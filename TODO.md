@@ -104,6 +104,11 @@
 - [L46 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L46)
 - [L52 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L52)
 
+### GfxDevice.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDevice.h#L3)
+- [L19 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDevice.h#L19)
+
 ### GfxDeviceCapabilities.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L3)
