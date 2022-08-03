@@ -6,7 +6,7 @@ def IsTextFile(filePath:str):
     return mimetypes.guess_type(filePath)[0] == 'text/plain'
 
 def CreateFileLineLink(relativeFilePath:str, l_no:int, line:str):
-    return "- [L" + str(l_no) + " :" +  line.strip().replace("\n", "") + "](" + relativeFilePath + "#L" + str(l_no) + ")\n"
+    return "- [L" + str(l_no) + " :" +  line.strip().replace("\n", "") + "](" + relativeFilePath.replace('\\', '/') + "#L" + str(l_no) + ")\n"
 
 def SearchForTodosInFiles(regex:str, directoryName:str):
     content="## " + directoryName + "\n"
