@@ -93,7 +93,6 @@ namespace Savanna
         static void PrintfSynchronous(const char* format, Args&&... args)
         {
             const std::lock_guard<std::mutex> lock(s_UniversalConsoleLock);
-            // fmt::print(format, args...);
             printf(format, args...);
         }
 

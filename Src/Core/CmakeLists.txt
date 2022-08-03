@@ -21,17 +21,6 @@ file(GLOB_RECURSE src
 # Filter any directory that contains a '~' in it's path.
 list(FILTER src EXCLUDE REGEX "${CMAKE_CURRENT_LIST_DIR}/(.+)~(.+)")
 
-# set(FMT_ROOT_DIR ${PROJECT_SOURCE_DIR}/../External/fmt-8.1.1/fmt-8.1.1)
-# set(FMT_BIN_DIR ${PROJECT_SOURCE_DIR}/../External/bin/fmt-8.1.1)
-# set(FMT_SUB_DIR ${FMT_ROOT_DIR} ${FMT_BIN_DIR})
-
-# add_subdirectory(${FMT_SUB_DIR})
-	# ${PROJECT_SOURCE_DIR}/../External/glm-0.9.9.8/glm
-	# ${PROJECT_SOURCE_DIR}/../External/bin/glm)
-
-# set(EXTERNAL_INCLUDE_DIRS
-#     ${FMT_ROOT_DIR}/include)
-
 # Sort the files into Filters based on Folder Hierarchy
 SOURCE_GROUP_BY_FOLDER()
 
