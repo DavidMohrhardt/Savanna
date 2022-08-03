@@ -1,0 +1,9 @@
+# Ignore the packages used for building currently
+CMake/
+fmt/
+GLFW/
+GLM/
+imgui/
+Ninja/
+Python/
+Vulkan/

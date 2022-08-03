@@ -1,0 +1,4 @@
+# External Folder Exclusion Overrides
+
+# Deprecatied folders
+!*~/
