@@ -1,0 +1,106 @@
+{
+    "BuildTargets": [
+        {
+            "Name": "Shared",
+            "Supported Architectures": [
+                "x64",
+                "AMD64",
+                "x86"
+            ],
+            "Tools": [],
+            "Required Dependencies": [],
+            "Optional Dependencies": []
+        },
+
+        {
+            "Name": "Windows",
+            "Supported Architectures": [
+                "x64",
+                "AMD64",
+                "x86"
+            ],
+
+            "Tools": [
+                {
+                    "Name": "Cmake",
+                    "Version": "3.21.1",
+                    "ArtifactPath": "${Project_Directory}/Artifacts/CMake/3.21.1/",
+                    "OutputPath": "${Project_Directory}/Tools/Cmake",
+                    "SupportedArchitectures": [
+                        {
+                            "Name": "x64",
+                            "ArtifactName": "cmake-3.21.1-windows-x86_64.zip"
+                        },
+                        {
+                            "Name": "AMD64",
+                            "ArtifactName": "cmake-3.21.1-windows-x86_64.zip"
+                        },
+                        {
+                            "Name": "x86",
+                            "ArtifactName": "cmake-3.21.1-windows-x86_64.zip"
+                        }
+                    ],
+                    "Files": [
+                        "./bin"
+                    ]
+                },
+
+                {
+                    "Name": "Python",
+                    "Version": "3.10.0",
+                    "ArtifactPath": "${Project_Directory}/Artifacts/Python/",
+                    "OutputPath": "${Project_Directory}/Tools/Python",
+                    "SupportedArchitectures": [
+                        {
+                            "Name": "AMD64",
+                            "ArtifactName": "python-3.10.0-embed-amd64.zip"
+                        }
+                    ],
+                    "Files": [
+                        "./"
+                    ]
+                },
+
+                {
+                    "Name": "Ninja",
+                    "Version": "1.10.2",
+                    "ArtifactPath": "${Project_Directory}/Artifacts/Ninja/latest/",
+                    "OutputPath": "${Project_Directory}/Tools/Python",
+                    "SupportedArchitectures": [
+                        {
+                            "Name": "Any",
+                            "ArtifactName": "ninja-win.zip"
+                        }
+                    ],
+                    "Files": [
+                        "./"
+                    ]
+                }
+            ],
+
+            "Required Dependencies": [
+
+            ],
+
+            "Optional Dependencies": [
+                {
+                    "Name": "Vulkan",
+                    "Version": "",
+                    "ArtifactPath": "${Project_Directory}/Artifacts/CMake/3.21.1/cmake-3.21.1-windows-x86_64.zip",
+                    "OutputPath": "./Cmake",
+                    "SupportedArchitectures": [
+                        {
+                            "Architectures": [
+                                "x64",
+                                "x86"
+                            ],
+                            "Files": [
+                                "/bin"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

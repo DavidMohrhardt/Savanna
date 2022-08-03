@@ -1,0 +1,33 @@
+// #pragma once
+
+// // Major and Minor Version Definitions
+
+// /**
+//  * @brief
+//  *
+//  */
+// #define SAVANNA_VERSION_MAJOR @savanna_VERSION_MAJOR@
+
+// /**
+//  * @brief
+//  *
+//  */
+// #define SAVANNA_VERSION_MINOR @savanna_VERSION_MINOR@
+
+// /**
+//  * @brief
+//  *
+//  */
+// #define SAVANNA_VERSION_PATCH @savanna_VERSION_PATCH@
+
+// // #define SAVANNA_VERSION "@savanna_VERSION_MAJOR@
+
+// // Profiling Enabling Definitions
+// /**
+//  * @brief
+//  */
+// #define SAVANNA_ENABLE_DEEP_ENGINE_PROFILING @savanna_DEEP_ENGINE_PROFILING@
+
+// /**
+//  * @brief
+//  */
