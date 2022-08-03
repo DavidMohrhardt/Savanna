@@ -46,5 +46,5 @@ content += SearchForTodosInFiles(r"./BuildScripts", "BuildScripts")
 content += SearchForTodosInFiles(r"./Documentation", "Documentation")
 content += SearchForTodosInFiles(r"./Tools", "Tools")
 
-with open("./TODO.md", 'w') as todoFile:
+with open("./Progress/TODOTracker.md", 'w') as todoFile:
     todoFile.write(content)

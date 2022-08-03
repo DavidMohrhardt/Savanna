@@ -3,4 +3,5 @@ This is a game engine I am writing in my spare time.  It likely won't be the pre
 
 ## Important Links
 
-- [Todo Items List and Links](./TODO.md)
+- [Functionality TODO Items List](./Progress/TODO.md)
+- [Inline Todo Items List and Links](./Progress/TODOTracker.md)
