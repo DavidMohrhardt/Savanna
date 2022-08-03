@@ -4,7 +4,7 @@ import SavannaLogging
 from dataclasses import dataclass
 from SavannaPathUtils import FindPathToFiles
 
-#TODO
+#TODO Update Build Platform class to handle generation of the required arguments and dependencies based on input meta files
 @dataclass
 class SavannaBuildPlatform:
     system : str

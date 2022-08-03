@@ -1,3 +1,14 @@
+/**
+ * @file Console.h
+ * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @brief Provides console logging utils for the engine.
+ * @version 0.1
+ * @date 2022-08-02
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
+
 #pragma once
 
 #include <stdio.h>

@@ -1,9 +1,24 @@
+/**
+ * @file AllocatorKind.h
+ * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @brief TODO @DavidMohrhardt Document
+ * @version 0.1
+ * @date 2022-08-02
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
+
 #pragma once
 
 #include "Types/Primitive/PrimitiveTypes.h"
 
 #include "Utilities/Macros/CppTypeDefs.h"
 
+/**
+ * @brief TODO @DavidMohrhardt Document
+ *
+ */
 enum SavannaAllocatorKind : __se_int32
 {
     /**
@@ -38,4 +53,8 @@ enum SavannaAllocatorKind : __se_int32
      */
     System,
 };
+
+/**
+ * @brief If using C++, provides a simple "Savanna" Namespaced type definition for the SavannaAllocatorKind: AllocatorKind
+ */
 DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(SavannaAllocatorKind, AllocatorKind);

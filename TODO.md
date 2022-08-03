@@ -2,34 +2,138 @@
 
 ## Src
 
+### DX12Application.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Applications/DX12Renderer/DX12Application.cpp#L3)
+
+### DX12Application.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Applications/DX12Renderer/DX12Application.h#L3)
+
+### WindowsRenderWindow.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Applications/DX12Renderer/Window/WindowsRenderWindow.cpp#L3)
+
+### WindowsRenderWindow.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Applications/DX12Renderer/Window/WindowsRenderWindow.h#L3)
+
 ### CMakeLists.txt
 
 - [L55 :# TODO change when unpacking artifacts is normalized](./Src/Applications/VulkanRenderer/CMakeLists.txt#L55)
+
+### VulkanApplication.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
+
+### VulkanApplication.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Applications/VulkanRenderer/VulkanApplication.h#L3)
+
+### IApplication.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Application/IApplication.h#L3)
+- [L14 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Application/IApplication.h#L14)
+- [L21 :* @brief TODO @DavidMohrhardt Document Destroy the IApplication object](./Src/Core/Application/IApplication.h#L21)
+- [L27 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Application/IApplication.h#L27)
+
+### CacheLine.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/CacheLine.h#L3)
+
+### AllocatorKind.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/AllocatorKind.h#L3)
+- [L18 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/AllocatorKind.h#L18)
+
+### AllocatorWrapper.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/AllocatorWrapper.h#L3)
+
+### FreeListAllocator.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/FreeListAllocator.cpp#L3)
+
+### FreeListAllocator.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/FreeListAllocator.h#L3)
+
+### Mallocator.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/Mallocator.cpp#L3)
+
+### Mallocator.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Memory/Allocators/Mallocator.h#L3)
 
 ### PlayerLoop.h
 
 - [L7 :// TODO @davidmo: move this over to a manager](./Src/Core/PlayerLoop/PlayerLoop.h#L7)
 
+### ProfilerManager.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Core/Profiling/ProfilerManager.h#L3)
+
 ### Console.h
 
-- [L88 :// TODO](./Src/Core/Utilities/Console.h#L88)
+- [L99 :// TODO](./Src/Core/Utilities/Console.h#L99)
 
 ### LazyDllLoader.h
 
 - [L6 :#if ENABLE_TODOS // Unimplemented](./Src/Core/Utilities/DllLoader/LazyDllLoader.h#L6)
 
+### Component.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Entities/Component.h#L3)
+
+### Entity.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Entities/Entity.h#L3)
+
+### System.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Entities/System.h#L3)
+
+### GfxApiEnumeration.h
+
+- [L16 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L16)
+- [L22 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L22)
+- [L28 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L28)
+- [L34 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L34)
+- [L40 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L40)
+- [L46 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L46)
+- [L52 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxApiEnumeration.h#L52)
+
+### GfxDeviceCapabilities.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L3)
+- [L19 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L19)
+- [L25 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L25)
+- [L31 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L31)
+- [L37 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L37)
+- [L43 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L43)
+- [L49 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L49)
+- [L55 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L55)
+- [L61 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L61)
+- [L67 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L67)
+- [L74 :* this enumeration. Requires querying from TODO](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L74)
+- [L80 :* @brief TODO @DavidMohrhardt Document Construct a new declare savanna extended namespaced cpp type def object](./Src/Modules/Rendering/GfxDeviceCapabilities.h#L80)
+
 ### GfxDeviceDescriptor.c
 
-- [L2 :#if ENABLE_TODOS](./Src/Modules/Rendering/GfxDeviceDescriptor.c#L2)
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceDescriptor.c#L3)
+- [L13 :#if ENABLE_TODOS](./Src/Modules/Rendering/GfxDeviceDescriptor.c#L13)
 
 ### GfxDeviceDescriptor.h
 
-- [L18 :#if ENABLE_TODOS](./Src/Modules/Rendering/GfxDeviceDescriptor.h#L18)
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/GfxDeviceDescriptor.h#L3)
+- [L29 :#if ENABLE_TODOS](./Src/Modules/Rendering/GfxDeviceDescriptor.h#L29)
 
 ### VulkanPhysicalDevice.cpp
 
-- [L11 :// TODO: Rework this to just have each PhysicalDevice produce it's descriptor and then init that.](./Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L11)
-- [L26 :// TODO](./Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L26)
+- [L3 :* @brief TODO @DavidMohrhardt Document](./Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L3)
+- [L22 :// TODO: Rework this to just have each PhysicalDevice produce it's descriptor and then init that.](./Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L22)
+- [L37 :// TODO](./Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L37)
 
 ### Assertions.h
 
@@ -74,7 +178,7 @@
 
 ### SavannaPlatform.py
 
-- [L6 :#TODO](./BuildScripts/Python/SavannaPlatform.py#L6)
+- [L6 :#TODO Update Build Platform class to handle generation of the required arguments and dependencies based on input meta files](./BuildScripts/Python/SavannaPlatform.py#L6)
 - [L13 :#TODO](./BuildScripts/Python/SavannaPlatform.py#L13)
 - [L20 :#TODO](./BuildScripts/Python/SavannaPlatform.py#L20)
 - [L26 :#TODO](./BuildScripts/Python/SavannaPlatform.py#L26)

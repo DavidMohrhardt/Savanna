@@ -1,3 +1,13 @@
+/**
+ * @file Main.cpp
+ * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @brief Implements the "Main" function for the Application.
+ * @version 0.1
+ * @date 2022-08-02
+ *
+ * @copyright Copyright (c) 2022
+ *
+ **/
 #include "DX12Application.h"
 
 #include <Windows.h>

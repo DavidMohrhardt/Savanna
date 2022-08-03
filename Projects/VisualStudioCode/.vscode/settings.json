@@ -88,5 +88,6 @@
     "cmake.configureOnOpen": true,
     "cmake.buildDirectory": "${workspaceFolder}/Builds/cache",
     "doxdocgen.generic.authorEmail": "david.mohrhardt@gmail.com",
-    "doxdocgen.generic.authorName": "David Mohrhardt"
+    "doxdocgen.generic.authorName": "David Mohrhardt",
+    "doxdocgen.generic.briefTemplate": "@brief TODO @DavidMohrhardt Document {text}"
 }
