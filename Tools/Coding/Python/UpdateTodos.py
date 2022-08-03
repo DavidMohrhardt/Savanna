@@ -1,6 +1,6 @@
 import mimetypes
 import os
-import re
+import subprocess
 
 def IsTextFile(filePath:str):
     return mimetypes.guess_type(filePath)[0] == 'text/plain'
@@ -16,14 +16,18 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
             if (filename == "UpdateTodos.py"):
                 continue
             filePath = os.path.join(rootDir, filename)
+            # TODO just use git ls-files to get all the files that should be checked then check if they are binary encoded.
+            processArgs = str("git ls-files --error-unmatch " + filePath).split(" ")
 
-            # if (IsTextFile(filePath)):
+            process = subprocess.run(processArgs, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+
+            if process.returncode != 0:
+                continue
+
             with open(filePath, 'r') as file:
-                print(filePath)
                 isFirstWriteForFile = True
                 try:
                     for l_no, line in enumerate(file):
-                        # search string
                         lowerLine = line.lower()
                         if "todo" in lowerLine:
                             if (not wasWritten):
@@ -31,7 +35,7 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
                             if (isFirstWriteForFile):
                                 isFirstWriteForFile = False
                                 content += "\n### " + filename + "\n\n"
-                            content += CreateFileLineLink(filePath, l_no, line)
+                            content += CreateFileLineLink("." + filePath, l_no, line)
                 except:
                     print("Error in file " + filename)
     if wasWritten:
