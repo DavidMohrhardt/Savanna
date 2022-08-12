@@ -17,20 +17,20 @@ typedef int64_t             __se_int64;
 typedef intptr_t            __se_intptr;
 typedef uintptr_t           __se_uintptr;
 
-typedef __se_byte           sbyte;
-typedef __se_ubyte          subyte;
+typedef __se_byte           s_byte;
+typedef __se_ubyte          s_ubyte;
 
-typedef __se_uint8          suint8;
-typedef __se_uint16         suint16;
-typedef __se_uint32         suint32;
-typedef __se_uint64         suint64;
-typedef __se_int8           sint8;
-typedef __se_int16          sint16;
-typedef __se_int32          sint32;
-typedef __se_int64          sint64;
+typedef __se_uint8          s_uint8;
+typedef __se_uint16         s_uint16;
+typedef __se_uint32         s_uint32;
+typedef __se_uint64         s_uint64;
+typedef __se_int8           s_int8;
+typedef __se_int16          s_int16;
+typedef __se_int32          s_int32;
+typedef __se_int64          s_int64;
 
-typedef __se_intptr         sintptr;
-typedef __se_uintptr        suintptr;
+typedef __se_intptr         s_intptr;
+typedef __se_uintptr        s_uintptr;
 
 #if __cplusplus
 namespace Savanna

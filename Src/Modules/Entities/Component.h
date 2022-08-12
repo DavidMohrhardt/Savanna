@@ -15,12 +15,12 @@
 
 #include "Entity.h"
 
-namespace Savanna
+namespace Savanna::ECS
 {
-    struct ComponentBase
+    struct Component
     {
     public:
-        uint32 m_ComponentId;
+        static uint32 m_ComponentId;
 
         static void RegisterComponent()
         {
@@ -31,5 +31,11 @@ namespace Savanna
         {
             // Find available entity block
         }
+    };
+
+    template<typename T>
+    struct ComponentData
+    {
+
     };
 }

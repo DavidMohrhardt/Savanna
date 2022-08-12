@@ -17,6 +17,7 @@
 
 #endif
 
+#include "Math/MathHelpers.h"
 #include "Utilities/SavannaCoding.h"
 
 /**
@@ -29,12 +30,14 @@
 
 // Constants/Constexpr's
 #if __cplusplus && __cpp_lib_hardware_interference_size
-    using std::hardware_constructive_interference_size;
-    using std::hardware_destructive_interference_size;
+    static constexpr size_t __se_hardware_constructive_interference_size
+        = std::hardware_constructive_interference_size;
+    static constexpr size_t __se_hardware_destructive_interference_size
+        = std::hardware_destructive_interference_size;
 #else // !__cplusplus || !__cpp_lib_hardware_interference_size
     // 64 bytes on x86_64 | L1_CACHE_BYTES | L1_CACHE_SHIFT | __cacheline_aligned | ...
-    constexpr size_t hardware_constructive_interference_size = 64;
-    constexpr size_t hardware_destructive_interference_size = 64;
+    static constexpr size_t __se_hardware_constructive_interference_size = 64;
+    static constexpr size_t __se_hardware_destructive_interference_size = 64;
 #endif // end __cplusplus
 
 /**
@@ -46,9 +49,9 @@
 constexpr size_t L1CacheLineLength()
 {
 #if __cplusplus
-    return std::hardware_destructive_interference_size;
+    return __se_hardware_destructive_interference_size;
 #else // !__cplusplus
-    return hardware_constructive_interference_size;
+    return __se_hardware_constructive_interference_size;
 #endif // end __cplusplus
 }
 
@@ -61,7 +64,19 @@ constexpr size_t L1CacheLineLength()
  */
 constexpr size_t GetL1CacheLineCount(size_t bytesLength)
 {
-    return bytesLength % L1CacheLineLength() != 0 ? bytesLength / L1CacheLineLength() : bytesLength / L1CacheLineLength() + 1;
+    return (bytesLength + L1CacheLineLength() - 1) / L1CacheLineLength();
+}
+
+/**
+ * @brief Estimates the number of a cachelines the given number of bytes will need to be stored in at compile time.
+ *
+ * @param bytesLength
+ * @return constexpr size_t
+ * The estimated number of a cachelines the given number of bytes will need to be stored in.
+ */
+constexpr size_t GetLengthInBytesToNextCacheLine(size_t bytesLength)
+{
+    return GetL1CacheLineCount(bytesLength) * L1CacheLineLength();
 }
 
 // Type Definitions

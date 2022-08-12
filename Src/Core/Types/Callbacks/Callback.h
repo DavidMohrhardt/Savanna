@@ -7,7 +7,7 @@
 namespace Savanna
 {
     template<typename TReturn = void, typename ...Args>
-    class Callback : public SavannaClass<Callback<TReturn, Args...>>
+    class Callback //: public SavannaClass<Callback<TReturn, Args...>>
     {
         // DECLARE_SAVANNA_CLASS(Callback);
     public:

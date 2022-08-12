@@ -10,6 +10,7 @@
  */
 #pragma once
 
+#ifdef ENABLE_LIST_ALLOCATOR
 #include "AllocatorUtils.h"
 
 #include "Memory/CacheLine.h"
@@ -39,3 +40,4 @@ namespace Savanna
     {}
 
 } // namespace Savanna
+#endif // ENABLE_LIST_ALLOCATOR

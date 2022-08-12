@@ -15,12 +15,12 @@
 
 namespace SavannaDX12
 {
-	WindowsRenderWindow::WindowsRenderWindow(Savanna::uint16 width, Savanna::uint16 height, std::string title, HINSTANCE hInstance, int nWndCmd)
+    WindowsRenderWindow::WindowsRenderWindow(Savanna::uint16 width, Savanna::uint16 height, std::string title, HINSTANCE hInstance, int nWndCmd)
         : m_Width(width)
         , m_Height(height)
         , m_FullscreenMode(false)
         , m_WindowRect()
-	{
+    {
         // Create Window
         // Initialize the window class.
         WNDCLASSEX windowClass = { 0 };
@@ -54,19 +54,19 @@ namespace SavannaDX12
             this);
 
         ShowWindow(m_Hwnd, nWndCmd);
-	}
+    }
 
-	WindowsRenderWindow::~WindowsRenderWindow()
-	{
-	}
+    WindowsRenderWindow::~WindowsRenderWindow()
+    {
+    }
 
-	void WindowsRenderWindow::DisplayWindow() const
-	{
-	}
+    void WindowsRenderWindow::DisplayWindow() const
+    {
+    }
 
-	void WindowsRenderWindow::HideWindow() const
-	{
-	}
+    void WindowsRenderWindow::HideWindow() const
+    {
+    }
 
     // Main message handler for the sample.
     LRESULT CALLBACK WindowsRenderWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

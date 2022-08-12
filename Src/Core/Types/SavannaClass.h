@@ -148,11 +148,11 @@ public:\
 
 namespace Savanna
 {
-    template<class T>
+    /*template<class T>
     class SavannaClass
     {
         DEFINE_SAVANNA_CLASS;
-    };
+    };*/
 } // namespace Savanna
 
 

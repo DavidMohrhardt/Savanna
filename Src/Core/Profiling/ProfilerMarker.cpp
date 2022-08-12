@@ -1,8 +1,9 @@
 #include "ProfilerMarker.h"
 
 #include "Types/Strings/HashString.h"
+
 #include "Utilities/Console.h"
-#include "Utilities/Macros/CppCommonDefs.h"
+#include "Utilities/SavannaCoding.h"
 
 namespace Savanna
 {

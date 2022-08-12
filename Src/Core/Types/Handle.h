@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Memory/CacheLine.h"
+#include "Utilities/SavannaCoding.h"
 
-#include "Utilities/Macros/CppTypeDefs.h"
 #include "Memory/CacheLine.h"
-
 /**
  * @brief
  *
@@ -13,13 +11,11 @@ typedef struct SAVANNA_CACHELINE_ALIGN
 {
     union
     {
-        // __se_intptr m_DataPtr;
-        void* m_DataPtr;
-        __se_byte m_HandleBytes[ sizeof(__se_intptr) ];
+        s_universalptr m_DataPtr;
+        s_byte m_HandleBytes[ sizeof(__se_intptr) ];
     };
-} __se_Handle;
-DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(__se_Handle, Handle);
-
+} __se_handle;
+DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(__se_handle, Handle);
 
 #ifdef __cplusplus
 
@@ -74,7 +70,7 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD T* Get() const SAVANNA_NO_EXCEPT
         {
-            return reinterpret_cast<T*>( m_Handle.m_DataPtr );
+            return static_cast<T*>( m_Handle.m_DataPtr.m_Ptr );
         }
 
         const bool IsValid() const { return m_Handle.m_DataPtr != 0; }

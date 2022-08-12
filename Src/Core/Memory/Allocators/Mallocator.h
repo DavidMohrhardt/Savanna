@@ -11,10 +11,7 @@
 
 #pragma once
 
-#include "Types/Exceptions/SavannaException.h"
-#include "Types/Primitive/PrimitiveTypes.h"
-#include "Types/Primitive/PrimitiveUnions.h"
-#include "Utilities/Macros/CppCommonDefs.h"
+#include "Utilities/SavannaCoding.h"
 
 namespace Savanna
 {
@@ -29,7 +26,7 @@ namespace Savanna
     {
         typedef T value_type;
 
-        Mallocator() SAVANNA_NO_EXCEPT
+        Mallocator()
         {}
 
         // A converting copy constructor:

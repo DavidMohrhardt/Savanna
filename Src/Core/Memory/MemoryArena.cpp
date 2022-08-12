@@ -1,32 +1,57 @@
 #include "MemoryArena.h"
-#include "Allocators/Mallocator.h"
+#include "CacheLine.h"
+#include "Allocators/AllocatorUtils.h"
 #include "Types/Exceptions/SavannaException.h"
+#include "Types/Pointers/PointerUtilities.h"
 
 namespace Savanna
 {
     MemoryArena::MemoryArena(size_t initialMemoryRequest)
         : m_Size(initialMemoryRequest)
-        , m_Root(nullptr)
-    {}
+        , m_Root(malloc(initialMemoryRequest))
+        , m_Allocated(0)
+        , m_Head(m_Root)
+    {
+        if (m_Root == nullptr)
+        {
+            throw RuntimeErrorException("Failed to allocate memory for MemoryArena.");
+        }
+    }
 
     MemoryArena::~MemoryArena()
     {
-        // RawMallocator::deallocate<byte>(m_Root, m_Size);
+        if (m_Root != nullptr)
+        {
+            free(m_Root);
+        }
     }
 
     SAVANNA_NO_DISCARD void* MemoryArena::AcquireMemory(size_t size)
     {
-        return nullptr;
-    }
-
-    void MemoryArena::ReleaseMemory(void* ptr, size_t size)
-    {
-        size_t offsetFromRoot = static_cast<size_t>(reinterpret_cast<intptr>(ptr) - reinterpret_cast<intptr>(m_Root));
-        if (offsetFromRoot < 0 || offsetFromRoot > m_Size || size + offsetFromRoot > m_Size)
+        if (size > GetMaxSize() || size == 0)
         {
-            throw RuntimeErrorException("Pointer out of the arena bounds Memory Arena.");
+            return nullptr;
         }
 
+        void* ptr = m_Head;
+        m_Head = GetForwardAlignedPtr<void, void>(Add(ptr, size), L1CacheLineLength());
 
+        if (m_Head == nullptr)
+        {
+            throw RuntimeErrorException("MemoryArena::AcquireMemory - Failed to allocate memory.");
+        }
+
+        m_Allocated = m_Allocated + size;
+        if (m_Allocated >= m_Size)
+        {
+            m_Head = nullptr;
+        }
+
+        return ptr;
+    }
+
+    void MemoryArena::ReleaseMemory(void* ptr)
+    {
+        // TODO: Implement
     }
 } // namespace Savanna

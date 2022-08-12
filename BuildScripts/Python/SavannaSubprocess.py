@@ -18,7 +18,7 @@ def RunSubprocessWithLogging(processArgs: list):
         subprocess.run(processArgs)
     elif (loggingParams.error):
         subprocess.run(processArgs, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    # TODO
+    # TODO @david.mohrhardt: Add logging for other levels
     # elif (loggingParams.output):
     #     subprocess.run(processArgs)
     else:

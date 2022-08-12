@@ -14,42 +14,58 @@
 #include "AllocatorUtils.h"
 
 #include "Memory/CacheLine.h"
-#include "Memory/MemoryArena.h"
+// #include "Memory/MemoryArena.h"
 
 #include "Utilities/SavannaCoding.h"
 
 namespace Savanna
 {
-    struct alignas(L1CacheLineLength()) FreeBlockDesc
+    class MemoryArena;
+
+    typedef struct alignas(L1CacheLineLength()) FreeBlockDesc
     {
         FreeBlockDesc* m_Next;
         size_t m_Size;
-
-        bool IsFreeBlock() const { return this == (m_Next - 1); }
-    };
+    } FreeBlockDesc;
 
     class FreeListAllocator
     {
     private:
+        MemoryArena* m_OwnerMemoryArena;
+
         void* m_Root;
         FreeBlockDesc* m_Head;
         FreeBlockDesc* m_MaxContiguousBlock;
         size_t m_Size;
         size_t m_AllocatedBytes;
+        uint32 m_NumberOfBlockLinks;
 
     public:
-        FreeListAllocator(MemoryArena& arena, size_t size);
+        FreeListAllocator();
+        FreeListAllocator(MemoryArena* arena, size_t size);
+        FreeListAllocator(void* m_Root, size_t size);
         ~FreeListAllocator();
 
-        SAVANNA_NO_DISCARD size_t max_size() SAVANNA_NO_EXCEPT;
+        SAVANNA_NO_DISCARD size_t MaxSize() SAVANNA_NO_EXCEPT;
 
-    protected:
-        SAVANNA_NO_DISCARD void* allocate_internal(size_t size, const size_t& alignment);
-        void deallocate_internal(void* ptr, const size_t sizeOfType, const size_t alignment);
+        SAVANNA_NO_DISCARD float get_fragmentation_percentage() const { return 0.f; };
+
+        SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
+        void Deallocate(void* const ptr, const size_t alignment);
+
+        SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
+        SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
 
     private:
-        SAVANNA_NO_DISCARD void* FindNextFreeBlockOfSize(const size_t size, const size_t alignment, size_t& outForwardAdjust);
+        SAVANNA_NO_DISCARD size_t GetRequiredSizeWithHeader(
+            void* const ptr,
+            const size_t size,
+            const size_t alignment) const;
+        SAVANNA_NO_DISCARD void* FindNextFreeBlockOfSize(const size_t size, const size_t alignment);
+
+#ifdef TEST_CACHE_ALIGNED_FAST_PATH
         SAVANNA_NO_DISCARD void* FindNextFreeBlockOfSizeCacheAligned(const size_t size);
+#endif
 
         SAVANNA_NO_DISCARD size_t GetAlignedSizeRequirement(const void* const ptr, const size_t alignment, const size_t size) const;
     };

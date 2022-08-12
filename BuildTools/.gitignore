@@ -1,6 +1,5 @@
 # External Folder Exclusion Overrides
 python*/
-7z/
 
 # Deprecated folders
 !*~/

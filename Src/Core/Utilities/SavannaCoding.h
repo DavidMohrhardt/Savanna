@@ -13,10 +13,16 @@
 #pragma once
 
 #include "Types/Primitive/PrimitiveTypes.h"
-#include "Types/Primitive/PrimitiveUnions.h"
+#include "Types/Primitive/FloatingPointUnions.h"
+#include "Types/Pointers/UniversalPointer.h"
 
+#include "Types/Pointers/PointerUtilities.h"
+
+// These headers are guarded in case compiling with C rather than C++ so it's safe to include
+#include "Macros/CppAttributes.h"
 #include "Macros/CppCommonDefs.h"
 #include "Macros/CppTypeDefs.h"
+
 #include "Macros/Enums.h"
 
 #include "PreprocessorDefinitions/ArchitectureDefinitions.h"
@@ -28,6 +34,7 @@
 
 #if __cplusplus
 
+// For headers that explicitly only work in C++
 #include "Types/Exceptions/SavannaException.h"
 
 #endif

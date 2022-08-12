@@ -23,7 +23,7 @@ namespace Savanna
 
         if (size > static_cast<size_t>(-1) / sizeof(T))
         {
-            throw BadArrayNewLengthException();
+            throw BadArrayNewLengthException;
         }
 
         void* const dataPtr = malloc(size * sizeof(T));

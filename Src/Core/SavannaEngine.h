@@ -2,7 +2,7 @@
 
 // Common Types
 #include "Types/Primitive/PrimitiveTypes.h"
-#include "Types/Primitive/PrimitiveUnions.h"
+#include "Types/Primitive/FloatingPointUnions.h"
 #include "Types/Handle.h"
 
 // Class Definitions

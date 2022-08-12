@@ -8,13 +8,19 @@
  * @copyright Copyright (c) 2022
  *
  */
+#pragma once
+
+#include "Math/MathHelpers.h"
 #include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Pointers/PointerUtilities.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 #if __cplusplus
 
 namespace Savanna
 {
+
+
     /**
      * @brief Aligns a pointer to the next nearest address with the given alignment.
      *
@@ -26,30 +32,17 @@ namespace Savanna
     {
         // As per https://en.wikipedia.org/wiki/Modulo_operation
         // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
-        return (reinterpret_cast<uintptr>(ptr) & (alignment - 1u));
+        size_t moduloResult = (reinterpret_cast<uintptr>(ptr) & (alignment - 1u));
+        return alignment - (moduloResult == 0 ? alignment : moduloResult);
     }
 
-    SAVANNA_NO_DISCARD inline void* GetForwardAlignedPtr(const void* const ptr, const size_t & alignment)
+    template<typename T, typename U>
+    SAVANNA_NO_DISCARD inline T* GetForwardAlignedPtr(U* const ptr, const size_t & alignment)
     {
-        // As per https://en.wikipedia.org/wiki/Modulo_operation
-        // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
-        return reinterpret_cast<void*>(reinterpret_cast<uintptr>(ptr) + (reinterpret_cast<uintptr>(ptr) & (alignment - 1u)));
+        size_t alignmentOffset = GetForwardAlignment(static_cast<const void* const>(ptr), alignment);
+        return reinterpret_cast<T*>(Add(ptr, alignmentOffset));
     }
 
-    template<typename T>
-    SAVANNA_NO_DISCARD inline T* AlignAndCastPtr(const T* const ptr, const size_t & alignment)
-    {
-        return static_cast<T*>(GetForwardAlignedPtr(reinterpret_cast<const void* const>(ptr), alignment));
-    }
-
-    SAVANNA_NO_DISCARD inline void* PointerAdd(const void* const ptr, const size_t & alignment)
-    {
-        // As per https://en.wikipedia.org/wiki/Modulo_operation
-        // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
-        return reinterpret_cast<void*>(reinterpret_cast<uintptr>(ptr) + (reinterpret_cast<uintptr>(ptr) & (alignment - 1u)));
-    }
 } // namespace Savanna
-
-#else
 
 #endif // end __cplusplus

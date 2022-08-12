@@ -348,10 +348,6 @@ Library/
 Projects/VisualStudio/*
 !DONOTDELETE.TXT
 
-# TODO @DavidMohrhardt Figure out how to properly download the required files.
-# Extracted Zips Folders
-External/*/
-
 # CMake
 CMakeFiles/
 CMakeCache.txt

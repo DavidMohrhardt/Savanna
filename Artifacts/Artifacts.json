@@ -1,0 +1,58 @@
+[
+    {
+        "Name": "Cmake",
+        "Version": "3.10.0",
+        "URL": "https://github.com/Kitware/CMake/releases/download/v3.24.0",
+        "FileNames": [
+            "cmake-3.24.0-windows-x86_64.zip"
+        ],
+        "OutputDirectory": "cmake"
+    },
+    {
+        "Name": "GLFW",
+        "Version": "3.3.6",
+        "URL": "https://github.com/glfw/glfw/releases/download/3.3.8",
+        "FileNames": [
+            "glfw-3.3.8.bin.WIN64.zip"
+        ],
+        "OutputDirectory": "glfw"
+    },
+    {
+        "Name": "GLM",
+        "Version": "0.9.9.8.7",
+        "URL": "https://github.com/g-truc/glm/releases/download/0.9.9.8",
+        "FileNames": [
+            "glm-0.9.9.8.7z"
+        ],
+        "OutputDirectory": "glm"
+    },
+    {
+        "Name": "Ninja",
+        "Version": "1.11.0",
+        "URL": "https://github.com/ninja-build/ninja/releases/download/v1.11.0",
+        "FileNames": [
+            "ninja-linux.zip",
+            "ninja-mac.zip",
+            "ninja-win.zip"
+        ],
+        "OutputDirectory": "ninja"
+    },
+    {
+        "Name": "Python",
+        "Version": "3.10.6",
+        "URL": "https://www.python.org/ftp/python/3.10.6",
+        "FileNames": [
+            "python-3.10.6-embed-amd64.zip"
+        ],
+        "OutputDirectory": "python"
+    },
+    {
+        "Name": "Vulkan",
+        "Version": "1.2.162.1",
+        "URL": "https://sdk.lunarg.com/sdk/download/latest/windows",
+        "FileNames": [
+            "vulkan-runtime-components.zip"
+        ],
+        "OutputDirectory": "vulkan"
+    }
+]

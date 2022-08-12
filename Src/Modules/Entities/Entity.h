@@ -17,7 +17,6 @@ namespace Savanna
 {
     struct Entity
     {
-        int64 m_EntityHandle;
-        intptr m_ComponentReferenceBag;
+
     };
 } // namespace Savanna
