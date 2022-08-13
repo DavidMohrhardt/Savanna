@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+include(FetchContent)
 
 # Set Application Name
 set(app_name SavannaVulkanRenderer)
@@ -32,10 +33,26 @@ SOURCE_GROUP_BY_FOLDER()
 # Add Executable
 add_executable(${app_name} ${src})
 
-set(HELPER_LIB_LIST
-	# Windows specific source files
-	${PROJECT_SOURCE_DIR}/../External/glfw-3.3.6.bin.WIN64/glfw-3.3.6.bin.WIN64/lib-vc2022/glfw3.lib
-	${PROJECT_SOURCE_DIR}/../External/glfw-3.3.6.bin.WIN64/glfw-3.3.6.bin.WIN64/lib-vc2022/glfw3_mt.lib)
+# declare_and_fetch(CONTENT_ID "glfw" GIT_REPOSITORY https://github.com/glfw/glfw GIT_TAG "3.3.6" GIT_SHALLOW ON)
+
+FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw
+)
+
+FetchContent_GetProperties(glfw)
+if(NOT glfw_POPULATED)
+    FetchContent_Populate(glfw)
+
+    set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "Build the GLFW example programs")
+    set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "Build the GLFW test programs")
+    set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "Build the GLFW documentation")
+    set(GLFW_INSTALL OFF CACHE INTERNAL "Generate installation target")
+
+    add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
+endif()
+
+set (HELPER_LIB_LIST glfw)
 
 set(target_static_libs
     Core
