@@ -11,7 +11,7 @@ typedef struct SAVANNA_CACHELINE_ALIGN
 {
     union
     {
-        s_universalptr m_DataPtr;
+        void* m_DataPtr;
         s_byte m_HandleBytes[ sizeof(__se_intptr) ];
     };
 } __se_handle;

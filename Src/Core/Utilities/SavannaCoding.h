@@ -14,16 +14,15 @@
 
 #include "Types/Primitive/PrimitiveTypes.h"
 #include "Types/Primitive/FloatingPointUnions.h"
-#include "Types/Pointers/UniversalPointer.h"
-
-#include "Types/Pointers/PointerUtilities.h"
 
 // These headers are guarded in case compiling with C rather than C++ so it's safe to include
 #include "Macros/CppAttributes.h"
 #include "Macros/CppCommonDefs.h"
 #include "Macros/CppTypeDefs.h"
-
 #include "Macros/Enums.h"
+
+#include "Math/MathHelpers.h"
+#include "Math/PointerMath.h"
 
 #include "PreprocessorDefinitions/ArchitectureDefinitions.h"
 #include "PreprocessorDefinitions/CompilerDefinitions.h"

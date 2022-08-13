@@ -1,3 +1,21 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/Src"
+    "cmake.sourceDirectory": "${workspaceFolder}/Src",
+    "files.associations": {
+        "cmath": "cpp",
+        "chrono": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "iterator": "cpp",
+        "list": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "format": "cpp",
+        "initializer_list": "cpp",
+        "type_traits": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp",
+        "charconv": "cpp",
+        "xmemory": "cpp"
+    }
 }

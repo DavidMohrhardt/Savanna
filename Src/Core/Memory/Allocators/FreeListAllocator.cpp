@@ -14,9 +14,8 @@
 
 #include "Memory/MemoryArena.h"
 #include "Math/MathHelpers.h"
+#include "Math/PointerMath.h"
 #include "Profiling/Profiler.h"
-#include "Types/Pointers/UniversalPointer.h"
-#include "Types/Pointers/PointerUtilities.h"
 
 namespace Savanna
 {
@@ -30,28 +29,30 @@ namespace Savanna
     {}
 
     FreeListAllocator::FreeListAllocator(MemoryArena* arena, size_t size)
+        : FreeListAllocator()
     {
         m_OwnerMemoryArena = arena;
-
         m_Root = arena->AcquireMemory(size);
-        m_Head = reinterpret_cast<FreeBlockDesc*>(m_Root);
-        m_Head->m_Next = nullptr;
-        m_Head->m_Size = m_Size - sizeof(FreeBlockDesc);
+        m_Head = reinterpret_cast<MemoryChunkHeader*>(m_Root);
         m_AllocatedBytes = 0;
+        m_Size = size;
+        m_AllocatedBytes = sizeof(MemoryChunkHeader);
+        m_NumberOfBlockLinks = 1;
+
+        m_Head->m_Next = nullptr;
+        m_Head->m_Size = static_cast<int32>(size - sizeof(MemoryChunkHeader));
     }
 
     FreeListAllocator::FreeListAllocator(void* bufferPtr, size_t size)
         : m_OwnerMemoryArena(nullptr)
         , m_Root(bufferPtr)
-        , m_Head(reinterpret_cast<FreeBlockDesc*>(bufferPtr))
+        , m_Head(reinterpret_cast<MemoryChunkHeader*>(bufferPtr))
         , m_Size(size)
-        , m_AllocatedBytes(sizeof(FreeBlockDesc))
+        , m_AllocatedBytes(sizeof(MemoryChunkHeader))
         , m_NumberOfBlockLinks(1)
     {
-        if (m_Root == nullptr)
-        {
-            throw RuntimeErrorException("Attempted to initialize Allocator with no backing buffer.");
-        }
+        m_Head->m_Next = nullptr;
+        m_Head->m_Size = static_cast<int32>(size - sizeof(MemoryChunkHeader));
     }
 
     FreeListAllocator::~FreeListAllocator()
@@ -69,134 +70,169 @@ namespace Savanna
      */
     size_t FreeListAllocator::MaxSize() SAVANNA_NO_EXCEPT
     {
-        if (m_MaxContiguousBlock != nullptr)
-        {
-            return m_MaxContiguousBlock->m_Size;
-        }
         return 0;
     }
 
-    inline void* FreeListAllocator::Allocate(size_t size, const size_t& alignment)
+    void* FreeListAllocator::Allocate(size_t size, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Allocate");
         assert(size > 0 && alignment > 0);
 
-        if (m_Head == nullptr)
+        MemoryChunkHeader* previousChunkHeader = nullptr;
+        MemoryChunkHeader* currentChunkHeader = m_Head;
+
+        // Need to find the tightest fit for the allocated chunk.
+        MemoryChunkHeader* previousBestFitChunkHeader = nullptr;
+        MemoryChunkHeader* bestFitChunkHeader = nullptr;
+        void* outMemoryChunkPtr = nullptr;
+
+        // Set the best fit an unreachable size.
+        int bestFitChunkSize = m_Size;
+        int totalRequiredSize = 0;
+
+        while (currentChunkHeader != nullptr)
         {
-            throw BadAllocationException();
+            int forwardAlignment = GetForwardAlignment(&currentChunkHeader[1], alignment);
+            totalRequiredSize = size + forwardAlignment;
+            if (currentChunkHeader->m_Size >= totalRequiredSize
+                && (bestFitChunkHeader == nullptr || currentChunkHeader->m_Size < bestFitChunkHeader->m_Size))
+            {
+                previousBestFitChunkHeader = previousChunkHeader;
+                bestFitChunkHeader = currentChunkHeader;
+                bestFitChunkSize = currentChunkHeader->m_Size;
+                outMemoryChunkPtr = &currentChunkHeader[1] + forwardAlignment;
+
+                if (currentChunkHeader->m_Size == totalRequiredSize)
+                {
+                    break;
+                }
+            }
+
+            previousChunkHeader = currentChunkHeader;
+            currentChunkHeader = currentChunkHeader->m_Next;
         }
 
-        void* freeBlockPtr = FindNextFreeBlockOfSize(size, alignment);
-        if (freeBlockPtr == nullptr)
+        if (outMemoryChunkPtr == nullptr)
         {
-            throw BadAllocationException();
+            return nullptr;
         }
 
-        return freeBlockPtr;
+        if (bestFitChunkHeader->m_Size - totalRequiredSize <= sizeof(MemoryChunkHeader))
+        {
+            // Can't split the chunk.
+            totalRequiredSize = bestFitChunkHeader->m_Size;
+            if (previousBestFitChunkHeader != nullptr)
+            {
+                previousBestFitChunkHeader->m_Next = bestFitChunkHeader->m_Next;
+            }
+            else
+            {
+                m_Head = bestFitChunkHeader->m_Next;
+            }
+
+            m_AllocatedBytes += totalRequiredSize;
+        }
+        else
+        {
+            // Split the chunk.
+            MemoryChunkHeader* newChunkHeader = Add(&bestFitChunkHeader[1], totalRequiredSize);
+
+            newChunkHeader->m_Size = bestFitChunkHeader->m_Size - totalRequiredSize;
+            bestFitChunkHeader->m_Size = totalRequiredSize;
+            newChunkHeader->m_Next = bestFitChunkHeader->m_Next;
+            bestFitChunkHeader->m_Next = newChunkHeader;
+
+            if (previousBestFitChunkHeader != nullptr)
+            {
+                previousBestFitChunkHeader->m_Next = newChunkHeader;
+            }
+            else
+            {
+                m_Head = newChunkHeader;
+            }
+
+            m_AllocatedBytes += totalRequiredSize + sizeof(MemoryChunkHeader);
+        }
+
+#if defined(OLD_IMPLEMENTATION)
+        // O(n) search for the tightest fit. Can't do better than this.
+        while (currentChunkHeader != nullptr)
+        {
+            int forwardAlignment = GetForwardAlignment(Add(&currentChunkHeader[1], size), alignment);
+            int minimalRequiredSize = size + forwardAlignment;
+            if (currentChunkHeader->m_Size > minimalRequiredSize)
+            {
+                if (currentChunkHeader->m_Size < bestFitChunkSize)
+                {
+                    previousBestFitChunkHeader = previousChunkHeader;
+                    bestFitChunkHeader = currentChunkHeader;
+                    bestFitChunkSize = currentChunkHeader->m_Size;
+                    outMemoryChunkPtr = Add(&currentChunkHeader[1], forwardAlignment);
+                }
+            }
+            else if (currentChunkHeader->m_Size == minimalRequiredSize)
+            {
+                // Found a chunk that exactly large enough.
+                bestFitChunkHeader = currentChunkHeader;
+                outMemoryChunkPtr = Add(&currentChunkHeader[1], forwardAlignment);
+                break;
+            }
+
+            // Chunk is too small, move to the next chunk.
+            // Continue searching.
+            previousChunkHeader = currentChunkHeader;
+            currentChunkHeader = currentChunkHeader->m_Next;
+        }
+
+        // Unlikely unless the allocator is out of memory or heavily fragmented.
+        if (bestFitChunkHeader == nullptr) SAVANNA_BRANCH_UNLIKELY
+        {
+            return nullptr;
+        }
+
+        int allocatedSize = 0;
+
+        // Update linked list of free blocks.
+        if(bestFitChunkSize <= sizeof(MemoryChunkHeader))
+        {
+            allocatedSize = bestFitChunkHeader->m_Size;
+
+            // remove the free block from the list
+            if(previousBestFitChunkHeader != nullptr)
+            {
+                previousBestFitChunkHeader->m_Next = bestFitChunkHeader->m_Next;
+            }
+            else
+            {
+                m_Head = bestFitChunkHeader->m_Next;
+            }
+        }
+        else
+        {
+            // split the free block into two
+            MemoryChunkHeader* newChunkHeader = GetForwardAlignedPtr<MemoryChunkHeader, void>(
+                Add(outMemoryChunkPtr, size), alignof(MemoryChunkHeader));
+
+            newChunkHeader->m_Size = bestFitChunkHeader->m_Size - bestFitChunkSize;
+            newChunkHeader->m_Next = bestFitChunkHeader->m_Next;
+            // remove the free block from the list
+            if(previousBestFitChunkHeader != nullptr)
+            {
+                previousBestFitChunkHeader->m_Next = newChunkHeader;
+            }
+            else
+            {
+                m_Head = newChunkHeader;
+            }
+        }
+
+        m_AllocatedBytes += allocatedSize;
+#endif
+        return outMemoryChunkPtr;
     }
 
     void FreeListAllocator::Deallocate(void* const ptr, const size_t alignment)
     {
-        if (ptr == nullptr || ptr <= m_Root || ptr > (Add(m_Root, m_Size)))
-        {
-            return;
-        }
 
-        FreeBlockDesc* blockHeaderPtr = nullptr;
-        if (alignment == alignof(FreeBlockDesc))
-        {
-            blockHeaderPtr = reinterpret_cast<FreeBlockDesc*>(Sub(ptr, sizeof(FreeBlockDesc)));
-        }
-        else
-        {
-            void* pointerTwoBlocksBack = Sub(ptr, sizeof(FreeBlockDesc) * 2);
-            size_t forwardAlignment = GetForwardAlignment(pointerTwoBlocksBack, alignof(FreeBlockDesc));
-            blockHeaderPtr = reinterpret_cast<FreeBlockDesc*>(Add(ptr, forwardAlignment));
-        }
-
-        FreeBlockDesc* currentBlockPtr = m_Head;
-        while (currentBlockPtr->m_Next < blockHeaderPtr)
-        {
-            currentBlockPtr = currentBlockPtr->m_Next;
-        }
-
-        blockHeaderPtr->m_Next = currentBlockPtr->m_Next;
-        currentBlockPtr->m_Next = blockHeaderPtr;
-    }
-
-    inline size_t FreeListAllocator::GetRequiredSizeWithHeader(void* const ptr, const size_t size, const size_t alignment) const
-    {
-        // return GetForwardAlignment(ptr, alignment)
-        //     + GetLengthInBytesToNextCacheLine(size)
-        //     + sizeof(FreeBlockDesc);
-
-        auto alignedPtr = Add(ptr, GetForwardAlignment(ptr, alignment));
-        void* nextBlockAlignedPtr =
-            GetForwardAlignedPtr<void, void>(Add(alignedPtr, size), alignof(FreeBlockDesc));
-        return reinterpret_cast<size_t>(Sub(ptr, reinterpret_cast<uintptr>(nextBlockAlignedPtr)));
-    }
-
-    inline void* FreeListAllocator::FindNextFreeBlockOfSize(const size_t size, const size_t alignment)
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::FindNextFreeBlockOfSize");
-        FreeBlockDesc* previousBlockPtr = m_Head;
-        FreeBlockDesc* currentBlockPtr = m_Head;
-
-        while (currentBlockPtr != nullptr)
-        {
-            if (currentBlockPtr->m_Size >= size)
-            {
-                // We have found a suitable block
-                size_t requiredSizeWithHeader = alignment != L1CacheLineLength()
-                    ? GetRequiredSizeWithHeader(currentBlockPtr + 1, size, alignment)
-                    // Can skip forward alignment here
-                    : GetLengthInBytesToNextCacheLine(size) + sizeof(FreeBlockDesc) + 1;
-
-                // TODO @DavidMohrhardt May want to add additional profiling tools to ensure a given branch is actually the most likely
-                if (currentBlockPtr->m_Size > requiredSizeWithHeader) SAVANNA_BRANCH_LIKELY
-                {
-                    // More likely that allocations won't perfectly fit but have some breathing room
-                    // until higher memory fragmentation in the allocator
-                    previousBlockPtr->m_Next = static_cast<FreeBlockDesc*>(Add(currentBlockPtr, requiredSizeWithHeader));
-                    currentBlockPtr->m_Size = requiredSizeWithHeader - sizeof(FreeBlockDesc);
-                    currentBlockPtr->m_Next = nullptr;
-
-                    // Number of available block links has not been updated so no need to update
-
-                    return reinterpret_cast<void*>(currentBlockPtr + 1);
-                }
-                else SAVANNA_BRANCH_UNLIKELY
-                {
-                    // Unlikely unless the allocator becomes highly fragmented and the number of bytes left over
-                    // is less than the size of a block + 1 byte or size is equivalent to n * L1CacheLineLength
-                    // for some positive integer n
-
-                    previousBlockPtr->m_Next = currentBlockPtr->m_Next;
-                    currentBlockPtr->m_Size = size;
-
-                    if (m_Head == currentBlockPtr)
-                    {
-                        m_Head = previousBlockPtr->m_Next;
-                    }
-
-                    // Lost a free block so subtract the number of block links
-                    m_NumberOfBlockLinks--;
-                    return reinterpret_cast<void*>(currentBlockPtr + 1);
-                }
-            }
-
-            previousBlockPtr = currentBlockPtr;
-            currentBlockPtr = currentBlockPtr->m_Next;
-        }
-
-        return nullptr;
-    }
-
-    inline size_t FreeListAllocator::GetAlignedSizeRequirement(const void* const ptr, const size_t alignment, const size_t size) const
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::GetAlignedSizeRequirement");
-        size_t forwardAdjust = GetForwardAlignment(ptr, alignment);
-        size_t blockHeaderOffset = GetForwardAlignment(Add(ptr, forwardAdjust + size), alignof(FreeBlockDesc));
-        return size + forwardAdjust + blockHeaderOffset;
     }
 } // namespace Savanna

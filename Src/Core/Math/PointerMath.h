@@ -1,0 +1,58 @@
+/**
+ * @file PointerMath.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2022-08-12
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
+
+#pragma once
+
+#include "Types/Primitive/PrimitiveTypes.h"
+#include "Utilities/SavannaCoding.h"
+
+inline size_t savanna_get_pointer_difference(const void* lhs, const void* rhs)
+{
+    return ((s_uintptr)lhs) > ((s_uintptr)rhs)
+        ? (size_t)((s_uintptr)lhs - (s_uintptr)rhs)
+        : (size_t)((s_uintptr)rhs - (s_uintptr)lhs);
+}
+
+inline size_t savanna_ptr_add(const void* const ptr, const size_t& byteOffset)
+{
+    return (size_t)((s_uintptr)ptr + byteOffset);
+}
+
+inline size_t savanna_ptr_sub(const void* const ptr, const size_t& byteOffset)
+{
+    return (size_t)((s_uintptr)ptr - byteOffset);
+}
+
+#if __cplusplus
+
+namespace Savanna
+{
+    inline size_t GetPointerDifference(const void* const lhs, const void* const rhs)
+    {
+        return reinterpret_cast<uintptr>(lhs) > reinterpret_cast<uintptr>(rhs)
+            ? static_cast<size_t>(reinterpret_cast<uintptr>(lhs) - reinterpret_cast<uintptr>(rhs))
+            : static_cast<size_t>(reinterpret_cast<uintptr>(rhs) - reinterpret_cast<uintptr>(lhs));
+    }
+
+    template<typename T>
+    inline T* Add(const T* const ptr, const size_t& byteOffset)
+    {
+        return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) + byteOffset);
+    }
+
+    template<typename T>
+    inline T* Subtract(const T* const ptr, const size_t& byteOffset)
+    {
+        return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) - byteOffset);
+    }
+} // namespace Savanna
+
+#endif

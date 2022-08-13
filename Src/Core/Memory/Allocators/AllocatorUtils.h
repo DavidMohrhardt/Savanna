@@ -11,16 +11,14 @@
 #pragma once
 
 #include "Math/MathHelpers.h"
+#include "Math/PointerMath.h"
 #include "Types/Primitive/PrimitiveTypes.h"
-#include "Types/Pointers/PointerUtilities.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 #if __cplusplus
 
 namespace Savanna
 {
-
-
     /**
      * @brief Aligns a pointer to the next nearest address with the given alignment.
      *

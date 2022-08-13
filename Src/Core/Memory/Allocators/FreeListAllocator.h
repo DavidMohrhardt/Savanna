@@ -14,7 +14,6 @@
 #include "AllocatorUtils.h"
 
 #include "Memory/CacheLine.h"
-// #include "Memory/MemoryArena.h"
 
 #include "Utilities/SavannaCoding.h"
 
@@ -22,11 +21,11 @@ namespace Savanna
 {
     class MemoryArena;
 
-    typedef struct alignas(L1CacheLineLength()) FreeBlockDesc
+    typedef struct alignas(8) MemoryChunkHeader
     {
-        FreeBlockDesc* m_Next;
-        size_t m_Size;
-    } FreeBlockDesc;
+        MemoryChunkHeader* m_Next;
+        int32 m_Size;
+    } MemoryChunkHeader;
 
     class FreeListAllocator
     {
@@ -34,8 +33,7 @@ namespace Savanna
         MemoryArena* m_OwnerMemoryArena;
 
         void* m_Root;
-        FreeBlockDesc* m_Head;
-        FreeBlockDesc* m_MaxContiguousBlock;
+        MemoryChunkHeader* m_Head;
         size_t m_Size;
         size_t m_AllocatedBytes;
         uint32 m_NumberOfBlockLinks;
@@ -48,25 +46,12 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD size_t MaxSize() SAVANNA_NO_EXCEPT;
 
-        SAVANNA_NO_DISCARD float get_fragmentation_percentage() const { return 0.f; };
+        SAVANNA_NO_DISCARD float GetFragmentationPercentage() const { return 0.f; };
 
         SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
         void Deallocate(void* const ptr, const size_t alignment);
 
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
-
-    private:
-        SAVANNA_NO_DISCARD size_t GetRequiredSizeWithHeader(
-            void* const ptr,
-            const size_t size,
-            const size_t alignment) const;
-        SAVANNA_NO_DISCARD void* FindNextFreeBlockOfSize(const size_t size, const size_t alignment);
-
-#ifdef TEST_CACHE_ALIGNED_FAST_PATH
-        SAVANNA_NO_DISCARD void* FindNextFreeBlockOfSizeCacheAligned(const size_t size);
-#endif
-
-        SAVANNA_NO_DISCARD size_t GetAlignedSizeRequirement(const void* const ptr, const size_t alignment, const size_t size) const;
     };
 } // namespace Savanna

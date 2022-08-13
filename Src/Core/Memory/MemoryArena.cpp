@@ -1,8 +1,8 @@
 #include "MemoryArena.h"
 #include "CacheLine.h"
 #include "Allocators/AllocatorUtils.h"
+#include "Math/PointerMath.h"
 #include "Types/Exceptions/SavannaException.h"
-#include "Types/Pointers/PointerUtilities.h"
 
 namespace Savanna
 {
