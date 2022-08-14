@@ -27,6 +27,14 @@ namespace Savanna
         int32 m_Size;
     } MemoryChunkHeader;
 
+    typedef struct alignas(8) AllocatedChunkDescriptor
+    {
+        size_t m_Offset;
+        int32 m_Size;
+    } AllocatedChunkDescriptor;
+
+    static_assert(sizeof(MemoryChunkHeader) == sizeof(AllocatedChunkDescriptor));
+
     class FreeListAllocator
     {
     private:

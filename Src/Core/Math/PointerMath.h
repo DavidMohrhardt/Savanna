@@ -42,16 +42,16 @@ namespace Savanna
             : static_cast<size_t>(reinterpret_cast<uintptr>(rhs) - reinterpret_cast<uintptr>(lhs));
     }
 
-    template<typename T>
-    inline T* Add(const T* const ptr, const size_t& byteOffset)
+    template<typename T, typename ...size_t>
+    inline T* Add(const T* const ptr, size_t... args)
     {
-        return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) + byteOffset);
+        return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) + (args + ...));
     }
 
-    template<typename T>
-    inline T* Subtract(const T* const ptr, const size_t& byteOffset)
+    template<typename T, typename ...size_t>
+    inline T* Subtract(const T* const ptr, size_t... args)
     {
-        return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) - byteOffset);
+        return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) - (args - ...));
     }
 } // namespace Savanna
 

@@ -82,8 +82,6 @@ namespace Savanna::Core::Tests
         Savanna::FreeListAllocator m_FreeListAllocator;
     };
 
-    // TODO @DavidMohrhardt Test move semantics work properly
-
     DECLARE_FREE_LIST_TEST_F(EnsureInitializationIsCorrect)
     {
         EXPECT_EQ(m_FreeListAllocator.GetSize(), GetSize());
@@ -135,5 +133,86 @@ namespace Savanna::Core::Tests
         EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result));
         EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
         EXPECT_EQ(result, nullptr);
+    }
+
+    DECLARE_FREE_LIST_TEST_F(CheckIfAssertionFailsWhenAllocatingWithInvalidAlignment)
+    {
+        void* result = nullptr;
+        size_t alignment = 0;
+        size_t size = 512;
+        EXPECT_DEATH_IF_SUPPORTED(CallAllocate(m_FreeListAllocator, size, alignment, &result), ".*");
+    }
+
+    DECLARE_FREE_LIST_TEST_F(CheckIfDeallocateWorksProperlyForSingleAllocationInEmptyAllocator)
+    {
+        void* result = nullptr;
+        size_t alignment = 8;
+        size_t size = 512;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result));
+        EXPECT_NE(result, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
+    }
+
+    DECLARE_FREE_LIST_TEST_F(AllocateThenDeallocateInReverseOrder)
+    {
+        void* result = nullptr;
+        size_t alignment = 8;
+        size_t size = 8;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result));
+        EXPECT_NE(result, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+
+        void* result2 = nullptr;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result2));
+        EXPECT_NE(result2, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+
+        void* result3 = nullptr;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result3));
+        EXPECT_NE(result3, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 4 + size * 3);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result3, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result2, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
+    }
+
+    DECLARE_FREE_LIST_TEST_F(AllocateThenDeallocateInAllocationOrder)
+    {
+        void* result = nullptr;
+        size_t alignment = 8;
+        size_t size = 8;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result));
+        EXPECT_NE(result, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+
+        void* result2 = nullptr;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result2));
+        EXPECT_NE(result2, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+
+        void* result3 = nullptr;
+        EXPECT_NO_THROW(CallAllocate(m_FreeListAllocator, size, alignment, &result3));
+        EXPECT_NE(result3, nullptr);
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 4 + size * 3);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result2, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
+
+        EXPECT_NO_THROW(CallDeallocate(m_FreeListAllocator, result3, alignment));
+        EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
     }
 } // namespace Savanna::Tests::Memory::Allocators
