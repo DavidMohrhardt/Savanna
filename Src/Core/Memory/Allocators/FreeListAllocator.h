@@ -52,10 +52,6 @@ namespace Savanna
         FreeListAllocator(void* m_Root, size_t size);
         ~FreeListAllocator();
 
-        SAVANNA_NO_DISCARD size_t MaxSize() SAVANNA_NO_EXCEPT;
-
-        SAVANNA_NO_DISCARD float GetFragmentationPercentage() const { return 0.f; };
-
         SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
         void Deallocate(void* const ptr, const size_t alignment);
 

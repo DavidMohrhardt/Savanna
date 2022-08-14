@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 99
+Total TODOs: 100
 ## Src
 
 ### DX12Application.cpp
@@ -216,6 +216,7 @@ Total TODOs: 99
 ### FreeListAllocatorTests.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTests.cpp#L3)
+- [L215 :// TODO : This test fails because of the bug in the implementation. Likely how I handle re-establishing the root is wrong.](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTests.cpp#L215)
 
 ## BuildScripts
 

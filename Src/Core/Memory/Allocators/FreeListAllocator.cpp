@@ -62,19 +62,6 @@ namespace Savanna
         }
     }
 
-    /**
-     * @brief Fast path for accessing the maximum unfragmented size of the list.
-     * This function does not ensure allocation is possible just that there is at least
-     * enough space among the blocks to satisfy the request. This is useful for fast checking
-     * whether an allocation is feasible.
-     *
-     * @return size_t The maximum unfragmented size of the list.
-     */
-    size_t FreeListAllocator::MaxSize() SAVANNA_NO_EXCEPT
-    {
-        return m_Size - m_AllocatedBytes;
-    }
-
     void* FreeListAllocator::Allocate(size_t size, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Allocate");
@@ -194,7 +181,6 @@ namespace Savanna
             currentChunkHeader = currentChunkHeader->m_Next;
         }
 
-        // Check if tightly aligned with previous chunk.
         if (previousChunkHeader == nullptr)
         {
             previousChunkHeader = allocatedChunkHeader;
