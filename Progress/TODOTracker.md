@@ -2,10 +2,6 @@
 
 ## Src
 
-### CMakeLists.txt
-
-- [L2 :# TODO @DavidMohrhardt write testrunner using https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests](../Src/CMakeLists.txt#L2)
-
 ### DX12Application.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/DX12Renderer/DX12Application.cpp#L3)

@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-# TODO @DavidMohrhardt write testrunner using https://google.github.io/googletest/advanced.html#running-a-subset-of-the-tests
-
 # Specify clang as the compiler to ensure supported language standards
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang")
