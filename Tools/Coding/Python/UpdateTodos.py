@@ -2,6 +2,8 @@ import mimetypes
 import os
 import subprocess
 
+total_todos = 0
+
 def IsTextFile(filePath:str):
     return mimetypes.guess_type(filePath)[0] == 'text/plain'
 
@@ -9,6 +11,7 @@ def CreateFileLineLink(relativeFilePath:str, l_no:int, line:str):
     return "- [L" + str(l_no) + " :" +  line.strip().replace("\n", "") + "](" + relativeFilePath.replace('\\', '/') + "#L" + str(l_no) + ")\n"
 
 def SearchForTodosInFiles(regex:str, directoryName:str):
+    global total_todos
     content="## " + directoryName + "\n"
     wasWritten = False
     for rootDir, dirs, files in os.walk(regex):
@@ -30,6 +33,7 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
                     for l_no, line in enumerate(file):
                         lowerLine = line.lower()
                         if "todo" in lowerLine:
+                            total_todos += 1
                             if (not wasWritten):
                                 wasWritten = True
                             if (isFirstWriteForFile):
@@ -44,11 +48,12 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
         return ""
 
 
-content="# TODO\n\n"
-content += SearchForTodosInFiles(r"./Src", "Src")
+content = SearchForTodosInFiles(r"./Src", "Src")
 content += SearchForTodosInFiles(r"./BuildScripts", "BuildScripts")
 content += SearchForTodosInFiles(r"./Documentation", "Documentation")
 content += SearchForTodosInFiles(r"./Tools", "Tools")
 
 with open("./Progress/TODOTracker.md", 'w') as todoFile:
+    todoFile.write("# TODO\n\n")
+    todoFile.write("Total TODOs: " + str(total_todos) + "\n")
     todoFile.write(content)

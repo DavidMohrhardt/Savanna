@@ -1,5 +1,6 @@
 # TODO
 
+Total TODOs: 99
 ## Src
 
 ### DX12Application.cpp
