@@ -186,6 +186,7 @@ namespace Savanna::Core::Tests
         EXPECT_EQ(m_FreeListAllocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
     }
 
+    // Test failing
     DECLARE_FREE_LIST_TEST_F(AllocateThenDeallocateInAllocationOrder)
     {
         void* result = nullptr;
