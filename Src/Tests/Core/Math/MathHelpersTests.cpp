@@ -1,6 +1,6 @@
 /**
  * @file MathHelpersTests.h
- * @author David Mohrhardt (DavidMohrhardt@github.com)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief Tests for the functions in the Core/Math/MathHelpers.h file
  * @version 0.1
  * @date 2022-08-08

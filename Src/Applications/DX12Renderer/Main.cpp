@@ -1,6 +1,6 @@
 /**
  * @file Main.cpp
- * @author David Mohrhardt (DavidMohrhardt@github.com)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief Implements the "Main" function for the Application.
  * @version 0.1
  * @date 2022-08-02

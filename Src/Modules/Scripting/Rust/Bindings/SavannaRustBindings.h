@@ -1,6 +1,6 @@
 /**
  * @file BindGen.h
- * @author David Mohrhardt (DavidMohrhardt@github.com) TODO make this an automated CMake thing
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna) TODO make this an automated CMake thing
  * @brief
  * @version 0.1
  * @date 2022-08-14

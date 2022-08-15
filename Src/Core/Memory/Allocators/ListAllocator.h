@@ -1,6 +1,6 @@
 /**
  * @file ListAllocator.h
- * @author David Mohrhardt (DavidMohrhardt@github.com)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
  * @date 2022-08-02

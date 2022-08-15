@@ -1,6 +1,6 @@
 /**
  * @file ECS.h
- * @author David Mohrhardt (DavidMohrhardt@github.com)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief Includes all required header files to create Entities, Components, or Systems
  * @version 0.1
  * @date 2022-08-02

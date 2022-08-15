@@ -1,6 +1,6 @@
 /**
  * @file GfxApiEnumeration.h
- * @author David Mohrhardt (DavidMohrhardt@github.com)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief Provides enumeration values indicating supported/active graphics APIs
  * @version 0.1
  * @date 2022-08-02
