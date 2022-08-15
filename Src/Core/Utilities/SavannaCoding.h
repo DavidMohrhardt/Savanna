@@ -1,6 +1,6 @@
 /**
  * @file SavannaCoding.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief The header is a simple header to bring in other non-destructive headers
  * to simplify the process of writing code in the engine.
  * @version 0.1

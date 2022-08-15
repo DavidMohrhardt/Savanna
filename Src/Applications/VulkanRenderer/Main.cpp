@@ -1,6 +1,6 @@
 /**
  * @file Main.cpp
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief Implements the "Main" function for the Application.
  * @version 0.1
  * @date 2022-08-02

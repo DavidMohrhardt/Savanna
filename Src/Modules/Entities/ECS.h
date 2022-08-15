@@ -1,6 +1,6 @@
 /**
  * @file ECS.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief Includes all required header files to create Entities, Components, or Systems
  * @version 0.1
  * @date 2022-08-02

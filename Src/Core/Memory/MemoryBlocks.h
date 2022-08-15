@@ -1,6 +1,6 @@
 /**
  * @file MemoryBlocks.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief Provides definitions for variable sized memory block structs in ranging KiB sizes.
  * These structs are useful for chunking views of contiguous memory into specifically sized chunks.
  *

@@ -1,6 +1,6 @@
 /**
  * @file FloatingPointUnions.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief This is a file that is used to define unions for definitions for floating point types allowing access to individual bytes as needed.
  * @version 0.1
  * @date 2022-08-10

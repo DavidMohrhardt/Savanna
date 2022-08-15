@@ -1,6 +1,6 @@
 /**
  * @file CoreTestUtils.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief TODO @DavidMohrhardt Document
  * @version 0.1
  * @date 2022-08-08

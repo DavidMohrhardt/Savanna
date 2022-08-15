@@ -1,6 +1,6 @@
 /**
  * @file Console.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief Provides console logging utils for the engine.
  * @version 0.1
  * @date 2022-08-02

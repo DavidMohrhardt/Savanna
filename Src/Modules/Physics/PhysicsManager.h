@@ -1,6 +1,6 @@
 /**
  * @file PhysicsManager.h
- * @author David Mohrhardt (david.mohrhardt@gmail.com)
+ * @author David Mohrhardt (DavidMohrhardt@github.com)
  * @brief Provides a manager to handle generation life-cycle management of physics systems.
  *
  * Note: This is a port from some work I did in college and as such is not actually used
