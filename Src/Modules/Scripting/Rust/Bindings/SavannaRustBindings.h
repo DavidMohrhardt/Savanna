@@ -11,4 +11,6 @@
 
 #pragma once
 
+// https://rust-lang.github.io/rust-bindgen/tutorial-1.html
+// https://rust-lang.github.io/rust-bindgen/cpp.html
 // Rust BindGen includes
