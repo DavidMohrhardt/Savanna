@@ -67,90 +67,79 @@ namespace Savanna
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Allocate");
         SAVANNA_MEMORY_SAFETY_ASSERT(size > 0 && alignment > 0, "Allocation size and alignment must be greater than 0");
 
-        MemoryChunkHeader* previousChunkHeader = nullptr;
-        MemoryChunkHeader* currentChunkHeader = m_Head;
+        MemoryChunkHeader* current = m_Head;
+        MemoryChunkHeader* previous = nullptr;
 
-        // Need to find the tightest fit for the allocated chunk.
-        MemoryChunkHeader* previousBestFitChunkHeader = nullptr;
-        MemoryChunkHeader* bestFitChunkHeader = nullptr;
-        void* outMemoryChunkPtr = nullptr;
+        MemoryChunkHeader* bestFit = nullptr;
+        MemoryChunkHeader* prevBestFit = nullptr;
 
-        // Set the best fit an unreachable size.
-        int bestFitChunkSize = m_Size;
-        int totalRequiredSize = 0;
-        int forwardAlignment = 0;
+        size_t bestFitSize, requiredSize, forwardAdjustment;
 
-        while (currentChunkHeader != nullptr)
+        while (current != nullptr)
         {
-            forwardAlignment = GetForwardAlignment(&currentChunkHeader[1], alignment);
-            totalRequiredSize = size + forwardAlignment;
-            if (currentChunkHeader->m_Size >= totalRequiredSize
-                && (bestFitChunkHeader == nullptr || currentChunkHeader->m_Size < bestFitChunkHeader->m_Size))
+            forwardAdjustment = GetForwardAlignment(&current[1], alignment);
+            requiredSize = size + forwardAdjustment;
+            if (current->m_Size >= requiredSize
+                && (bestFit == nullptr || current->m_Size < bestFitSize))
             {
-                previousBestFitChunkHeader = previousChunkHeader;
-                bestFitChunkHeader = currentChunkHeader;
-                bestFitChunkSize = currentChunkHeader->m_Size;
-                outMemoryChunkPtr = &currentChunkHeader[1] + forwardAlignment;
+                bestFit = current;
+                bestFitSize = current->m_Size;
+                prevBestFit = previous;
 
-                if (currentChunkHeader->m_Size == totalRequiredSize)
+                if (current->m_Size == requiredSize)
                 {
                     break;
                 }
             }
 
-            previousChunkHeader = currentChunkHeader;
-            currentChunkHeader = currentChunkHeader->m_Next;
+            previous = current;
+            current = current->m_Next;
         }
 
-        if (outMemoryChunkPtr == nullptr)
+        if (bestFit == nullptr)
         {
             return nullptr;
         }
 
-        if (bestFitChunkHeader->m_Size - totalRequiredSize <= sizeof(MemoryChunkHeader))
+        void* outPtr = Add(&bestFit[1], forwardAdjustment);
+        AllocatedChunkDescriptor* descPtr = &reinterpret_cast<AllocatedChunkDescriptor*>(outPtr)[-1];
+
+        if (bestFit->m_Size - requiredSize > sizeof(MemoryChunkHeader))
         {
-            // Can't split the chunk.
-            totalRequiredSize = bestFitChunkHeader->m_Size;
-            if (previousBestFitChunkHeader != nullptr)
+            MemoryChunkHeader* newChunk = Add(bestFit + 1, requiredSize);
+            newChunk->m_Size = bestFit->m_Size - requiredSize - sizeof(MemoryChunkHeader);
+            newChunk->m_Next = bestFit->m_Next;
+
+            if (prevBestFit != nullptr)
             {
-                previousBestFitChunkHeader->m_Next = bestFitChunkHeader->m_Next;
+                prevBestFit->m_Next = newChunk;
             }
             else
             {
-                m_Head = bestFitChunkHeader->m_Next;
+                m_Head = newChunk;
             }
 
-            m_AllocatedBytes += totalRequiredSize;
+            descPtr->m_Size = requiredSize + sizeof(MemoryChunkHeader);
         }
         else
         {
-            // Split the chunk.
-            MemoryChunkHeader* newChunkHeader = Add(&bestFitChunkHeader[1], totalRequiredSize);
-
-            newChunkHeader->m_Size = bestFitChunkHeader->m_Size - totalRequiredSize;
-            bestFitChunkHeader->m_Size = totalRequiredSize;
-            newChunkHeader->m_Next = bestFitChunkHeader->m_Next;
-            bestFitChunkHeader->m_Next = newChunkHeader;
-
-            if (previousBestFitChunkHeader != nullptr)
+            if (prevBestFit != nullptr)
             {
-                previousBestFitChunkHeader->m_Next = newChunkHeader;
+                prevBestFit->m_Next = bestFit->m_Next;
             }
             else
             {
-                m_Head = newChunkHeader;
+                m_Head = bestFit->m_Next;
             }
 
-            m_AllocatedBytes += totalRequiredSize + sizeof(MemoryChunkHeader);
+            descPtr->m_Size = bestFit->m_Size;
         }
 
-        AllocatedChunkDescriptor* descriptorPtr
-            = reinterpret_cast<AllocatedChunkDescriptor*>(outMemoryChunkPtr) - 1;
+        m_AllocatedBytes += descPtr->m_Size;
 
-        descriptorPtr->m_Size = totalRequiredSize + sizeof(MemoryChunkHeader);
-        descriptorPtr->m_Offset = forwardAlignment;
+        descPtr->m_Offset = forwardAdjustment;
 
-        return outMemoryChunkPtr;
+        return outPtr;
     }
 
     void FreeListAllocator::Deallocate(void* const ptr, const size_t alignment)
@@ -159,45 +148,49 @@ namespace Savanna
         SAVANNA_MEMORY_SAFETY_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
         SAVANNA_MEMORY_SAFETY_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkHeader), "Attempting to deallocate pointer from an empty allocator");
 
-        MemoryChunkHeader* allocatedChunkHeader = nullptr;
-        {
-            AllocatedChunkDescriptor* chunkDescriptor = reinterpret_cast<AllocatedChunkDescriptor*>(ptr) - 1;
+        AllocatedChunkDescriptor allocationDescriptor =
+            reinterpret_cast<AllocatedChunkDescriptor*>(ptr)[-1];
 
-            allocatedChunkHeader =
-                reinterpret_cast<MemoryChunkHeader*>(Subtract(ptr, chunkDescriptor->m_Offset, sizeof(MemoryChunkHeader)));
-            allocatedChunkHeader->m_Size = chunkDescriptor->m_Size;
-        }
+        // Subtract the stored alignment adjustment to get the end of the actual header index into the pointer one place backwards to
+        MemoryChunkHeader* allocatedHeader =
+            &reinterpret_cast<MemoryChunkHeader*>(Subtract(ptr, allocationDescriptor.m_Offset))[-1];
+        allocatedHeader->m_Size = allocationDescriptor.m_Size;
 
-        MemoryChunkHeader* previousChunkHeader = nullptr;
-        MemoryChunkHeader* currentChunkHeader = m_Head;
-        while (currentChunkHeader != nullptr)
+        MemoryChunkHeader* previousHeader = nullptr;
+        MemoryChunkHeader* currentHeader = m_Head;
+        while (currentHeader != nullptr)
         {
-            if (reinterpret_cast<uintptr>(currentChunkHeader) > reinterpret_cast<uintptr>(allocatedChunkHeader))
+            if (reinterpret_cast<uintptr>(currentHeader) >= reinterpret_cast<uintptr>(allocatedHeader) + allocatedHeader->m_Size)
             {
                 break;
             }
 
-            previousChunkHeader = currentChunkHeader;
-            currentChunkHeader = currentChunkHeader->m_Next;
+            previousHeader = currentHeader;
+            currentHeader = currentHeader->m_Next;
         }
 
-        if (previousChunkHeader == nullptr)
+        if (previousHeader == nullptr)
         {
-            previousChunkHeader = allocatedChunkHeader;
-            allocatedChunkHeader->m_Next = m_Head;
-            m_Head = allocatedChunkHeader;
+            previousHeader = allocatedHeader;
+            allocatedHeader->m_Next = m_Head;
+            m_Head = allocatedHeader;
         }
-
-        if (reinterpret_cast<uintptr>(previousChunkHeader) + previousChunkHeader->m_Size == reinterpret_cast<uintptr>(allocatedChunkHeader))
+        else if (reinterpret_cast<uintptr>(previousHeader) + previousHeader->m_Size == reinterpret_cast<uintptr>(allocatedHeader))
         {
-            previousChunkHeader->m_Size += allocatedChunkHeader->m_Size;
+            previousHeader->m_Size += allocatedHeader->m_Size;
         }
         else
         {
-            previousChunkHeader->m_Next = allocatedChunkHeader;
-            allocatedChunkHeader->m_Next = currentChunkHeader;
+            previousHeader->m_Next = allocatedHeader;
+            allocatedHeader->m_Next = currentHeader;
         }
 
-        m_AllocatedBytes -= allocatedChunkHeader->m_Size;
+        m_AllocatedBytes -= allocatedHeader->m_Size;
+
+        if (Add(previousHeader, previousHeader->m_Size) == previousHeader->m_Next)
+        {
+            previousHeader->m_Size += currentHeader->m_Size;
+            previousHeader->m_Next = previousHeader->m_Next->m_Next;
+        }
     }
 } // namespace Savanna
