@@ -2,13 +2,14 @@
 
 #include "Application/IApplication.h"
 
-namespace SavannaEditor
+namespace Savanna::Editor
 {
-    class EditorApplication : public Savanna::IApplication
+    class EditorApplication final : public Savanna::IApplication
     {
     public:
-        void Initialize();
+        EditorApplication();
+        ~EditorApplication();
+
         void Run();
-        void Deinitialize();
     };
 }

@@ -5,15 +5,13 @@
  * @version 0.1
  * @date 2022-08-14
  *
- * @copyright Copyright (c) 2022
- *
  */
 
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
 
-#include "AllocatorKind.h"
+#include "AllocatorType.h"
 #include "FreeListAllocator.h"
 // #include "LinearAllocator.h"
 // #include "StackAllocator.h"
@@ -24,13 +22,13 @@ namespace Savanna
      * @brief A wrapper for all core allocators. This is an easy abstraction for using the core allocators without
      * virtual methods or inheritance.
      *
-     * Space inefficiency is not the concern for this class.
-     *
+     * Instead, this class uses a union to store the core allocator. This is a completely awful hack, but it's an
+     * easy way to avoid virtual methods. Needs testing.
      */
     class CoreAllocatorWrapper
     {
     private:
-        AllocatorKind m_AllocatorKind;
+        AllocatorType m_CoreAllocatorWrapperType;
         union
         {
             FreeListAllocator m_FreeListAllocator;
@@ -38,10 +36,10 @@ namespace Savanna
         };
 
     public:
-        CoreAllocatorWrapper(MemoryArena* arena, size_t size, AllocatorType allocatorKind)
-            : m_AllocatorKind(allocatorKind)
+        CoreAllocatorWrapper(MemoryArena* arena, size_t size, AllocatorType allocatorType)
+            : m_CoreAllocatorWrapperType(allocatorType)
         {
-            switch (allocatorKind)
+            switch (allocatorType)
             {
             case k_FreeList:
                 m_FreeListAllocator = FreeListAllocator(arena, size);
@@ -59,8 +57,8 @@ namespace Savanna
 
         CoreAllocatorWrapper(CoreAllocatorWrapper& other)
         {
-            m_AllocatorKind = other.m_AllocatorKind;
-            switch (m_AllocatorKind)
+            m_CoreAllocatorWrapperType = other.m_CoreAllocatorWrapperType;
+            switch (m_CoreAllocatorWrapperType)
             {
             case k_FreeList:
                 m_FreeListAllocator = other.m_FreeListAllocator;
@@ -79,42 +77,62 @@ namespace Savanna
         // Move Constructor
         CoreAllocatorWrapper(CoreAllocatorWrapper&& other)
         {
-            m_AllocatorKind = other.m_AllocatorKind;
-            other.m_AllocatorKind = k_None;
-            switch (m_AllocatorKind)
+            m_CoreAllocatorWrapperType = other.m_CoreAllocatorWrapperType;
+            other.m_CoreAllocatorWrapperType = k_None;
+            switch (m_CoreAllocatorWrapperType)
             {
             case k_FreeList:
                 m_FreeListAllocator = other.m_FreeListAllocator;
                 other.m_FreeListAllocator = FreeListAllocator();
                 break;
-            // case k_Linear:
-            //     m_LinearAllocator = other.m_LinearAllocator;
-            //     break;
-            // case k_Stack:
-            //     m_StackAllocator = other.m_StackAllocator;
-            //     break;
             default:
                 break;
             }
         }
 
-        CoreAllocatorWrapper(FreeListAllocator& FreeListAllocator)
+        CoreAllocatorWrapper(FreeListAllocator& freeListAllocator)
         {
-            m_AllocatorKind = k_FreeList;
-            m_FreeListAllocator = FreeListAllocator;
+            m_CoreAllocatorWrapperType = k_FreeList;
+            m_FreeListAllocator = freeListAllocator;
         }
 
-        CoreAllocatorWrapper(FreeListAllocator&& FreeListAllocator)
+        // Move Assignment Operator
+        CoreAllocatorWrapper(FreeListAllocator&& freeListAllocator)
         {
-            m_AllocatorKind = k_FreeList;
-            m_FreeListAllocator = FreeListAllocator;
-            FreeListAllocator = FreeListAllocator();
+            m_CoreAllocatorWrapperType = k_FreeList;
+            m_FreeListAllocator = freeListAllocator;
+            freeListAllocator = FreeListAllocator();
         }
 
         ~CoreAllocatorWrapper() {}
 
     public:
-        void* allocate(const size_t& size, const size_t& alignment);
-        void free(void* ptr, const size_t& alignment);
+        void* Allocate(size_t& size, size_t& alignment);
+        void Free(void* ptr, const size_t& alignment);
+
+        size_t GetSize() const;
+        size_t GetAllocatedSize() const;
+
+        void Reset();
+
+        bool operator==(const CoreAllocatorWrapper& other) const
+        {
+            if (m_CoreAllocatorWrapperType != other.m_CoreAllocatorWrapperType)
+            {
+                return false;
+            }
+
+            switch (m_CoreAllocatorWrapperType)
+            {
+            case k_FreeList:
+                return m_FreeListAllocator == other.m_FreeListAllocator;
+            // case k_Linear:
+            //     return m_LinearAllocator == other.m_LinearAllocator;
+            // case k_Stack:
+            //     return m_StackAllocator == other.m_StackAllocator;
+            default:
+                return false;
+            }
+        }
     };
 } // namespace Savanna

@@ -1,5 +1,7 @@
 #include "ProfilerMarker.h"
 
+#include <utility>
+
 #include "Types/Strings/HashString.h"
 
 #include "Utilities/Console.h"
@@ -14,8 +16,8 @@ namespace Savanna
     // auto is utilized to make the template argument less annoying.
     inline auto Now() SAVANNA_NO_EXCEPT { return std::chrono::high_resolution_clock::now(); }
 
-    ProfilerMarker::ProfilerMarker(HashString markerName)
-        : m_ProfilerMarkerName(markerName)
+    ProfilerMarker::ProfilerMarker(FixedString256&& markerName)
+        : m_ProfilerMarkerName(std::move(markerName))
         , m_Sampling(false)
         , m_StartTime()
         , m_EndTime()
@@ -58,7 +60,7 @@ namespace Savanna
             m_EndTime = Now();
             m_Sampling = false;
             // ProfilerManager::EndProfilerMarker(this);
-            SAVANNA_LOG("[Profiler %s] %lfms Elapsed\n", m_ProfilerMarkerName.ToString(), Poll());
+            SAVANNA_LOG("[Profiler %s] %lfms Elapsed\n", m_ProfilerMarkerName.c_str(), Poll());
         }
     }
 }

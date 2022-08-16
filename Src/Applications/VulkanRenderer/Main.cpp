@@ -5,15 +5,11 @@
  * @version 0.1
  * @date 2022-08-02
  *
- * @copyright Copyright (c) 2022
- *
  */
 
 #include "VulkanApplication.h"
 
 #include "SavannaEngine.h"
-#include "Memory/CacheLine.h"
-
 
 int main(int argc, char** argvs)
 {

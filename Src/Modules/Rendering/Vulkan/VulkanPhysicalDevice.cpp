@@ -5,8 +5,6 @@
  * @version 0.1
  * @date 2022-08-02
  *
- * @copyright Copyright (c) 2022
- *
  */
 
 #include "VulkanPhysicalDevice.h"
@@ -17,6 +15,7 @@
 #include <vector>
 #include <stdexcept>
 
+#include <Profiling/Profiler.h>
 #include <Types/Exceptions/SavannaException.h>
 #include <Types/Strings/FixedString.h>
 

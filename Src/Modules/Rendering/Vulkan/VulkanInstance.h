@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SavannaEngine.h>
+#include <Memory/MemoryArena.h>
 #include <Types/Strings/FixedString.h>
 
 #include <memory>
@@ -58,7 +59,7 @@ namespace Savanna::Rendering::Vulkan
         std::unique_ptr<VulkanDebugMessenger> m_DebugMessenger;
 
     public: // Constructors/Destructors
-        VulkanInstance();
+        VulkanInstance(MemoryArena* memoryArena);
         ~VulkanInstance();
 
     public: // Functions

@@ -5,8 +5,6 @@
  * @version 0.1
  * @date 2022-08-08
  *
- * @copyright Copyright (c) 2022
- *
  */
 #include "AllocatorTestUtils.h"
 
@@ -140,7 +138,8 @@ namespace Savanna::Core::Tests
         void* result = nullptr;
         size_t alignment = 0;
         size_t size = 512;
-        EXPECT_DEATH_IF_SUPPORTED(Allocate(size, alignment, &result), ".*");
+        EXPECT_NO_THROW(Allocate(size, alignment, &result));
+        EXPECT_EQ(result, nullptr);
     }
 
     DECLARE_FREE_LIST_TEST_F(AllocateAndDeallocateBasicTest)

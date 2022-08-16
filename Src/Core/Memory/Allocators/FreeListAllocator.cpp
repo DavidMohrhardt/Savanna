@@ -5,8 +5,6 @@
  * @version 0.1
  * @date 2022-08-02
  *
- * @copyright Copyright (c) 2022
- *
  */
 #include "FreeListAllocator.h"
 
@@ -65,8 +63,6 @@ namespace Savanna
     void* FreeListAllocator::Allocate(size_t size, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Allocate");
-        SAVANNA_MEMORY_SAFETY_ASSERT(size > 0 && alignment > 0, "Allocation size and alignment must be greater than 0");
-
         MemoryChunkHeader* current = m_Head;
         MemoryChunkHeader* previous = nullptr;
 

@@ -1,15 +1,18 @@
 #include "EditorApplication.h"
 
-void SavannaEditor::EditorApplication::Initialize()
-{ 
-
-}
-
-void SavannaEditor::EditorApplication::Run()
+namespace Savanna::Editor
 {
+    EditorApplication::EditorApplication()
+        : IApplication(Context())
+    {
+    }
+
+    EditorApplication::~EditorApplication()
+    {
+    }
+
+    void EditorApplication::Run()
+    {
+    }
 }
 
-void SavannaEditor::EditorApplication::Deinitialize()
-{
-
-}

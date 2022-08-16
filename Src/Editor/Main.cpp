@@ -1,9 +1,10 @@
 #include "EditorApplication.h"
 
+using namespace Savanna::Editor;
+
+
 int main(const int argv, const char** argvs)
 {
-    SavannaEditor::EditorApplication application = SavannaEditor::EditorApplication();
-    application.Initialize();
+    EditorApplication application = EditorApplication();
     application.Run();
-    application.Deinitialize();
 }

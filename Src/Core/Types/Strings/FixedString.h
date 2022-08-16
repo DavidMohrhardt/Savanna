@@ -13,10 +13,6 @@
 
 #endif
 
-#include "Types/SavannaClass.h"
-
-#include "Memory/CacheLine.h"
-
 #include "Memory/CacheLine.h"
 
 #if __cplusplus
@@ -30,7 +26,6 @@ namespace Savanna \
         FixedString##__strlen__(const char* cstring, size_t start, size_t size) \
             : m_StringLength(0)\
         { \
-            SAVANNA_INSERT_SCOPED_PROFILER("FixedString" #__strlen__ "::ctor");\
             memset(m_Bytes, 0, __strlen__); \
             if (cstring != nullptr && start < size) \
             { \
@@ -69,7 +64,6 @@ namespace Savanna \
 \
         FixedString##__strlen__& operator=(const FixedString##__strlen__& other) \
         { \
-            SAVANNA_INSERT_SCOPED_PROFILER("FixedString" #__strlen__ "::operator=");\
             if (this == &other) \
                 return *this; \
 \

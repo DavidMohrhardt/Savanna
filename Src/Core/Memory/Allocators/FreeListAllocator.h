@@ -5,8 +5,6 @@
  * @version 0.1
  * @date 2022-08-02
  *
- * @copyright Copyright (c) 2022
- *
  */
 
 #pragma once
@@ -57,5 +55,10 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
+
+        bool operator==(const FreeListAllocator& other) const
+        {
+            return m_Root == other.m_Root && m_Size == other.m_Size && m_Head == other.m_Head && m_AllocatedBytes == other.m_AllocatedBytes && m_NumberOfBlockLinks == other.m_NumberOfBlockLinks;
+        }
     };
 } // namespace Savanna

@@ -3,7 +3,8 @@
 #include <chrono>
 
 #include "ProfilerDefinitions.h"
-#include "Types/Strings/HashString.h"
+
+#include "Types/Strings/FixedString.h"
 
 #define SAVANNA_INSERT_SCOPED_PROFILER(functionName)
 
@@ -14,24 +15,26 @@
  * @brief Inserts a scoped profiler into the code and begins profiling.
  */
 #define SAVANNA_INSERT_SCOPED_PROFILER( functionName ) \
-    Savanna::ProfilerMarker __savanna_ProfilerMarker_ = Savanna::ProfilerMarker( SAVANNA_HASH_STRING( functionName ) ); \
+    Savanna::ProfilerMarker __savanna_ProfilerMarker_ = Savanna::ProfilerMarker( Savanna::FixedString256( functionName  ) ); \
     __savanna_ProfilerMarker_.BeginSample();
 
 #endif
 
 namespace Savanna
 {
+    class HashString;
+
     class ProfilerMarker
     {
     private:
-        HashString m_ProfilerMarkerName;
         bool m_Sampling;
+        FixedString256 m_ProfilerMarkerName;
 
         std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTime;
         std::chrono::time_point<std::chrono::high_resolution_clock> m_EndTime;
 
     public:
-        ProfilerMarker(HashString markerName);
+        ProfilerMarker(FixedString256&& markerName);
         ~ProfilerMarker();
 
         void BeginSample();

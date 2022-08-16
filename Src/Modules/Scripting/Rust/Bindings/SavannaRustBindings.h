@@ -5,8 +5,6 @@
  * @version 0.1
  * @date 2022-08-14
  *
- * @copyright Copyright (c) 2022
- *
  */
 
 #pragma once

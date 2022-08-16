@@ -9,7 +9,15 @@
 
 namespace Savanna::Rendering::Vulkan
 {
-    class VulkanPhysicalDevice // : IPhysicalGfxDevice
+    struct VulkanPhysicalDeviceDescriptor
+    {
+        VkPhysicalDevice physicalDevice;
+        VkPhysicalDeviceProperties properties;
+        VkPhysicalDeviceFeatures features;
+        VkPhysicalDeviceMemoryProperties memoryProperties;
+    };
+
+    class VulkanPhysicalDevice
     {
     private:
         static uint32 s_PhysicalDeviceCount;

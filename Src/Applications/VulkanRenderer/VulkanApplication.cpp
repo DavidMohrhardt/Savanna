@@ -5,8 +5,6 @@
  * @version 0.1
  * @date 2022-08-02
  *
- * @copyright Copyright (c) 2022
- *
  */
 
 #include "VulkanApplication.h"
@@ -23,11 +21,13 @@
 
 namespace SavannaVulkan
 {
+    using namespace Savanna;
     using namespace Savanna::Rendering::Vulkan;
 
     VulkanApplication::VulkanApplication()
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor");
+        // m_Arena = MemoryArena(sizeof(UnifiedMemoryBlock2048KiB));
         m_Window = new GLFWWindowWrapper(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr));
         m_Instance = new VulkanInstance();
 
