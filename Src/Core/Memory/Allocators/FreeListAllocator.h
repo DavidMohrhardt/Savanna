@@ -53,6 +53,18 @@ namespace Savanna
         SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
         void Deallocate(void* const ptr, const size_t alignment);
 
+        template<typename T>
+        SAVANNA_NO_DISCARD T* Allocate(size_t count = 1)
+        {
+            return reinterpret_cast<T*>(Allocate(sizeof(T) * count, alignof(T)));
+        }
+
+        template<typename T>
+        void Deallocate(T* const ptr)
+        {
+            Deallocate(ptr, alignof(T));
+        }
+
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
 

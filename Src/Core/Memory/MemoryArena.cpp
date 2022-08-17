@@ -6,9 +6,9 @@
 
 namespace Savanna
 {
-    MemoryArena::MemoryArena(size_t initialMemoryRequest)
-        : m_Size(initialMemoryRequest)
-        , m_Root(malloc(initialMemoryRequest))
+    MemoryArena::MemoryArena(const size_t& size)
+        : m_Size(size)
+        , m_Root(malloc(size))
         , m_Allocated(0)
         , m_Head(m_Root)
     {

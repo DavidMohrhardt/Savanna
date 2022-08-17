@@ -11,6 +11,8 @@
 
 #include <Vulkan/Utilities/VulkanCallbacks.h>
 
+#include <Profiling/Profiler.h>
+
 #define GLFW_INCLUDE_VULKAN
 #include <iostream>
 #include <string.h>
@@ -25,11 +27,26 @@ namespace SavannaVulkan
     using namespace Savanna::Rendering::Vulkan;
 
     VulkanApplication::VulkanApplication()
+        : IApplication()
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor");
-        // m_Arena = MemoryArena(sizeof(UnifiedMemoryBlock2048KiB));
-        m_Window = new GLFWWindowWrapper(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr));
-        m_Instance = new VulkanInstance();
+
+        Context& context = GetContext();
+
+        if (!context.TryCreateMemoryArena("Rendering", sizeof(MemoryBlock32KiB))
+            || !context.TryCreateMemoryArena("Common", sizeof(MemoryBlock32KiB)))
+        {
+            // SAVANNA_ERROR_LOG("Failed to create memory arenas");
+            throw Savanna::RuntimeErrorException("Failed to create application memory arenas!");
+        }
+
+        MemoryArena& defaultArena = context.GetDefaultMemoryArena();
+        MemoryArena& commonMemoryArena = context.GetMemoryArena("Common");
+        MemoryArena& renderingMemoryArena = context.GetMemoryArena("Rendering");
+
+        FreeListAllocator coreAllocator(&defaultArena, sizeof(MemoryBlock32KiB));
+        m_Window = coreAllocator.Allocate<GLFWWindowWrapper>();
+        *m_Window = GLFWWindowWrapper(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr));
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -41,7 +58,8 @@ namespace SavannaVulkan
             }
         }
 
-        m_Instance = new VulkanInstance();
+        // m_Instance = coreAllocator.Allocate<VulkanInstance>();
+        // *m_Instance(renderingMemoryArena);
         if (!m_Instance->TryCreateInstance("SavannaVulkanRenderer", "No Engine"))
         {
             throw Savanna::RuntimeErrorException("Unable to create Vulkan Instance.");

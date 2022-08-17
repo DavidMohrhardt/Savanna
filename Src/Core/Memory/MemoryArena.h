@@ -6,6 +6,8 @@ namespace Savanna
 {
     class MemoryArena
     {
+    public:
+        static constexpr size_t k_DefaultMemoryArenaSize = sizeof(MemoryBlock32KiB);
     private:
         /* data */
         size_t m_Size;
@@ -14,7 +16,7 @@ namespace Savanna
         void* m_Head;
 
     public:
-        MemoryArena(size_t initialMemoryRequest);
+        MemoryArena(const size_t& size);
         ~MemoryArena();
 
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; }

@@ -44,7 +44,7 @@ namespace Savanna::Rendering::Vulkan
         }
     }
 
-    VulkanInstance::VulkanInstance()
+    VulkanInstance::VulkanInstance(const MemoryArena& memoryArena)
     {
         InitializeStatics();
     }

@@ -59,7 +59,7 @@ namespace Savanna::Rendering::Vulkan
         std::unique_ptr<VulkanDebugMessenger> m_DebugMessenger;
 
     public: // Constructors/Destructors
-        VulkanInstance(MemoryArena* memoryArena);
+        VulkanInstance(const MemoryArena& memoryArena);
         ~VulkanInstance();
 
     public: // Functions

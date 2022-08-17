@@ -25,6 +25,10 @@ namespace Savanna
         typedef T value_type;
         CoreStlAllocatorAdaptor() = delete;
 
+        CoreStlAllocatorAdaptor(CoreAllocatorWrapper& coreAllocatorWrapper) SAVANNA_NO_EXCEPT
+            : m_CoreAllocatorWrapper(coreAllocatorWrapper)
+        {}
+
         CoreStlAllocatorAdaptor(MemoryArena* arena, size_t size, AllocatorType allocatorType) SAVANNA_NO_EXCEPT
             : m_CoreAllocatorWrapper(arena, size, allocatorType)
         {}

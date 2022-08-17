@@ -20,11 +20,14 @@ namespace Savanna
     {
     private:
         MemoryArena m_DefaultMemoryArena;
-        unordered_map<HashString, MemoryArena> m_MemoryArenas;
+        // ListAllocator m_SystemAllocator;
+
+        // unordered_map<HashString, MemoryArena> m_MemoryArenas;
+        std::unordered_map<HashString, MemoryArena> m_MemoryArenas;
 
     public:
         Context();
-        Context(size_t coreMemorySize, size_t memoryArenaSize);
+        Context(const size_t& coreMemorySize);
 
         ~Context();
 

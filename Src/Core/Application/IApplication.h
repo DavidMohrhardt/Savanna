@@ -17,17 +17,18 @@ namespace Savanna
     class IApplication
     {
     private:
-        Context m_ApplicationContext;
+        Context m_Context;
     protected:
-        IApplication(Context&& context) : m_ApplicationContext(std::move(context)) {}
+        IApplication(Context&& context) : m_Context(std::move(context)) {}
 
-        IApplication() = delete;
+        IApplication() : m_Context(Context()) {}
+
         IApplication(const IApplication&) = delete;
         IApplication& operator=(const IApplication&) = delete;
     public:
         virtual ~IApplication() {}
         virtual void Run() = 0;
 
-        Context& GetContext() { return m_ApplicationContext; }
+        Context& GetContext() { return m_Context; }
     };
 } // namespace Savanna

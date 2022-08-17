@@ -13,7 +13,7 @@
 #include <SavannaVulkan.h>
 
 #include <Application/IApplication.h>
-#include <Types/Strings/FixedString.h>
+#include <Types/Strings/HashString.h>
 
 #include <vector>
 
@@ -21,10 +21,16 @@
 
 namespace SavannaVulkan
 {
+    using namespace Savanna;
     using namespace Savanna::Rendering::Vulkan;
 
     class VulkanApplication : public Savanna::IApplication
     {
+        static constexpr HashString k_MemoryArenaTags[] = {
+            HashString("Common"),
+            HashString("System"),
+            HashString("Graphics")
+        };
     public:
         VulkanApplication();
         ~VulkanApplication();
