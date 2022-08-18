@@ -17,7 +17,7 @@
 
 namespace Savanna
 {
-    class MemoryArena;
+    class MemoryPool;
 
     typedef struct alignas(8) MemoryChunkHeader
     {
@@ -36,18 +36,30 @@ namespace Savanna
     class FreeListAllocator
     {
     private:
-        MemoryArena* m_OwnerMemoryArena;
-
         void* m_Root;
         MemoryChunkHeader* m_Head;
         size_t m_Size;
         size_t m_AllocatedBytes;
-        uint32 m_NumberOfBlockLinks;
 
     public:
         FreeListAllocator();
-        FreeListAllocator(MemoryArena* arena, size_t size);
         FreeListAllocator(void* m_Root, size_t size);
+
+        // copy and move constructors
+        FreeListAllocator(FreeListAllocator& other) = delete;
+
+        FreeListAllocator(FreeListAllocator&& other)
+        {
+            m_Root = other.m_Root;
+            m_Head = other.m_Head;
+            m_Size = other.m_Size;
+            m_AllocatedBytes = other.m_AllocatedBytes;
+            other.m_Root = nullptr;
+            other.m_Head = nullptr;
+            other.m_Size = 0;
+            other.m_AllocatedBytes = 0;
+        }
+
         ~FreeListAllocator();
 
         SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
@@ -68,9 +80,8 @@ namespace Savanna
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
 
-        bool operator==(const FreeListAllocator& other) const
-        {
-            return m_Root == other.m_Root && m_Size == other.m_Size && m_Head == other.m_Head && m_AllocatedBytes == other.m_AllocatedBytes && m_NumberOfBlockLinks == other.m_NumberOfBlockLinks;
-        }
+        FreeListAllocator& operator=(FreeListAllocator&& other);
+
+        bool operator==(const FreeListAllocator& other) const;
     };
 } // namespace Savanna

@@ -17,48 +17,23 @@
 namespace Savanna
 {
     FreeListAllocator::FreeListAllocator()
-        : m_OwnerMemoryArena(nullptr)
-        , m_Root(nullptr)
+        : m_Root(nullptr)
         , m_Head(nullptr)
         , m_Size(0)
         , m_AllocatedBytes(0)
-        , m_NumberOfBlockLinks(0)
     {}
 
-    FreeListAllocator::FreeListAllocator(MemoryArena* arena, size_t size)
-        : FreeListAllocator()
-    {
-        m_OwnerMemoryArena = arena;
-        m_Root = arena->AcquireMemory(size);
-        m_Head = reinterpret_cast<MemoryChunkHeader*>(m_Root);
-        m_AllocatedBytes = 0;
-        m_Size = size;
-        m_AllocatedBytes = sizeof(MemoryChunkHeader);
-        m_NumberOfBlockLinks = 1;
-
-        m_Head->m_Next = nullptr;
-        m_Head->m_Size = static_cast<int32>(size - sizeof(MemoryChunkHeader));
-    }
-
     FreeListAllocator::FreeListAllocator(void* bufferPtr, size_t size)
-        : m_OwnerMemoryArena(nullptr)
-        , m_Root(bufferPtr)
+        : m_Root(bufferPtr)
         , m_Head(reinterpret_cast<MemoryChunkHeader*>(bufferPtr))
         , m_Size(size)
         , m_AllocatedBytes(sizeof(MemoryChunkHeader))
-        , m_NumberOfBlockLinks(1)
     {
         m_Head->m_Next = nullptr;
         m_Head->m_Size = static_cast<int32>(size - sizeof(MemoryChunkHeader));
     }
 
-    FreeListAllocator::~FreeListAllocator()
-    {
-        if (m_OwnerMemoryArena != nullptr)
-        {
-            m_OwnerMemoryArena->ReleaseMemory(m_Root);
-        }
-    }
+    FreeListAllocator::~FreeListAllocator() {}
 
     void* FreeListAllocator::Allocate(size_t size, const size_t& alignment)
     {
@@ -188,5 +163,17 @@ namespace Savanna
             previousHeader->m_Size += currentHeader->m_Size;
             previousHeader->m_Next = previousHeader->m_Next->m_Next;
         }
+    }
+
+    FreeListAllocator& FreeListAllocator::operator=(FreeListAllocator&& other)
+    {
+        if (this != &other)
+        {
+            m_Root = other.m_Root;
+            m_Head = other.m_Head;
+            m_Size = other.m_Size;
+            m_AllocatedBytes = other.m_AllocatedBytes;
+        }
+        return *this;
     }
 } // namespace Savanna

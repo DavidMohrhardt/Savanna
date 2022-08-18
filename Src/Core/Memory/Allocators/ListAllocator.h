@@ -8,9 +8,6 @@
  */
 #pragma once
 
-#ifdef ENABLE_LIST_ALLOCATOR
-#include "AllocatorUtils.h"
-
 #include "Memory/CacheLine.h"
 #include "Memory/MemoryArena.h"
 
@@ -18,24 +15,43 @@
 
 namespace Savanna
 {
-    template<typename T>
-    class ListAllocator : public FreeListAllocator
+    class ListAllocator
     {
+    private:
+        void* m_Root;
+        void* m_Head;
+        size_t m_Size;
+        size_t m_AllocatedBytes;
+
     public:
-        ListAllocator(MemoryArena& arena, size_t size);
+        ListAllocator();
+        ListAllocator(void* m_Root, size_t size);
+        ListAllocator(ListAllocator& other) = delete;
+        ListAllocator(ListAllocator&& other);
         ~ListAllocator();
 
-        SAVANNA_NO_DISCARD T* allocate(size_t size);
-        void deallocate(T* ptr, size_t size);
+        SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
 
-        size_t max_size() SAVANNA_NO_EXCEPT;
+        template<typename T>
+        SAVANNA_NO_DISCARD T* Allocate(size_t count = 1)
+        {
+            return reinterpret_cast<T*>(Allocate(sizeof(T) * count, alignof(T)));
+        }
+
+        void Reset();
+
+        void Deallocate(void* const ptr, const size_t alignment) {}
+        /**
+         * @brief Does nothing as this allocator does not support deallocation.
+         *
+         * @tparam T
+         * @param ptr
+         */
+        template<typename T>
+        void Deallocate(T* const ptr) {}
+
+        SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
+        SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
     };
 
-    ListAllocator(MemoryArena& arena, size_t size)
-    {}
-
-    ListAllocator::~ListAllocator()
-    {}
-
 } // namespace Savanna
-#endif // ENABLE_LIST_ALLOCATOR

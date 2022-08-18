@@ -14,7 +14,7 @@
 #endif
 
 #if SAVANNA_USE_OLD_CORE_MEMORY
-#define DECLARE_COMMON_SAVANNA_CLASS(typeName) \
+#define DECLARE_SAVANNA_CLASS(typeName) \
 public:\
     void* operator new(size_t size, bool initializeMemoryToZero = false);\
     void* operator new(size_t size, Savanna::AllocatorKind &allocatorKind, bool initializeMemoryToZero = false);\
@@ -85,75 +85,46 @@ public:\
 
 #else
 
-#define DECLARE_COMMON_SAVANNA_CLASS(typeName) \
-public:\
-    void* operator new(size_t size);\
-    void* operator new(size_t size, bool initializeMemoryToZero);\
-    void operator delete(void* ptr)
+#define DECLARE_SAVANNA_CLASS(typeName) \
+private: \
+\
+public: \
+    void* operator new(size_t size) = delete;\
+    void* operator new(Savanna::HashString& memoryPoolTag, Savanna::Context& context, size_t size) final;\
+    void* operator new(Savanna::MemoryPool& pool, size_t size) final;\
+    void* operator new(Savanna::MemoryPool& pool, size_t size, bool initializeMemoryToZero) final;\
+    void operator delete(void* ptr) final;
 
 #define IMPLEMENT_SAVANNA_CLASS(typeName) \
-\
-    void* typeName::operator new(size_t size)\
+    void* typeName::operator new(Savanna::HashString& memoryPoolTag, Savanna::Context& context, size_t size) \
     {\
-        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new()"); \
-        void dataPtr = malloc(size); \
+        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new(memoryPoolTag, context)"); \
+        void* dataPtr = Savanna::MemoryManager::GetInstance()->Allocate(memoryPoolTag, size, alignof(typename), false); \
         if (dataPtr == nullptr)\
             throw Savanna::BadAllocationException();\
+        dataPtr->m_AllocatorHandle = allocatorHandle;\
         return dataPtr;\
     }\
 \
-    void* typeName::operator new(size_t size, bool initializeMemoryToZero)\
+    void* typeName::operator new(Savanna::MemoryPool& pool, size_t size) \
     {\
-        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new() memset 0"); \
-        void dataPtr = initializeMemoryToZero ? calloc(size) : malloc(size); \
-        if (dataPtr == nullptr)\
-            throw Savanna::BadAllocationException();\
-        return dataPtr;\
+        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new(pool)"); \
+        return pool.Allocate(size);\
     }\
 \
-    void typeName::operator delete(void* ptr)\
-    {\
+    void* typeName::operator new(Savanna::MemoryPool& pool, size_t size, bool initializeMemoryToZero) \
+    { \
+        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new(memoryPoolTag, context)"); \
+        return pool.Allocate(size, initializeMemoryToZero); \
+    } \
+\
+    void typeName::operator delete(void* ptr) \
+    { \
         SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator delete"); \
-        if (ptr == nullptr) return;\
-        free(ptr);\
-    }
-
-#define DEFINE_SAVANNA_CLASS \
-\
-    void* operator new(size_t size)\
-    {\
-        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new()"); \
-        void dataPtr = malloc(size); \
-        if (dataPtr == nullptr)\
-            throw Savanna::BadAllocationException();\
-        return dataPtr;\
-    }\
-\
-    void* operator new(size_t size, bool initializeMemoryToZero)\
-    {\
-        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator new() memset 0"); \
-        void dataPtr = initializeMemoryToZero ? calloc(size) : malloc(size); \
-        if (dataPtr == nullptr)\
-            throw Savanna::BadAllocationException();\
-        return dataPtr;\
-    }\
-\
-    void operator delete(void* ptr)\
-    {\
-        SAVANNA_INSERT_SCOPED_PROFILER(#typeName " Operator delete"); \
-        if (ptr == nullptr) return;\
-        free(ptr);\
+        if (ptr == nullptr) return; \
+        Savanna::MemoryManager::GetInstance()->Delete(memoryPoolTag, context, ptr); \
     }
 #endif
-
-namespace Savanna
-{
-    /*template<class T>
-    class SavannaClass
-    {
-        DEFINE_SAVANNA_CLASS;
-    };*/
-} // namespace Savanna
 
 
 #else // !__cplusplus

@@ -36,13 +36,13 @@ namespace Savanna
         };
 
     public:
-        CoreAllocatorWrapper(MemoryArena* arena, size_t size, AllocatorType allocatorType)
+        CoreAllocatorWrapper(MemoryPool* pool, size_t size, AllocatorType allocatorType)
             : m_CoreAllocatorWrapperType(allocatorType)
         {
             switch (allocatorType)
             {
             case k_FreeList:
-                m_FreeListAllocator = FreeListAllocator(arena, size);
+                m_FreeListAllocator = FreeListAllocator(pool, size);
                 break;
             // case k_Linear:
             //     m_LinearAllocator = LinearAllocator(arena, size);
@@ -55,24 +55,7 @@ namespace Savanna
             }
         }
 
-        CoreAllocatorWrapper(CoreAllocatorWrapper& other)
-        {
-            m_CoreAllocatorWrapperType = other.m_CoreAllocatorWrapperType;
-            switch (m_CoreAllocatorWrapperType)
-            {
-            case k_FreeList:
-                m_FreeListAllocator = other.m_FreeListAllocator;
-                break;
-            // case k_Linear:
-            //     m_LinearAllocator = other.m_LinearAllocator;
-            //     break;
-            // case k_Stack:
-            //     m_StackAllocator = other.m_StackAllocator;
-            //     break;
-            default:
-                break;
-            }
-        }
+        CoreAllocatorWrapper(CoreAllocatorWrapper& other) = delete;
 
         // Move Constructor
         CoreAllocatorWrapper(CoreAllocatorWrapper&& other)
@@ -82,7 +65,7 @@ namespace Savanna
             switch (m_CoreAllocatorWrapperType)
             {
             case k_FreeList:
-                m_FreeListAllocator = other.m_FreeListAllocator;
+                m_FreeListAllocator = std::move(other.m_FreeListAllocator);
                 other.m_FreeListAllocator = FreeListAllocator();
                 break;
             default:
@@ -90,18 +73,11 @@ namespace Savanna
             }
         }
 
-        CoreAllocatorWrapper(FreeListAllocator& freeListAllocator)
-        {
-            m_CoreAllocatorWrapperType = k_FreeList;
-            m_FreeListAllocator = freeListAllocator;
-        }
-
         // Move Assignment Operator
         CoreAllocatorWrapper(FreeListAllocator&& freeListAllocator)
+            : m_CoreAllocatorWrapperType(k_FreeList)
+            , m_FreeListAllocator(std::move(freeListAllocator))
         {
-            m_CoreAllocatorWrapperType = k_FreeList;
-            m_FreeListAllocator = freeListAllocator;
-            freeListAllocator = FreeListAllocator();
         }
 
         ~CoreAllocatorWrapper() {}
