@@ -1,0 +1,13 @@
+[package]
+name = "savanna-rust"
+version = "0.1.0"
+# authors = ["David Mohrhardt <adetaylor@chromium.org>"]
+edition = "2021"
+
+[dependencies]
+autocxx = "0.22.3"
+cxx = "1.0"
+
+[build-dependencies]
+autocxx-build = "0.22.3"
+miette = { version="5.3", features=["fancy"] } # optional but gives nicer error messages!

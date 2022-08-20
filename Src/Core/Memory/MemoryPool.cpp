@@ -1,4 +1,4 @@
-#include "MemoryArena.h"
+#include "MemoryPool.h"
 #include "CacheLine.h"
 #include "Allocators/AllocatorUtils.h"
 #include "Math/PointerMath.h"
@@ -6,52 +6,33 @@
 
 namespace Savanna
 {
-    MemoryArena::MemoryArena(const size_t& size)
+    MemoryPool::MemoryPool(void* root, const size_t& size, AllocatorType allocatorType)
         : m_Size(size)
-        , m_Root(malloc(size))
+        , m_Root(root)
         , m_Allocated(0)
-        , m_Head(m_Root)
+        , m_Allocator(root, size, allocatorType)
     {
         if (m_Root == nullptr)
         {
-            throw RuntimeErrorException("Failed to allocate memory for MemoryArena.");
+            throw RuntimeErrorException("Failed to allocate memory for MemoryPool.");
         }
     }
 
-    MemoryArena::~MemoryArena()
+    MemoryPool::~MemoryPool()
     {
-        if (m_Root != nullptr)
+        if (m_Arena > MemoryArena::EngineArenaCount)
         {
             free(m_Root);
         }
     }
 
-    SAVANNA_NO_DISCARD void* MemoryArena::AcquireMemory(size_t size)
+    SAVANNA_NO_DISCARD void* MemoryPool::AcquireMemory(size_t& size)
     {
-        if (size > GetMaxSize() || size == 0)
-        {
-            return nullptr;
-        }
-
-        void* ptr = m_Head;
-        m_Head = GetForwardAlignedPtr<void, void>(Add(ptr, size), L1CacheLineLength());
-
-        if (m_Head == nullptr)
-        {
-            throw RuntimeErrorException("MemoryArena::AcquireMemory - Failed to allocate memory.");
-        }
-
-        m_Allocated = m_Allocated + size;
-        if (m_Allocated >= m_Size)
-        {
-            m_Head = nullptr;
-        }
-
-        return ptr;
+        return m_Allocator.Allocate(size, k_DefaultAlignment);
     }
 
-    void MemoryArena::ReleaseMemory(void* ptr)
+    void MemoryPool::ReleaseMemory(void* ptr)
     {
-        // TODO: Implement
+        m_Allocator.Free(ptr, k_DefaultAlignment);
     }
 } // namespace Savanna

@@ -58,20 +58,21 @@ namespace Savanna::Rendering::Vulkan
         std::vector<const char*> m_RequestedExtensions;
         std::unique_ptr<VulkanDebugMessenger> m_DebugMessenger;
 
+        VkResult m_MostRecentErrorCode = VK_SUCCESS;
+
     public: // Constructors/Destructors
-        VulkanInstance(const MemoryArena& memoryArena);
+        VulkanInstance(const FixedString32& applicationName, const FixedString32& engineName);
         ~VulkanInstance();
 
     public: // Functions
-        bool TryCreateInstance(const FixedString32& applicationName, const FixedString32& engineName);
+        inline VkInstance GetInstance() const { return m_VulkanInstance; }
+        inline VkResult GetErrorCode() const { return m_MostRecentErrorCode; }
 
         bool TryRequestExtension(const char* extensionName);
         inline const std::vector<const char*> GetRequestedExtensions() const { return m_RequestedExtensions; }
 
         bool CheckValidationLayerSupport();
         // bool RequestValidationLayerEnabled(const char* layerName);
-
-        const VkInstance GetInstance() const { return m_VulkanInstance; }
 
     private: // Functions
         void SetupValidationLayersIfRequested(

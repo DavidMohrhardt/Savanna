@@ -1,5 +1,5 @@
 /**
- * @file ListAllocator.h
+ * @file LinearAllocator.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
@@ -15,7 +15,7 @@
 
 namespace Savanna
 {
-    class ListAllocator
+    class LinearAllocator
     {
     private:
         void* m_Root;
@@ -24,11 +24,11 @@ namespace Savanna
         size_t m_AllocatedBytes;
 
     public:
-        ListAllocator();
-        ListAllocator(void* m_Root, size_t size);
-        ListAllocator(ListAllocator& other) = delete;
-        ListAllocator(ListAllocator&& other);
-        ~ListAllocator();
+        LinearAllocator();
+        LinearAllocator(void* m_Root, size_t size);
+        LinearAllocator(LinearAllocator& other) = delete;
+        LinearAllocator(LinearAllocator&& other);
+        ~LinearAllocator();
 
         SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
 

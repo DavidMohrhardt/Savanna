@@ -20,20 +20,9 @@
 enum SavannaMemoryArena : __se_int32
 {
     /**
-     * @brief Represents the lack of a memory arena. This is the default value and cannot be used to acquire
-     * memory.
-     */
-    None,
-
-    /**
      * @brief Represents Core Engine Memory Arena. Not to be used by users.
      */
     Core,
-
-    /**
-     * @brief Represents the Scripting Engine Memory Arena
-     */
-    Scripting,
 
     /**
      * @brief Rerpresents a general use long-term Memory Arena
@@ -60,10 +49,39 @@ enum SavannaMemoryArena : __se_int32
     ThreadLocal,
 
     /**
+     * @brief Represents the Scripting Engine Memory Arena
+     */
+    Scripting,
+
+    /**
+     * @brief Provides a count of the number engine specific memory arenas. Does not provide the full count of
+     * definitions in this enumeration
+     */
+    EngineArenaCount,
+
+    /**
+     * @brief Represents the lack of a memory arena. This is the default value and cannot be used to acquire
+     * memory.
+     */
+    None,
+
+    /**
+     * @brief Rerpresents user defined memory arenas, when using Extension users must provide a memory arena from
+     * which to source additional memory from.
+     */
+    Extension,
+
+    /**
      * @brief Represents a Memory Arena that is unowned by the engine. Allocations using this arena will use
      * malloc and must be freed manually.
      */
     System,
+
+    /**
+     * @brief
+     *
+     */
+    Ensure32Bit = 0x7FFFFFFF
 };
 
 /**

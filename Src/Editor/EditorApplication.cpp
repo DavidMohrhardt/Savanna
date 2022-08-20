@@ -3,7 +3,6 @@
 namespace Savanna::Editor
 {
     EditorApplication::EditorApplication()
-        : IApplication(Context())
     {
     }
 

@@ -38,11 +38,12 @@ namespace SavannaVulkan
         void Run();
 
     private:
-        GLFWWindowWrapper* m_Window;
-        bool m_Initialized = false;
 
-        VulkanInstance* m_Instance;
-        VulkanPhysicalDevice* m_PhysicalDevice;
+        GLFWWindowWrapper m_Window;
+        VulkanInstance m_Instance;
+        VulkanPhysicalDevice m_CurrentPhysicalDevice;
+
+        std::vector<VulkanPhysicalDevice> m_AvailablePhysicalDevices;
 
     private:
     };

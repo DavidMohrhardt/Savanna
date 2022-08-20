@@ -11,6 +11,40 @@
 
 namespace Savanna
 {
+    CoreAllocatorWrapper::CoreAllocatorWrapper(void* root, size_t size, AllocatorType allocatorType)
+        : m_CoreAllocatorWrapperType(allocatorType)
+    {
+        switch (allocatorType)
+        {
+        case k_FreeList:
+            m_FreeListAllocator = FreeListAllocator(root, size);
+            break;
+        // case k_Linear:
+        //     m_LinearAllocator = LinearAllocator(root, size);
+        //     break;
+        // case k_Stack:
+        //     m_StackAllocator = StackAllocator(root, size);
+        //     break;
+        default:
+            break;
+        }
+    }
+
+    CoreAllocatorWrapper::CoreAllocatorWrapper(CoreAllocatorWrapper&& other)
+    {
+        m_CoreAllocatorWrapperType = other.m_CoreAllocatorWrapperType;
+        other.m_CoreAllocatorWrapperType = k_None;
+        switch (m_CoreAllocatorWrapperType)
+        {
+        case k_FreeList:
+            m_FreeListAllocator = std::move(other.m_FreeListAllocator);
+            other.m_FreeListAllocator = FreeListAllocator();
+            break;
+        default:
+            break;
+        }
+    }
+
     void* CoreAllocatorWrapper::Allocate(size_t& size, size_t& alignment)
     {
         // return m_allocator->Allocate(size, alignment);?

@@ -1,9 +1,2 @@
-# Ignore the packages used for building currently
-CMake/
-fmt/
-GLFW/
-GLM/
-imgui/
-Ninja/
-Python/
-Vulkan/
+# Ignore all folders. We use the Artifacts json file to redownload them
+*/

@@ -1,5 +1,5 @@
 /**
- * @file ListAllocator.cpp
+ * @file LinearAllocator.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
@@ -7,30 +7,30 @@
  *
  *
  */
-#include "ListAllocator.h"
+#include "LinearAllocator.h"
 
 #include "AllocatorUtils.h"
 
 namespace Savanna
 {
-    ListAllocator::ListAllocator()
+    LinearAllocator::LinearAllocator()
         : m_Root(nullptr)
         , m_Head(nullptr)
         , m_Size(0)
         , m_AllocatedBytes(0)
     {}
 
-    ListAllocator::ListAllocator(void* bufferPtr, size_t size)
+    LinearAllocator::LinearAllocator(void* bufferPtr, size_t size)
         : m_Root(bufferPtr)
         , m_Head(bufferPtr)
         , m_Size(size)
         , m_AllocatedBytes(0)
     {}
 
-    ListAllocator::~ListAllocator()
+    LinearAllocator::~LinearAllocator()
     {}
 
-    ListAllocator::ListAllocator(ListAllocator&& other)
+    LinearAllocator::LinearAllocator(LinearAllocator&& other)
     {
         m_Root = other.m_Root;
         m_Head = other.m_Head;
@@ -42,7 +42,7 @@ namespace Savanna
         other.m_AllocatedBytes = 0;
     }
 
-    void* ListAllocator::Allocate(size_t size, const size_t& alignment)
+    void* LinearAllocator::Allocate(size_t size, const size_t& alignment)
     {
         size_t forwardOffset = GetForwardAlignment(m_Head, alignment);
         size_t totalSize = size + forwardOffset;
@@ -56,5 +56,5 @@ namespace Savanna
         return result;
     }
 
-    void ListAllocator::Reset()  { m_Head = m_Root; }
+    void LinearAllocator::Reset()  { m_Head = m_Root; }
 } // namespace Savanna

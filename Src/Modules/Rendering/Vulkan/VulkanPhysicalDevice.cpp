@@ -19,90 +19,123 @@
 #include <Types/Exceptions/SavannaException.h>
 #include <Types/Strings/FixedString.h>
 
-// TODO: Rework this to just have each PhysicalDevice produce it's descriptor and then init that.
-
 namespace Savanna::Rendering::Vulkan
 {
-    inline VkPhysicalDeviceProperties GetDeviceProperties(VkPhysicalDevice& device, VkPhysicalDeviceProperties& deviceProperties)
+    uint32 VulkanPhysicalDevice::GetPhysicalDeviceCount(const VkInstance& instance)
     {
-        vkGetPhysicalDeviceProperties(device, &deviceProperties);
-
-        return deviceProperties;
-    }
-
-#if SAVANNA_VULKAN_ENABLE_DEBUGGING
-    inline void PrintDeviceProperties(VkPhysicalDeviceProperties& deviceProperties)
-    {
-        FixedString512 propertiesString = FixedString256("Vulkan Physical Device\n\t");
-        // TODO
-    }
-#endif
-
-    bool HasGraphicsQueueFamily(VkPhysicalDevice physicalDevice)
-    {
-        uint32 queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
-
-        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
-
-        for (const auto& queueFamily : queueFamilies)
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::GetPhysicalDeviceCount");
+        static uint32 s_count = 0;
+        if (s_count == 0) SAVANNA_BRANCH_UNLIKELY
         {
-            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+            uint32 count = 0;
+            vkEnumeratePhysicalDevices(instance, &count, nullptr);
+            s_count = count;
+        }
+        return s_count;
+    }
+
+    void VulkanPhysicalDevice::GetPhysicalDeviceDescriptors(
+        const VkInstance& instance,
+        uint32 count,
+        VulkanPhysicalDeviceDescriptor* physicalDeviceDescriptorsPtr)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::GetPhysicalDeviceDescriptors");
+        if (physicalDeviceDescriptorsPtr != nullptr)
+        {
+            std::vector<VkPhysicalDevice> physicalDevices(count);
+            vkEnumeratePhysicalDevices(instance, &count, physicalDevices.data());
+            for (int i = 0; i < count; ++i)
             {
-                // outDesc = { queueFamily.queueFlags };
-                return true;
+                physicalDeviceDescriptorsPtr[i].physicalDevice = physicalDevices[i];
+                vkGetPhysicalDeviceProperties(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].properties);
+                vkGetPhysicalDeviceFeatures(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].features);
+                vkGetPhysicalDeviceMemoryProperties(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].memoryProperties);
             }
         }
-
-        return false;
     }
 
-    inline bool TryGetSuitableDevices(VkPhysicalDevice* pDevices, uint32 deviceCount, VkPhysicalDevice& outDevice)
+    VulkanPhysicalDevice::VulkanPhysicalDevice() : m_Descriptor({ VK_NULL_HANDLE, {0}, {0}, {0} }) {}
+
+    VulkanPhysicalDevice::VulkanPhysicalDevice(const VulkanPhysicalDeviceDescriptor& descriptor)
     {
-        for (int i = 0; i < deviceCount; i++)
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::VulkanPhysicalDevice ctor(const VulkanPhysicalDeviceDescriptor&)");
+        m_Descriptor = descriptor;
+        uint32_t queueFamilyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(GetPhysicalDevice(), &queueFamilyCount, nullptr);
+
+        std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(GetPhysicalDevice(), &queueFamilyCount, queueFamilyProperties.data());
+        uint32 i = 0;
+        for (const auto& properties : queueFamilyProperties)
         {
-            VkPhysicalDeviceProperties deviceProperties;
-            GetDeviceProperties(pDevices[i], deviceProperties);
+            VkQueueFlags flags = properties.queueFlags;
 
-#if SAVANNA_VULKAN_ENABLE_DEBUGGING
-            PrintDeviceProperties(deviceProperties);
-#endif
-
-            if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && HasGraphicsQueueFamily(pDevices[i]))
+            if (flags & VK_QUEUE_GRAPHICS_BIT)
             {
-                outDevice = pDevices[i];
-                return true;
+                m_QueueFamilyIndices.m_GraphicsQueueFamilyIndex = static_cast<uint32>(i);
             }
-        }
 
-        return false;
+            if (flags & VK_QUEUE_COMPUTE_BIT)
+            {
+                m_QueueFamilyIndices.m_ComputeQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (flags & VK_QUEUE_TRANSFER_BIT)
+            {
+                m_QueueFamilyIndices.m_TransferQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (flags & VK_QUEUE_SPARSE_BINDING_BIT)
+            {
+                m_QueueFamilyIndices.m_SparseBindingQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (m_QueueFamilyIndices.HasAllQueueFamilyIndices())
+            {
+                break;
+            }
+
+            ++i;
+        }
     }
 
-    VulkanPhysicalDevice::VulkanPhysicalDevice(VkInstance instance)
-        : m_VulkanPhysicalDevice(VK_NULL_HANDLE)
+    const VulkanPhysicalDeviceDescriptor& VulkanPhysicalDevice::GetDescriptor() const
     {
-        SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::ctor");
-        uint32 deviceCount = 0;
-        vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-
-        if (deviceCount == 0)
-        {
-            throw Savanna::RuntimeErrorException("No Physical Devices Found.");
-        }
-
-        VkPhysicalDevice* pDevices = reinterpret_cast<VkPhysicalDevice*>(malloc(sizeof(VkPhysicalDevice) * deviceCount));
-        vkEnumeratePhysicalDevices(instance, &deviceCount, pDevices);
-
-        bool result = TryGetSuitableDevices(pDevices, deviceCount, m_VulkanPhysicalDevice);
-
-        free(pDevices);
-
-        if (m_VulkanPhysicalDevice == VK_NULL_HANDLE)
-        {
-            throw Savanna::RuntimeErrorException("failed to find a suitable GPU!");
-        }
+        return m_Descriptor;
     }
 
-    VulkanPhysicalDevice::~VulkanPhysicalDevice() {}
+    const VkPhysicalDevice& VulkanPhysicalDevice::GetPhysicalDevice() const
+    {
+        return m_Descriptor.physicalDevice;
+    }
+
+    const VkPhysicalDeviceProperties& VulkanPhysicalDevice::GetProperties() const
+    {
+        return m_Descriptor.properties;
+    }
+
+    const VkPhysicalDeviceFeatures& VulkanPhysicalDevice::GetFeatures() const
+    {
+        return m_Descriptor.features;
+    }
+
+    const VkPhysicalDeviceMemoryProperties& VulkanPhysicalDevice::GetMemoryProperties() const
+    {
+        return m_Descriptor.memoryProperties;
+    }
+
+    const VkPhysicalDeviceLimits& VulkanPhysicalDevice::GetLimits() const
+    {
+        return m_Descriptor.properties.limits;
+    }
+
+    const VkPhysicalDeviceSparseProperties& VulkanPhysicalDevice::GetSparseProperties() const
+    {
+        return m_Descriptor.properties.sparseProperties;
+    }
+
+    const VulkanQueueFamilyIndices& VulkanPhysicalDevice::GetQueueFamilyIndices() const
+    {
+        return m_QueueFamilyIndices;
+    }
 } // namespace Savanna::Rendering::Vulkan

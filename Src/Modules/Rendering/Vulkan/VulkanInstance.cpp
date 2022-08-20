@@ -44,19 +44,9 @@ namespace Savanna::Rendering::Vulkan
         }
     }
 
-    VulkanInstance::VulkanInstance(const MemoryArena& memoryArena)
+    VulkanInstance::VulkanInstance(const FixedString32& applicationName, const FixedString32& engineName)
     {
         InitializeStatics();
-    }
-
-    VulkanInstance::~VulkanInstance()
-    {
-        m_DebugMessenger = nullptr;
-        vkDestroyInstance(m_VulkanInstance, nullptr);
-    }
-
-    bool VulkanInstance::TryCreateInstance(const FixedString32& applicationName, const FixedString32& engineName)
-    {
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pApplicationName = applicationName;
@@ -74,13 +64,15 @@ namespace Savanna::Rendering::Vulkan
 
         createInfo.enabledExtensionCount = static_cast<uint32_t>(m_RequestedExtensions.size());
         createInfo.ppEnabledExtensionNames = m_RequestedExtensions.data();
-
-        VkResult result;
-        VK_CALL(result, vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance), "Failed to create VkInstance!");
+        VK_CALL(m_MostRecentErrorCode, vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance), "Failed to create VkInstance!");
 
         AfterInstanceCreationValidationLayerSetup(&debugCreateInfo, nullptr);
+    }
 
-        return result == VK_SUCCESS;
+    VulkanInstance::~VulkanInstance()
+    {
+        m_DebugMessenger = nullptr;
+        vkDestroyInstance(m_VulkanInstance, nullptr);
     }
 
     bool VulkanInstance::TryRequestExtension(const char* extensionName)
@@ -162,7 +154,8 @@ namespace Savanna::Rendering::Vulkan
     {
         if (m_EnableValidationLayers)
         {
-            m_DebugMessenger = std::unique_ptr<VulkanDebugMessenger>(new VulkanDebugMessenger(this, pDebugCreateInfo, pAllocationCallbacks));
+            m_DebugMessenger = std::unique_ptr<VulkanDebugMessenger>(
+                new VulkanDebugMessenger(this, pDebugCreateInfo, pAllocationCallbacks));
         }
     }
 } // namespace Savanna::Rendering::Vulkan

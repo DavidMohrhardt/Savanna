@@ -36,42 +36,10 @@ namespace Savanna
         };
 
     public:
-        CoreAllocatorWrapper(MemoryPool* pool, size_t size, AllocatorType allocatorType)
-            : m_CoreAllocatorWrapperType(allocatorType)
-        {
-            switch (allocatorType)
-            {
-            case k_FreeList:
-                m_FreeListAllocator = FreeListAllocator(pool, size);
-                break;
-            // case k_Linear:
-            //     m_LinearAllocator = LinearAllocator(arena, size);
-            //     break;
-            // case k_Stack:
-            //     m_StackAllocator = StackAllocator(arena, size);
-            //     break;
-            default:
-                break;
-            }
-        }
+        CoreAllocatorWrapper(void* root, size_t size, AllocatorType allocatorType);
 
         CoreAllocatorWrapper(CoreAllocatorWrapper& other) = delete;
-
-        // Move Constructor
-        CoreAllocatorWrapper(CoreAllocatorWrapper&& other)
-        {
-            m_CoreAllocatorWrapperType = other.m_CoreAllocatorWrapperType;
-            other.m_CoreAllocatorWrapperType = k_None;
-            switch (m_CoreAllocatorWrapperType)
-            {
-            case k_FreeList:
-                m_FreeListAllocator = std::move(other.m_FreeListAllocator);
-                other.m_FreeListAllocator = FreeListAllocator();
-                break;
-            default:
-                break;
-            }
-        }
+        CoreAllocatorWrapper(CoreAllocatorWrapper&& other);
 
         // Move Assignment Operator
         CoreAllocatorWrapper(FreeListAllocator&& freeListAllocator)
@@ -90,25 +58,5 @@ namespace Savanna
         size_t GetAllocatedSize() const;
 
         void Reset();
-
-        bool operator==(const CoreAllocatorWrapper& other) const
-        {
-            if (m_CoreAllocatorWrapperType != other.m_CoreAllocatorWrapperType)
-            {
-                return false;
-            }
-
-            switch (m_CoreAllocatorWrapperType)
-            {
-            case k_FreeList:
-                return m_FreeListAllocator == other.m_FreeListAllocator;
-            // case k_Linear:
-            //     return m_LinearAllocator == other.m_LinearAllocator;
-            // case k_Stack:
-            //     return m_StackAllocator == other.m_StackAllocator;
-            default:
-                return false;
-            }
-        }
     };
 } // namespace Savanna

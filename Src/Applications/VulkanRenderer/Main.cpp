@@ -7,6 +7,8 @@
  *
  */
 
+#include <memory>
+
 #include "VulkanApplication.h"
 
 #include "SavannaEngine.h"
@@ -15,8 +17,11 @@ int main(int argc, char** argvs)
 {
     try
     {
-        SavannaVulkan::VulkanApplication app = SavannaVulkan::VulkanApplication();
-        app.Run();
+        using namespace SavannaVulkan;
+        std::unique_ptr<VulkanApplication> application
+            = std::unique_ptr<VulkanApplication>(new VulkanApplication());
+
+        application->Run();
     }
     catch(const std::exception& e)
     {

@@ -19,6 +19,7 @@
 
 namespace Savanna::Core::Tests
 {
+#if ENABLE_MEMORY_ARENA_TESTS
     class MemoryArenaTest : public ::testing::Test
     {
     public:
@@ -83,5 +84,5 @@ namespace Savanna::Core::Tests
         ptr = m_Arena.AcquireMemory(1024);
         EXPECT_EQ(ptr, nullptr);
     }
-
+#endif // end ENABLE_MEMORY_ARENA_TESTS
 } // namespace Savanna::Tests

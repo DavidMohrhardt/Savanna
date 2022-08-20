@@ -17,25 +17,46 @@
 namespace Savanna
 {
     FreeListAllocator::FreeListAllocator()
-        : m_Root(nullptr)
-        , m_Head(nullptr)
-        , m_Size(0)
-        , m_AllocatedBytes(0)
+        : m_Head(nullptr)
     {}
 
-    FreeListAllocator::FreeListAllocator(void* bufferPtr, size_t size)
-        : m_Root(bufferPtr)
-        , m_Head(reinterpret_cast<MemoryChunkHeader*>(bufferPtr))
-        , m_Size(size)
-        , m_AllocatedBytes(sizeof(MemoryChunkHeader))
+    FreeListAllocator::FreeListAllocator(void* root, size_t size)
+        : CoreAllocatorBase(root, size)
+        , m_Head(reinterpret_cast<MemoryChunkHeader*>(root))
     {
-        m_Head->m_Next = nullptr;
-        m_Head->m_Size = static_cast<int32>(size - sizeof(MemoryChunkHeader));
+        if (m_Head != nullptr)
+        {
+            m_Head->m_Next = nullptr;
+            m_Head->m_Size = static_cast<int32>(size);
+        }
     }
 
+    FreeListAllocator::FreeListAllocator(FreeListAllocator&& other)
+        : CoreAllocatorBase(static_cast<CoreAllocatorBase&&>(other))
+        , m_Head(other.m_Head)
+    {
+        other.m_Head = nullptr;
+    }
+
+    /**
+     * @brief FreeListAllocator do not own their memory and therefore have nothing to do
+     *       with the destructor.
+     */
     FreeListAllocator::~FreeListAllocator() {}
 
-    void* FreeListAllocator::Allocate(size_t size, const size_t& alignment)
+    FreeListAllocator& FreeListAllocator::operator=(FreeListAllocator&& other)
+    {
+        if (this != &other)
+        {
+            m_Root = other.m_Root;
+            m_Head = other.m_Head;
+            m_Size = other.m_Size;
+            m_AllocatedBytes = other.m_AllocatedBytes;
+        }
+        return *this;
+    }
+
+    void* FreeListAllocator::Allocate(const size_t& size, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Allocate");
         MemoryChunkHeader* current = m_Head;
@@ -113,7 +134,7 @@ namespace Savanna
         return outPtr;
     }
 
-    void FreeListAllocator::Deallocate(void* const ptr, const size_t alignment)
+    void FreeListAllocator::Deallocate(void* const ptr, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Deallocate");
         SAVANNA_MEMORY_SAFETY_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
@@ -163,17 +184,5 @@ namespace Savanna
             previousHeader->m_Size += currentHeader->m_Size;
             previousHeader->m_Next = previousHeader->m_Next->m_Next;
         }
-    }
-
-    FreeListAllocator& FreeListAllocator::operator=(FreeListAllocator&& other)
-    {
-        if (this != &other)
-        {
-            m_Root = other.m_Root;
-            m_Head = other.m_Head;
-            m_Size = other.m_Size;
-            m_AllocatedBytes = other.m_AllocatedBytes;
-        }
-        return *this;
     }
 } // namespace Savanna

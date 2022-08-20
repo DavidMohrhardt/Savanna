@@ -9,10 +9,8 @@
 
 #pragma once
 
-#include "AllocatorUtils.h"
-
+#include "CoreAllocatorBase.h"
 #include "Memory/CacheLine.h"
-
 #include "Utilities/SavannaCoding.h"
 
 namespace Savanna
@@ -31,57 +29,30 @@ namespace Savanna
         int32 m_Size;
     } AllocatedChunkDescriptor;
 
-    static_assert(sizeof(MemoryChunkHeader) == sizeof(AllocatedChunkDescriptor));
+    static_assert(sizeof(MemoryChunkHeader) == sizeof(AllocatedChunkDescriptor) && "MemoryChunkHeader and AllocatedChunkDescriptor must be the same size");
 
-    class FreeListAllocator
+    /**
+     * @brief
+     */
+    class FreeListAllocator final : public CoreAllocatorBase
     {
     private:
-        void* m_Root;
         MemoryChunkHeader* m_Head;
-        size_t m_Size;
-        size_t m_AllocatedBytes;
 
     public:
         FreeListAllocator();
-        FreeListAllocator(void* m_Root, size_t size);
-
-        // copy and move constructors
+        FreeListAllocator(void* root, size_t size);
         FreeListAllocator(FreeListAllocator& other) = delete;
-
-        FreeListAllocator(FreeListAllocator&& other)
-        {
-            m_Root = other.m_Root;
-            m_Head = other.m_Head;
-            m_Size = other.m_Size;
-            m_AllocatedBytes = other.m_AllocatedBytes;
-            other.m_Root = nullptr;
-            other.m_Head = nullptr;
-            other.m_Size = 0;
-            other.m_AllocatedBytes = 0;
-        }
+        FreeListAllocator(FreeListAllocator&& other);
 
         ~FreeListAllocator();
 
-        SAVANNA_NO_DISCARD void* Allocate(size_t size, const size_t& alignment);
-        void Deallocate(void* const ptr, const size_t alignment);
-
-        template<typename T>
-        SAVANNA_NO_DISCARD T* Allocate(size_t count = 1)
-        {
-            return reinterpret_cast<T*>(Allocate(sizeof(T) * count, alignof(T)));
-        }
-
-        template<typename T>
-        void Deallocate(T* const ptr)
-        {
-            Deallocate(ptr, alignof(T));
-        }
-
-        SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
-        SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
-
+    public:
+        FreeListAllocator& operator=(FreeListAllocator& other) = delete;
         FreeListAllocator& operator=(FreeListAllocator&& other);
 
-        bool operator==(const FreeListAllocator& other) const;
+    public:
+        SAVANNA_NO_DISCARD void* Allocate(const size_t& size, const size_t& alignment) override;
+        void Deallocate(void* const ptr, const size_t& alignment) override;
     };
 } // namespace Savanna

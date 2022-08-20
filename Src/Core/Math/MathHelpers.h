@@ -19,12 +19,10 @@ SAVANNA_NO_DISCARD inline constexpr bool IsPowerOfTwo(const auto& val)
     return val && !(val & (val - 1));
 }
 
-#define IMPLEMENT_FAST_MODULO_POWER_OF_2_FOR_TYPE(__type) \
-    SAVANNA_NO_DISCARD inline constexpr __type ModByPowerOfTwo(const __type x, const __type pow2Mod) \
-    { \
-        assert(IsPowerOfTwo(pow2Mod), "pow2Mod must be a power of two"); \
-        return (x & (pow2Mod - 1)); \
-    }
+SAVANNA_NO_DISCARD inline constexpr auto NextPowerOfTwo(const auto& val)
+{
+    return (val & ~(val - 1)) << 1;
+}
 
 /**
  * @brief Provides the modulus of a value and a power of two.
@@ -41,4 +39,4 @@ SAVANNA_NO_DISCARD inline constexpr auto ModByPowerOfTwo(const auto x, const aut
     return (x & (pow2Mod - 1));
 }
 
-#undef IMPLEMENT_FAST_MODULO_POWER_OF_2_FOR_TYPE
+

@@ -7,8 +7,6 @@
  *
  */
 
-#include "Context/Context.h"
-
 namespace Savanna
 {
     /**
@@ -17,18 +15,21 @@ namespace Savanna
     class IApplication
     {
     private:
-        Context m_Context;
+        // Context& m_Context;
     protected:
-        IApplication(Context&& context) : m_Context(std::move(context)) {}
-
-        IApplication() : m_Context(Context()) {}
+        // IApplication(Context&& context) : m_Context(std::move(context)) {}
+        // IApplication() : m_Context(DefaultContext()) {}
+    public:
+        IApplication() {}
 
         IApplication(const IApplication&) = delete;
         IApplication& operator=(const IApplication&) = delete;
-    public:
+
         virtual ~IApplication() {}
+
+    public:
         virtual void Run() = 0;
 
-        Context& GetContext() { return m_Context; }
+        // Context& GetContext() { return m_Context; }
     };
 } // namespace Savanna

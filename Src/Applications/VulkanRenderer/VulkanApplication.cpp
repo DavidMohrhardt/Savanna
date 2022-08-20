@@ -9,8 +9,11 @@
 
 #include "VulkanApplication.h"
 
+// Savanna Vulkan Includes
 #include <Vulkan/Utilities/VulkanCallbacks.h>
+#include <Vulkan/Utilities/VulkanDeviceChooser.h>
 
+// Savanna Includes
 #include <Profiling/Profiler.h>
 
 #define GLFW_INCLUDE_VULKAN
@@ -28,77 +31,62 @@ namespace SavannaVulkan
 
     VulkanApplication::VulkanApplication()
         : IApplication()
+        , m_Window(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr))
+        , m_Instance("SavannaVulkanRenderer", "No Engine")
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor");
 
-        Context& context = GetContext();
-
-        if (!context.TryCreateMemoryArena("Rendering", sizeof(MemoryBlock32KiB))
-            || !context.TryCreateMemoryArena("Common", sizeof(MemoryBlock32KiB)))
+        if (m_Instance.GetErrorCode() != VK_SUCCESS)
         {
-            // SAVANNA_ERROR_LOG("Failed to create memory arenas");
-            throw Savanna::RuntimeErrorException("Failed to create application memory arenas!");
+            throw Savanna::RuntimeErrorException("Unable to create Vulkan Instance.");
         }
-
-        MemoryArena& defaultArena = context.GetDefaultMemoryArena();
-        MemoryArena& commonMemoryArena = context.GetMemoryArena("Common");
-        MemoryArena& renderingMemoryArena = context.GetMemoryArena("Rendering");
-
-        FreeListAllocator coreAllocator(&defaultArena, sizeof(MemoryBlock32KiB));
-        m_Window = coreAllocator.Allocate<GLFWWindowWrapper>();
-        *m_Window = GLFWWindowWrapper(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr));
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
         for (int i = 0; i < glfwExtensionCount; ++i)
         {
-            if (!m_Instance->TryRequestExtension(glfwExtensions[i]))
+            if (!m_Instance.TryRequestExtension(glfwExtensions[i]))
             {
                 throw Savanna::RuntimeErrorException("Required GLFW extension is unsupported by this Vulkan Instance!");
             }
         }
 
-        // m_Instance = coreAllocator.Allocate<VulkanInstance>();
-        // *m_Instance(renderingMemoryArena);
-        if (!m_Instance->TryCreateInstance("SavannaVulkanRenderer", "No Engine"))
+        // Get Physical Devices
         {
-            throw Savanna::RuntimeErrorException("Unable to create Vulkan Instance.");
-        }
+            SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor - Get Physical Devices");
+            uint32 count = VulkanPhysicalDevice::GetPhysicalDeviceCount(m_Instance.GetInstance());
+            std::vector<VulkanPhysicalDeviceDescriptor> physicalDeviceDescriptors(count);
 
-        m_PhysicalDevice = new VulkanPhysicalDevice(m_Instance->GetInstance());
-        m_Initialized = true;
+            VulkanPhysicalDevice::GetPhysicalDeviceDescriptors(
+                m_Instance.GetInstance(),
+                count,
+                physicalDeviceDescriptors.data());
+
+            for (int i = 0; i < count; ++i)
+            {
+                VulkanPhysicalDevice physicalDevice = VulkanPhysicalDevice(physicalDeviceDescriptors[i]);
+                m_AvailablePhysicalDevices.push_back(physicalDevice);
+            }
+
+            bool foundSuitableDevice = TryChooseVulkanDevice(m_AvailablePhysicalDevices.data(), m_AvailablePhysicalDevices.size(), m_CurrentPhysicalDevice);
+
+            if (!foundSuitableDevice)
+            {
+                throw Savanna::RuntimeErrorException("Unable to choose a Vulkan Physical Device!");
+            }
+        }
     }
 
     VulkanApplication::~VulkanApplication()
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::dtor");
-
-        if (m_Window != nullptr)
-        {
-            delete m_Window;
-        }
-
-        if (m_PhysicalDevice != nullptr)
-        {
-            delete m_PhysicalDevice;
-        }
-
-        if (m_Instance != nullptr)
-        {
-            delete m_Instance;
-        }
-
-        m_Initialized = false;
     }
 
     void VulkanApplication::Run()
     {
-        if (m_Initialized)
+        while(!m_Window.ShouldClose())
         {
-            while(!m_Window->ShouldClose())
-            {
-                m_Window->PollEvents();
-            }
+            m_Window.PollEvents();
         }
     }
 }

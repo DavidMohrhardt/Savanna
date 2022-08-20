@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Types/Primitive/PrimitiveTypes.h>
-#include <Utilities/Macros/CppTypeDefs.h>
+#include <Utilities/SavannaCoding.h>
 
 /**
  * @brief

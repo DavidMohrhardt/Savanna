@@ -23,19 +23,14 @@ namespace Savanna
 
     public:
         typedef T value_type;
+
         CoreStlAllocatorAdaptor() = delete;
 
-        CoreStlAllocatorAdaptor(CoreAllocatorWrapper& coreAllocatorWrapper) SAVANNA_NO_EXCEPT
-            : m_CoreAllocatorWrapper(coreAllocatorWrapper)
-        {}
-
-        CoreStlAllocatorAdaptor(MemoryArena* arena, size_t size, AllocatorType allocatorType) SAVANNA_NO_EXCEPT
-            : m_CoreAllocatorWrapper(arena, size, allocatorType)
-        {}
-        CoreStlAllocatorAdaptor(CoreStlAllocatorAdaptor& other) SAVANNA_NO_EXCEPT
+        CoreStlAllocatorAdaptor(CoreAllocatorWrapper& allocator)
             : m_CoreAllocatorWrapper(other.m_CoreAllocatorWrapper)
         {}
-        CoreStlAllocatorAdaptor(CoreStlAllocatorAdaptor&& other) SAVANNA_NO_EXCEPT
+
+        CoreStlAllocatorAdaptor(CoreStlAllocatorAdaptor& other)
             : m_CoreAllocatorWrapper(other.m_CoreAllocatorWrapper)
         {}
 

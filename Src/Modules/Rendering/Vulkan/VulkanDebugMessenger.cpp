@@ -50,7 +50,7 @@ namespace Savanna::Rendering::Vulkan
 
     VulkanDebugMessenger::~VulkanDebugMessenger()
     {
-        auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_CreatorInstance, "vkDestroyDebugUtilsMessengerEXT");
+        PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_CreatorInstance, "vkDestroyDebugUtilsMessengerEXT");
         if (func != nullptr)
         {
             func(m_CreatorInstance, m_DebugMessenger, m_AllocationCallbacks);
