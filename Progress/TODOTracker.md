@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 100
+Total TODOs: 98
 ## Src
 
 ### DX12Application.cpp
@@ -34,9 +34,7 @@ Total TODOs: 100
 ### IApplication.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Application/IApplication.h#L3)
-- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Application/IApplication.h#L14)
-- [L21 :* @brief TODO @DavidMohrhardt Document Destroy the IApplication object](../Src/Core/Application/IApplication.h#L21)
-- [L27 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Application/IApplication.h#L27)
+- [L12 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Application/IApplication.h#L12)
 
 ### MathHelpers.h
 
@@ -46,18 +44,10 @@ Total TODOs: 100
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/CacheLine.h#L3)
 
-### MemoryArena.cpp
+### MemoryArena.h
 
-- [L54 :// TODO: Implement](../Src/Core/Memory/MemoryArena.cpp#L54)
-
-### AllocatorKind.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/AllocatorKind.h#L3)
-- [L18 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/AllocatorKind.h#L18)
-
-### AllocatorWrapper.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/AllocatorWrapper.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/MemoryArena.h#L3)
+- [L16 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/MemoryArena.h#L16)
 
 ### FreeListAllocator.cpp
 
@@ -85,12 +75,12 @@ Total TODOs: 100
 
 ### FloatingPointUnions.h
 
-- [L16 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L16)
-- [L36 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L36)
+- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L14)
+- [L34 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L34)
 
 ### Console.h
 
-- [L99 :// TODO](../Src/Core/Utilities/Console.h#L99)
+- [L97 :// TODO](../Src/Core/Utilities/Console.h#L97)
 
 ### LazyDllLoader.h
 
@@ -127,49 +117,57 @@ Total TODOs: 100
 
 ### GfxApiEnumeration.h
 
-- [L16 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L16)
-- [L22 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L22)
-- [L28 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L28)
-- [L34 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L34)
-- [L40 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L40)
-- [L46 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L46)
-- [L52 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L52)
+- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L14)
+- [L20 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L20)
+- [L26 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L26)
+- [L32 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L32)
+- [L38 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L38)
+- [L44 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L44)
+- [L50 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L50)
 
 ### GfxDevice.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L3)
-- [L19 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L19)
+- [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L17)
 
 ### GfxDeviceCapabilities.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L3)
-- [L19 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L19)
-- [L25 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L25)
-- [L31 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L31)
-- [L37 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L37)
-- [L43 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L43)
-- [L49 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L49)
-- [L55 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L55)
-- [L61 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L61)
-- [L67 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L67)
-- [L74 :* this enumeration. Requires querying from TODO](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L74)
-- [L80 :* @brief TODO @DavidMohrhardt Document Construct a new declare savanna extended namespaced cpp type def object](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L80)
+- [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L17)
+- [L23 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L23)
+- [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L29)
+- [L35 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L35)
+- [L41 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L41)
+- [L47 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L47)
+- [L53 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L53)
+- [L59 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L59)
+- [L65 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L65)
+- [L72 :* this enumeration. Requires querying from TODO](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L72)
+- [L78 :* @brief TODO @DavidMohrhardt Document Construct a new declare savanna extended namespaced cpp type def object](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L78)
 
 ### GfxDeviceDescriptor.c
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceDescriptor.c#L3)
-- [L13 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.c#L13)
+- [L11 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.c#L11)
 
 ### GfxDeviceDescriptor.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L3)
-- [L29 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L29)
+- [L27 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L27)
 
 ### VulkanPhysicalDevice.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L3)
-- [L22 :// TODO: Rework this to just have each PhysicalDevice produce it's descriptor and then init that.](../Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L22)
-- [L37 :// TODO](../Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L37)
+
+### VulkanDeviceChooser.cpp
+
+- [L35 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L35)
+- [L99 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L99)
+
+### VulkanDeviceSelection.h
+
+- [L22 :// TODO](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceSelection.h#L22)
+- [L88 :// TODO @DavidMohrhardt Remove the function and replace with a way to select the device](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceSelection.h#L88)
 
 ### Assertions.h
 
@@ -187,7 +185,7 @@ Total TODOs: 100
 ### CoreTestUtils.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/CoreTestUtils.h#L3)
-- [L18 :// TODO @DavidMohrhardt Replace with ifdefs when debugging is enabled](../Src/Tests/Core/CoreTestUtils.h#L18)
+- [L16 :// TODO @DavidMohrhardt Replace with ifdefs when debugging is enabled](../Src/Tests/Core/CoreTestUtils.h#L16)
 
 ### MathTestUtils.h
 
@@ -213,10 +211,10 @@ Total TODOs: 100
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/AllocatorUtilsTests.cpp#L3)
 
-### FreeListAllocatorTests.cpp
+### FreeListAllocatorTest.cpp
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTests.cpp#L3)
-- [L215 :// TODO : This test fails because of the bug in the implementation. Likely how I handle re-establishing the root is wrong.](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTests.cpp#L215)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTest.cpp#L3)
+- [L215 :// TODO : This test fails because of the bug in the implementation. Likely how I handle re-establishing the root is wrong.](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTest.cpp#L215)
 
 ## BuildScripts
 
