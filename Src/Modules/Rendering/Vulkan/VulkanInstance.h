@@ -26,7 +26,7 @@ namespace Savanna::Rendering::Vulkan
     class VulkanInstance
     {
     private: // Constants
-        const std::vector<const char*> k_DefaultValidationLayers =
+        inline static const std::vector<const char*> k_DefaultValidationLayers =
         {
             "VK_LAYER_KHRONOS_validation"
         };
@@ -58,15 +58,14 @@ namespace Savanna::Rendering::Vulkan
         std::vector<const char*> m_RequestedExtensions;
         std::unique_ptr<VulkanDebugMessenger> m_DebugMessenger;
 
-        VkResult m_MostRecentErrorCode = VK_SUCCESS;
-
     public: // Constructors/Destructors
+        VulkanInstance() = default;
         VulkanInstance(const FixedString32& applicationName, const FixedString32& engineName);
         ~VulkanInstance();
 
     public: // Functions
-        inline VkInstance GetInstance() const { return m_VulkanInstance; }
-        inline VkResult GetErrorCode() const { return m_MostRecentErrorCode; }
+        inline VkInstance GetVkInstance() const { return m_VulkanInstance; }
+        inline bool IsValid() const { return m_VulkanInstance != VK_NULL_HANDLE; }
 
         bool TryRequestExtension(const char* extensionName);
         inline const std::vector<const char*> GetRequestedExtensions() const { return m_RequestedExtensions; }

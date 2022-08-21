@@ -31,13 +31,13 @@ namespace Savanna::Rendering::Vulkan
 
     bool TryChooseVulkanDevice(
         const VulkanPhysicalDevice* devices,
-        const size_t& count,
+        const uint32& count,
         VulkanPhysicalDevice& selectedDevice,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs = k_DefaultDeviceChooserScoringFuncs);
 
     bool TryChooseVulkanDeviceDescriptor(
         const VulkanPhysicalDeviceDescriptor* deviceDescriptors,
-        const size_t& count,
+        const uint32& count,
         VulkanPhysicalDeviceDescriptor& selectedDeviceDesc,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs = k_DefaultDeviceChooserScoringFuncs);
 } // namespace Savanna::Vulkan

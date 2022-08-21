@@ -30,6 +30,14 @@ namespace Savanna::Rendering::Vulkan
         std::optional<uint32> m_TransferQueueFamilyIndex;
         std::optional<uint32> m_SparseBindingQueueFamilyIndex;
 
+        VulkanQueueFamilyIndices()
+        {
+            m_GraphicsQueueFamilyIndex = std::nullopt;
+            m_ComputeQueueFamilyIndex = std::nullopt;
+            m_TransferQueueFamilyIndex = std::nullopt;
+            m_SparseBindingQueueFamilyIndex = std::nullopt;
+        }
+
         bool HasGraphicsQueueFamilyIndex() const
         {
             return m_GraphicsQueueFamilyIndex.has_value();
@@ -57,6 +65,14 @@ namespace Savanna::Rendering::Vulkan
                 && HasTransferQueueFamilyIndex()
                 && HasSparseBindingQueueFamilyIndex();
         }
+
+        bool HasAnyQueueFamilyIndices() const
+        {
+            return HasGraphicsQueueFamilyIndex()
+                || HasComputeQueueFamilyIndex()
+                || HasTransferQueueFamilyIndex()
+                || HasSparseBindingQueueFamilyIndex();
+        }
     };
 
     class VulkanPhysicalDevice
@@ -68,6 +84,11 @@ namespace Savanna::Rendering::Vulkan
             const VkInstance& instance,
             const uint32 count,
             VulkanPhysicalDeviceDescriptor* physicalDeviceDescriptorsPtr);
+
+        static void EnumeratePhysicalDevices(
+            const VkInstance& instance,
+            uint32& outCount,
+            VulkanPhysicalDevice* physicalDevicesPtr);
 
     private:
         VulkanPhysicalDeviceDescriptor m_Descriptor;
@@ -87,7 +108,7 @@ namespace Savanna::Rendering::Vulkan
         VulkanPhysicalDevice& operator=(VulkanPhysicalDevice&& other) = default;
 
     public:
-        VulkanGraphicsDevice CreateGraphicsDevice();
+        // VulkanGraphicsDevice CreateGraphicsDevice();
 
         const VulkanPhysicalDeviceDescriptor& GetDescriptor() const;
         const VkPhysicalDevice& GetPhysicalDevice() const;

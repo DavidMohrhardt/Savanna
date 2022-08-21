@@ -2,6 +2,8 @@
 
 #include "VulkanDebugMessenger.h"
 
+#include <Profiling/Profiler.h>
+
 namespace Savanna::Rendering::Vulkan
 {
     std::unordered_set<std::string> VulkanInstance::s_SupportedExtensions = {};
@@ -46,6 +48,7 @@ namespace Savanna::Rendering::Vulkan
 
     VulkanInstance::VulkanInstance(const FixedString32& applicationName, const FixedString32& engineName)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanInstance::VulkanInstance ctor()");
         InitializeStatics();
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -64,7 +67,9 @@ namespace Savanna::Rendering::Vulkan
 
         createInfo.enabledExtensionCount = static_cast<uint32_t>(m_RequestedExtensions.size());
         createInfo.ppEnabledExtensionNames = m_RequestedExtensions.data();
-        VK_CALL(m_MostRecentErrorCode, vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance), "Failed to create VkInstance!");
+        VK_CALL_OR_THROW(
+            vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance),
+            "Failed to create VkInstance!");
 
         AfterInstanceCreationValidationLayerSetup(&debugCreateInfo, nullptr);
     }

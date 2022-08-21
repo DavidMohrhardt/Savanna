@@ -40,11 +40,11 @@ namespace Savanna::Rendering::Vulkan
         VulkanInstance* pInstance,
         VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
         const VkAllocationCallbacks* pAllocationCallbacks)
-        : m_CreatorInstance(pInstance->GetInstance())
+        : m_CreatorInstance(pInstance->GetVkInstance())
         , m_AllocationCallbacks(pAllocationCallbacks)
     {
         VK_CALL_OR_THROW(
-            CreateDebugUtilsMessengerEXT(pInstance->GetInstance(), pDebugCreateInfo, pAllocationCallbacks, &m_DebugMessenger),
+            CreateDebugUtilsMessengerEXT(pInstance->GetVkInstance(), pDebugCreateInfo, pAllocationCallbacks, &m_DebugMessenger),
             "Unable to create debug messenger.");
     }
 

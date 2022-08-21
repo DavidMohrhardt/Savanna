@@ -24,14 +24,15 @@ namespace Savanna::Rendering::Vulkan
     uint32 VulkanPhysicalDevice::GetPhysicalDeviceCount(const VkInstance& instance)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::GetPhysicalDeviceCount");
-        static uint32 s_count = 0;
-        if (s_count == 0) SAVANNA_BRANCH_UNLIKELY
+        static uint32 s_NumberOfDevices = 0;
+        // Should only be true once per instance.
+        if (s_NumberOfDevices == 0) SAVANNA_BRANCH_UNLIKELY
         {
             uint32 count = 0;
             vkEnumeratePhysicalDevices(instance, &count, nullptr);
-            s_count = count;
+            s_NumberOfDevices = count;
         }
-        return s_count;
+        return s_NumberOfDevices;
     }
 
     void VulkanPhysicalDevice::GetPhysicalDeviceDescriptors(
@@ -50,6 +51,30 @@ namespace Savanna::Rendering::Vulkan
                 vkGetPhysicalDeviceProperties(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].properties);
                 vkGetPhysicalDeviceFeatures(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].features);
                 vkGetPhysicalDeviceMemoryProperties(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].memoryProperties);
+            }
+        }
+    }
+
+    void VulkanPhysicalDevice::EnumeratePhysicalDevices(
+        const VkInstance& instance,
+        uint32& outCount,
+        VulkanPhysicalDevice* physicalDevicesPtr)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::EnumeratePhysicalDevices");
+
+        if (physicalDevicesPtr == nullptr)
+        {
+            outCount = GetPhysicalDeviceCount(instance);
+            return;
+        }
+        else
+        {
+            std::vector<VulkanPhysicalDeviceDescriptor> physicalDeviceDescriptors(outCount);
+            GetPhysicalDeviceDescriptors(instance, outCount, physicalDeviceDescriptors.data());
+
+            for (int i = 0; i < outCount; ++i)
+            {
+                physicalDevicesPtr[i] = VulkanPhysicalDevice(physicalDeviceDescriptors[i]);
             }
         }
     }

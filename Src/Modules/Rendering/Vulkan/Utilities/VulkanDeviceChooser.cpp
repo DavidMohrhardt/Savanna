@@ -97,7 +97,7 @@ namespace Savanna::Rendering::Vulkan
     {
         // From https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceLimits.html#:~:text=The%20VkPhysicalDeviceLimits%20are%20properties%20of%20the%20physical%20device.,VkPhysicalDeviceProperties%20structure%20which%20is%20returned%20from%20vkGetPhysicalDeviceProperties.%20Description
 
-        // TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later
+        // TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later
         outScore += deviceLimits.maxImageDimension1D;
         outScore += deviceLimits.maxImageDimension2D;
         outScore += deviceLimits.maxImageDimension3D;
@@ -249,7 +249,7 @@ namespace Savanna::Rendering::Vulkan
 
     bool TryChooseVulkanDevice(
         const VulkanPhysicalDevice* devices,
-        const size_t& count,
+        const uint32& count,
         VulkanPhysicalDevice& selectedDevice,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
     {
@@ -288,46 +288,46 @@ namespace Savanna::Rendering::Vulkan
 
     bool TryChooseVulkanDeviceDescriptor(
         const VulkanPhysicalDeviceDescriptor* deviceDescriptors,
-        const size_t& count,
+        const uint32& count,
         VulkanPhysicalDeviceDescriptor& selectedDeviceDesc,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
+    {
+        if (deviceDescriptors == nullptr || count == 0)
         {
-            if (deviceDescriptors == nullptr || count == 0)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            if (count == 1)
-            {
-                selectedDeviceDesc = deviceDescriptors[0];
-                return true;
-            }
+        if (count == 1)
+        {
+            selectedDeviceDesc = deviceDescriptors[0];
+            return true;
+        }
 
-            uint32 bestScore = 0;
-            const VulkanPhysicalDeviceDescriptor* bestDeviceDescriptor = nullptr;
+        uint32 bestScore = 0;
+        const VulkanPhysicalDeviceDescriptor* bestDeviceDescriptor = nullptr;
 
-            for (int i = 0; i < count; ++i)
+        for (int i = 0; i < count; ++i)
+        {
+            uint32 score = 0;
+            if (!ScoreDeviceDescriptor(deviceDescriptors[i], scoringFunctionPtrs, score))
             {
-                uint32 score = 0;
-                if (!ScoreDeviceDescriptor(deviceDescriptors[i], scoringFunctionPtrs, score))
-                {
-                    continue;
-                }
-                else if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestDeviceDescriptor = &deviceDescriptors[i];
-                }
+                continue;
             }
-
-            if (bestDeviceDescriptor == nullptr)
+            else if (score > bestScore)
             {
-                return false;
-            }
-            else
-            {
-                selectedDeviceDesc = *bestDeviceDescriptor;
-                return true;
+                bestScore = score;
+                bestDeviceDescriptor = &deviceDescriptors[i];
             }
         }
+
+        if (bestDeviceDescriptor == nullptr)
+        {
+            return false;
+        }
+        else
+        {
+            selectedDeviceDesc = *bestDeviceDescriptor;
+            return true;
+        }
+    }
 } // namespace Savanna::Vulkan

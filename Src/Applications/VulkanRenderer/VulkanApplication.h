@@ -12,6 +12,8 @@
 #include <SavannaEngine.h>
 #include <SavannaVulkan.h>
 
+#include <Vulkan/VulkanRenderer.h>
+
 #include <Application/IApplication.h>
 #include <Types/Strings/HashString.h>
 
@@ -40,10 +42,7 @@ namespace SavannaVulkan
     private:
 
         GLFWWindowWrapper m_Window;
-        VulkanInstance m_Instance;
-        VulkanPhysicalDevice m_CurrentPhysicalDevice;
-
-        std::vector<VulkanPhysicalDevice> m_AvailablePhysicalDevices;
+        VulkanRenderer m_Renderer;
 
     private:
     };

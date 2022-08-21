@@ -20,18 +20,23 @@ namespace Savanna::Rendering::Vulkan
     {
     private:
         VkDevice m_Device;
-        VulkanPhysicalDevice* m_PhysicalDevice;
 
     public:
-        VulkanGraphicsDevice() = default;
-        VulkanGraphicsDevice(const VulkanGraphicsDevice&) = default;
-        VulkanGraphicsDevice(VulkanGraphicsDevice&&) = default;
+        VulkanGraphicsDevice();
 
-        VulkanGraphicsDevice(VkDeviceCreateInfo& createInfo);
+        VulkanGraphicsDevice(const VulkanGraphicsDevice&) = delete;
+        VulkanGraphicsDevice(VulkanGraphicsDevice&&);
+
+        VulkanGraphicsDevice(const VulkanPhysicalDevice& physicalDevice, VkDeviceCreateInfo& createInfo);
 
         ~VulkanGraphicsDevice();
+
     public:
-        VulkanGraphicsDevice& operator=(const VulkanGraphicsDevice&) = default;
-        VulkanGraphicsDevice& operator=(VulkanGraphicsDevice&&) = default;
+        VulkanGraphicsDevice& operator=(VulkanGraphicsDevice&) = delete;
+        VulkanGraphicsDevice& operator=(VulkanGraphicsDevice&&);
+
+    public:
+        VkDevice GetVkDevice() const;
+        VkQueue GetVkQueue(const uint32 index) const;
     };
 } // namespace Savanna::Rendering::Vulkan
