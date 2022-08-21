@@ -19,6 +19,5 @@ namespace Savanna::ECS
         // friend class SavannaScriptingApi;
     private:
         SAVANNA_NO_DISCARD static uint64 RegisterComponent(ComponentData<T> componentData) SAVANNA_NO_EXCEPT;
-
     }
 } // namespace Savanna::ECS

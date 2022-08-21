@@ -4,7 +4,7 @@
 
 #include <cassert>
 
-#include "Utilities/PreprocessorDefinitions/InterfaceDefinitions.h"
+#include <Utilities/PreprocessorDefinitions/InterfaceDefinitions.h>
 
 namespace Savanna
 {
