@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 98
+Total TODOs: 96
 ## Src
 
 ### DX12Application.cpp
@@ -162,12 +162,7 @@ Total TODOs: 98
 ### VulkanDeviceChooser.cpp
 
 - [L35 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L35)
-- [L99 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L99)
-
-### VulkanDeviceSelection.h
-
-- [L22 :// TODO](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceSelection.h#L22)
-- [L88 :// TODO @DavidMohrhardt Remove the function and replace with a way to select the device](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceSelection.h#L88)
+- [L99 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L99)
 
 ### Assertions.h
 
