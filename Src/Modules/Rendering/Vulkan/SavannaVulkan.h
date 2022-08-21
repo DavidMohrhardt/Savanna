@@ -2,8 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include "VulkanInstance.h"
-#include "VulkanPhysicalDevice.h"
+#include "VulkanRenderer.h"
 
 #include "Utilities/VulkanDefinitions.h"
 #include "Utilities/VulkanMacros.h"

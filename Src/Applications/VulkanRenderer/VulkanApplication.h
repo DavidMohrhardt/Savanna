@@ -40,7 +40,6 @@ namespace SavannaVulkan
         void Run();
 
     private:
-
         GLFWWindowWrapper m_Window;
         VulkanRenderer m_Renderer;
 

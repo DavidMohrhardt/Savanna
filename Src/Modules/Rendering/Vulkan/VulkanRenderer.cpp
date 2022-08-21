@@ -17,37 +17,82 @@
 
 namespace Savanna::Rendering::Vulkan
 {
-    VulkanRenderer::VulkanRenderer()
-        : m_Instance("Savanna Vulkan Renderer", "No Engine")
+    VulkanRenderer::VulkanRenderer(const FixedString32& applicationName, const FixedString32& engineName)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor()");
+        m_Instance = VulkanInstance(applicationName, engineName, nullptr, 0);
+
         if (!m_Instance.IsValid())
         {
-            throw std::runtime_error("Failed to create Vulkan instance!");
+            throw RuntimeErrorException("Failed to create Vulkan instance!");
         }
 
-        VulkanPhysicalDeviceDescriptor selectedDeviceDescriptor{};
+        SelectPhysicalDevice(m_Instance, &m_PhysicalDevice);
+        CreateLogicalDevice(m_PhysicalDevice, &m_GraphicsDevice);
+        QueryGraphicsQueue(m_PhysicalDevice, m_GraphicsDevice, &m_GraphicsQueue);
+    }
 
-        uint32 physicalDeviceCount = VulkanPhysicalDevice::GetPhysicalDeviceCount(m_Instance.GetVkInstance());
+    VulkanRenderer::VulkanRenderer(VulkanInstance&& instance)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor(instance)");
+        if (!instance.IsValid())
+        {
+            throw RuntimeErrorException("Failed to create Vulkan instance!");
+        }
+
+        m_Instance = std::move(instance);
+        SelectPhysicalDevice(m_Instance, &m_PhysicalDevice);
+        CreateLogicalDevice(m_PhysicalDevice, &m_GraphicsDevice);
+        QueryGraphicsQueue(m_PhysicalDevice, m_GraphicsDevice, &m_GraphicsQueue);
+    }
+
+    VulkanRenderer::VulkanRenderer(VulkanInstance &&instance, VulkanPhysicalDevice &&physicalDevice, VulkanGraphicsDevice &&graphicsDevice)
+        : m_Instance(std::move(instance))
+        , m_PhysicalDevice(std::move(physicalDevice))
+        , m_GraphicsDevice(std::move(graphicsDevice))
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor(VulkanInstance&, VulkanPhysicalDevice&, VulkanGraphicsDevice&)");
+        if (!m_Instance.IsValid())
+        {
+            throw RuntimeErrorException("Failed to create Vulkan instance!");
+        }
+    }
+
+    void VulkanRenderer::SelectPhysicalDevice(
+        const VulkanInstance& instance,
+        VulkanPhysicalDevice* outPhysicalDevice)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::SelectPhysicalDevice()");
+        assert(outPhysicalDevice != nullptr && "outPhysicalDevice is nullptr!");
+
+        uint32 physicalDeviceCount = VulkanPhysicalDevice::GetPhysicalDeviceCount(instance.GetVkInstance());
 
         std::vector<VulkanPhysicalDeviceDescriptor> deviceDescriptors =
             std::vector<VulkanPhysicalDeviceDescriptor>(physicalDeviceCount);
 
         VulkanPhysicalDevice::GetPhysicalDeviceDescriptors(
-            m_Instance.GetVkInstance(), physicalDeviceCount, deviceDescriptors.data());
+            instance.GetVkInstance(), physicalDeviceCount, deviceDescriptors.data());
+
+        VulkanPhysicalDeviceDescriptor selectedDeviceDescriptor{};
 
         if (!TryChooseVulkanDeviceDescriptor(
             deviceDescriptors.data(), physicalDeviceCount, selectedDeviceDescriptor))
         {
-            throw std::runtime_error("No suitable Vulkan devices found.");
+            throw RuntimeErrorException("No suitable Vulkan devices found.");
         }
 
-        m_PhysicalDevice = VulkanPhysicalDevice(selectedDeviceDescriptor);
+        *outPhysicalDevice = VulkanPhysicalDevice(selectedDeviceDescriptor);
+    }
 
-        VulkanQueueFamilyIndices indices = m_PhysicalDevice.GetQueueFamilyIndices();
+    void VulkanRenderer::CreateLogicalDevice(const VulkanPhysicalDevice& physicalDevice, VulkanGraphicsDevice* outGfxDevice)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::CreateLogicalDevice()");
+        assert(outGfxDevice != nullptr && "outGfxDevice is nullptr!");
+
+        VulkanQueueFamilyIndices indices = physicalDevice.GetQueueFamilyIndices();
         if (!indices.m_GraphicsQueueFamilyIndex.has_value())
         {
-            throw std::runtime_error("No suitable Vulkan queues found.");
+            throw RuntimeErrorException("No suitable graphics queues found.");
         }
 
         VkDeviceQueueCreateInfo queueCreateInfo{};
@@ -66,7 +111,21 @@ namespace Savanna::Rendering::Vulkan
         createInfo.pEnabledFeatures = &deviceFeatures;
         createInfo.enabledExtensionCount = 0;
 
-        m_GraphicsDevice = VulkanGraphicsDevice(m_PhysicalDevice, createInfo);
-        m_GraphicsQueue = m_GraphicsDevice.GetVkQueue(indices.m_GraphicsQueueFamilyIndex.value());
+        *outGfxDevice = VulkanGraphicsDevice(physicalDevice, createInfo);
+    }
+
+    void VulkanRenderer::QueryGraphicsQueue(
+        const VulkanPhysicalDevice& physicalDevice,
+        const VulkanGraphicsDevice& device,
+        VkQueue* outGraphicsQueue)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::QueryGraphicsQueue()");
+        VulkanQueueFamilyIndices indices = physicalDevice.GetQueueFamilyIndices();
+        if (!indices.m_GraphicsQueueFamilyIndex.has_value())
+        {
+            throw RuntimeErrorException("No suitable graphics queues found.");
+        }
+
+        *outGraphicsQueue = device.GetVkQueue(indices.m_GraphicsQueueFamilyIndex.value());
     }
 } // namespace Savanna::Rendering::Vulkan

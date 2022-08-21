@@ -10,6 +10,7 @@
 #include "VulkanApplication.h"
 
 // Savanna Vulkan Includes
+#include <Vulkan/NativeVulkanDisplaySurfaceInfo.h>
 #include <Vulkan/Utilities/VulkanCallbacks.h>
 
 // Savanna Includes
@@ -35,13 +36,24 @@ namespace SavannaVulkan
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        for (int i = 0; i < glfwExtensionCount; ++i)
+
+        VulkanInstance instance("Savanna Vulkan", "No Engine", glfwExtensions, glfwExtensionCount);
+        if (!instance.IsValid())
         {
-            if (!m_Renderer.GetVulkanInstance().TryRequestExtension(glfwExtensions[i]))
-            {
-                throw Savanna::RuntimeErrorException("Required GLFW extension is unsupported by this Vulkan Instance!");
-            }
+            throw std::runtime_error("Failed to create Vulkan instance!");
         }
+
+        m_Renderer = VulkanRenderer(std::move(instance));
+
+        VulkanSurfaceCreateInfoUnion surfaceCreateInfo{};
+
+#if SAVANNA_WINDOWS
+        Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &surfaceCreateInfo);
+#else
+        #error "Unsupported platform!"
+#endif
+
+        // m_Renderer.CreateRenderSurface(surfaceCreateInfo);
     }
 
     VulkanApplication::~VulkanApplication()

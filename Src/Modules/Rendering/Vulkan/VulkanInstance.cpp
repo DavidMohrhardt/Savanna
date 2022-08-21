@@ -46,10 +46,30 @@ namespace Savanna::Rendering::Vulkan
         }
     }
 
-    VulkanInstance::VulkanInstance(const FixedString32& applicationName, const FixedString32& engineName)
+    bool VulkanInstance::IsExtensionSupported(const char* extensionName)
+    {
+        InitializeStatics();
+        return s_SupportedExtensions.contains(extensionName);
+    }
+
+    VulkanInstance::VulkanInstance()
+        : m_VkInstance(VK_NULL_HANDLE)
+        , m_DebugMessenger(nullptr)
+        , m_EnableValidationLayers(false)
+        , m_ActiveExtensions({})
+    {
+        InitializeStatics();
+    }
+
+    VulkanInstance::VulkanInstance(
+        const FixedString32& applicationName,
+        const FixedString32& engineName,
+        const char** requestedExtensions,
+        uint32_t requestedExtensionCount)
+        : VulkanInstance() // InitializeStatics();
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanInstance::VulkanInstance ctor()");
-        InitializeStatics();
+
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pApplicationName = applicationName;
@@ -63,28 +83,76 @@ namespace Savanna::Rendering::Vulkan
         createInfo.pApplicationInfo = &appInfo;
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo {};
-        SetupValidationLayersIfRequested(&createInfo, &debugCreateInfo, nullptr);
+        SetupValidationLayersIfNeeded(&createInfo, &debugCreateInfo, nullptr);
 
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(m_RequestedExtensions.size());
-        createInfo.ppEnabledExtensionNames = m_RequestedExtensions.data();
+        if (requestedExtensionCount > 0)
+        {
+            m_ActiveExtensions = std::vector<const char*>(requestedExtensionCount);
+            for (int i = 0; i < requestedExtensionCount; i++)
+            {
+                if (!IsExtensionSupported(requestedExtensions[i]))
+                {
+                    SAVANNA_LOG("Extension %s is not supported\n", requestedExtensions[i]);
+                    return;
+                }
+                else
+                {
+                    m_ActiveExtensions[i] = requestedExtensions[i];
+                }
+            }
+
+            createInfo.enabledExtensionCount = static_cast<uint32_t>(m_ActiveExtensions.size());
+            createInfo.ppEnabledExtensionNames = m_ActiveExtensions.data();
+        }
+        else
+        {
+            createInfo.enabledExtensionCount = 0;
+            createInfo.ppEnabledExtensionNames = nullptr;
+        }
+
         VK_CALL_OR_THROW(
-            vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance),
+            vkCreateInstance(&createInfo, nullptr, &m_VkInstance),
             "Failed to create VkInstance!");
 
-        AfterInstanceCreationValidationLayerSetup(&debugCreateInfo, nullptr);
+        OnPostInitialization(&debugCreateInfo, nullptr);
+    }
+
+    VulkanInstance::VulkanInstance(VkInstanceCreateInfo& createInfo)
+        : VulkanInstance() // InitializeStatics();
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanInstance::VulkanInstance ctor(VkApplicationInfo&)");
+        VK_CALL_OR_THROW(
+            vkCreateInstance(&createInfo, nullptr, &m_VkInstance),
+            "Failed to create VkInstance!");
+    }
+
+    VulkanInstance::VulkanInstance(VulkanInstance &&other)
+    {
+        *this = std::move(other);
     }
 
     VulkanInstance::~VulkanInstance()
     {
         m_DebugMessenger = nullptr;
-        vkDestroyInstance(m_VulkanInstance, nullptr);
+        vkDestroyInstance(m_VkInstance, nullptr);
+    }
+
+    VulkanInstance& VulkanInstance::operator=(VulkanInstance &&other)
+    {
+        m_VkInstance = other.m_VkInstance;
+        other.m_VkInstance = nullptr;
+
+        m_DebugMessenger = std::move(other.m_DebugMessenger);
+        m_ActiveExtensions = std::move(other.m_ActiveExtensions);
+
+        return *this;
     }
 
     bool VulkanInstance::TryRequestExtension(const char* extensionName)
     {
         if (IsExtensionSupported(extensionName))
         {
-            m_RequestedExtensions.push_back(extensionName);
+            m_ActiveExtensions.push_back(extensionName);
             return true;
         }
 
@@ -123,7 +191,7 @@ namespace Savanna::Rendering::Vulkan
         return true;
     }
 
-    void VulkanInstance::SetupValidationLayersIfRequested(
+    void VulkanInstance::SetupValidationLayersIfNeeded(
         VkInstanceCreateInfo* createInfo,
         VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo,
         void* userData)
@@ -153,7 +221,7 @@ namespace Savanna::Rendering::Vulkan
         }
     }
 
-    void VulkanInstance::AfterInstanceCreationValidationLayerSetup(
+    void VulkanInstance::OnPostInitialization(
         VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
         const VkAllocationCallbacks* pAllocationCallbacks)
     {

@@ -16,7 +16,9 @@
 
 namespace Savanna::Rendering::Vulkan
 {
-    VulkanGraphicsDevice::VulkanGraphicsDevice() {}
+    VulkanGraphicsDevice::VulkanGraphicsDevice()
+        : m_Device(VK_NULL_HANDLE)
+    {}
 
     VulkanGraphicsDevice::VulkanGraphicsDevice(
         const VulkanPhysicalDevice& physicalDevice,
@@ -36,7 +38,10 @@ namespace Savanna::Rendering::Vulkan
 
     VulkanGraphicsDevice::~VulkanGraphicsDevice()
     {
-        vkDestroyDevice(m_Device, nullptr);
+        if (m_Device != VK_NULL_HANDLE)
+        {
+            vkDestroyDevice(m_Device, nullptr);
+        }
     }
 
     VulkanGraphicsDevice& VulkanGraphicsDevice::operator=(VulkanGraphicsDevice&& other)

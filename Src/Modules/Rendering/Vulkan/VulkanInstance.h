@@ -50,36 +50,54 @@ namespace Savanna::Rendering::Vulkan
 
     private: // Static Functions
         inline static void InitializeStatics();
-        inline static bool IsExtensionSupported(const char* extensionName) { return s_SupportedExtensions.contains(extensionName); }
+        inline static bool IsExtensionSupported(const char* extensionName);
         static void PrintAvailableExtensions();
 
     private: // Members
-        VkInstance m_VulkanInstance;
-        std::vector<const char*> m_RequestedExtensions;
+        VkInstance m_VkInstance;
+        std::vector<const char*> m_ActiveExtensions;
         std::unique_ptr<VulkanDebugMessenger> m_DebugMessenger;
 
+    private: // Private Constructors
+        VulkanInstance(const VulkanInstance& other) = delete;
+
     public: // Constructors/Destructors
-        VulkanInstance() = default;
-        VulkanInstance(const FixedString32& applicationName, const FixedString32& engineName);
+        VulkanInstance(
+            const FixedString32& applicationName,
+            const FixedString32& engineName,
+            const char** requestedExtensions,
+            uint32_t requestedExtensionCount);
+
+        VulkanInstance(VkInstanceCreateInfo& createInfo);
+
+        VulkanInstance();
+        VulkanInstance(VulkanInstance&& other);
+
         ~VulkanInstance();
 
+    public: // Operators
+        VulkanInstance& operator=(const VulkanInstance& other) = delete;
+        VulkanInstance& operator=(VulkanInstance&& other);
+
+        operator VkInstance() const { return m_VkInstance; }
+
     public: // Functions
-        inline VkInstance GetVkInstance() const { return m_VulkanInstance; }
-        inline bool IsValid() const { return m_VulkanInstance != VK_NULL_HANDLE; }
+        inline VkInstance GetVkInstance() const { return m_VkInstance; }
+        inline bool IsValid() const { return m_VkInstance != VK_NULL_HANDLE; }
 
         bool TryRequestExtension(const char* extensionName);
-        inline const std::vector<const char*> GetRequestedExtensions() const { return m_RequestedExtensions; }
+        inline const std::vector<const char*> GetActiveExtensions() const { return m_ActiveExtensions; }
 
         bool CheckValidationLayerSupport();
         // bool RequestValidationLayerEnabled(const char* layerName);
 
     private: // Functions
-        void SetupValidationLayersIfRequested(
+        void SetupValidationLayersIfNeeded(
             VkInstanceCreateInfo* createInfo,
             VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo,
             void* userData);
 
-        void AfterInstanceCreationValidationLayerSetup(
+        void OnPostInitialization(
             VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
             const VkAllocationCallbacks* pAllocationCallbacks);
     };
