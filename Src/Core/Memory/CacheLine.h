@@ -18,14 +18,6 @@
 #include "Math/MathHelpers.h"
 #include "Utilities/SavannaCoding.h"
 
-/**
- * @brief Defines a common alignment for Savanna Classes and structs.
- *
- * See L1CacheLineLength for more info.
- *
- */
-#define SAVANNA_CACHELINE_ALIGN alignas(L1CacheLineLength())
-
 // Constants/Constexpr's
 #if __cplusplus && __cpp_lib_hardware_interference_size
     static constexpr size_t __se_hardware_constructive_interference_size

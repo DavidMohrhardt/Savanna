@@ -102,12 +102,12 @@ namespace Savanna \
 \
         union \
         { \
-            SAVANNA_CACHELINE_ALIGN __se_FixedString##__strlen__ m_CFixedString; \
-            SAVANNA_CACHELINE_ALIGN char m_Characters[ __strlen__ ]; \
-            SAVANNA_CACHELINE_ALIGN __se_byte m_Bytes[ __strlen__ ]; \
+            alignas(8) __se_FixedString##__strlen__ m_CFixedString; \
+            alignas(8) char m_Characters[ __strlen__ ]; \
+            alignas(8) __se_byte m_Bytes[ __strlen__ ]; \
         }; \
     private:\
-        SAVANNA_CACHELINE_ALIGN size_t m_StringLength; \
+        alignas(8) size_t m_StringLength; \
     }; \
 } // namespace Savanna
 
@@ -116,12 +116,12 @@ namespace Savanna \
 #endif
 
 #define DECLARE_SAVANNA_FIXED_STRING_WITH_LENGTH(__strlen__) \
-    typedef struct SAVANNA_CACHELINE_ALIGN \
+    typedef struct alignas(8) \
     { \
         union \
         { \
-            SAVANNA_CACHELINE_ALIGN char characters[ __strlen__ ]; \
-            SAVANNA_CACHELINE_ALIGN __se_byte bytes[ __strlen__ ]; \
+            alignas(8) char characters[ __strlen__ ]; \
+            alignas(8) __se_byte bytes[ __strlen__ ]; \
         }; \
     } __se_FixedString##__strlen__; \
     DECLARE_SAVANNA_CPP_FIXED_STRING_WITH_LENGTH(__strlen__);

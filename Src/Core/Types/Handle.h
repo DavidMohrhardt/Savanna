@@ -7,7 +7,7 @@
  * @brief
  *
  */
-typedef struct SAVANNA_CACHELINE_ALIGN
+typedef struct
 {
     union
     {
