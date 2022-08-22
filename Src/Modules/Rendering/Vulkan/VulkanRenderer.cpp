@@ -122,16 +122,32 @@ namespace Savanna::Rendering::Vulkan
         QueryGraphicsQueue(m_PhysicalDevice, m_GraphicsDevice, &m_GraphicsQueue);
     }
 
+    VulkanRenderer::VulkanRenderer(VulkanRenderer&& other)
+    {
+        *this = std::move(other);
+    }
+
     VulkanRenderer::~VulkanRenderer()
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::~VulkanRenderer()");
-        if (m_Instance.IsValid())
+        if (m_DisplaySurface != VK_NULL_HANDLE)
         {
-            if (m_DisplaySurface != VK_NULL_HANDLE)
-            {
-                vkDestroySurfaceKHR(m_Instance.GetVkInstance(), m_DisplaySurface, nullptr);
-            }
+            vkDestroySurfaceKHR(m_Instance.GetVkInstance(), m_DisplaySurface, nullptr);
         }
+    }
+
+    VulkanRenderer& VulkanRenderer::operator=(VulkanRenderer&& other)
+    {
+        if (this != &other)
+        {
+            m_Instance = std::move(other.m_Instance);
+            m_PhysicalDevice = std::move(other.m_PhysicalDevice);
+            m_GraphicsDevice = std::move(other.m_GraphicsDevice);
+            m_GraphicsQueue = std::move(other.m_GraphicsQueue);
+            m_DisplaySurface = other.m_DisplaySurface;
+            other.m_DisplaySurface = VK_NULL_HANDLE;
+        }
+        return *this;
     }
 
     bool VulkanRenderer::TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& surfaceCreateInfo)

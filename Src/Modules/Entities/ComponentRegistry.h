@@ -13,13 +13,17 @@
 #include <Utilities/SavannaCoding.h>
 
 #include "ComponentId.h"
-#include "IComponent.h"
 
 #include <typeindex>
 #include <unordered_map>
 
-namespace Savanna::ECS
+namespace Savanna::Entities
 {
+    class IComponent;
+
+    template<typename T>
+    class IComponentData;
+
     /**
      * @brief Provides a registry for all IComponentData types. Components are provided a unique identifier
      *       when they are registered.
@@ -31,7 +35,7 @@ namespace Savanna::ECS
         ~ComponentRegistry() = delete;
 
     private:
-        static std::unordered_map<std::type_index, ComponentId> s_ComponentTypeMap;
+        static std::unordered_map<std::type_index, se_ComponentId> s_ComponentTypeMap;
 
     public:
         static constexpr uint8 k_ComponentIdMask = 0xFF;
@@ -41,11 +45,24 @@ namespace Savanna::ECS
         // Might be overkill here, maybe just use the templated IComponentData
 
 
-    static const ComponentId GetComponentId(const IComponent* const componentPtr);
-    static const ComponentId RegisterComponentType(const IComponent* const componentPtr);
+        static const ComponentId GetComponentId(const IComponent* const componentPtr);
+        static const ComponentId RegisterComponentType(const IComponent* const componentPtr);
 
+        static const ComponentId GetComponentIdFromType(const std::type_index typeIndex);
+        static const ComponentId RegisterComponentTypeForType(const std::type_index typeIndex);
 
-    static const ComponentId GetComponentIdFromType(const std::type_index typeIndex);
-    static const ComponentId RegisterComponentTypeForType(const std::type_index typeIndex);
+        template<typename T, class TComponentData = IComponentData<T>>
+        static const ComponentId GetComponentIdFromType()
+        {
+            static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
+            return GetComponentIdFromType(typeid(TComponentData));
+        }
+
+        template<typename T, class TComponentData = IComponentData<T>>
+        static const ComponentId RegisterComponentTypeForType()
+        {
+            static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
+            return RegisterComponentTypeForType(typeid(TComponentData));
+        }
     };
-} // namespace Savanna::ECS
+} // namespace Savanna::Entities

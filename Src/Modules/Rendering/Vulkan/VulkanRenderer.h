@@ -60,12 +60,12 @@ namespace Savanna::Rendering::Vulkan
         ~VulkanRenderer();
 
         VulkanRenderer(const VulkanRenderer& other) = delete;
-        VulkanRenderer(VulkanRenderer&& other) = default;
+        VulkanRenderer(VulkanRenderer&& other);
 
     public:
         // operators
         VulkanRenderer& operator=(const VulkanRenderer& other) = delete;
-        VulkanRenderer& operator=(VulkanRenderer&& other) = default;
+        VulkanRenderer& operator=(VulkanRenderer&& other);
 
     public:
         bool TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& displaySurfaceInfo);

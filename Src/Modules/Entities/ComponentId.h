@@ -26,7 +26,7 @@ typedef union se_ComponentId
     __se_uint8 m_SetMask;
     __se_uint64 m_ComponentId;
 } se_ComponentId;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(ECS, se_ComponentId, ComponentId);
+DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Entities, se_ComponentId, ComponentId);
 
 static const se_ComponentId k_InvalidComponentId = { .m_ComponentId = 0 };
 

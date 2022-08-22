@@ -12,9 +12,9 @@
 #include <SavannaEngine.h>
 
 #include "Entities/Entity.h"
-#include "Entities/Component.h"
+#include "Entities/IComponentData.h"
 
-namespace Savanna
+namespace Savanna::Entities
 {
     enum SavannaSystemErrorFlags
     {
@@ -44,15 +44,18 @@ namespace Savanna
 
     class ISystem
     {
-        SystemBase(uint64 systemHandle, const SavannaSystemOperatingHints options)
-            : m_SystemHandle(systemHandle), m_Options(options) {}
+    public:
+        ISystem(uint64 systemHandle, const SavannaSystemOperatingHints options)
+            : m_SystemHandle(systemHandle)
+            , m_Options(options)
+        {}
 
         // Disallow copy constructors
-        SystemBase(SystemBase &other) = delete;
+        ISystem(ISystem &other) = delete;
 
-        virtual ~SystemBase() {}
+        virtual ~ISystem() {}
 
-        virtual SavannaSystemErrorCode RunSystem(ComponentBase* components) = 0;
+        virtual SavannaSystemErrorCode RunSystem(IComponent* components) = 0;
 
     protected:
         uint64 m_SystemHandle;

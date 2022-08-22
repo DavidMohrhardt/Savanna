@@ -7,7 +7,9 @@
  */
 #pragma once
 
-namespace Savanna::ECS
+#include "ComponentId.h"
+
+namespace Savanna::Entities
 {
     struct IComponent
     {
@@ -16,5 +18,5 @@ namespace Savanna::ECS
         virtual ~IComponent() = default;
         virtual const ComponentId& GetComponentId() const = 0;
     };
-} // namespace Savanna::ECS
+} // namespace Savanna::Entities
 

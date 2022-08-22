@@ -9,20 +9,16 @@
 
 #pragma once
 
-#include "Entity.h"
-#include "IComponent.h"
 #include "ComponentRegistry.h"
+#include "IComponent.h"
 
-namespace Savanna::ECS
+namespace Savanna::Entities
 {
     template<typename T>
     struct IComponentData : public IComponent
     {
     public:
         inline static const ComponentId& s_ComponentId = ComponentRegistry::RegisterComponentTypeForType(typeid(IComponentData<T>));
-
-    private:
-        T m_Data;
 
     public:
         IComponentData() = default;

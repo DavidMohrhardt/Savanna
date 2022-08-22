@@ -8,18 +8,20 @@
  */
 
 #include "ComponentRegistry.h"
-#include "ComponentId.h"
-#include "IComponentData.h"
+#include "IComponent.h"
 
 #include <cassert>
 #include <mutex>
 
-namespace Savanna::ECS
+namespace Savanna::Entities
 {
     // Mask the most significant 8 bits of the component ID to represent additional sets of components.
-    // 8! * (54) = 2177280 possible unique component IDs.
+    // (2^8) * (64 - 8) = 14336 possible unique component IDs.
+    // Additionally, making the mask 16 bits will result in (2^16) * (64 - 16) = 3145728 possible unique component IDs.
     std::mutex g_ComponentRegistryMutex;
     ComponentId g_ComponentIdCounter = { 0x1ull };
+
+    std::unordered_map<std::type_index, se_ComponentId> ComponentRegistry::s_ComponentTypeMap;
 
     const ComponentId ComponentRegistry::GetComponentId(const IComponent* const componentPtr)
     {
@@ -67,5 +69,5 @@ namespace Savanna::ECS
         return componentId;
     }
 
-} // namespace Savanna::ECS
+} // namespace Savanna::Entities
 
