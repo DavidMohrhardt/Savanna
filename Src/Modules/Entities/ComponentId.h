@@ -13,22 +13,24 @@
 #include <Utilities/SavannaCoding.h>
 
 #undef SAVANNA_INVALID_COMPONENT_ID
-#define SAVANNA_INVALID_COMPONENT_ID 0x0
+#define SAVANNA_INVALID_COMPONENT_ID k_InvalidComponentId;
 
-const uint8 k_ComponentIdMask = 0xFF;
+const __se_uint8 k_ComponentIdMask = 0xFF;
 
 /**
  * @brief Defines a unique identifier for a component type. Components of like types are assigned the same
  * identifier.
  */
-typedef union se_ComponentId alignas(8)
+typedef union se_ComponentId
 {
-    uint8 m_SetMask : 0;
-    uint64 m_ComponentId : 0;
+    __se_uint8 m_SetMask;
+    __se_uint64 m_ComponentId;
 } se_ComponentId;
 DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(ECS, se_ComponentId, ComponentId);
 
-bool se_IsValidComponentId(const ComponentId& const componentId)
+static const se_ComponentId k_InvalidComponentId = { .m_ComponentId = 0 };
+
+inline bool se_IsValidComponentId(const se_ComponentId& componentId)
 {
-    return (componentId.m_ComponentId & ~k_ComponentIdMask) != SAVANNA_INVALID_COMPONENT_ID;
+    return (componentId.m_ComponentId & ~k_ComponentIdMask) != k_InvalidComponentId.m_ComponentId;
 }

@@ -10,10 +10,13 @@
 #pragma once
 
 #include <SavannaEngine.h>
-#include <SavannaCoding.h>
+#include <Utilities/SavannaCoding.h>
 
-#undef SAVANNA_INVALID_COMPONENT_ID
-#define SAVANNA_INVALID_COMPONENT_ID 0x0
+#include "ComponentId.h"
+#include "IComponent.h"
+
+#include <typeindex>
+#include <unordered_map>
 
 namespace Savanna::ECS
 {
@@ -28,7 +31,7 @@ namespace Savanna::ECS
         ~ComponentRegistry() = delete;
 
     private:
-        static std::unordered_map<std::type_index, ComponentId> s_ComponentIds;
+        static std::unordered_map<std::type_index, ComponentId> s_ComponentTypeMap;
 
     public:
         static constexpr uint8 k_ComponentIdMask = 0xFF;
@@ -36,10 +39,13 @@ namespace Savanna::ECS
 
     public:
         // Might be overkill here, maybe just use the templated IComponentData
-        static const ComponentId& GetComponentId(const IComponent* const componentPtr);
-        static ComponentId RegisterComponentType(const IComponent* const componentPtr);
 
-        static const ComponentId& GetComponentIdFromType(const std::type_index const typeIndex);
-        static ComponentId RegisterComponentTypeForType(const std::type_index const typeIndex);
+
+    static const ComponentId GetComponentId(const IComponent* const componentPtr);
+    static const ComponentId RegisterComponentType(const IComponent* const componentPtr);
+
+
+    static const ComponentId GetComponentIdFromType(const std::type_index typeIndex);
+    static const ComponentId RegisterComponentTypeForType(const std::type_index typeIndex);
     };
 } // namespace Savanna::ECS

@@ -13,20 +13,8 @@ namespace Savanna::ECS
     {
     public:
         IComponent() {}
-
-        virtual const ComponentId& GetComponentId() const
-        {
-            return ComponentManager::GetComponentType(GetTypeIndex());
-        }
-
         virtual ~IComponent() = default;
         virtual const ComponentId& GetComponentId() const = 0;
-
-    protected:
-        constexpr std::type_index GetTypeIndex() const
-        {
-            return typeid(this);
-        }
     };
 } // namespace Savanna::ECS
 

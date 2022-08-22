@@ -11,14 +11,15 @@
 
 #include "Entity.h"
 #include "IComponent.h"
+#include "ComponentRegistry.h"
 
 namespace Savanna::ECS
 {
-    template<struct T>
+    template<typename T>
     struct IComponentData : public IComponent
     {
     public:
-        inline static const ComponentId& s_ComponentId = ComponentManager::RegisterComponentTypeForType(typeid(T));
+        inline static const ComponentId& s_ComponentId = ComponentRegistry::RegisterComponentTypeForType(typeid(IComponentData<T>));
 
     private:
         T m_Data;
