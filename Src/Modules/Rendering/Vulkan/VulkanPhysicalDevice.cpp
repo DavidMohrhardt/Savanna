@@ -85,43 +85,6 @@ namespace Savanna::Rendering::Vulkan
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::VulkanPhysicalDevice ctor(const VulkanPhysicalDeviceDescriptor&)");
         m_Descriptor = descriptor;
-        uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(GetPhysicalDevice(), &queueFamilyCount, nullptr);
-
-        std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(GetPhysicalDevice(), &queueFamilyCount, queueFamilyProperties.data());
-        uint32 i = 0;
-        for (const auto& properties : queueFamilyProperties)
-        {
-            VkQueueFlags flags = properties.queueFlags;
-
-            if (flags & VK_QUEUE_GRAPHICS_BIT)
-            {
-                m_QueueFamilyIndices.m_GraphicsQueueFamilyIndex = static_cast<uint32>(i);
-            }
-
-            if (flags & VK_QUEUE_COMPUTE_BIT)
-            {
-                m_QueueFamilyIndices.m_ComputeQueueFamilyIndex = static_cast<uint32>(i);
-            }
-
-            if (flags & VK_QUEUE_TRANSFER_BIT)
-            {
-                m_QueueFamilyIndices.m_TransferQueueFamilyIndex = static_cast<uint32>(i);
-            }
-
-            if (flags & VK_QUEUE_SPARSE_BINDING_BIT)
-            {
-                m_QueueFamilyIndices.m_SparseBindingQueueFamilyIndex = static_cast<uint32>(i);
-            }
-
-            if (m_QueueFamilyIndices.HasAllQueueFamilyIndices())
-            {
-                break;
-            }
-
-            ++i;
-        }
     }
 
     const VulkanPhysicalDeviceDescriptor& VulkanPhysicalDevice::GetDescriptor() const
@@ -162,5 +125,58 @@ namespace Savanna::Rendering::Vulkan
     const VulkanQueueFamilyIndices& VulkanPhysicalDevice::GetQueueFamilyIndices() const
     {
         return m_QueueFamilyIndices;
+    }
+
+    void VulkanPhysicalDevice::ParseQueueFamilyIndices(VkSurfaceKHR* surfacePtr)
+    {
+        if (m_QueueFamilyIndices.HasAllQueueFamilyIndices()) return;
+
+        uint32_t queueFamilyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(GetPhysicalDevice(), &queueFamilyCount, nullptr);
+
+        std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(GetPhysicalDevice(), &queueFamilyCount, queueFamilyProperties.data());
+        uint32 i = 0;
+        for (const auto& properties : queueFamilyProperties)
+        {
+            VkQueueFlags flags = properties.queueFlags;
+
+            if (!m_QueueFamilyIndices.HasGraphicsQueueFamilyIndex() && flags & VK_QUEUE_GRAPHICS_BIT)
+            {
+                m_QueueFamilyIndices.m_GraphicsQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (!m_QueueFamilyIndices.HasComputeQueueFamilyIndex() && flags & VK_QUEUE_COMPUTE_BIT)
+            {
+                m_QueueFamilyIndices.m_ComputeQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (!m_QueueFamilyIndices.HasTransferQueueFamilyIndex() && flags & VK_QUEUE_TRANSFER_BIT)
+            {
+                m_QueueFamilyIndices.m_TransferQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (!m_QueueFamilyIndices.HasSparseBindingQueueFamilyIndex() && flags & VK_QUEUE_SPARSE_BINDING_BIT)
+            {
+                m_QueueFamilyIndices.m_SparseBindingQueueFamilyIndex = static_cast<uint32>(i);
+            }
+
+            if (surfacePtr != nullptr && !m_QueueFamilyIndices.HasPresentQueueFamilyIndex())
+            {
+                VkBool32 presentSupport = false;
+                vkGetPhysicalDeviceSurfaceSupportKHR(GetPhysicalDevice(), i, *surfacePtr, &presentSupport);
+                if (presentSupport)
+                {
+                    m_QueueFamilyIndices.m_PresentQueueFamilyIndex = static_cast<uint32>(i);
+                }
+            }
+
+            if (m_QueueFamilyIndices.HasAllQueueFamilyIndices())
+            {
+                break;
+            }
+
+            ++i;
+        }
     }
 } // namespace Savanna::Rendering::Vulkan

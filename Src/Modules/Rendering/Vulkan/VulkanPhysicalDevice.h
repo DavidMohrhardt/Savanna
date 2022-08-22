@@ -26,21 +26,19 @@ namespace Savanna::Rendering::Vulkan
     struct VulkanQueueFamilyIndices
     {
         std::optional<uint32> m_GraphicsQueueFamilyIndex;
+        std::optional<uint32> m_PresentQueueFamilyIndex;
         std::optional<uint32> m_ComputeQueueFamilyIndex;
         std::optional<uint32> m_TransferQueueFamilyIndex;
         std::optional<uint32> m_SparseBindingQueueFamilyIndex;
 
-        VulkanQueueFamilyIndices()
-        {
-            m_GraphicsQueueFamilyIndex = std::nullopt;
-            m_ComputeQueueFamilyIndex = std::nullopt;
-            m_TransferQueueFamilyIndex = std::nullopt;
-            m_SparseBindingQueueFamilyIndex = std::nullopt;
-        }
-
         bool HasGraphicsQueueFamilyIndex() const
         {
             return m_GraphicsQueueFamilyIndex.has_value();
+        }
+
+        bool HasPresentQueueFamilyIndex() const
+        {
+            return m_PresentQueueFamilyIndex.has_value();
         }
 
         bool HasComputeQueueFamilyIndex() const
@@ -61,6 +59,7 @@ namespace Savanna::Rendering::Vulkan
         bool HasAllQueueFamilyIndices() const
         {
             return HasGraphicsQueueFamilyIndex()
+                && HasPresentQueueFamilyIndex()
                 && HasComputeQueueFamilyIndex()
                 && HasTransferQueueFamilyIndex()
                 && HasSparseBindingQueueFamilyIndex();
@@ -69,6 +68,7 @@ namespace Savanna::Rendering::Vulkan
         bool HasAnyQueueFamilyIndices() const
         {
             return HasGraphicsQueueFamilyIndex()
+                || HasPresentQueueFamilyIndex()
                 || HasComputeQueueFamilyIndex()
                 || HasTransferQueueFamilyIndex()
                 || HasSparseBindingQueueFamilyIndex();
@@ -108,8 +108,6 @@ namespace Savanna::Rendering::Vulkan
         VulkanPhysicalDevice& operator=(VulkanPhysicalDevice&& other) = default;
 
     public:
-        // VulkanGraphicsDevice CreateGraphicsDevice();
-
         const VulkanPhysicalDeviceDescriptor& GetDescriptor() const;
         const VkPhysicalDevice& GetPhysicalDevice() const;
         const VkPhysicalDeviceProperties& GetProperties() const;
@@ -117,7 +115,8 @@ namespace Savanna::Rendering::Vulkan
         const VkPhysicalDeviceMemoryProperties& GetMemoryProperties() const;
         const VkPhysicalDeviceLimits& GetLimits() const;
         const VkPhysicalDeviceSparseProperties& GetSparseProperties() const;
-
         const VulkanQueueFamilyIndices& GetQueueFamilyIndices() const;
+
+        void ParseQueueFamilyIndices(VkSurfaceKHR* surfacePtr);
     };
 } // namespace Savanna::Rendering::Vulkan

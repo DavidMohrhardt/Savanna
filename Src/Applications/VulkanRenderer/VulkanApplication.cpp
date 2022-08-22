@@ -37,23 +37,19 @@ namespace SavannaVulkan
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-        VulkanInstance instance("Savanna Vulkan", "No Engine", glfwExtensions, glfwExtensionCount);
-        if (!instance.IsValid())
-        {
-            throw std::runtime_error("Failed to create Vulkan instance!");
-        }
-
-        m_Renderer = VulkanRenderer(std::move(instance));
-
-        VulkanSurfaceCreateInfoUnion surfaceCreateInfo{};
+        VulkanRendererCreateInfo rendererCreateInfo{};
+        rendererCreateInfo.m_ApplicationName = "Savanna Vulkan";
+        rendererCreateInfo.m_EngineName = "Savanna";
+        rendererCreateInfo.m_ActiveExtensions = glfwExtensions;
+        rendererCreateInfo.m_ActiveExtensionCount = glfwExtensionCount;
 
 #if SAVANNA_WINDOWS
-        Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &surfaceCreateInfo);
+        Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &rendererCreateInfo.m_SurfaceCreateInfo);
 #else
         #error "Unsupported platform!"
 #endif
 
-        // m_Renderer.CreateRenderSurface(surfaceCreateInfo);
+        m_Renderer = std::move(VulkanRenderer(&rendererCreateInfo));
     }
 
     VulkanApplication::~VulkanApplication()

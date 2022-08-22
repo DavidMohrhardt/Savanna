@@ -15,6 +15,8 @@
 #include <VulkanPhysicalDevice.h>
 #include <VulkanGraphicsDevice.h>
 
+#include "VulkanRendererCreateInfo.h"
+
 namespace Savanna::Rendering::Vulkan
 {
     class VulkanRenderer
@@ -43,7 +45,7 @@ namespace Savanna::Rendering::Vulkan
         // VkQueue m_GraphicsQueue;
         // VkQueue m_PresentQueue;
 
-        VkSurfaceKHR m_Surface;
+        VkSurfaceKHR m_DisplaySurface;
 
         // VkSwapchainKHR m_Swapchain;
         // VkExtent2D m_Extent;
@@ -52,20 +54,21 @@ namespace Savanna::Rendering::Vulkan
         // VkImage m_Image;
 
     public:
-        VulkanRenderer(const FixedString32& applicationName, const FixedString32& engineName);
-        VulkanRenderer(VulkanInstance&& instance);
-        VulkanRenderer(VulkanInstance&& instance, VulkanPhysicalDevice&& physicalDevice, VulkanGraphicsDevice&& graphicsDevice);
-
         VulkanRenderer() = default;
-        ~VulkanRenderer() = default;
+        VulkanRenderer(const VulkanRendererCreateInfo* const createInfoPtr);
+
+        ~VulkanRenderer();
+
+        VulkanRenderer(const VulkanRenderer& other) = delete;
+        VulkanRenderer(VulkanRenderer&& other) = default;
 
     public:
         // operators
-        VulkanRenderer(VulkanRenderer&&) = default;
-        VulkanRenderer& operator=(VulkanRenderer&&) = default;
+        VulkanRenderer& operator=(const VulkanRenderer& other) = delete;
+        VulkanRenderer& operator=(VulkanRenderer&& other) = default;
 
     public:
-        void CreateSurface(const VkDisplaySurfaceCreateInfoKHR& displaySurfaceCreateInfo);
+        bool TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& displaySurfaceInfo);
 
         VulkanInstance& GetVulkanInstance() { return m_Instance; }
         VulkanPhysicalDevice& GetVulkanPhysicalDevice() { return m_PhysicalDevice; }

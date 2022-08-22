@@ -77,7 +77,8 @@
         "ratio": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "hash_map": "cpp"
+        "hash_map": "cpp",
+        "typeindex": "cpp"
     },
     "doxdocgen.generic.authorName": "David Mohrhardt",
     "doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

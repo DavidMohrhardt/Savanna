@@ -17,47 +17,6 @@
 
 namespace Savanna::Rendering::Vulkan
 {
-    VulkanRenderer::VulkanRenderer(const FixedString32& applicationName, const FixedString32& engineName)
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor()");
-        m_Instance = VulkanInstance(applicationName, engineName, nullptr, 0);
-
-        if (!m_Instance.IsValid())
-        {
-            throw RuntimeErrorException("Failed to create Vulkan instance!");
-        }
-
-        SelectPhysicalDevice(m_Instance, &m_PhysicalDevice);
-        CreateLogicalDevice(m_PhysicalDevice, &m_GraphicsDevice);
-        QueryGraphicsQueue(m_PhysicalDevice, m_GraphicsDevice, &m_GraphicsQueue);
-    }
-
-    VulkanRenderer::VulkanRenderer(VulkanInstance&& instance)
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor(instance)");
-        if (!instance.IsValid())
-        {
-            throw RuntimeErrorException("Failed to create Vulkan instance!");
-        }
-
-        m_Instance = std::move(instance);
-        SelectPhysicalDevice(m_Instance, &m_PhysicalDevice);
-        CreateLogicalDevice(m_PhysicalDevice, &m_GraphicsDevice);
-        QueryGraphicsQueue(m_PhysicalDevice, m_GraphicsDevice, &m_GraphicsQueue);
-    }
-
-    VulkanRenderer::VulkanRenderer(VulkanInstance &&instance, VulkanPhysicalDevice &&physicalDevice, VulkanGraphicsDevice &&graphicsDevice)
-        : m_Instance(std::move(instance))
-        , m_PhysicalDevice(std::move(physicalDevice))
-        , m_GraphicsDevice(std::move(graphicsDevice))
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor(VulkanInstance&, VulkanPhysicalDevice&, VulkanGraphicsDevice&)");
-        if (!m_Instance.IsValid())
-        {
-            throw RuntimeErrorException("Failed to create Vulkan instance!");
-        }
-    }
-
     void VulkanRenderer::SelectPhysicalDevice(
         const VulkanInstance& instance,
         VulkanPhysicalDevice* outPhysicalDevice)
@@ -127,5 +86,74 @@ namespace Savanna::Rendering::Vulkan
         }
 
         *outGraphicsQueue = device.GetVkQueue(indices.m_GraphicsQueueFamilyIndex.value());
+    }
+
+    VulkanRenderer::VulkanRenderer(const VulkanRendererCreateInfo* const createInfoPtr)
+        : m_Instance()
+        , m_PhysicalDevice()
+        , m_GraphicsDevice()
+        , m_GraphicsQueue()
+        , m_DisplaySurface(VK_NULL_HANDLE)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor()");
+        assert(createInfoPtr != nullptr && "createInfoPtr is nullptr!");
+        m_Instance = VulkanInstance(
+            createInfoPtr->m_ApplicationName,
+            createInfoPtr->m_EngineName,
+            createInfoPtr->m_ActiveExtensions,
+            createInfoPtr->m_ActiveExtensionCount);
+
+        if (!m_Instance.IsValid())
+        {
+            throw RuntimeErrorException("Failed to create Vulkan instance!");
+        }
+
+        SelectPhysicalDevice(m_Instance, &m_PhysicalDevice);
+        if (TryCreateDisplaySurface(createInfoPtr->m_SurfaceCreateInfo))
+        {
+            m_PhysicalDevice.ParseQueueFamilyIndices(&m_DisplaySurface);
+        }
+        else
+        {
+            m_PhysicalDevice.ParseQueueFamilyIndices(nullptr);
+        }
+
+        CreateLogicalDevice(m_PhysicalDevice, &m_GraphicsDevice);
+        QueryGraphicsQueue(m_PhysicalDevice, m_GraphicsDevice, &m_GraphicsQueue);
+    }
+
+    VulkanRenderer::~VulkanRenderer()
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::~VulkanRenderer()");
+        if (m_Instance.IsValid())
+        {
+            if (m_DisplaySurface != VK_NULL_HANDLE)
+            {
+                vkDestroySurfaceKHR(m_Instance.GetVkInstance(), m_DisplaySurface, nullptr);
+            }
+        }
+    }
+
+    bool VulkanRenderer::TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& surfaceCreateInfo)
+    {
+        if (!m_Instance.IsValid())
+        {
+            return false;
+        }
+
+        if (m_DisplaySurface == VK_NULL_HANDLE)
+        {
+            VkResult result;
+#if SAVANNA_WINDOWS
+            VK_CALL(
+                result,
+                vkCreateWin32SurfaceKHR(m_Instance.GetVkInstance(), &surfaceCreateInfo.win32SurfaceCreateInfo, nullptr, &m_DisplaySurface),
+                "Failed to create Vulkan surface!");
+#endif
+
+            return result == VK_SUCCESS;
+        }
+
+        return false;
     }
 } // namespace Savanna::Rendering::Vulkan

@@ -20,4 +20,5 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Code Modules
+add_subdirectory(Entities)
 add_subdirectory(Rendering)
