@@ -13,7 +13,7 @@
 
 namespace Savanna
 {
-    typedef uint32_t EntityID;
+    typedef uint64 EntityID;
     typedef struct Entity
     {
         EntityID Id;

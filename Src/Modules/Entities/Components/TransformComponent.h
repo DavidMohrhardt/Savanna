@@ -6,7 +6,7 @@
 
 namespace Savanna::ECS
 {
-    struct TransformComponent : public Component
+    struct TransformComponent : public IComponent
     {
         glm::Vector3 m_Position;
         glm::Vector4 m_Rotation;

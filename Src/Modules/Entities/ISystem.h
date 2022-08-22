@@ -42,7 +42,7 @@ namespace Savanna
         kEnsure32Bits = 0xFFFFFFFF
     };
 
-    class SystemBase
+    class ISystem
     {
         SystemBase(uint64 systemHandle, const SavannaSystemOperatingHints options)
             : m_SystemHandle(systemHandle), m_Options(options) {}
