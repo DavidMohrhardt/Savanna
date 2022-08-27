@@ -51,7 +51,8 @@ set(target_static_libs
 
 set(core_include_dirs
 	# Savanna Core
-	${CMAKE_SOURCE_DIR}/Core)
+	${CMAKE_SOURCE_DIR}/Core
+    ${CMAKE_SOURCE_DIR}/Modules/Entities)
 
 set(module_include_dirs
     # Savanna Modules

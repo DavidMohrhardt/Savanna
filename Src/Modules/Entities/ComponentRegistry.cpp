@@ -15,13 +15,28 @@
 
 namespace Savanna::Entities
 {
-    // Mask the most significant 8 bits of the component ID to represent additional sets of components.
-    // (2^8) * (64 - 8) = 14336 possible unique component IDs.
-    // Additionally, making the mask 16 bits will result in (2^16) * (64 - 16) = 3145728 possible unique component IDs.
     std::mutex g_ComponentRegistryMutex;
     ComponentId g_ComponentIdCounter = { 0x1ull };
 
-    std::unordered_map<std::type_index, se_ComponentId> ComponentRegistry::s_ComponentTypeMap;
+    std::unordered_map<std::type_index, SEComponentId> ComponentRegistry::s_ComponentTypeMap = {};
+
+    const uint8 ComponentRegistry::GetNumberOfComponentIdSets()
+    {
+        std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
+        return g_ComponentIdCounter.m_SetMask;
+    }
+
+    const uint32 ComponentRegistry::GetTotalNumberOfRegisteredComponents()
+    {
+        std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
+        return s_ComponentTypeMap.size();
+    }
+
+    const ComponentId ComponentRegistry::GetNextAvailableComponentId()
+    {
+        std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
+        return g_ComponentIdCounter;
+    }
 
     const ComponentId ComponentRegistry::GetComponentId(const IComponent* const componentPtr)
     {
@@ -30,35 +45,36 @@ namespace Savanna::Entities
 
     const ComponentId ComponentRegistry::RegisterComponentType(const IComponent* const componentPtr)
     {
-        return RegisterComponentTypeForType(typeid(componentPtr));
+        return RegisterComponentWithTypeIndex(typeid(componentPtr));
     }
-
 
     const ComponentId ComponentRegistry::GetComponentIdFromType(const std::type_index typeIndex)
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
-            return SAVANNA_INVALID_COMPONENT_ID;
+            return SE_INVALID_ID_HANDLE;
         }
 
         return s_ComponentTypeMap[typeIndex];
     }
 
-    const ComponentId ComponentRegistry::RegisterComponentTypeForType(const std::type_index typeIndex)
+    const ComponentId ComponentRegistry::RegisterComponentWithTypeIndex(const std::type_index typeIndex)
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
-        ComponentId componentId = SAVANNA_INVALID_COMPONENT_ID;
+        ComponentId componentId = SE_INVALID_ID_HANDLE;
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
-            assert(!se_IsValidComponentId(g_ComponentIdCounter) && "Component ID overflow");
+            assert(se_IsValidComponentId(g_ComponentIdCounter) && "Component ID overflow");
             componentId = g_ComponentIdCounter;
             s_ComponentTypeMap.emplace(typeIndex, componentId);
-            g_ComponentIdCounter.m_ComponentId++;
+            // Shift the component ID and keep the set mask the same.
+            g_ComponentIdCounter.m_ComponentId = (g_ComponentIdCounter.m_ComponentId & k_ComponentIdMaskSetMask) | (g_ComponentIdCounter.m_ComponentId & k_ComponentIdMask) << 1;
 
-            if (!se_IsValidComponentId(g_ComponentIdCounter))
+            if (se_GetBaseId(g_ComponentIdCounter) == SE_INVALID_ID)
             {
-                // m_MaxSetMask = ++g_ComponentIdCounter.m_SetMask;
+                // Id can now be 0 only 0x0ull is reserved for an invalid mask. Mask out the counter bits but keep the set mask.
+                g_ComponentIdCounter.m_SetMask++;
             }
         }
         else

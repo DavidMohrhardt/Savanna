@@ -6,7 +6,7 @@
 
 namespace Savanna::Entities
 {
-    struct TransformComponent : public IComponent
+    struct TransformComponent : public IComponentData<TransformComponent>
     {
         glm::Vector3 m_Position;
         glm::Vector4 m_Rotation;

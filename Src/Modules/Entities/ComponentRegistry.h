@@ -35,21 +35,23 @@ namespace Savanna::Entities
         ~ComponentRegistry() = delete;
 
     private:
-        static std::unordered_map<std::type_index, se_ComponentId> s_ComponentTypeMap;
+        static std::unordered_map<std::type_index, SEComponentId> s_ComponentTypeMap;
 
     public:
         static constexpr uint8 k_ComponentIdMask = 0xFF;
         static constexpr uint64 k_ComponentIdMask64 = 0x00FFFFFFFFFFFFFF;
 
     public:
+        static const uint8 GetNumberOfComponentIdSets();
+        static const uint32 GetTotalNumberOfRegisteredComponents();
+        static const ComponentId GetNextAvailableComponentId();
+
         // Might be overkill here, maybe just use the templated IComponentData
-
-
         static const ComponentId GetComponentId(const IComponent* const componentPtr);
         static const ComponentId RegisterComponentType(const IComponent* const componentPtr);
 
         static const ComponentId GetComponentIdFromType(const std::type_index typeIndex);
-        static const ComponentId RegisterComponentTypeForType(const std::type_index typeIndex);
+        static const ComponentId RegisterComponentWithTypeIndex(const std::type_index typeIndex);
 
         template<typename T, class TComponentData = IComponentData<T>>
         static const ComponentId GetComponentIdFromType()
@@ -59,10 +61,10 @@ namespace Savanna::Entities
         }
 
         template<typename T, class TComponentData = IComponentData<T>>
-        static const ComponentId RegisterComponentTypeForType()
+        static const ComponentId RegisterComponentWithTypeIndex()
         {
             static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
-            return RegisterComponentTypeForType(typeid(TComponentData));
+            return RegisterComponentWithTypeIndex(typeid(TComponentData));
         }
     };
 } // namespace Savanna::Entities

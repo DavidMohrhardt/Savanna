@@ -17,9 +17,9 @@
 /**
  * @brief Registers a script defined component type to the component registry.
  */
-SAVANNA_EXPORT(const ComponentId) se_RegisterExternalComponent(IComponent* component);
+SAVANNA_EXPORT(const ComponentId) SERegisterExternalComponent(IComponent* component);
 
 /**
  * @brief Registers a script defined component type to the component registry.
  */
-SAVANNA_EXPORT(const ComponentId) se_RegisterExternalComponent(const ComponentId& componentId);
+SAVANNA_EXPORT(const ComponentId) SERegisterExternalComponent(const ComponentId& componentId);

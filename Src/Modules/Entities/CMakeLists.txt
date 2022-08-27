@@ -45,6 +45,9 @@ target_include_directories(
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_SOURCE_DIR}/Core)
 
+target_link_libraries(${app_name} ${target_static_libs}) #${target_shared_libs})
+add_dependencies(${LIBRARY_NAME} ${target_static_libs}) #${target_shared_libs})
+
 # Install Binaries in Build Folder
 install(TARGETS ${LIBRARY_NAME}
     LIBRARY DESTINATION lib

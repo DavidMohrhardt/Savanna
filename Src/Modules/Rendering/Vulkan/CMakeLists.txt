@@ -31,7 +31,6 @@ SOURCE_GROUP_BY_FOLDER()
 
 # Set the target static libraries
 set(target_static_libs
-    Core
     ${VULKAN_LIB_LIST}
 	${HELPER_LIB_LIST})
 
@@ -50,7 +49,8 @@ message("src ${CMAKE_SOURCE_DIR}/Rendering")
 #     ${CMAKE_SOURCE_DIR}/Rendering)
 # target_link_libraries(${LIBRARY_NAME}_static ${target_static_libs})
 
-add_library(${LIBRARY_NAME} SHARED ${src})
+# add_library(${LIBRARY_NAME} SHARED ${src})
+add_library(${LIBRARY_NAME} STATIC ${src})
 
 target_include_directories(
     ${LIBRARY_NAME}
@@ -58,7 +58,8 @@ target_include_directories(
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_SOURCE_DIR}/Rendering)
 
-target_link_libraries(${LIBRARY_NAME} ${target_static_libs})
+target_link_libraries(${LIBRARY_NAME} Core ${target_static_libs})
+add_dependencies(${LIBRARY_NAME} Core)
 
 set(LIBRARIES ${LIBRARY_NAME})#_static ${LIBRARY_NAME}_shared)
 

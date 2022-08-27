@@ -29,6 +29,7 @@ namespace Savanna
             m_Head->m_Next = nullptr;
             m_Head->m_Size = static_cast<int32>(size);
         }
+        m_AllocatedBytes = sizeof(MemoryChunkHeader);
     }
 
     FreeListAllocator::FreeListAllocator(FreeListAllocator&& other)

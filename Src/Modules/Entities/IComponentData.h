@@ -17,16 +17,34 @@ namespace Savanna::Entities
     template<typename T>
     struct IComponentData : public IComponent
     {
-    public:
-        inline static const ComponentId& s_ComponentId = ComponentRegistry::RegisterComponentTypeForType(typeid(IComponentData<T>));
-
+        // static_assert(!(std::is_base_of<IComponent>::value), "Template parameter cannot be another IComponent type.");
     public:
         IComponentData() = default;
         virtual ~IComponentData() = default;
 
-        SAVANNA_NO_DISCARD virtual const ComponentId& GetComponentId() const override final
-        {
-            return s_ComponentId;
-        }
+        /**
+         * @brief Get the Component Id object.
+         *
+         * @return SAVANNA_NO_DISCARD const&
+         */
+        SAVANNA_NO_DISCARD virtual const ComponentId& GetComponentId() override final;
+        SAVANNA_NO_DISCARD inline static const ComponentId& GetId();
+
+        bool operator==(const IComponentData& other) const;
+        bool operator!=(const IComponentData& other) const;
     };
+
+    template<typename T>
+    inline const ComponentId& IComponentData<T>::GetComponentId()
+    {
+        return GetId();
+    }
+
+    template<typename T>
+    inline const ComponentId& IComponentData<T>::GetId()
+    {
+        static ComponentId id =
+            ComponentRegistry::RegisterComponentWithTypeIndex(typeid(IComponentData<T>));
+        return id;
+    }
 }
