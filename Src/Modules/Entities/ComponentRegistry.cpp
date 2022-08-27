@@ -12,18 +12,19 @@
 
 #include <cassert>
 #include <mutex>
+#include <Utilities/Console.h>
 
 namespace Savanna::Entities
 {
     std::mutex g_ComponentRegistryMutex;
-    ComponentId g_ComponentIdCounter = { 0x1ull };
+    ComponentId g_ComponentIdCounter = { .m_ComponentId = 1 };
 
     std::unordered_map<std::type_index, SEComponentId> ComponentRegistry::s_ComponentTypeMap = {};
 
     const uint8 ComponentRegistry::GetNumberOfComponentIdSets()
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
-        return g_ComponentIdCounter.m_SetMask;
+        return g_ComponentIdCounter.m_Set;
     }
 
     const uint32 ComponentRegistry::GetTotalNumberOfRegisteredComponents()
@@ -63,19 +64,21 @@ namespace Savanna::Entities
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
         ComponentId componentId = SE_INVALID_ID_HANDLE;
+        auto ptr = &g_ComponentIdCounter;
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
             assert(se_IsValidComponentId(g_ComponentIdCounter) && "Component ID overflow");
+
             componentId = g_ComponentIdCounter;
             s_ComponentTypeMap.emplace(typeIndex, componentId);
-            // Shift the component ID and keep the set mask the same.
-            g_ComponentIdCounter.m_ComponentId = (g_ComponentIdCounter.m_ComponentId & k_ComponentIdMaskSetMask) | (g_ComponentIdCounter.m_ComponentId & k_ComponentIdMask) << 1;
 
-            if (se_GetBaseId(g_ComponentIdCounter) == SE_INVALID_ID)
+            g_ComponentIdCounter.m_ComponentKey = g_ComponentIdCounter.m_ComponentKey << 1;
+            if (g_ComponentIdCounter.m_ComponentKey < componentId.m_ComponentKey)
             {
-                // Id can now be 0 only 0x0ull is reserved for an invalid mask. Mask out the counter bits but keep the set mask.
-                g_ComponentIdCounter.m_SetMask++;
+                g_ComponentIdCounter.m_Set++;
+                g_ComponentIdCounter.m_ComponentKey = 0x1;
             }
+
         }
         else
         {
