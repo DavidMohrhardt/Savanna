@@ -25,15 +25,8 @@ namespace Savanna::Rendering::Vulkan
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::SelectPhysicalDevice()");
         assert(outPhysicalDevice != nullptr && "outPhysicalDevice is nullptr!");
 
-        uint32 physicalDeviceCount = VulkanPhysicalDevice::GetPhysicalDeviceCount(instance.GetVkInstance());
-
-        std::vector<VulkanPhysicalDeviceDescriptor> deviceDescriptors =
-            std::vector<VulkanPhysicalDeviceDescriptor>(physicalDeviceCount);
-
-        VulkanPhysicalDevice::GetPhysicalDeviceDescriptors(
-            instance.GetVkInstance(), physicalDeviceCount, deviceDescriptors.data());
-
-        uint32 numberOfPhysicalDevices = VulkanPhysicalDevice::GetPhysicalDeviceCount(instance.GetVkInstance());
+        uint32 numberOfPhysicalDevices =
+            VulkanPhysicalDevice::GetPhysicalDeviceCount(instance.GetVkInstance());
         if (numberOfPhysicalDevices == 0)
         {
             throw RuntimeErrorException("No physical devices found!");

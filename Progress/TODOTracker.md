@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 102
+Total TODOs: 119
 ## Src
 
 ### DX12Application.cpp
@@ -26,7 +26,7 @@ Total TODOs: 102
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L51 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L51)
+- [L50 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L50)
 
 ### VulkanApplication.h
 
@@ -74,6 +74,15 @@ Total TODOs: 102
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Profiling/ProfilerManager.h#L3)
 
+### ProfilerMarker.cpp
+
+- [L14 :// TODO @DavidMohrhardt Remove this and implement stacks for profiler markers.](../Src/Core/Profiling/ProfilerMarker.cpp#L14)
+- [L70 :// TODO @DavidMohrhardt Remove this and implement profiler marker stacks instead.](../Src/Core/Profiling/ProfilerMarker.cpp#L70)
+
+### ProfilerMarker.h
+
+- [L29 :// TODO @DavidMohrhardt: Add a way for the profiler to output the logs tabbed](../Src/Core/Profiling/ProfilerMarker.h#L29)
+
 ### FloatingPointUnions.h
 
 - [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L14)
@@ -103,10 +112,21 @@ Total TODOs: 102
 ### ComponentRegistry.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentRegistry.cpp#L3)
-
-### ComponentRegistry.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentRegistry.h#L3)
+- [L19 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L19)
+- [L32 :// TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L32)
+- [L33 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L33)
+- [L37 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L37)
+- [L46 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L46)
+- [L47 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L47)
+- [L51 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L51)
+- [L57 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L57)
+- [L58 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L58)
+- [L62 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L62)
+- [L68 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L68)
+- [L69 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L69)
+- [L73 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L73)
+- [L110 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L110)
+- [L112 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L112)
 
 ### Entity.h
 
@@ -175,7 +195,7 @@ Total TODOs: 102
 
 ### VulkanRenderer.cpp
 
-- [L49 :// TODO @DavidMohrhardt make this function the constructor of the VulkanGraphicsDevice class.](../Src/Modules/Rendering/Vulkan/VulkanRenderer.cpp#L49)
+- [L42 :// TODO @DavidMohrhardt make this function the constructor of the VulkanGraphicsDevice class.](../Src/Modules/Rendering/Vulkan/VulkanRenderer.cpp#L42)
 
 ### VulkanDeviceChooser.cpp
 

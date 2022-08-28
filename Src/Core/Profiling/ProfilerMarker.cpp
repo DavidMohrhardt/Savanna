@@ -12,6 +12,9 @@ namespace Savanna
     // Forward declarations
     class SavannaProfilingManager;
 
+    // TODO @DavidMohrhardt Remove this and implement stacks for profiler markers.
+    FixedString128 ProfilerMarker::s_Tabs = "";
+
     // Referenced from https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size
     // auto is utilized to make the template argument less annoying.
     inline auto Now() SAVANNA_NO_EXCEPT { return std::chrono::high_resolution_clock::now(); }
@@ -34,6 +37,7 @@ namespace Savanna
         if (!m_Sampling)
         {
             m_Sampling = true;
+            s_Tabs.Append('\t');
 
             m_StartTime = { Now() };
         }
@@ -60,7 +64,12 @@ namespace Savanna
             m_EndTime = Now();
             m_Sampling = false;
             // ProfilerManager::EndProfilerMarker(this);
-            SAVANNA_LOG("[Profiler %s] %lfms Elapsed\n", m_ProfilerMarkerName.c_str(), Poll());
+            SAVANNA_LOG("[Profiler]%s%s %lfms Elapsed\n",
+                s_Tabs.c_str(),
+                m_ProfilerMarkerName.c_str(),
+                Poll());
+            // TODO @DavidMohrhardt Remove this and implement profiler marker stacks instead.
+            s_Tabs.SetCharacter('\0', s_Tabs.GetStringLength() - 1);
         }
     }
 }

@@ -26,12 +26,11 @@
 
 namespace SavannaVulkan
 {
-    using namespace Savanna;
-    using namespace Savanna::Rendering::Vulkan;
-
     VulkanApplication::VulkanApplication()
         : m_Window(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr))
     {
+        using namespace Savanna;
+        using namespace Savanna::Rendering::Vulkan;
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor");
 
         uint32_t glfwExtensionCount = 0;

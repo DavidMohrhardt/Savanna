@@ -45,6 +45,28 @@ namespace Savanna \
             : FixedString##__strlen__(str.c_str(), 0, str.length()) \
         {} \
 \
+        void SetCharacter(char character, size_t position) \
+        { \
+            if (position > m_StringLength || position < 0) \
+            { \
+                return; \
+            } \
+            m_Characters[position] = character; \
+            if (character == '\0') \
+            { \
+                m_StringLength = position; \
+            } \
+        } \
+\
+        void Append(char character) \
+        { \
+            if (m_StringLength < __strlen__) \
+            { \
+                m_Characters[m_StringLength] = character; \
+                m_StringLength++; \
+            } \
+        } \
+\
         void Append(std::string const str, size_t start = 0)\
         {\
             CopyFrom(str.c_str(), start, str.length());\
@@ -60,6 +82,12 @@ namespace Savanna \
             CopyFrom(cstring, start, size);\
         }\
 \
+        FixedString##__strlen__ GetSubstring(size_t start, size_t size)\
+        {\
+            FixedString##__strlen__ substring(m_Characters, start, size);\
+            return substring;\
+        }\
+\
         const char* c_str() const { return m_Characters; } \
 \
         FixedString##__strlen__& operator=(const FixedString##__strlen__& other) \
@@ -70,6 +98,8 @@ namespace Savanna \
             memcpy(m_Bytes, other.m_Bytes, __strlen__); \
             return *this; \
         } \
+\
+        const size_t GetStringLength() const { return m_StringLength; } \
 \
         template<typename TPrimitive> FixedString##__strlen__(const char* format, TPrimitive primitive) \
         { \

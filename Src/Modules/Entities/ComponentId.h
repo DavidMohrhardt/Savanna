@@ -13,7 +13,7 @@
 #include <Utilities/SavannaCoding.h>
 
 #undef SE_INVALID_ID
-#define SE_INVALID_ID_HANDLE k_InvalidComponentId
+#define SE_INVALID_HANDLE k_InvalidComponentId
 
 #undef SE_INVALID_ID
 #define SE_INVALID_ID k_InvalidComponentId.m_ComponentId

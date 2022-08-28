@@ -1,8 +1,8 @@
-#include "VolatilityLock.h"
+#include "VolatileLock.h"
 
 namespace Savanna
 {
-    // SAVANNA_EXPORT(void*) Savanna_VolatileLock_CreateVolatilityLock(int32 poolHandle)
+    // SAVANNA_EXPORT(void*) Savanna_VolatileLock_CreateVolatileLock(int32 poolHandle)
     // {
     //     return MemoryManager.Allocate(poolHandle)
     // }
@@ -11,7 +11,7 @@ namespace Savanna
     // {
     //     if (lockHandle != nullptr)
     //     {
-    //         *static_cast<VolatilityLock*>(lockHandle)->Acquire();
+    //         *static_cast<VolatileLock*>(lockHandle)->Acquire();
     //     }
     // }
 
@@ -19,11 +19,11 @@ namespace Savanna
     // {
     //     if (lockHandle != nullptr)
     //     {
-    //         *static_cast<VolatilityLock*>(lockHandle)->Release();
+    //         *static_cast<VolatileLock*>(lockHandle)->Release();
     //     }
     // }
 
-    // SAVANNA_EXPORT(void) Savanna_VolatileLock_DestroyVolatilityLock(void*)
+    // SAVANNA_EXPORT(void) Savanna_VolatileLock_DestroyVolatileLock(void*)
     // {
     //     return MemoryManager.Free(pool)
     // }

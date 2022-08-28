@@ -61,7 +61,6 @@ namespace Savanna::Rendering::Vulkan
         VulkanPhysicalDevice* physicalDevicesPtr)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanPhysicalDevice::EnumeratePhysicalDevices");
-
         if (physicalDevicesPtr == nullptr)
         {
             outCount = GetPhysicalDeviceCount(instance);
