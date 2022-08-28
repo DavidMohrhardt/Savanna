@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 96
+Total TODOs: 102
 ## Src
 
 ### DX12Application.cpp
@@ -26,6 +26,7 @@ Total TODOs: 96
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
+- [L51 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L51)
 
 ### VulkanApplication.h
 
@@ -86,25 +87,38 @@ Total TODOs: 96
 
 - [L6 :#if ENABLE_TODOS // Unimplemented](../Src/Core/Utilities/DllLoader/LazyDllLoader.h#L6)
 
+### Assertions.h
+
+- [L6 ://TODO](../Src/Experimental/Modules/Threading/Assertions.h#L6)
+- [L10 :// TODO](../Src/Experimental/Modules/Threading/Assertions.h#L10)
+
+### FiberAsmMacros.h
+
+- [L93 :// TODO @davidmo](../Src/Experimental/Modules/Threading/Fibers/FiberAsmMacros.h#L93)
+
 ### JacobianMatrix.cpp
 
 - [L79 :// TODO](../Src/Modules/Animation/IK/JacobianMatrix.cpp#L79)
 
-### Component.h
+### ComponentRegistry.cpp
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/Component.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentRegistry.cpp#L3)
 
-### ComponentManager.h
+### ComponentRegistry.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentManager.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentRegistry.h#L3)
 
 ### Entity.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/Entity.h#L3)
 
-### System.h
+### IComponentData.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/System.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/IComponentData.h#L3)
+
+### ISystem.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ISystem.h#L3)
 
 ### PhysicsComponent.cpp
 
@@ -159,19 +173,14 @@ Total TODOs: 96
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L3)
 
+### VulkanRenderer.cpp
+
+- [L49 :// TODO @DavidMohrhardt make this function the constructor of the VulkanGraphicsDevice class.](../Src/Modules/Rendering/Vulkan/VulkanRenderer.cpp#L49)
+
 ### VulkanDeviceChooser.cpp
 
-- [L35 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L35)
-- [L99 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L99)
-
-### Assertions.h
-
-- [L6 ://TODO](../Src/Modules/Threading/Assertions.h#L6)
-- [L10 :// TODO](../Src/Modules/Threading/Assertions.h#L10)
-
-### FiberAsmMacros.h
-
-- [L93 :// TODO @davidmo](../Src/Modules/Threading/Fibers/FiberAsmMacros.h#L93)
+- [L82 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L82)
+- [L146 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L146)
 
 ### SavannaTestRunner.h
 
@@ -210,6 +219,15 @@ Total TODOs: 96
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTest.cpp#L3)
 - [L215 :// TODO : This test fails because of the bug in the implementation. Likely how I handle re-establishing the root is wrong.](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTest.cpp#L215)
+
+### ModuleTestUtils.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Modules/ModuleTestUtils.h#L3)
+- [L16 :// TODO @DavidMohrhardt Replace with ifdefs when debugging is enabled](../Src/Tests/Modules/ModuleTestUtils.h#L16)
+
+### EntitiesTestUtils.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Modules/Entities/EntitiesTestUtils.h#L3)
 
 ## BuildScripts
 
