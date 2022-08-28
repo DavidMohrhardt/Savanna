@@ -10,7 +10,8 @@
 
 #include <vulkan/vulkan.h>
 
-#include "VulkanPhysicalDevice.h"
+#include <VulkanPhysicalDevice.h>
+#include <VulkanRendererCreateInfo.h>
 
 namespace Savanna::Rendering::Vulkan
 {
@@ -32,12 +33,7 @@ namespace Savanna::Rendering::Vulkan
     bool TryChooseVulkanDevice(
         const VulkanPhysicalDevice* devices,
         const uint32& count,
-        VulkanPhysicalDevice& selectedDevice,
-        const VulkanDeviceScoringFuncs& scoringFunctionPtrs = k_DefaultDeviceChooserScoringFuncs);
-
-    bool TryChooseVulkanDeviceDescriptor(
-        const VulkanPhysicalDeviceDescriptor* deviceDescriptors,
-        const uint32& count,
-        VulkanPhysicalDeviceDescriptor& selectedDeviceDesc,
+        const VulkanRendererCreateInfo* pCreateInfo,
+        VulkanPhysicalDevice* pOutSelectedDevice,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs = k_DefaultDeviceChooserScoringFuncs);
 } // namespace Savanna::Vulkan

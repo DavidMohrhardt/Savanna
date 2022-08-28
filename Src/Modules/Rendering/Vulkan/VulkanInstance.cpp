@@ -64,8 +64,8 @@ namespace Savanna::Rendering::Vulkan
     VulkanInstance::VulkanInstance(
         const FixedString32& applicationName,
         const FixedString32& engineName,
-        const char** requestedExtensions,
-        uint32_t requestedExtensionCount)
+        const char** requiredExtensions,
+        uint32_t requiredExtensionCount)
         : VulkanInstance() // InitializeStatics();
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanInstance::VulkanInstance ctor()");
@@ -85,19 +85,19 @@ namespace Savanna::Rendering::Vulkan
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo {};
         SetupValidationLayersIfNeeded(&createInfo, &debugCreateInfo, nullptr);
 
-        if (requestedExtensionCount > 0)
+        if (requiredExtensionCount > 0)
         {
-            m_ActiveExtensions = std::vector<const char*>(requestedExtensionCount);
-            for (int i = 0; i < requestedExtensionCount; i++)
+            m_ActiveExtensions = std::vector<const char*>(requiredExtensionCount);
+            for (int i = 0; i < requiredExtensionCount; i++)
             {
-                if (!IsExtensionSupported(requestedExtensions[i]))
+                if (!IsExtensionSupported(requiredExtensions[i]))
                 {
-                    SAVANNA_LOG("Extension %s is not supported\n", requestedExtensions[i]);
+                    SAVANNA_LOG("Extension %s is not supported\n", requiredExtensions[i]);
                     return;
                 }
                 else
                 {
-                    m_ActiveExtensions[i] = requestedExtensions[i];
+                    m_ActiveExtensions[i] = requiredExtensions[i];
                 }
             }
 

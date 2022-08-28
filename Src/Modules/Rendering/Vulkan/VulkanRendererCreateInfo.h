@@ -22,9 +22,13 @@ namespace Savanna::Rendering::Vulkan
         FixedString32 m_ApplicationName;
         FixedString32 m_EngineName;
 
-        const char** m_ActiveExtensions;
-        uint32 m_ActiveExtensionCount;
+        const char** m_InstanceExtensions;
+        const char** m_DeviceExtensions;
+
+        uint32 m_InstanceExtensionsCount;
+        uint32 m_DeviceExtensionsCount;
 
         VulkanSurfaceCreateInfoUnion m_SurfaceCreateInfo;
+        VkSwapchainCreateInfoKHR m_SwapchainCreateInfo;
     };
 } // namespace Savanna::Rendering::Vulkan

@@ -7,47 +7,62 @@
  */
 #pragma once
 
+// Savanna Core Includes
 #include <Utilities/SavannaCoding.h>
 
+// Vulkan Includes
 #include <vulkan/vulkan.h>
 
+// Savanna Vulkan includes
 #include <VulkanInstance.h>
 #include <VulkanPhysicalDevice.h>
 #include <VulkanGraphicsDevice.h>
-
-#include "VulkanRendererCreateInfo.h"
+#include <VulkanQueueFamilyIndices.h>
+#include <VulkanRendererCreateInfo.h>
 
 namespace Savanna::Rendering::Vulkan
 {
     class VulkanRenderer
     {
     private:
-        static void SelectPhysicalDevice(
-            const VulkanInstance& instance,
-            VulkanPhysicalDevice* outPhysicalDevice);
-
-        static void CreateLogicalDevice(
-            const VulkanPhysicalDevice& physicalDevice,
-            VulkanGraphicsDevice* outGfxDevice);
-
-        static void QueryGraphicsQueue(
+        static void QueryVulkanQueue(
             const VulkanPhysicalDevice& physicalDevice,
             const VulkanGraphicsDevice& device,
-            VkQueue* outGraphicsQueue);
+            const uint32 queueIndex,
+            VkQueue* outQueue);
+
+        static void SelectPhysicalDevice(
+            const VulkanInstance& instance,
+            const VulkanRendererCreateInfo* pCreateInfo,
+            VulkanPhysicalDevice* outPhysicalDevice);
+
+        static void SetupVkQueueCreateInfos(
+            const VulkanPhysicalDevice& physicalDevice,
+            const VulkanGraphicsDevice& device);
+
+    private:
+        void CreateLogicalDevice(
+            const VulkanPhysicalDevice& physicalDevice,
+            const VulkanRendererCreateInfo* pCreateInfo,
+            VulkanGraphicsDevice* outGfxDevice);
+
+        void GetAvailableQueues();
 
     private:
         VulkanInstance m_Instance;
         VulkanPhysicalDevice m_PhysicalDevice;
         VulkanGraphicsDevice m_GraphicsDevice;
 
+        VulkanQueueFamilyIndices m_QueueFamilyIndices;
         VkQueue m_GraphicsQueue;
-
-        // VkQueue m_GraphicsQueue;
-        // VkQueue m_PresentQueue;
+        VkQueue m_PresentQueue;
+        VkQueue m_ComputeQueue;
+        VkQueue m_TransferQueue;
+        // VkQueue m_SparseBindingQueue;
 
         VkSurfaceKHR m_DisplaySurface;
+        VkSwapchainKHR m_Swapchain;
 
-        // VkSwapchainKHR m_Swapchain;
         // VkExtent2D m_Extent;
         // VkFormat m_Format;
         // VkImageView m_ImageView;
@@ -55,7 +70,7 @@ namespace Savanna::Rendering::Vulkan
 
     public:
         VulkanRenderer() = default;
-        VulkanRenderer(const VulkanRendererCreateInfo* const createInfoPtr);
+        VulkanRenderer(const VulkanRendererCreateInfo* const pCreateInfo);
 
         ~VulkanRenderer();
 
@@ -70,10 +85,14 @@ namespace Savanna::Rendering::Vulkan
     public:
         bool TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& displaySurfaceInfo);
 
-        VulkanInstance& GetVulkanInstance() { return m_Instance; }
-        VulkanPhysicalDevice& GetVulkanPhysicalDevice() { return m_PhysicalDevice; }
-        VulkanGraphicsDevice& GetVulkanGraphicsDevice() { return m_GraphicsDevice; }
+        const VulkanInstance& GetVulkanInstance() { return m_Instance; }
+        const VulkanPhysicalDevice& GetVulkanPhysicalDevice() { return m_PhysicalDevice; }
+        const VulkanGraphicsDevice& GetVulkanGraphicsDevice() { return m_GraphicsDevice; }
+
+        const VulkanQueueFamilyIndices& GetVulkanQueueFamilyIndices() const { return m_QueueFamilyIndices; }
 
         VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
+
+        VkSurfaceKHR GetDisplaySurface() const { return m_DisplaySurface; }
     };
 } // namespace Savanna::Rendering::Vulkan

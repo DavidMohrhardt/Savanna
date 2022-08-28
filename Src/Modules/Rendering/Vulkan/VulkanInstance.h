@@ -65,8 +65,8 @@ namespace Savanna::Rendering::Vulkan
         VulkanInstance(
             const FixedString32& applicationName,
             const FixedString32& engineName,
-            const char** requestedExtensions,
-            uint32_t requestedExtensionCount);
+            const char** requiredExtensions,
+            uint32_t requiredExtensionCount);
 
         VulkanInstance(VkInstanceCreateInfo& createInfo);
 

@@ -10,18 +10,65 @@
 
 namespace Savanna::Rendering::Vulkan
 {
+    bool CheckExtensionSupport(const VkPhysicalDevice device, const char** requiredExtensions, const uint32 requiredExtensionCount)
+    {
+        if (requiredExtensionCount == 0)
+        {
+            return true;
+        }
+
+        if (requiredExtensions == nullptr)
+        {
+            return false;
+        }
+
+        uint32 extensionCount = 0;
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+        if (extensionCount == 0)
+        {
+            return false;
+        }
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+        bool allExtensionsFound = true;
+        for (uint32 i = 0; i < requiredExtensionCount; ++i)
+        {
+            bool found = false;
+            for (uint32 j = 0; j < extensionCount; ++j)
+            {
+                if (strcmp(requiredExtensions[i], availableExtensions[j].extensionName) == 0)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                SAVANNA_WARNING_LOG("Required Device Extension %s not found.", requiredExtensions[i]);
+                allExtensionsFound = false;
+            }
+        }
+
+        return allExtensionsFound;
+    }
+
     bool ScoreDeviceType(const VkPhysicalDeviceType& deviceType, uint32& outScore)
     {
         switch (deviceType)
         {
         case VK_PHYSICAL_DEVICE_TYPE_CPU:
             outScore = 10;
+            break;
         case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
             outScore = 100;
+            break;
         case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
             outScore = 500;
+            break;
         case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
             outScore = 1000;
+            break;
         default:
             return false;
         }
@@ -250,18 +297,18 @@ namespace Savanna::Rendering::Vulkan
     bool TryChooseVulkanDevice(
         const VulkanPhysicalDevice* devices,
         const uint32& count,
-        VulkanPhysicalDevice& selectedDevice,
+        const VulkanRendererCreateInfo* pCreateInfo,
+        VulkanPhysicalDevice* pOutSelectedDevice,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
     {
-        if (devices == nullptr || count == 0)
+        if (pOutSelectedDevice == nullptr)
         {
             return false;
         }
 
-        if (count == 1)
+        if (devices == nullptr || count == 0)
         {
-            selectedDevice = devices[0];
-            return true;
+            return false;
         }
 
         uint32 bestScore = 0;
@@ -270,6 +317,11 @@ namespace Savanna::Rendering::Vulkan
         for (int i = 0; i < count; ++i)
         {
             uint32 score = 0;
+            if (!CheckExtensionSupport(devices[i].GetPhysicalDevice(), pCreateInfo->m_DeviceExtensions, pCreateInfo->m_DeviceExtensionsCount))
+            {
+                continue;
+            }
+
             if (!ScoreDeviceDescriptor(devices[i].GetDescriptor(), scoringFunctionPtrs, score))
             {
                 continue;
@@ -279,55 +331,10 @@ namespace Savanna::Rendering::Vulkan
             {
                 bestScore = score;
                 foundDevice = true;
-                selectedDevice = devices[i];
+                *pOutSelectedDevice = devices[i];
             }
         }
 
         return foundDevice;
-    }
-
-    bool TryChooseVulkanDeviceDescriptor(
-        const VulkanPhysicalDeviceDescriptor* deviceDescriptors,
-        const uint32& count,
-        VulkanPhysicalDeviceDescriptor& selectedDeviceDesc,
-        const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
-    {
-        if (deviceDescriptors == nullptr || count == 0)
-        {
-            return false;
-        }
-
-        if (count == 1)
-        {
-            selectedDeviceDesc = deviceDescriptors[0];
-            return true;
-        }
-
-        uint32 bestScore = 0;
-        const VulkanPhysicalDeviceDescriptor* bestDeviceDescriptor = nullptr;
-
-        for (int i = 0; i < count; ++i)
-        {
-            uint32 score = 0;
-            if (!ScoreDeviceDescriptor(deviceDescriptors[i], scoringFunctionPtrs, score))
-            {
-                continue;
-            }
-            else if (score > bestScore)
-            {
-                bestScore = score;
-                bestDeviceDescriptor = &deviceDescriptors[i];
-            }
-        }
-
-        if (bestDeviceDescriptor == nullptr)
-        {
-            return false;
-        }
-        else
-        {
-            selectedDeviceDesc = *bestDeviceDescriptor;
-            return true;
-        }
     }
 } // namespace Savanna::Vulkan

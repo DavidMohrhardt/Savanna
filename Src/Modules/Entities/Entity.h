@@ -13,9 +13,9 @@
 
 namespace Savanna
 {
-    typedef uint64 EntityID;
+    typedef uint64 EntityHandle;
     typedef struct Entity
     {
-        EntityID Id;
+        EntityHandle Id;
     } Entity;
 } // namespace Savanna

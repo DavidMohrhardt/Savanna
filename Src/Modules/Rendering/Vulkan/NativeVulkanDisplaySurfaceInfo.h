@@ -25,8 +25,8 @@ namespace Savanna::Rendering::Vulkan
         Mir,
         Android,
         Win32Khr,
-        Macos,
-        Ios,
+        MacOS,
+        iOS,
     };
 
     typedef struct VulkanSurfaceCreateInfoUnion
@@ -35,7 +35,9 @@ namespace Savanna::Rendering::Vulkan
         {
 #if SAVANNA_WINDOWS
             VkWin32SurfaceCreateInfoKHR win32SurfaceCreateInfo;
-#elif SAVANNA_LINUX || SAVANNA_DARWIN
+#elif SAVANNA_DARWIN
+            VkMacOSSurfaceCreateInfoMVK macOSSurfaceCreateInfo;
+#elif SAVANNA_LINUX
             VkXlibSurfaceCreateInfoKHR xlibSurfaceCreateInfo;
             VkXcbSurfaceCreateInfoKHR xcbSurfaceCreateInfo;
             VkWaylandSurfaceCreateInfoKHR waylandSurfaceCreateInfo;

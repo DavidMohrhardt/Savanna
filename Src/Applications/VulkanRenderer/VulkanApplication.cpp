@@ -40,14 +40,19 @@ namespace SavannaVulkan
         VulkanRendererCreateInfo rendererCreateInfo{};
         rendererCreateInfo.m_ApplicationName = "Savanna Vulkan";
         rendererCreateInfo.m_EngineName = "Savanna";
-        rendererCreateInfo.m_ActiveExtensions = glfwExtensions;
-        rendererCreateInfo.m_ActiveExtensionCount = glfwExtensionCount;
+        rendererCreateInfo.m_InstanceExtensions = glfwExtensions;
+        rendererCreateInfo.m_InstanceExtensionsCount = glfwExtensionCount;
 
 #if SAVANNA_WINDOWS
         Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &rendererCreateInfo.m_SurfaceCreateInfo);
 #else
         #error "Unsupported platform!"
 #endif
+
+        // TODO @DavidMohrhardt Allow for additional extensions to be added via queries
+        auto swapChainExtensionName = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+        rendererCreateInfo.m_DeviceExtensions = &swapChainExtensionName;
+        rendererCreateInfo.m_DeviceExtensionsCount = 1;
 
         m_Renderer = std::move(VulkanRenderer(&rendererCreateInfo));
     }

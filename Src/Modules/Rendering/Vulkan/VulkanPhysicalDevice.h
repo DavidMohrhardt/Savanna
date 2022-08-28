@@ -1,17 +1,13 @@
 #pragma once
 
-// Standard Includes
-#include <optional>
-
 // Vulkan Includes
 #include <vulkan/vulkan.h>
 
 // Savanna Includes
-#include <Memory/CacheLine.h>
 #include <Types/Primitive/PrimitiveTypes.h>
 
 // Module includes
-#include "VulkanQueueFamilyDesc.h"
+#include "VulkanQueueFamilyIndices.h"
 
 namespace Savanna::Rendering::Vulkan
 {
@@ -21,58 +17,6 @@ namespace Savanna::Rendering::Vulkan
         VkPhysicalDeviceProperties properties;
         VkPhysicalDeviceFeatures features;
         VkPhysicalDeviceMemoryProperties memoryProperties;
-    };
-
-    struct VulkanQueueFamilyIndices
-    {
-        std::optional<uint32> m_GraphicsQueueFamilyIndex;
-        std::optional<uint32> m_PresentQueueFamilyIndex;
-        std::optional<uint32> m_ComputeQueueFamilyIndex;
-        std::optional<uint32> m_TransferQueueFamilyIndex;
-        std::optional<uint32> m_SparseBindingQueueFamilyIndex;
-
-        bool HasGraphicsQueueFamilyIndex() const
-        {
-            return m_GraphicsQueueFamilyIndex.has_value();
-        }
-
-        bool HasPresentQueueFamilyIndex() const
-        {
-            return m_PresentQueueFamilyIndex.has_value();
-        }
-
-        bool HasComputeQueueFamilyIndex() const
-        {
-            return m_ComputeQueueFamilyIndex.has_value();
-        }
-
-        bool HasTransferQueueFamilyIndex() const
-        {
-            return m_TransferQueueFamilyIndex.has_value();
-        }
-
-        bool HasSparseBindingQueueFamilyIndex() const
-        {
-            return m_SparseBindingQueueFamilyIndex.has_value();
-        }
-
-        bool HasAllQueueFamilyIndices() const
-        {
-            return HasGraphicsQueueFamilyIndex()
-                && HasPresentQueueFamilyIndex()
-                && HasComputeQueueFamilyIndex()
-                && HasTransferQueueFamilyIndex()
-                && HasSparseBindingQueueFamilyIndex();
-        }
-
-        bool HasAnyQueueFamilyIndices() const
-        {
-            return HasGraphicsQueueFamilyIndex()
-                || HasPresentQueueFamilyIndex()
-                || HasComputeQueueFamilyIndex()
-                || HasTransferQueueFamilyIndex()
-                || HasSparseBindingQueueFamilyIndex();
-        }
     };
 
     class VulkanPhysicalDevice
@@ -88,7 +32,7 @@ namespace Savanna::Rendering::Vulkan
         static void EnumeratePhysicalDevices(
             const VkInstance& instance,
             uint32& outCount,
-            VulkanPhysicalDevice* physicalDevicesPtr);
+            VulkanPhysicalDevice* physicalDevicesPtr = nullptr);
 
     private:
         VulkanPhysicalDeviceDescriptor m_Descriptor;
@@ -115,7 +59,6 @@ namespace Savanna::Rendering::Vulkan
         const VkPhysicalDeviceMemoryProperties& GetMemoryProperties() const;
         const VkPhysicalDeviceLimits& GetLimits() const;
         const VkPhysicalDeviceSparseProperties& GetSparseProperties() const;
-        const VulkanQueueFamilyIndices& GetQueueFamilyIndices() const;
 
         void ParseQueueFamilyIndices(VkSurfaceKHR* surfacePtr);
     };
