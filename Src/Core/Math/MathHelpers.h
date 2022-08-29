@@ -39,4 +39,16 @@ SAVANNA_NO_DISCARD inline constexpr auto ModByPowerOfTwo(const auto x, const aut
     return (x & (pow2Mod - 1));
 }
 
-
+/**
+ * @brief Get the Required Length To Fill Union object
+ *
+ * @param largestTypeInUnion
+ * @param otherTypeInUnion
+ * @return constexpr size_t
+ */
+consteval size_t GetRequiredLengthToFillUnion(size_t largestTypeInUnion, size_t otherTypeInUnion)
+{
+    return largestTypeInUnion >= otherTypeInUnion
+        ? (largestTypeInUnion / otherTypeInUnion)
+        : (otherTypeInUnion / largestTypeInUnion);
+}

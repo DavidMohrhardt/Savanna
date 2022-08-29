@@ -10,7 +10,10 @@
 
 namespace Savanna::Rendering::Vulkan
 {
-    bool CheckExtensionSupport(const VkPhysicalDevice device, const char** requiredExtensions, const uint32 requiredExtensionCount)
+    bool CheckExtensionSupport(
+        const VkPhysicalDevice device,
+        const char** requiredExtensions,
+        const uint32 requiredExtensionCount)
     {
         if (requiredExtensionCount == 0)
         {

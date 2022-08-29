@@ -27,65 +27,61 @@ namespace Savanna::Entities::ComponentRegistry
 {
     using namespace Savanna::Entities;
 
-    constexpr uint8 k_ComponentIdMask = 0xFF;
-    constexpr uint64 k_ComponentIdMask64 = 0x00FFFFFFFFFFFFFF;
-
     // TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.
 #if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-    VolatileLock g_ComponentIdAccessLock;
-#else // Original
-    std::mutex g_ComponentRegistryMutex;
+    VolatileLock g_ComponentKeyAccessLock;
 #endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
 
+    std::mutex g_ComponentRegistryMutex;
 
-    ComponentId g_ComponentIdCounter = { .m_ComponentId = 1 };
+    ComponentKey g_ComponentKeyCounter = { .m_FullComponentKey = 0x1 };
 
-    std::unordered_map<std::type_index, SEComponentId> s_ComponentTypeMap = {};
+    std::unordered_map<std::type_index, SEComponentKey> s_ComponentTypeMap = {};
 
-    const uint8 GetNumberOfComponentIdSets()
+    const se_ComponentKeyMask_T GetNumberOfComponentKeySets()
     {
         // TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.
 #if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        VolatileLockGuard lock(g_ComponentIdAccessLock);
+        VolatileLockGuard lock(g_ComponentKeyAccessLock);
 #else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
 #endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        return g_ComponentIdCounter.m_Set;
+        return g_ComponentKeyCounter.m_Set;
     }
 
     const uint32 GetTotalNumberOfRegisteredComponents()
     {
         // TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.
 #if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        VolatileLockGuard lock(g_ComponentIdAccessLock);
+        VolatileLockGuard lock(g_ComponentKeyAccessLock);
 #else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
 #endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
         return s_ComponentTypeMap.size();
     }
 
-    const ComponentId GetNextAvailableComponentId()
+    const ComponentKey GetNextAvailableComponentKey()
     {
         // TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.
 #if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        VolatileLockGuard lock(g_ComponentIdAccessLock);
+        VolatileLockGuard lock(g_ComponentKeyAccessLock);
 #else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
 #endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        return g_ComponentIdCounter;
+        return g_ComponentKeyCounter;
     }
 
-    const ComponentId GetComponentId(const IComponent* const componentPtr)
+    const ComponentKey GetComponentKey(const IComponent* const componentPtr)
     {
-        return GetComponentIdFromType(typeid(componentPtr));
+        return GetComponentKeyFromType(typeid(componentPtr));
     }
 
-    const ComponentId RegisterComponentType(const IComponent* const componentPtr)
+    const ComponentKey RegisterComponentType(const IComponent* const componentPtr)
     {
         return RegisterComponentWithTypeIndex(typeid(componentPtr));
     }
 
-    const ComponentId GetComponentIdFromType(const std::type_index typeIndex)
+    const ComponentKey GetComponentKeyFromType(const std::type_index typeIndex)
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
@@ -96,29 +92,30 @@ namespace Savanna::Entities::ComponentRegistry
         return s_ComponentTypeMap[typeIndex];
     }
 
-    const ComponentId RegisterComponentWithTypeIndex(const std::type_index typeIndex)
+    const ComponentKey RegisterComponentWithTypeIndex(const std::type_index typeIndex)
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
-        ComponentId componentId = SE_INVALID_HANDLE;
-        auto ptr = &g_ComponentIdCounter;
+        ComponentKey componentId = SE_INVALID_HANDLE;
+        auto ptr = &g_ComponentKeyCounter;
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
-            assert(se_IsValidComponentId(g_ComponentIdCounter) && "Component ID overflow");
+            assert(SEIsValidComponentKey(g_ComponentKeyCounter) && "Component ID overflow");
 
-            componentId = g_ComponentIdCounter;
+            componentId = g_ComponentKeyCounter;
             s_ComponentTypeMap.emplace(typeIndex, componentId);
 
-#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-            VolatileLockGuard lock(g_ComponentIdAccessLock);
-#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
+            se_ComponentKey_t maskedKey = g_ComponentKeyCounter.m_Key;
+            maskedKey <<= 1;
 
-            g_ComponentIdCounter.m_ComponentKey = g_ComponentIdCounter.m_ComponentKey << 1;
-            if (g_ComponentIdCounter.m_ComponentKey < componentId.m_ComponentKey)
+            if (maskedKey > SAVANNA_COMPONENT_KEY_MAX_VALUE)
             {
-                g_ComponentIdCounter.m_Set++;
-                g_ComponentIdCounter.m_ComponentKey = 0x1;
+                g_ComponentKeyCounter.m_Key = 0x1;
+                g_ComponentKeyCounter.m_Set++;
             }
-
+            else
+            {
+                g_ComponentKeyCounter.m_Key <<= 1;
+            }
         }
         else
         {

@@ -7,18 +7,18 @@
  */
 #pragma once
 
-#include "ComponentId.h"
+#include "ComponentKey.h"
 
 namespace Savanna::Entities
 {
-    struct ComponentIdFacade
+    struct ComponentKeyFacade
     {
-        ComponentId m_ComponentId;
+        ComponentKey m_ComponentKey;
 
-        bool operator==(const ComponentIdFacade& other) const { return (*this == other); }
-        bool operator!=(const ComponentIdFacade& other) const { return !(*this == other); }
-        bool operator==(const ComponentId& other) const { return m_ComponentId.m_ComponentId == other.m_ComponentId; }
-        bool operator!=(const ComponentId& other) const { return !operator==(other); }
+        bool operator==(const ComponentKeyFacade& other) const { return (*this == other); }
+        bool operator!=(const ComponentKeyFacade& other) const { return !(*this == other); }
+        bool operator==(const ComponentKey& other) const { return m_ComponentKey.m_FullComponentKey == other.m_FullComponentKey; }
+        bool operator!=(const ComponentKey& other) const { return !operator==(other); }
     };
 
     struct IComponent
@@ -28,7 +28,7 @@ namespace Savanna::Entities
 
         virtual ~IComponent() = default;
 
-        virtual const ComponentId& GetComponentId() = 0;
+        virtual const ComponentKey& GetComponentKey() = 0;
     };
 } // namespace Savanna::Entities
 

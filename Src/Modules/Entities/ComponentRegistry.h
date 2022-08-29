@@ -13,7 +13,7 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include "ComponentId.h"
+#include "ComponentKey.h"
 
 #include <typeindex>
 #include <unordered_map>
@@ -23,26 +23,26 @@ namespace Savanna::Entities::ComponentRegistry
     class IComponent;
     template<typename T> class IComponentData;
 
-    const uint8 GetNumberOfComponentIdSets();
+    const uint8 GetNumberOfComponentKeySets();
     const uint32 GetTotalNumberOfRegisteredComponents();
-    const ComponentId GetNextAvailableComponentId();
+    const ComponentKey GetNextAvailableComponentKey();
 
     // Might be overkill here, maybe just use the templated IComponentData
-    const ComponentId GetComponentId(const IComponent* const componentPtr);
-    const ComponentId RegisterComponentType(const IComponent* const componentPtr);
+    const ComponentKey GetComponentKey(const IComponent* const componentPtr);
+    const ComponentKey RegisterComponentType(const IComponent* const componentPtr);
 
-    const ComponentId GetComponentIdFromType(const std::type_index typeIndex);
-    const ComponentId RegisterComponentWithTypeIndex(const std::type_index typeIndex);
+    const ComponentKey GetComponentKeyFromType(const std::type_index typeIndex);
+    const ComponentKey RegisterComponentWithTypeIndex(const std::type_index typeIndex);
 
     template<typename T, class TComponentData = IComponentData<T>>
-    const ComponentId GetComponentIdFromType()
+    const ComponentKey GetComponentKeyFromType()
     {
         static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
-        return GetComponentIdFromType(typeid(TComponentData));
+        return GetComponentKeyFromType(typeid(TComponentData));
     }
 
     template<typename T, class TComponentData = IComponentData<T>>
-    const ComponentId RegisterComponentWithTypeIndex()
+    const ComponentKey RegisterComponentWithTypeIndex()
     {
         static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
         return RegisterComponentWithTypeIndex(typeid(TComponentData));

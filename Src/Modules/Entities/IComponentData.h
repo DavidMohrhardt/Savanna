@@ -27,23 +27,23 @@ namespace Savanna::Entities
          *
          * @return SAVANNA_NO_DISCARD const&
          */
-        SAVANNA_NO_DISCARD virtual const ComponentId& GetComponentId() override final;
-        SAVANNA_NO_DISCARD inline static const ComponentId& GetId();
+        SAVANNA_NO_DISCARD virtual const ComponentKey& GetComponentKey() override final;
+        SAVANNA_NO_DISCARD inline static const ComponentKey& GetKey();
 
         bool operator==(const IComponentData& other) const;
         bool operator!=(const IComponentData& other) const;
     };
 
     template<typename T>
-    inline const ComponentId& IComponentData<T>::GetComponentId()
+    inline const ComponentKey& IComponentData<T>::GetComponentKey()
     {
-        return GetId();
+        return GetKey();
     }
 
     template<typename T>
-    inline const ComponentId& IComponentData<T>::GetId()
+    inline const ComponentKey& IComponentData<T>::GetKey()
     {
-        static ComponentId id =
+        static ComponentKey id =
             ComponentRegistry::RegisterComponentWithTypeIndex(typeid(IComponentData<T>));
         return id;
     }

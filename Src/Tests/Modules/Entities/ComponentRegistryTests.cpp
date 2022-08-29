@@ -15,46 +15,46 @@ namespace Savanna::Entities::Tests
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestCustomComponentDataGetsRegistered)
     {
-        auto testComponentId = CustomComponentData::GetId();
-        EXPECT_TRUE(se_IsValidComponentId(testComponentId));
+        auto testComponentKey = CustomComponentData::GetKey();
+        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey));
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestTemplateSpecializationTestComponentGetsRegistered)
     {
-        auto testComponentId = TemplateSpecializationTestComponent<int>::GetId();
-        EXPECT_TRUE(se_IsValidComponentId(testComponentId));
+        auto testComponentKey = TemplateSpecializationTestComponent<int>::GetKey();
+        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey));
     }
 
-    DECLARE_COMPONENT_REGISTRY_TEST(TestTemplatesProduceDifferingComponentIds)
+    DECLARE_COMPONENT_REGISTRY_TEST(TestTemplatesProduceDifferingComponentKeys)
     {
-        auto testComponentId1 = TemplateSpecializationTestComponent<int>::GetId();
-        auto testComponentId2 = TemplateSpecializationTestComponent<float>::GetId();
-        EXPECT_TRUE(se_IsValidComponentId(testComponentId1));
-        EXPECT_TRUE(se_IsValidComponentId(testComponentId2));
-        EXPECT_NE(testComponentId1.m_ComponentId, testComponentId2.m_ComponentId);
+        auto testComponentKey1 = TemplateSpecializationTestComponent<int>::GetKey();
+        auto testComponentKey2 = TemplateSpecializationTestComponent<float>::GetKey();
+        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey1));
+        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey2));
+        EXPECT_NE(testComponentKey1.m_FullComponentKey, testComponentKey2.m_FullComponentKey);
     }
 
-    DECLARE_COMPONENT_REGISTRY_TEST(TestComponentIdsAreUnique)
+    DECLARE_COMPONENT_REGISTRY_TEST(TestComponentKeysAreUnique)
     {
-        auto testComponentId1 = CustomComponentData::GetId();
-        auto testComponentId2 = TemplateSpecializationTestComponent<int>::GetId();
-        EXPECT_TRUE(se_IsValidComponentId(testComponentId1));
-        EXPECT_TRUE(se_IsValidComponentId(testComponentId2));
-        EXPECT_NE(testComponentId1.m_ComponentId, testComponentId2.m_ComponentId);
+        auto testComponentKey1 = CustomComponentData::GetKey();
+        auto testComponentKey2 = TemplateSpecializationTestComponent<int>::GetKey();
+        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey1));
+        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey2));
+        EXPECT_NE(testComponentKey1.m_FullComponentKey, testComponentKey2.m_FullComponentKey);
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestArbitraryTypesProperlyGenerateIds)
     {
-        SEComponentId testComponentIds[5] = {
-            TemplateSpecializationTestComponent<int>::GetId(),
-            TemplateSpecializationTestComponent<char>::GetId(),
-            TemplateSpecializationTestComponent<float>::GetId(),
-            TemplateSpecializationTestComponent<double>::GetId(),
-            TemplateSpecializationTestComponent<TemplateSpecializationTestComponent<int>>::GetId()
+        SEComponentKey testComponentKeys[5] = {
+            TemplateSpecializationTestComponent<int>::GetKey(),
+            TemplateSpecializationTestComponent<char>::GetKey(),
+            TemplateSpecializationTestComponent<float>::GetKey(),
+            TemplateSpecializationTestComponent<double>::GetKey(),
+            TemplateSpecializationTestComponent<TemplateSpecializationTestComponent<int>>::GetKey()
         };
         for (int i = 0; i < 5; ++i)
         {
-            EXPECT_TRUE( se_IsValidComponentId(testComponentIds[i]) );
+            EXPECT_TRUE( SEIsValidComponentKey(testComponentKeys[i]) );
             for (int j = 0; j < i; ++j)
             {
                 if (i == j)
@@ -62,86 +62,59 @@ namespace Savanna::Entities::Tests
                     continue;
                 }
 
-                EXPECT_NE(testComponentIds[i].m_ComponentId, testComponentIds[j].m_ComponentId);
+                EXPECT_NE(testComponentKeys[i].m_FullComponentKey, testComponentKeys[j].m_FullComponentKey);
             }
         }
     }
 
-    DECLARE_COMPONENT_REGISTRY_TEST(TestIfComponentIdPastFiftySixEntriesWrapsPastZero)
+    DECLARE_COMPONENT_REGISTRY_TEST(TestIfComponentKeyPast26EntriesWrapsPastZero)
     {
-        int32 totalNumberOfComponentsRegistered = ComponentRegistry::GetTotalNumberOfRegisteredComponents();
-        int32 expectedNumberOfComponentsInNextSet = (totalNumberOfComponentsRegistered + 64) % k_ComponentIdKeyBitCount;
-        ComponentId ids[64] = {
-            ArbitraryType::GetId(),
-            ArbitraryType2::GetId(),
-            ArbitraryType3::GetId(),
-            ArbitraryType4::GetId(),
-            ArbitraryType5::GetId(),
-            ArbitraryType6::GetId(),
-            ArbitraryType7::GetId(),
-            ArbitraryType8::GetId(),
-            ArbitraryType9::GetId(),
-            ArbitraryType10::GetId(),
-            ArbitraryType11::GetId(),
-            ArbitraryType12::GetId(),
-            ArbitraryType13::GetId(),
-            ArbitraryType14::GetId(),
-            ArbitraryType15::GetId(),
-            ArbitraryType16::GetId(),
-            ArbitraryType17::GetId(),
-            ArbitraryType18::GetId(),
-            ArbitraryType19::GetId(),
-            ArbitraryType20::GetId(),
-            ArbitraryType21::GetId(),
-            ArbitraryType22::GetId(),
-            ArbitraryType23::GetId(),
-            ArbitraryType24::GetId(),
-            ArbitraryType25::GetId(),
-            ArbitraryType26::GetId(),
-            ArbitraryType27::GetId(),
-            ArbitraryType28::GetId(),
-            ArbitraryType29::GetId(),
-            ArbitraryType30::GetId(),
-            ArbitraryType31::GetId(),
-            ArbitraryType32::GetId(),
-            ArbitraryType33::GetId(),
-            ArbitraryType34::GetId(),
-            ArbitraryType35::GetId(),
-            ArbitraryType36::GetId(),
-            ArbitraryType37::GetId(),
-            ArbitraryType38::GetId(),
-            ArbitraryType39::GetId(),
-            ArbitraryType40::GetId(),
-            ArbitraryType41::GetId(),
-            ArbitraryType42::GetId(),
-            ArbitraryType43::GetId(),
-            ArbitraryType44::GetId(),
-            ArbitraryType45::GetId(),
-            ArbitraryType46::GetId(),
-            ArbitraryType47::GetId(),
-            ArbitraryType48::GetId(),
-            ArbitraryType49::GetId(),
-            ArbitraryType50::GetId(),
-            ArbitraryType51::GetId(),
-            ArbitraryType52::GetId(),
-            ArbitraryType53::GetId(),
-            ArbitraryType54::GetId(),
-            ArbitraryType55::GetId(),
-            ArbitraryType56::GetId(),
-            ArbitraryType57::GetId(),
-            ArbitraryType58::GetId(),
-            ArbitraryType59::GetId(),
-            ArbitraryType60::GetId(),
-            ArbitraryType61::GetId(),
-            ArbitraryType62::GetId(),
-            ArbitraryType63::GetId(),
-            ArbitraryType64::GetId()
+        constexpr int k_NumberOfTestElements = SAVANNA_ECS_KEY_SET_BIT_COUNT + SAVANNA_ECS_KEY_BIT_COUNT;
+        int32 expectedNumberOfComponentsInNextSet = (ComponentRegistry::GetTotalNumberOfRegisteredComponents() + k_NumberOfTestElements) % SAVANNA_ECS_KEY_BIT_COUNT;
+        ComponentKey ids[k_NumberOfTestElements] = {
+            ArbitraryType::GetKey(),
+            ArbitraryType2::GetKey(),
+            ArbitraryType3::GetKey(),
+            ArbitraryType4::GetKey(),
+            ArbitraryType5::GetKey(),
+            ArbitraryType6::GetKey(),
+            ArbitraryType7::GetKey(),
+            ArbitraryType8::GetKey(),
+            ArbitraryType9::GetKey(),
+            ArbitraryType10::GetKey(),
+            ArbitraryType11::GetKey(),
+            ArbitraryType12::GetKey(),
+            ArbitraryType13::GetKey(),
+            ArbitraryType14::GetKey(),
+            ArbitraryType15::GetKey(),
+            ArbitraryType16::GetKey(),
+            ArbitraryType17::GetKey(),
+            ArbitraryType18::GetKey(),
+            ArbitraryType19::GetKey(),
+            ArbitraryType20::GetKey(),
+            ArbitraryType21::GetKey(),
+            ArbitraryType22::GetKey(),
+            ArbitraryType23::GetKey(),
+            ArbitraryType24::GetKey(),
+            ArbitraryType25::GetKey(),
+            ArbitraryType26::GetKey(),
+            ArbitraryType27::GetKey(),
+            ArbitraryType28::GetKey(),
+            ArbitraryType29::GetKey(),
+            ArbitraryType30::GetKey(),
+            ArbitraryType31::GetKey(),
+            ArbitraryType32::GetKey(),
         };
 
         bool allUnique = true;
         int alternateSetCount = 0;
-        for (int i = 0; i < 64; ++i)
+        for (int i = 0; i < SAVANNA_ECS_KEY_BIT_COUNT; ++i)
         {
+            if (ids[i].m_Set != 0)
+            {
+                ++alternateSetCount;
+            }
+
             for (int j = 0; j < i; ++j)
             {
                 if (i == j)
@@ -151,14 +124,12 @@ namespace Savanna::Entities::Tests
 
                 auto componentId1 = ids[i];
                 auto componentId2 = ids[j];
-                if (componentId1.m_ComponentId == componentId2.m_ComponentId)
+                if (componentId1.m_FullComponentKey == componentId2.m_FullComponentKey)
                 {
                     allUnique = false;
                     break;
                 }
             }
-            if (ids[i].m_Set > 0)
-                alternateSetCount++;
         }
 
         EXPECT_TRUE(allUnique);

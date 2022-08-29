@@ -1,7 +1,7 @@
 /**
  * @file WindowsVulkanDisplaySurface.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief Implements Windows specific Vulkan surface creation utilities.
  * @version 0.1
  * @date 2022-08-21
  *

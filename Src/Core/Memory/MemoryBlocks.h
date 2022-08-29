@@ -13,7 +13,7 @@
 #include <memory.h>
 
 #include "CacheLine.h"
-
+#include "Math/MathHelpers.h"
 #include "Types/Primitive/PrimitiveTypes.h"
 
 #include "Utilities/PreprocessorDefinitions/PlatformDefinitions.h"
@@ -39,23 +39,9 @@
  * @param KiBLength the length in KiB.
  * @return constexpr size_t size in Bytes.
  */
-static constexpr size_t KibiBytesToBytes(size_t KiBLength)
+static consteval size_t KibiBytesToBytes(size_t KiBLength)
 {
     return KiBLength * 1024;
-}
-
-/**
- * @brief Get the Required Length To Fill Union object
- *
- * @param largestTypeInUnion
- * @param otherTypeInUnion
- * @return constexpr size_t
- */
-static constexpr size_t GetRequiredLengthToFillUnion(size_t largestTypeInUnion, size_t otherTypeInUnion)
-{
-    return largestTypeInUnion >= otherTypeInUnion
-        ? (largestTypeInUnion / otherTypeInUnion)
-        : (otherTypeInUnion / largestTypeInUnion);
 }
 
 /**
