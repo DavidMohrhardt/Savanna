@@ -24,9 +24,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Set General Standards
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# set(CMAKE_C_STANDARD 20)
-# Set requirement to false due to symbol error with fmt when seeking c20
-# set(CMAKE_C_STANDARD_REQUIRED False)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Command to output information to the console
 # Useful for displaying errors, warnings, and debugging

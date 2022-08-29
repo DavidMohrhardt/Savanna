@@ -6,20 +6,26 @@
  * @date 2022-08-03
  *
  */
-
+#ifndef __SAVANNA_MATH_HELPERS_H__
+#define __SAVANNA_MATH_HELPERS_H__
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
-#include "Types/Exceptions/SavannaException.h"
 
+#if defined(__cplusplus)
 #include <cassert>
+#else
+#include <assert.h>
+#endif
 
-SAVANNA_NO_DISCARD inline constexpr bool IsPowerOfTwo(const auto& val)
+// SAVANNA_NO_DISCARD inline constexpr
+inline bool IsPowerOfTwo(const __se_int64 val)
 {
     return val && !(val & (val - 1));
 }
 
-SAVANNA_NO_DISCARD inline constexpr auto NextPowerOfTwo(const auto& val)
+// SAVANNA_NO_DISCARD inline constexpr
+inline __se_int64 NextPowerOfTwo(const __se_int64 val)
 {
     return (val & ~(val - 1)) << 1;
 }
@@ -31,7 +37,8 @@ SAVANNA_NO_DISCARD inline constexpr auto NextPowerOfTwo(const auto& val)
  * @param pow2Mod The power of two to modulate by.
  * @return The result of x % pow2Mod.
  */
-SAVANNA_NO_DISCARD inline constexpr auto ModByPowerOfTwo(const auto x, const auto pow2Mod)
+// SAVANNA_NO_DISCARD inline constexpr
+inline __se_int64 ModByPowerOfTwo(const __se_int64 x, const __se_int64 pow2Mod)
 {
     // As per https://en.wikipedia.org/wiki/Modulo_operation
     // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
@@ -46,9 +53,10 @@ SAVANNA_NO_DISCARD inline constexpr auto ModByPowerOfTwo(const auto x, const aut
  * @param otherTypeInUnion
  * @return constexpr size_t
  */
-consteval size_t GetRequiredLengthToFillUnion(size_t largestTypeInUnion, size_t otherTypeInUnion)
+inline consteval size_t GetRequiredLengthToFillUnion(size_t largestTypeInUnion, size_t otherTypeInUnion)
 {
     return largestTypeInUnion >= otherTypeInUnion
         ? (largestTypeInUnion / otherTypeInUnion)
         : (otherTypeInUnion / largestTypeInUnion);
 }
+#endif

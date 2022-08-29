@@ -8,7 +8,8 @@
  * @copyright Copyright (c) 2022
  *
  */
-#pragma once
+#ifndef __SAVANNA_COMPONENT_KEY_H__
+#define __SAVANNA_COMPONENT_KEY_H__
 
 #include <Utilities/SavannaCoding.h>
 
@@ -42,13 +43,13 @@ typedef __se_uint8 se_ComponentKeyMask_T;
 // that's still 1024 / 64 = 16 cache lines to read
 
 /**
- * @brief Defines a unique identifier for a component type. Components of like types are assigned the same
- * identifier.
+ * @brief Defines a unique key/identifier for a component type. Components of like types are assigned the same
+ * key.
  */
-typedef union SEComponentKey
+typedef union SavannaComponentKey
 {
     /**
-     * @brief The full component identifier.
+     * @brief The full component key.
      */
     se_ComponentKey_t m_FullComponentKey;
 
@@ -62,29 +63,22 @@ typedef union SEComponentKey
      */
     se_ComponentKeyMask_T m_Set : SAVANNA_ECS_KEY_SET_BIT_COUNT;
 
-} SEComponentKey;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Entities, SEComponentKey, ComponentKey);
+} SavannaComponentKey;
+DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Entities, SavannaComponentKey, ComponentKey);
 
-static_assert(sizeof(SEComponentKey) == sizeof(se_ComponentKey_t), "SEComponentKey is not 32 bits");
+static_assert(sizeof(SavannaComponentKey) == sizeof(se_ComponentKey_t), "SavannaComponentKey is not 32 bits");
 
-static const SEComponentKey k_InvalidComponentKey = { 0x0ull };
+/**
+ * @brief Represents an invalid component key.
+ */
+const SavannaComponentKey k_InvalidComponentKey = { 0x0 };
 
-inline bool SEIsValidComponentKey(const SEComponentKey& componentId)
-{
-    return componentId.m_FullComponentKey != k_InvalidComponentKey.m_FullComponentKey;
-}
+const SavannaComponentKey k_SetMask = { 0xFF000000 };
 
-inline bool SECompareKeys(const SEComponentKey& entityKey, const SEComponentKey& systemLock)
-{
-    // This is where we should use SIMD to speed up the comparison.
-    const __se_uint8 underflowedUint8Max = 0x0 - 1;
-    for (int i = 0; i < underflowedUint8Max; ++i)
-    {
-        if (entityKey.m_Set != systemLock.m_Set)
-        {
-            return false;
-        }
-    }
+const SavannaComponentKey k_KeyMask = { 0x00FFFFFF };
 
-    return true;
-}
+bool SavannaIsValidComponentKey(const SavannaComponentKey& componentId);
+
+bool SavannaCompareKeys(const SavannaComponentKey& entityKey, const SavannaComponentKey& systemLock);
+
+#endif

@@ -40,7 +40,11 @@ foreach ($file in $files) {
     }
 }
 
-Wait-Job -Job $jobs | Out-Null
+if ($jobs.Count -gt 0)
+{
+    Write-Host "Downloading Artifacts..."
+    Wait-Job -Job $jobs | Out-Null
+}
 
 foreach ($job in $jobs) {
     Receive-Job -Job $job | Out-Null

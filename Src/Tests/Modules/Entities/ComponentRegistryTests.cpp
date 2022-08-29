@@ -16,21 +16,21 @@ namespace Savanna::Entities::Tests
     DECLARE_COMPONENT_REGISTRY_TEST(TestCustomComponentDataGetsRegistered)
     {
         auto testComponentKey = CustomComponentData::GetKey();
-        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey));
+        EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey));
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestTemplateSpecializationTestComponentGetsRegistered)
     {
         auto testComponentKey = TemplateSpecializationTestComponent<int>::GetKey();
-        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey));
+        EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey));
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestTemplatesProduceDifferingComponentKeys)
     {
         auto testComponentKey1 = TemplateSpecializationTestComponent<int>::GetKey();
         auto testComponentKey2 = TemplateSpecializationTestComponent<float>::GetKey();
-        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey1));
-        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey2));
+        EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey1));
+        EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey2));
         EXPECT_NE(testComponentKey1.m_FullComponentKey, testComponentKey2.m_FullComponentKey);
     }
 
@@ -38,14 +38,14 @@ namespace Savanna::Entities::Tests
     {
         auto testComponentKey1 = CustomComponentData::GetKey();
         auto testComponentKey2 = TemplateSpecializationTestComponent<int>::GetKey();
-        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey1));
-        EXPECT_TRUE(SEIsValidComponentKey(testComponentKey2));
+        EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey1));
+        EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey2));
         EXPECT_NE(testComponentKey1.m_FullComponentKey, testComponentKey2.m_FullComponentKey);
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestArbitraryTypesProperlyGenerateIds)
     {
-        SEComponentKey testComponentKeys[5] = {
+       SavannaComponentKey testComponentKeys[5] = {
             TemplateSpecializationTestComponent<int>::GetKey(),
             TemplateSpecializationTestComponent<char>::GetKey(),
             TemplateSpecializationTestComponent<float>::GetKey(),
@@ -54,7 +54,7 @@ namespace Savanna::Entities::Tests
         };
         for (int i = 0; i < 5; ++i)
         {
-            EXPECT_TRUE( SEIsValidComponentKey(testComponentKeys[i]) );
+            EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKeys[i]) );
             for (int j = 0; j < i; ++j)
             {
                 if (i == j)

@@ -1,6 +1,10 @@
 #pragma once
 
+#ifndef __cplusplus
+#include <stdint.h>
+#else
 #include <cstdint>
+#endif
 
 #if INTPTR_MAX == INT32_MAX
     #define SAVANNA_ENV_32 1

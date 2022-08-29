@@ -1,8 +1,12 @@
 #pragma once
 
 #include <stdint.h>
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
 // Global namespace typedefs
+typedef bool                __se_bool;
 typedef char                __se_byte;
 typedef unsigned char       __se_ubyte;
 

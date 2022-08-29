@@ -29,7 +29,7 @@
 #include "PreprocessorDefinitions/InterfaceDefinitions.h"
 #include "PreprocessorDefinitions/PlatformDefinitions.h"
 
-#if __cplusplus
+#ifdef __cplusplus
 
 // For headers that explicitly only work in C++
 #include "Types/Exceptions/SavannaException.h"

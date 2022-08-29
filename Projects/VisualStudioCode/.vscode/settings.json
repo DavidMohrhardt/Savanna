@@ -78,7 +78,8 @@
         "xstddef": "cpp",
         "xtr1common": "cpp",
         "hash_map": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "savannaexception.h": "c"
     },
     "doxdocgen.generic.authorName": "David Mohrhardt",
     "doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

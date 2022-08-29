@@ -1,6 +1,6 @@
 /**
  * @file ComponentRegistry.cpp
- * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/ Savanna)
  * @brief TODO @DavidMohrhardt Document
  * @version 0.1
  * @date 2022-08-03
@@ -16,7 +16,7 @@
 #include <cassert>
 #include <mutex>
 
-// Savanna includes
+//  Savanna includes
 #if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
 #include <Types/Locks/VolatileLock.h>
 #endif
@@ -36,7 +36,7 @@ namespace Savanna::Entities::ComponentRegistry
 
     ComponentKey g_ComponentKeyCounter = { .m_FullComponentKey = 0x1 };
 
-    std::unordered_map<std::type_index, SEComponentKey> s_ComponentTypeMap = {};
+    std::unordered_map<std::type_index, SavannaComponentKey> s_ComponentTypeMap = {};
 
     const se_ComponentKeyMask_T GetNumberOfComponentKeySets()
     {
@@ -99,7 +99,7 @@ namespace Savanna::Entities::ComponentRegistry
         auto ptr = &g_ComponentKeyCounter;
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
-            assert(SEIsValidComponentKey(g_ComponentKeyCounter) && "Component ID overflow");
+            assert(SavannaIsValidComponentKey(g_ComponentKeyCounter) && "Component ID overflow");
 
             componentId = g_ComponentKeyCounter;
             s_ComponentTypeMap.emplace(typeIndex, componentId);
@@ -125,5 +125,4 @@ namespace Savanna::Entities::ComponentRegistry
         return componentId;
     }
 
-} // namespace Savanna::Entities
-
+} // namespace  Savanna::Entities
