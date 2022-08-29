@@ -15,7 +15,7 @@
 namespace Savanna
 {
     template<typename T>
-    class ArraySlice : public LinearIterator<T>
+    class ArraySlice
     {
     private:
         const T* m_DataPtr = nullptr;
@@ -38,7 +38,7 @@ namespace Savanna
         ~ArraySlice() = default;
 
     public:
-        void CopyTo(T* pDestination, const size_t& const start = 0, const size_t& const length) const
+        void CopyTo(T* pDestination, const size_t& start = 0, const size_t& length = 1) const
         {
             assert(length < m_Size);
             assert(pDestination != nullptr);
@@ -47,6 +47,6 @@ namespace Savanna
 
     public:
         inline size_t GetSize() const { return m_Size; }
-        inline const T& operator[](const size_t& const index) const { return m_DataPtr[index]; }
+        inline const T& operator[](const size_t& index) const { return m_DataPtr[index]; }
     };
 } // namespace Savanna

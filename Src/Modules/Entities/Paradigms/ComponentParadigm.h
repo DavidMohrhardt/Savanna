@@ -12,7 +12,7 @@
  */
 #pragma once
 
-#include "ECS.h"
+#include "Entities.h"
 
 // Core Includes
 #include <Math/MathHelpers.h>
@@ -23,35 +23,36 @@
 
 namespace Savanna::Entities
 {
+    struct CompoundComponentKey
+    {
+        ComponentKey m_ComponentKeys[4];
+
+        inline bool operator==(const CompoundComponentKey& other) const
+        {
+            return m_ComponentKeys[0].m_FullComponentKey == other.m_ComponentKeys[0].m_FullComponentKey
+                && m_ComponentKeys[1].m_FullComponentKey == other.m_ComponentKeys[1].m_FullComponentKey
+                && m_ComponentKeys[2].m_FullComponentKey == other.m_ComponentKeys[2].m_FullComponentKey
+                && m_ComponentKeys[3].m_FullComponentKey == other.m_ComponentKeys[3].m_FullComponentKey;
+        }
+
+        inline bool operator!=(const CompoundComponentKey& other) const
+        {
+            return !(*this == other);
+        }
+
+        inline CompoundComponentKey& operator=(const CompoundComponentKey& other)
+        {
+            m_ComponentKeys[0] = other.m_ComponentKeys[0];
+            m_ComponentKeys[1] = other.m_ComponentKeys[1];
+            m_ComponentKeys[2] = other.m_ComponentKeys[2];
+            m_ComponentKeys[3] = other.m_ComponentKeys[3];
+            return *this;
+        }
+    };
+
     class Paradigm
     {
     private:
-        struct CompoundComponentKey
-        {
-            ComponentKey m_ComponentKeys[4];
-
-            inline bool operator==(const CompoundComponentKey& other) const
-            {
-                return m_ComponentKeys[0].m_FullComponentKey == other.m_ComponentKeys[0].m_FullComponentKey
-                    && m_ComponentKeys[1].m_FullComponentKey == other.m_ComponentKeys[1].m_FullComponentKey
-                    && m_ComponentKeys[2].m_FullComponentKey == other.m_ComponentKeys[2].m_FullComponentKey
-                    && m_ComponentKeys[3].m_FullComponentKey == other.m_ComponentKeys[3].m_FullComponentKey;
-            }
-
-            inline bool operator!=(const CompoundComponentKey& other) const
-            {
-                return !(*this == other);
-            }
-
-            inline CompoundComponentKey& operator=(const CompoundComponentKey& other)
-            {
-                m_ComponentKeys[0] = other.m_ComponentKeys[0];
-                m_ComponentKeys[1] = other.m_ComponentKeys[1];
-                m_ComponentKeys[2] = other.m_ComponentKeys[2];
-                m_ComponentKeys[3] = other.m_ComponentKeys[3];
-                return *this;
-            }
-        };
 
         /**
          * @brief The memory pool that holds the component data for this paradigm.
@@ -85,12 +86,12 @@ namespace Savanna::Entities
             /**
              * @brief The component keys that define this paradigm.
              */
-            ComponentKey m_ComponentKeys[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
+            ComponentKey m_ParadigmKeyChain[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
 
             /**
              * @brief The component keys that define this paradigm.
              */
-            CompoundComponentKey m_CompoundComponentKeys[
+            CompoundComponentKey m_CompoundParadigmKeyChain[
                 GetRequiredLengthToFillUnion(
                     sizeof(ComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS,
                     sizeof(CompoundComponentKey)
@@ -99,19 +100,17 @@ namespace Savanna::Entities
         };
 
     public:
-        Paradigm(const void* pParadigmMemory, const size_t& const paradigmMemorySize);
+        Paradigm(const void* pParadigmMemory, const size_t& paradigmMemorySize);
 
         Paradigm() = default;
         Paradigm(const Paradigm&) = default;
         Paradigm(Paradigm&&) = default;
-        Paradigm& operator=(const Paradigm&) = default;
-        Paradigm& operator=(Paradigm&&) = default;
 
         ~Paradigm() = default;
     private:
         void AddComponentToParadigmInternal(
-            const size_t& const size,
-            const size_t& const alignment,
+            const size_t& size,
+            const size_t& alignment,
             const ComponentKey& componentKey);
 
         /**
@@ -121,10 +120,13 @@ namespace Savanna::Entities
         void AllocateParadigm(size_t paradigmSize);
 
         SAVANNA_NO_DISCARD void* GetComponentData(
-            const size_t& const stride,
-            const size_t& const alignment,
+            const size_t& stride,
+            const size_t& alignment,
             ComponentKey componentKey,
             size_t* outArrayLength);
+
+    public:
+        ArraySlice<ComponentKey> GetKeyChain() const;
 
     public:
         // TODO @DavidMohrhardt Return a proper ArrayView instead of a pointer.
@@ -155,5 +157,5 @@ namespace Savanna::Entities
 
             AddComponentToParadigmInternal(dataSize, dataAlignment, key);
         }
-    }
+    };
 } // namespace Savanna::Entities

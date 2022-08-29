@@ -11,8 +11,8 @@
 
 #include <SavannaEngine.h>
 
-#include "Entities/Entity.h"
-#include "Entities/IComponentData.h"
+#include "Entity.h"
+#include "IComponentData.h"
 
 namespace Savanna::Entities
 {

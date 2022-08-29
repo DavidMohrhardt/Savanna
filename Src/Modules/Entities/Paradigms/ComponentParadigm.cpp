@@ -8,8 +8,6 @@
  * @copyright Copyright (c) 2022
  *
  */
-#pragma once
-
 #include "ComponentParadigm.h"
 
 // C Standard Library Includes
@@ -18,19 +16,19 @@
 
 namespace Savanna::Entities
 {
-    Paradigm::Paradigm(const void* pParadigmMemory, const size_t& const paradigmMemorySize)
+    Paradigm::Paradigm(const void* pParadigmMemory, const size_t& paradigmMemorySize)
         : m_ParadigmMemory(pParadigmMemory)
         , m_ParadigmMemorySize(paradigmMemorySize)
     {
         assert(pParadigmMemory != nullptr);
         assert(paradigmMemorySize > 0);
 
-        memset(m_ParadigmKeyChain, 0, sizeof(ComponentKey * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS));
+        memset(m_ParadigmKeyChain, 0, sizeof(ComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
     }
 
     void Paradigm::AddComponentToParadigmInternal(
-        const size_t& const size,
-        const size_t& const alignment,
+        const size_t& size,
+        const size_t& alignment,
         const ComponentKey& componentKey)
     {
         if (m_EntityCount > 0)
@@ -51,12 +49,11 @@ namespace Savanna::Entities
         }
 
         m_EntityParadigmSize = newSize;
-        m_ComponentKeys[componentKey.m_Set] |= componentKey.m_Key;
+        m_ParadigmKeyChain[componentKey.m_Set].m_Key |= componentKey.m_Key;
     }
 
-    ArraySlice<ComponentKey> Paradigm::GetComponentKey() const
+    ArraySlice<ComponentKey> Paradigm::GetKeyChain() const
     {
-        assert(index < SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
         return ArraySlice<ComponentKey>(m_ParadigmKeyChain, SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
     }
 } // namespace Savanna::Entities

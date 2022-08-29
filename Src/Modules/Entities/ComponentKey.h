@@ -20,10 +20,10 @@
 #define SAVANNA_ECS_KEY_SET_BIT_COUNT 8
 
 #undef SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS
-#define SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS (1 << SAVANNA_ECS_KEY_SET_BIT_COUNT)
+#define SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS ( 1 << SAVANNA_ECS_KEY_SET_BIT_COUNT )
 
 #undef SAVANNA_COMPONENT_KEY_MAX_VALUE
-#define SAVANNA_COMPONENT_KEY_MAX_VALUE (1 << SAVANNA_ECS_KEY_BIT_COUNT)
+#define SAVANNA_COMPONENT_KEY_MAX_VALUE ( 1 << SAVANNA_ECS_KEY_BIT_COUNT )
 
 #undef SE_INVALID_HANDLE
 #define SE_INVALID_HANDLE k_InvalidComponentKey
@@ -73,9 +73,9 @@ static_assert(sizeof(SavannaComponentKey) == sizeof(se_ComponentKey_t), "Savanna
  */
 const SavannaComponentKey k_InvalidComponentKey = { 0x0 };
 
-const SavannaComponentKey k_SetMask = { 0xFF000000 };
+const SavannaComponentKey k_SetMask = { 0xFF000000u };
 
-const SavannaComponentKey k_KeyMask = { 0x00FFFFFF };
+const SavannaComponentKey k_KeyMask = { 0x00FFFFFFu };
 
 bool SavannaIsValidComponentKey(const SavannaComponentKey& componentId);
 
