@@ -13,7 +13,7 @@
 #include "Utilities/SavannaCoding.h"
 
 #if defined(__cplusplus)
-#include <cassert>
+#include <assert.h>
 #else
 #include <assert.h>
 #endif
@@ -42,7 +42,7 @@ inline __se_int64 ModByPowerOfTwo(const __se_int64 x, const __se_int64 pow2Mod)
 {
     // As per https://en.wikipedia.org/wiki/Modulo_operation
     // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
-    assert(IsPowerOfTwo(pow2Mod) && "pow2Mod must be a power of two");
+    SAVANNA_ASSERT(IsPowerOfTwo(pow2Mod) && "pow2Mod must be a power of two");
     return (x & (pow2Mod - 1));
 }
 

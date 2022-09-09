@@ -29,10 +29,10 @@ namespace Savanna::Entities
 
         inline bool operator==(const CompoundComponentKey& other) const
         {
-            return m_ComponentKeys[0].m_FullComponentKey == other.m_ComponentKeys[0].m_FullComponentKey
-                && m_ComponentKeys[1].m_FullComponentKey == other.m_ComponentKeys[1].m_FullComponentKey
-                && m_ComponentKeys[2].m_FullComponentKey == other.m_ComponentKeys[2].m_FullComponentKey
-                && m_ComponentKeys[3].m_FullComponentKey == other.m_ComponentKeys[3].m_FullComponentKey;
+            return m_ComponentKeys[0] == other.m_ComponentKeys[0]
+                && m_ComponentKeys[1] == other.m_ComponentKeys[1]
+                && m_ComponentKeys[2] == other.m_ComponentKeys[2]
+                && m_ComponentKeys[3] == other.m_ComponentKeys[3];
         }
 
         inline bool operator!=(const CompoundComponentKey& other) const
@@ -74,13 +74,6 @@ namespace Savanna::Entities
          */
         uint32 m_EntityCount = 0;
 
-        /**
-         * @brief All arrays are aligned to the largest component alignment.
-         *
-         * TODO @DavidMohrhardt Maybe store metadata about the component in the paradigm to recompute the actual alighment of the component.
-         */
-        size_t m_LargestComponentAlignment = 0;
-
         union
         {
             /**
@@ -102,11 +95,14 @@ namespace Savanna::Entities
     public:
         Paradigm(const void* pParadigmMemory, const size_t& paradigmMemorySize);
 
-        Paradigm() = default;
-        Paradigm(const Paradigm&) = default;
-        Paradigm(Paradigm&&) = default;
+        Paradigm();
 
-        ~Paradigm() = default;
+        Paradigm(const Paradigm& other);
+
+        Paradigm(Paradigm&& other);
+
+        ~Paradigm();
+
     private:
         void AddComponentToParadigmInternal(
             const size_t& size,

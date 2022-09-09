@@ -2,18 +2,19 @@
  * @file SavannaCoding.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief The header is a simple header to bring in other non-destructive headers
- * to simplify the process of writing code in the engine.
+ * to simplify the process of writing code within the expectations of the engine.
  * @version 0.1
  * @date 2022-07-31
  *
  */
-
 #pragma once
 
 #include "Types/Primitive/PrimitiveTypes.h"
 #include "Types/Primitive/FloatingPointUnions.h"
 
-// These headers are guarded in case compiling with C rather than C++ so it's safe to include
+#include "Assertions/SavannaAssertions.h"
+
+// These macro headers are guarded in case compiling with C rather than C++ so it's safe to include
 #include "Macros/CppAttributes.h"
 #include "Macros/CppCommonDefs.h"
 #include "Macros/CppTypeDefs.h"

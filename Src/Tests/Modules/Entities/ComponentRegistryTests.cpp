@@ -31,7 +31,7 @@ namespace Savanna::Entities::Tests
         auto testComponentKey2 = TemplateSpecializationTestComponent<float>::GetKey();
         EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey1));
         EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey2));
-        EXPECT_NE(testComponentKey1.m_FullComponentKey, testComponentKey2.m_FullComponentKey);
+        EXPECT_NE(testComponentKey1, testComponentKey2);
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestComponentKeysAreUnique)
@@ -40,12 +40,12 @@ namespace Savanna::Entities::Tests
         auto testComponentKey2 = TemplateSpecializationTestComponent<int>::GetKey();
         EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey1));
         EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKey2));
-        EXPECT_NE(testComponentKey1.m_FullComponentKey, testComponentKey2.m_FullComponentKey);
+        EXPECT_NE(testComponentKey1, testComponentKey2);
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestArbitraryTypesProperlyGenerateIds)
     {
-       SavannaComponentKey testComponentKeys[5] = {
+       ComponentKey testComponentKeys[5] = {
             TemplateSpecializationTestComponent<int>::GetKey(),
             TemplateSpecializationTestComponent<char>::GetKey(),
             TemplateSpecializationTestComponent<float>::GetKey(),
@@ -54,7 +54,7 @@ namespace Savanna::Entities::Tests
         };
         for (int i = 0; i < 5; ++i)
         {
-            EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKeys[i]) );
+            EXPECT_TRUE(SavannaIsValidComponentKey(testComponentKeys[i]));
             for (int j = 0; j < i; ++j)
             {
                 if (i == j)
@@ -62,15 +62,15 @@ namespace Savanna::Entities::Tests
                     continue;
                 }
 
-                EXPECT_NE(testComponentKeys[i].m_FullComponentKey, testComponentKeys[j].m_FullComponentKey);
+                EXPECT_NE(testComponentKeys[i], testComponentKeys[j]);
             }
         }
     }
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestIfComponentKeyPast26EntriesWrapsPastZero)
     {
-        constexpr int k_NumberOfTestElements = SAVANNA_ECS_KEY_SET_BIT_COUNT + SAVANNA_ECS_KEY_BIT_COUNT;
-        int32 expectedNumberOfComponentsInNextSet = (ComponentRegistry::GetTotalNumberOfRegisteredComponents() + k_NumberOfTestElements) % SAVANNA_ECS_KEY_BIT_COUNT;
+        constexpr int k_NumberOfTestElements = SAVANNA_ECS_KEY_RING_INDEX_BIT_COUNT + SAVANNA_ECS_KEY_TEETH_BIT_COUNT;
+        int32 expectedNumberOfComponentsInNextSet = (ComponentRegistry::GetTotalNumberOfRegisteredComponents() + k_NumberOfTestElements) % SAVANNA_ECS_KEY_TEETH_BIT_COUNT;
         ComponentKey ids[k_NumberOfTestElements] = {
             ArbitraryType::GetKey(),
             ArbitraryType2::GetKey(),
@@ -108,14 +108,20 @@ namespace Savanna::Entities::Tests
 
         bool allUnique = true;
         int alternateSetCount = 0;
-        for (int i = 0; i < SAVANNA_ECS_KEY_BIT_COUNT; ++i)
+        for (int i = 0; i < k_NumberOfTestElements; ++i)
         {
-            if (ids[i].m_Set != 0)
+            if (!allUnique)
+            {
+                break;
+            }
+
+            auto keyRingIndex = ids[i].GetRingIndex();
+            if (keyRingIndex != 0)
             {
                 ++alternateSetCount;
             }
 
-            for (int j = 0; j < i; ++j)
+            for (int j = i + 1; j < k_NumberOfTestElements; ++j)
             {
                 if (i == j)
                 {
@@ -124,16 +130,15 @@ namespace Savanna::Entities::Tests
 
                 auto componentId1 = ids[i];
                 auto componentId2 = ids[j];
-                if (componentId1.m_FullComponentKey == componentId2.m_FullComponentKey)
+                if (componentId1 == componentId2)
                 {
                     allUnique = false;
-                    break;
                 }
             }
         }
 
         EXPECT_TRUE(allUnique);
-        EXPECT_TRUE(alternateSetCount > 1);
+        EXPECT_TRUE(alternateSetCount >= 1);
         EXPECT_EQ(alternateSetCount, expectedNumberOfComponentsInNextSet);
     }
 }

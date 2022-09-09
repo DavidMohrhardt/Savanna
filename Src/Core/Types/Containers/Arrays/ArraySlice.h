@@ -26,8 +26,8 @@ namespace Savanna
             : m_DataPtr(pData)
             , m_Size(size)
         {
-            assert(pData != nullptr);
-            assert(size > 0);
+            SAVANNA_ASSERT(pData != nullptr);
+            SAVANNA_ASSERT(size > 0);
         }
 
         // TODO @DavidMohrhardt consider disallowing copy and move construction.
@@ -40,8 +40,8 @@ namespace Savanna
     public:
         void CopyTo(T* pDestination, const size_t& start = 0, const size_t& length = 1) const
         {
-            assert(length < m_Size);
-            assert(pDestination != nullptr);
+            SAVANNA_ASSERT(length < m_Size);
+            SAVANNA_ASSERT(pDestination != nullptr);
             memcpy(pDestination, m_DataPtr, m_Size * sizeof(T));
         }
 

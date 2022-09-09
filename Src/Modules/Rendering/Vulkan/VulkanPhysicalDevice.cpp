@@ -11,7 +11,7 @@
 
 #include <cstdlib>
 #include <mutex>
-#include <cassert>
+#include <assert.h>
 #include <vector>
 #include <stdexcept>
 

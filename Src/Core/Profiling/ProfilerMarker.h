@@ -27,9 +27,6 @@ namespace Savanna
     class ProfilerMarker
     {
     private:
-        // TODO @DavidMohrhardt: Add a way for the profiler to output the logs tabbed
-        static FixedString128 s_Tabs;
-    private:
         bool m_Sampling;
         FixedString256 m_ProfilerMarkerName;
 

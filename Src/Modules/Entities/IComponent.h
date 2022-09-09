@@ -11,16 +11,6 @@
 
 namespace Savanna::Entities
 {
-    struct ComponentKeyFacade
-    {
-        ComponentKey m_ComponentKey;
-
-        bool operator==(const ComponentKeyFacade& other) const { return (*this == other); }
-        bool operator!=(const ComponentKeyFacade& other) const { return !(*this == other); }
-        bool operator==(const ComponentKey& other) const { return m_ComponentKey.m_FullComponentKey == other.m_FullComponentKey; }
-        bool operator!=(const ComponentKey& other) const { return !operator==(other); }
-    };
-
     struct IComponent
     {
     public:

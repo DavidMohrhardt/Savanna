@@ -16,14 +16,38 @@
 
 namespace Savanna::Entities
 {
+    Paradigm::Paradigm()
+    {
+        memset(m_ParadigmKeyChain, 0, sizeof(m_ParadigmKeyChain) * sizeof(ComponentKey));
+    }
+
+    Paradigm::Paradigm(const Paradigm& other)
+    {
+        m_ParadigmMemory = other.m_ParadigmMemory;
+        memcpy(m_ParadigmKeyChain, other.m_ParadigmKeyChain, sizeof(m_ParadigmKeyChain) * sizeof(ComponentKey));
+    }
+
+    Paradigm::Paradigm(Paradigm&& other)
+    {
+        m_ParadigmMemory = other.m_ParadigmMemory;
+        memcpy(m_ParadigmKeyChain, other.m_ParadigmKeyChain, sizeof(m_ParadigmKeyChain) * sizeof(ComponentKey));
+        other.m_ParadigmMemory = nullptr;
+        other.m_ParadigmMemorySize = 0;
+    }
+
     Paradigm::Paradigm(const void* pParadigmMemory, const size_t& paradigmMemorySize)
         : m_ParadigmMemory(pParadigmMemory)
         , m_ParadigmMemorySize(paradigmMemorySize)
     {
-        assert(pParadigmMemory != nullptr);
-        assert(paradigmMemorySize > 0);
+        SAVANNA_ASSERT(pParadigmMemory != nullptr);
+        SAVANNA_ASSERT(paradigmMemorySize > 0);
 
         memset(m_ParadigmKeyChain, 0, sizeof(ComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
+    }
+
+    Paradigm::~Paradigm()
+    {
+        // Release memory
     }
 
     void Paradigm::AddComponentToParadigmInternal(
@@ -36,11 +60,6 @@ namespace Savanna::Entities
             throw RuntimeErrorException("Cannot add new components to paradigms that are already storing entity paradigms.");
         }
 
-        if (alignment > m_LargestComponentAlignment)
-        {
-            m_LargestComponentAlignment = alignment;
-        }
-
         size_t newSize = m_EntityParadigmSize + size;
         if (newSize > m_ParadigmMemorySize)
         {
@@ -49,7 +68,7 @@ namespace Savanna::Entities
         }
 
         m_EntityParadigmSize = newSize;
-        m_ParadigmKeyChain[componentKey.m_Set].m_Key |= componentKey.m_Key;
+        m_ParadigmKeyChain[componentKey.GetRingIndex()] |= componentKey;
     }
 
     ArraySlice<ComponentKey> Paradigm::GetKeyChain() const

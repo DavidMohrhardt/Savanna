@@ -13,3 +13,16 @@
 
 // Profiler Headers
 
+/**
+ * @brief General error codes for the engine. Modules may define their own error codes.
+ */
+typedef enum SavannaErrorCode
+{
+    SavannaErrorCode_Failure = 0,
+    SavannaErrorCode_Success = 1,
+    SavannaErrorCode_InvalidArgument = 2,
+    SavannaErrorCode_OutOfMemory = 3,
+    SavannaErrorCode_NotImplemented = 4,
+    SavannaErrorCode_NotSupported = 5,
+    SavannaErrorCode_Unknown = 6,
+} SavannaErrorCode;

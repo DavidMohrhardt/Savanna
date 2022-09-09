@@ -27,30 +27,30 @@ namespace Savanna
          * @brief TODO @DavidMohrhardt Document
          *
          */
-        VULKAN = 0x1,
+        VULKAN,
 
-        /**
-         * @brief TODO @DavidMohrhardt Document
-         *
-         */
-        DX12 = 0x2,
+        // /**
+        //  * @brief TODO @DavidMohrhardt Document
+        //  *
+        //  */
+        // DX12,
 
-        /**
-         * @brief TODO @DavidMohrhardt Document
-         *
-         */
-        DX12ULTIMATE = 0x3,
+        // /**
+        //  * @brief TODO @DavidMohrhardt Document
+        //  *
+        //  */
+        // DX12ULTIMATE,
 
-        /**
-         * @brief TODO @DavidMohrhardt Document
-         *
-         */
-        Metal = 0x4,
+        // /**
+        //  * @brief TODO @DavidMohrhardt Document
+        //  *
+        //  */
+        // METAL,
 
-        /**
-         * @brief TODO @DavidMohrhardt Document
-         *
-         */
-        OPENGL = 0x5,
+        // /**
+        //  * @brief TODO @DavidMohrhardt Document
+        //  *
+        //  */
+        // OPENGL,
     };
 } // namespace Savanna

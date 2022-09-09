@@ -3,7 +3,7 @@
 // System includes
 #include <stdio.h>
 #include <stdlib.h>
-#include <cassert>
+#include <assert.h>
 #include <string>
 #include <stdlib.h>
 #include <fstream>

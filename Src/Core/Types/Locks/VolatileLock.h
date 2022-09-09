@@ -2,7 +2,7 @@
 
 // Idea gathered from Game Engine Architecture 3E by Jason Gregory pg. 326
 
-#include <cassert>
+#include <assert.h>
 
 // #include <Utilities/PreprocessorDefinitions/InterfaceDefinitions.h>
 #include <Utilities/SavannaCoding.h>
@@ -13,7 +13,7 @@ namespace Savanna
     class VolatileLock
     {
     private:
-        // Prevent optimization to ensure assertions catch overlapping accesses to critical section by threads.
+        // Prevent optimization to ensure SAVANNA_ASSERTions catch overlapping accesses to critical section by threads.
         volatile bool m_Locked;
 
     public:
@@ -22,7 +22,7 @@ namespace Savanna
          */
         void Acquire()
         {
-            assert(!m_Locked);
+            SAVANNA_ASSERT(!m_Locked);
             m_Locked = true;
         }
 
@@ -31,7 +31,7 @@ namespace Savanna
          */
         void Release()
         {
-            assert(m_Locked);
+            SAVANNA_ASSERT(m_Locked);
             m_Locked = false;
         }
     };

@@ -17,11 +17,11 @@
 
 #if __cplusplus
 
-#include <cassert>
+#include <assert.h>
 #include "Types/Exceptions/SavannaException.h"
 
 #else // __cplusplus
-#include <assert.h>
+#include <cassert>
 #endif // end __cplusplus
 
 #if ENABLE_SAVANNA_ASSERTIONS
@@ -41,25 +41,5 @@
 #else
 
 #define SAVANNA_MEMORY_SAFETY_ASSERT(condition, message)
-
-#endif
-
-#if ENABLE_SAVANNA_ASSERTIONS_DEBUGGING && __cplusplus
-
-#undef SAVANNA_ASSERT
-#define SAVANNA_ASSERT(expression) \
-    if (!(condition)) \
-    { \
-        throw Savanna::RuntimeErrorException(); \
-    } \
-    assert(condition)
-
-#undef SAVANNA_MEMORY_SAFETY_ASSERT
-#define SAVANNA_MEMORY_SAFETY_ASSERT(condition, message) \
-    if (!(condition)) \
-    { \
-        throw Savanna::BadAllocationException(); \
-    } \
-    assert(condition)
 
 #endif

@@ -1,6 +1,6 @@
 /**
  * @file ComponentRegistry.cpp
- * @author David Mohrhardt (https://github.com/DavidMohrhardt/ Savanna)
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief TODO @DavidMohrhardt Document
  * @version 0.1
  * @date 2022-08-03
@@ -13,7 +13,7 @@
 #include <IComponentData.h>
 
 // Standard includes
-#include <cassert>
+#include <assert.h>
 #include <mutex>
 
 //  Savanna includes
@@ -34,9 +34,9 @@ namespace Savanna::Entities::ComponentRegistry
 
     std::mutex g_ComponentRegistryMutex;
 
-    ComponentKey g_ComponentKeyCounter = { .m_FullComponentKey = 0x1 };
+    ComponentKey g_ComponentKeyCounter = ComponentKey(0x1);
 
-    std::unordered_map<std::type_index, SavannaComponentKey> s_ComponentTypeMap = {};
+    std::unordered_map<std::type_index, ComponentKey> s_ComponentTypeMap = {};
 
     const se_ComponentKeyMask_T GetNumberOfComponentKeySets()
     {
@@ -46,7 +46,7 @@ namespace Savanna::Entities::ComponentRegistry
 #else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
 #endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        return g_ComponentKeyCounter.m_Set;
+        return g_ComponentKeyCounter.GetRingIndex();
     }
 
     const uint32 GetTotalNumberOfRegisteredComponents()
@@ -92,30 +92,32 @@ namespace Savanna::Entities::ComponentRegistry
         return s_ComponentTypeMap[typeIndex];
     }
 
+    static inline void UpdateComponentKeyCounter()
+    {
+        se_ComponentKey_t nextComponentKey = g_ComponentKeyCounter.GetKeyValue() << 1;
+        if ((nextComponentKey & k_SEComponentKeyTeethMask) != 0x0)
+        {
+            g_ComponentKeyCounter.SetKeyValue(nextComponentKey);
+        }
+        else
+        {
+            g_ComponentKeyCounter.SetRingIndex(g_ComponentKeyCounter.GetRingIndex() + 1);
+            g_ComponentKeyCounter.SetKeyValue(1);
+        }
+    }
+
     const ComponentKey RegisterComponentWithTypeIndex(const std::type_index typeIndex)
     {
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
         ComponentKey componentId = SE_INVALID_HANDLE;
-        auto ptr = &g_ComponentKeyCounter;
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
-            assert(SavannaIsValidComponentKey(g_ComponentKeyCounter) && "Component ID overflow");
+            SAVANNA_ASSERT(SavannaIsValidComponentKey(g_ComponentKeyCounter) && "Component ID overflow");
 
             componentId = g_ComponentKeyCounter;
             s_ComponentTypeMap.emplace(typeIndex, componentId);
 
-            se_ComponentKey_t maskedKey = g_ComponentKeyCounter.m_Key;
-            maskedKey <<= 1;
-
-            if (maskedKey > SAVANNA_COMPONENT_KEY_MAX_VALUE)
-            {
-                g_ComponentKeyCounter.m_Key = 0x1;
-                g_ComponentKeyCounter.m_Set++;
-            }
-            else
-            {
-                g_ComponentKeyCounter.m_Key <<= 1;
-            }
+            UpdateComponentKeyCounter();
         }
         else
         {

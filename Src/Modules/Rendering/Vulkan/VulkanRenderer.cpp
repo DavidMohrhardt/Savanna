@@ -12,6 +12,7 @@
 #include <Profiling/Profiler.h>
 
 #include "Utilities/VulkanDeviceChooser.h"
+#include "Utilities/VulkanDefinitions.h"
 
 #include <vector>
 
@@ -23,7 +24,7 @@ namespace Savanna::Rendering::Vulkan
         VulkanPhysicalDevice* outPhysicalDevice)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::SelectPhysicalDevice()");
-        assert(outPhysicalDevice != nullptr && "outPhysicalDevice is nullptr!");
+        SAVANNA_ASSERT(outPhysicalDevice != nullptr && "outPhysicalDevice is nullptr!");
 
         uint32 numberOfPhysicalDevices =
             VulkanPhysicalDevice::GetPhysicalDeviceCount(instance.GetVkInstance());
@@ -47,7 +48,7 @@ namespace Savanna::Rendering::Vulkan
         VulkanGraphicsDevice* outGfxDevice)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::CreateLogicalDevice()");
-        assert(outGfxDevice != nullptr && "outGfxDevice is nullptr!");
+        SAVANNA_ASSERT(outGfxDevice != nullptr && "outGfxDevice is nullptr!");
 
         m_QueueFamilyIndices = VulkanQueueFamilyIndices(m_PhysicalDevice.GetPhysicalDevice(), &m_DisplaySurface);
 
@@ -143,7 +144,7 @@ namespace Savanna::Rendering::Vulkan
         , m_DisplaySurface(VK_NULL_HANDLE)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor()");
-        assert(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
+        SAVANNA_ASSERT(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
         m_Instance = VulkanInstance(
             pCreateInfo->m_ApplicationName,
             pCreateInfo->m_EngineName,
@@ -166,6 +167,7 @@ namespace Savanna::Rendering::Vulkan
             m_PhysicalDevice,
             pCreateInfo,
             &m_GraphicsDevice);
+
         GetAvailableQueues();
     }
 
@@ -218,5 +220,41 @@ namespace Savanna::Rendering::Vulkan
         }
 
         return false;
+    }
+
+    void VulkanRenderer::CreateSwapchain()
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::CreateSwapchain()");
+        VkSurfaceCapabilitiesKHR surfaceCapabilities;
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_PhysicalDevice.GetPhysicalDevice(), m_DisplaySurface, &surfaceCapabilities);
+        uint32 numFormats, numPresentationModes;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(m_PhysicalDevice.GetPhysicalDevice(), m_DisplaySurface, &numFormats, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(m_PhysicalDevice.GetPhysicalDevice(), m_DisplaySurface, &numPresentationModes, nullptr);
+
+        // TODO @DavidMohrhardt - Return error code
+        if (numFormats == 0 || numPresentationModes == 0)
+        {
+            throw RuntimeErrorException("No surface formats or presentation modes available");
+        }
+
+        VkSurfaceFormatKHR* surfaceFormats = new VkSurfaceFormatKHR[numFormats];
+        vkGetPhysicalDeviceSurfaceFormatsKHR(m_PhysicalDevice.GetPhysicalDevice(), m_DisplaySurface, &numFormats, surfaceFormats);
+        VkPresentModeKHR* surfacePresentModes = new VkPresentModeKHR[numPresentationModes];
+        vkGetPhysicalDeviceSurfacePresentModesKHR(m_PhysicalDevice.GetPhysicalDevice(), m_DisplaySurface, &numPresentationModes, surfacePresentModes);
+
+        for (int i = 0; i < numFormats; i++)
+        {
+            const VkSurfaceFormatKHR& format = surfaceFormats[i];
+            if (format.format == VK_FORMAT_UNDEFINED)
+            {
+                continue;
+            }
+
+            if (format.format == SAVANNA_VULKAN_DEFAULT_FORMAT && format.colorSpace == SAVANNA_VULKAN_DEFAULT_COLORSPACE)
+            {
+                m_SurfaceFormat = format;
+            }
+        }
+
     }
 } // namespace Savanna::Rendering::Vulkan

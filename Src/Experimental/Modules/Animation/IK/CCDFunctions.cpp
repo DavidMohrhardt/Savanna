@@ -100,7 +100,7 @@ namespace CCD
                 for(int k = 0; k < 4; k++)
                 {
                     isnanMat = isnan(jointMatrices[i][j][k]);
-                    assert(!isnanMat);
+                    SAVANNA_ASSERT(!isnanMat);
                 }
         }
 

@@ -25,6 +25,48 @@ namespace Savanna::Rendering::Vulkan
     class VulkanRenderer
     {
     private:
+        VulkanInstance m_Instance;
+        VulkanPhysicalDevice m_PhysicalDevice;
+        VulkanGraphicsDevice m_GraphicsDevice;
+
+        VulkanQueueFamilyIndices m_QueueFamilyIndices;
+        VkQueue m_GraphicsQueue;
+        VkQueue m_PresentQueue;
+        VkQueue m_ComputeQueue;
+        VkQueue m_TransferQueue;
+        // VkQueue m_SparseBindingQueue;
+
+        VkSurfaceKHR m_DisplaySurface;
+        VkSwapchainKHR m_Swapchain;
+
+        // VkExtent2D m_Extent;
+        VkSurfaceFormatKHR m_SurfaceFormat;
+        // VkImageView m_ImageView;
+        // VkImage m_Image;
+
+    public:
+        VulkanRenderer() = default;
+        VulkanRenderer(const VulkanRendererCreateInfo* const pCreateInfo);
+
+        ~VulkanRenderer();
+
+        VulkanRenderer(const VulkanRenderer& other) = delete;
+        VulkanRenderer(VulkanRenderer&& other);
+
+    public:
+        // operators
+        VulkanRenderer& operator=(const VulkanRenderer& other) = delete;
+        VulkanRenderer& operator=(VulkanRenderer&& other);
+
+    private:
+        /**
+         * @brief
+         *
+         * @param physicalDevice
+         * @param device
+         * @param queueIndex
+         * @param outQueue
+         */
         static void QueryVulkanQueue(
             const VulkanPhysicalDevice& physicalDevice,
             const VulkanGraphicsDevice& device,
@@ -48,39 +90,7 @@ namespace Savanna::Rendering::Vulkan
 
         void GetAvailableQueues();
 
-    private:
-        VulkanInstance m_Instance;
-        VulkanPhysicalDevice m_PhysicalDevice;
-        VulkanGraphicsDevice m_GraphicsDevice;
-
-        VulkanQueueFamilyIndices m_QueueFamilyIndices;
-        VkQueue m_GraphicsQueue;
-        VkQueue m_PresentQueue;
-        VkQueue m_ComputeQueue;
-        VkQueue m_TransferQueue;
-        // VkQueue m_SparseBindingQueue;
-
-        VkSurfaceKHR m_DisplaySurface;
-        VkSwapchainKHR m_Swapchain;
-
-        // VkExtent2D m_Extent;
-        // VkFormat m_Format;
-        // VkImageView m_ImageView;
-        // VkImage m_Image;
-
-    public:
-        VulkanRenderer() = default;
-        VulkanRenderer(const VulkanRendererCreateInfo* const pCreateInfo);
-
-        ~VulkanRenderer();
-
-        VulkanRenderer(const VulkanRenderer& other) = delete;
-        VulkanRenderer(VulkanRenderer&& other);
-
-    public:
-        // operators
-        VulkanRenderer& operator=(const VulkanRenderer& other) = delete;
-        VulkanRenderer& operator=(VulkanRenderer&& other);
+        void CreateSwapchain();
 
     public:
         bool TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& displaySurfaceInfo);
@@ -94,5 +104,7 @@ namespace Savanna::Rendering::Vulkan
         VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
 
         VkSurfaceKHR GetDisplaySurface() const { return m_DisplaySurface; }
+
+        VkSwapchainKHR GetSwapchain() const { return m_Swapchain; }
     };
 } // namespace Savanna::Rendering::Vulkan
