@@ -5,7 +5,7 @@
 
 namespace Savanna::Entities
 {
-    SAVANNA_DECLARE_ECS_COMPONENT(Tag)
+    SAVANNA_DECLARE_ECS_COMPONENT_STRUCT(Tag)
     {
         HashString m_Tag;
     };

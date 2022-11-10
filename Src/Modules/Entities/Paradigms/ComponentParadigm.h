@@ -14,6 +14,8 @@
 
 #include "Entities.h"
 
+#include "ParadigmLayoutDescriptor.h"
+
 // Core Includes
 #include <Math/MathHelpers.h>
 #include <Memory/MemoryBlocks.h>
@@ -74,6 +76,11 @@ namespace Savanna::Entities
          */
         uint32 m_EntityCount = 0;
 
+        /**
+         * @brief A descriptor of the memory layout of this paradigm.
+         */
+        ParadigmLayoutDescriptor m_ParadigmLayoutDescriptor;
+
         union
         {
             /**
@@ -121,11 +128,12 @@ namespace Savanna::Entities
             ComponentKey componentKey,
             size_t* outArrayLength);
 
+        void UpdateParadigmLayout();
+
     public:
         ArraySlice<ComponentKey> GetKeyChain() const;
 
     public:
-        // TODO @DavidMohrhardt Return a proper ArrayView instead of a pointer.
         template <typename T>
         SAVANNA_NO_DISCARD ArraySlice<IComponentData<T>*> GetComponents(size_t* pOutComponentArrayLength)
         {

@@ -11,16 +11,10 @@
 #include "ComponentParadigm.h"
 
 // C Standard Library Includes
-#include <cassert>
 #include <cstring>
 
 namespace Savanna::Entities
 {
-    Paradigm::Paradigm()
-    {
-        memset(m_ParadigmKeyChain, 0, sizeof(m_ParadigmKeyChain) * sizeof(ComponentKey));
-    }
-
     Paradigm::Paradigm(const Paradigm& other)
     {
         m_ParadigmMemory = other.m_ParadigmMemory;
@@ -47,9 +41,68 @@ namespace Savanna::Entities
 
     Paradigm::~Paradigm()
     {
-        // Release memory
+        // TODO @DavidMohrhardt Release memory
     }
 
+    struct ComponentMetaData
+    {
+    private:
+        size_t m_TotalSize;
+        size_t m_NumberOfComponents;
+        const size_t* m_pComponentSizeInfo;
+        const size_t* m_pComponentAlignmentInfo;
+
+    public:
+        ComponentMetaData(const size_t& totalSize, const size_t& numberOfComponents, const size_t* pComponentSizeInfo, const size_t* pComponentAlignmentInfo)
+            : m_TotalSize(totalSize)
+            , m_NumberOfComponents(numberOfComponents)
+            , m_pComponentSizeInfo(pComponentSizeInfo)
+            , m_pComponentAlignmentInfo(pComponentAlignmentInfo)
+        {
+        }
+
+        inline size_t GetTotalSize() const
+        {
+            return m_TotalSize;
+        }
+
+        inline size_t GetNumberOfComponents() const
+        {
+            return m_NumberOfComponents;
+        }
+
+        inline const size_t* GetComponentSizeInfo() const
+        {
+            return m_pComponentSizeInfo;
+        }
+
+        inline const size_t* GetComponentAlignmentInfo() const
+        {
+            return m_pComponentAlignmentInfo;
+        }
+    };
+
+    // void Paradigm::UpdateParadigmLayout()
+    // {
+    //     // For each component in the paradigm, update the component layout
+    //     // ComponentMetaData metaData = ComponentRegistry::AcquireComponentMetaDataFromKeyChain(m_ParadigmKeyChain);
+    //     // size_t totalSize = metaData.GetTotalSize();
+    //     // size_t numberOfComponents = metaData.GetNumberOfComponents();
+
+    //     // void* pScratchMemory = malloc(m_ParadigmMemorySize);
+    //     // memcpy(pScratchMemory, m_ParadigmMemory, m_ParadigmMemorySize);
+
+    //     // for (size_t i = 0; i < numberOfComponents; i++)
+    //     // {
+    //     //     // TODO @DavidMohrhardt Need to store the previous component layout to properly copy the data
+    //     //     // to the new layout.
+
+    //     // }
+
+    //     // ComponentRegistry::ReleaseComponentMetaDataFromKeyChain(metaData);
+    // }
+
+    // TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.
     void Paradigm::AddComponentToParadigmInternal(
         const size_t& size,
         const size_t& alignment,
@@ -69,6 +122,10 @@ namespace Savanna::Entities
 
         m_EntityParadigmSize = newSize;
         m_ParadigmKeyChain[componentKey.GetRingIndex()] |= componentKey;
+
+        // TODO @DavidMohrhardt consider making this asynchronous
+        // as it's likely to involve a lot of memory movement
+        UpdateParadigmLayout();
     }
 
     ArraySlice<ComponentKey> Paradigm::GetKeyChain() const
