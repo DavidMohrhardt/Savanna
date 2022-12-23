@@ -27,13 +27,19 @@ namespace Savanna::Rendering::Vulkan
         VulkanGraphicsDevice(const VulkanGraphicsDevice&) = delete;
         VulkanGraphicsDevice(VulkanGraphicsDevice&&);
 
-        VulkanGraphicsDevice(const VulkanPhysicalDevice& physicalDevice, VkDeviceCreateInfo& createInfo);
+        VulkanGraphicsDevice(const VulkanPhysicalDevice& physicalDevice, const VkDeviceCreateInfo* inCreateInfo);
 
         ~VulkanGraphicsDevice();
 
     public:
         VulkanGraphicsDevice& operator=(VulkanGraphicsDevice&) = delete;
         VulkanGraphicsDevice& operator=(VulkanGraphicsDevice&&);
+
+        operator VkDevice() const { return m_Device; }
+        operator VkDevice*() { return &m_Device; }
+        operator const VkDevice*() const { return &m_Device; }
+        operator VkDevice&() { return m_Device; }
+        operator const VkDevice&() const { return m_Device; }
 
     public:
         VkDevice GetVkDevice() const;

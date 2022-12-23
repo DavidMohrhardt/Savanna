@@ -22,11 +22,11 @@ namespace Savanna::Rendering::Vulkan
 
     VulkanGraphicsDevice::VulkanGraphicsDevice(
         const VulkanPhysicalDevice& physicalDevice,
-        VkDeviceCreateInfo& createInfo)
+        const VkDeviceCreateInfo* pCreateInfo)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanGraphicsDevice::VulkanGraphicsDevice ctor()");
         VK_CALL_OR_THROW(
-            vkCreateDevice(physicalDevice.GetPhysicalDevice(), &createInfo, nullptr, &m_Device),
+            vkCreateDevice(physicalDevice, pCreateInfo, nullptr, &m_Device),
             "Failed to create logical device!");
     }
 

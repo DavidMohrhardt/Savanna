@@ -51,6 +51,8 @@ namespace Savanna::Rendering::Vulkan
         VulkanPhysicalDevice& operator=(const VulkanPhysicalDevice& other) = default;
         VulkanPhysicalDevice& operator=(VulkanPhysicalDevice&& other) = default;
 
+        operator VkPhysicalDevice() const { return m_Descriptor.physicalDevice; }
+
     public:
         const VulkanPhysicalDeviceDescriptor& GetDescriptor() const;
         const VkPhysicalDevice& GetPhysicalDevice() const;

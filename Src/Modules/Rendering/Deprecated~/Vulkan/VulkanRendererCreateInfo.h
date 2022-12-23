@@ -24,9 +24,11 @@ namespace Savanna::Rendering::Vulkan
 
         const char** m_InstanceExtensions;
         const char** m_DeviceExtensions;
+        const char** m_EnabledLayerNames;
 
         uint32 m_InstanceExtensionsCount;
         uint32 m_DeviceExtensionsCount;
+        uint32 m_EnabledLayerCount;
 
         VulkanSurfaceCreateInfoUnion m_SurfaceCreateInfo;
         VkSwapchainCreateInfoKHR m_SwapchainCreateInfo;

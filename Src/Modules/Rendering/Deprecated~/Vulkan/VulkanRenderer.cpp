@@ -45,42 +45,30 @@ namespace Savanna::Rendering::Vulkan
     void VulkanRenderer::CreateLogicalDevice(
         const VulkanPhysicalDevice& physicalDevice,
         const VulkanRendererCreateInfo* pCreateInfo,
-        VulkanGraphicsDevice* outGfxDevice)
+        VulkanGraphicsDevice& outGfxDevice)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::CreateLogicalDevice()");
-        SAVANNA_ASSERT(outGfxDevice != nullptr && "outGfxDevice is nullptr!");
 
         m_QueueFamilyIndices = VulkanQueueFamilyIndices(m_PhysicalDevice.GetPhysicalDevice(), &m_DisplaySurface);
 
-        std::vector<VkDeviceQueueCreateInfo> queueCreationInfos(2);
-        queueCreationInfos.clear();
+        const float queuePriority = 1.0f;
 
-        uint32 indices[] = {
-            m_QueueFamilyIndices.m_PresentQueueFamilyIndex.value(),
-            m_QueueFamilyIndices.m_PresentQueueFamilyIndex.value()
-        };
-
-        float queuePriority = 1.0f;
-        for (int i = 0; i < 2; i++)
-        {
-            VkDeviceQueueCreateInfo queueCreateInfo {};
-            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueCreateInfo.queueFamilyIndex = indices[i];
-            queueCreateInfo.queueCount = 1;
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-            queueCreationInfos.emplace_back(queueCreateInfo);
-        }
+        VkDeviceQueueCreateInfo queueCreateInfo {};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = m_QueueFamilyIndices.m_GraphicsQueueFamilyIndex.value();
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
 
         VkPhysicalDeviceFeatures deviceFeatures{};
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.queueCreateInfoCount = queueCreationInfos.size();
-        createInfo.pQueueCreateInfos = queueCreationInfos.data();
+        createInfo.queueCreateInfoCount = 1;
+        createInfo.pQueueCreateInfos = &queueCreateInfo;
         createInfo.pEnabledFeatures = &deviceFeatures;
         createInfo.enabledExtensionCount = pCreateInfo->m_DeviceExtensionsCount;
         createInfo.ppEnabledExtensionNames = pCreateInfo->m_DeviceExtensions;
 
-        *outGfxDevice = VulkanGraphicsDevice(physicalDevice, createInfo);
+        outGfxDevice = VulkanGraphicsDevice(physicalDevice, &createInfo);
     }
 
     void VulkanRenderer::GetAvailableQueues()
@@ -136,6 +124,11 @@ namespace Savanna::Rendering::Vulkan
         *outQueue = device.GetVkQueue(queueIndex);
     }
 
+    /**
+     * @brief Construct a new Vulkan Renderer:: Vulkan Renderer object
+     *
+     * @param pCreateInfo
+     */
     VulkanRenderer::VulkanRenderer(const VulkanRendererCreateInfo* const pCreateInfo)
         : m_Instance()
         , m_PhysicalDevice()
@@ -144,31 +137,7 @@ namespace Savanna::Rendering::Vulkan
         , m_DisplaySurface(VK_NULL_HANDLE)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::VulkanRenderer ctor()");
-        SAVANNA_ASSERT(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
-        m_Instance = VulkanInstance(
-            pCreateInfo->m_ApplicationName,
-            pCreateInfo->m_EngineName,
-            pCreateInfo->m_InstanceExtensions,
-            pCreateInfo->m_InstanceExtensionsCount);
-
-        if (!m_Instance.IsValid())
-        {
-            throw RuntimeErrorException("Failed to create Vulkan instance!");
-        }
-
-        SelectPhysicalDevice(m_Instance, pCreateInfo, &m_PhysicalDevice);
-        if (!TryCreateDisplaySurface(pCreateInfo->m_SurfaceCreateInfo))
-        {
-            // Rendering to display not supported.
-            throw RuntimeErrorException("Failed to create Vulkan display surface!");
-        }
-
-        CreateLogicalDevice(
-            m_PhysicalDevice,
-            pCreateInfo,
-            &m_GraphicsDevice);
-
-        GetAvailableQueues();
+        Initialize(pCreateInfo);
     }
 
     VulkanRenderer::VulkanRenderer(VulkanRenderer&& other)
@@ -199,7 +168,35 @@ namespace Savanna::Rendering::Vulkan
         return *this;
     }
 
-    bool VulkanRenderer::TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& surfaceCreateInfo)
+    void VulkanRenderer::Initialize(const VulkanRendererCreateInfo *const pCreateInfo)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER("VulkanRenderer::Initialize(const VulkanRendererCreateInfo* const pCreateInfo)");
+        SAVANNA_ASSERT(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
+        m_Instance = VulkanInstance(
+            pCreateInfo->m_ApplicationName,
+            pCreateInfo->m_EngineName,
+            pCreateInfo->m_InstanceExtensions,
+            pCreateInfo->m_InstanceExtensionsCount);
+
+        if (!m_Instance.IsValid())
+        {
+            throw RuntimeErrorException("Failed to create Vulkan instance!");
+        }
+
+        SelectPhysicalDevice(m_Instance, pCreateInfo, &m_PhysicalDevice);
+
+        if (!TryCreateDisplaySurface(pCreateInfo->m_SurfaceCreateInfo))
+        {
+            // Rendering to display not supported.
+            throw RuntimeErrorException("Failed to create Vulkan display surface!");
+        }
+
+        CreateLogicalDevice(m_PhysicalDevice, pCreateInfo, &m_GraphicsDevice);
+
+        GetAvailableQueues();
+    }
+
+    bool VulkanRenderer::TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion &surfaceCreateInfo)
     {
         if (!m_Instance.IsValid())
         {
@@ -255,6 +252,5 @@ namespace Savanna::Rendering::Vulkan
                 m_SurfaceFormat = format;
             }
         }
-
     }
 } // namespace Savanna::Rendering::Vulkan

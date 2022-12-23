@@ -2,6 +2,8 @@
 
 #include "SavannaVulkan.h"
 
+#include <vulkan/vulkan.h>
+
 #include "Utilities/VulkanCallbacks.h"
 
 namespace Savanna::Rendering::Vulkan
@@ -10,7 +12,7 @@ namespace Savanna::Rendering::Vulkan
     {
     // Constants
     private:
-        static constexpr const char* k_DefaultDebuggingExtensionName = "VK_EXT_debug_utils";
+        static constexpr const char* k_DefaultDebuggingExtensionName = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
     // Static Members
     private:

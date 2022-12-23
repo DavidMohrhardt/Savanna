@@ -86,13 +86,14 @@ namespace Savanna::Rendering::Vulkan
         void CreateLogicalDevice(
             const VulkanPhysicalDevice& physicalDevice,
             const VulkanRendererCreateInfo* pCreateInfo,
-            VulkanGraphicsDevice* outGfxDevice);
+            VulkanGraphicsDevice &outGfxDevice);
 
         void GetAvailableQueues();
 
         void CreateSwapchain();
 
     public:
+        void Initialize(const VulkanRendererCreateInfo* const pCreateInfo);
         bool TryCreateDisplaySurface(const VulkanSurfaceCreateInfoUnion& displaySurfaceInfo);
 
         const VulkanInstance& GetVulkanInstance() { return m_Instance; }

@@ -16,8 +16,6 @@
 #include "Utilities/VulkanMacros.h"
 #include "Utilities/VulkanResultUtils.h"
 
-#define USE_ALTERNATE_VK_DEBUG_UTILS 1
-
 namespace Savanna::Rendering::Vulkan
 {
     // Forward Declarations
@@ -31,12 +29,7 @@ namespace Savanna::Rendering::Vulkan
             "VK_LAYER_KHRONOS_validation"
         };
 
-        const char* k_DefaultDebuggingExtensionName =
-#if USE_ALTERNATE_VK_DEBUG_UTILS
-            "VK_EXT_debug_utils";
-#else
-            "VK_EXT_DEBUG_UTILS_EXTENSION_NAME";
-#endif
+        const char* k_DefaultDebuggingExtensionName = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 
 #ifndef SAVANNA_VULKAN_DEBUGGING
         bool m_EnableValidationLayers = false;
@@ -44,14 +37,17 @@ namespace Savanna::Rendering::Vulkan
         bool m_EnableValidationLayers = true;
 #endif
 
-    private: // Static Members
-        static std::unordered_set<std::string> s_SupportedExtensions;
-        static bool s_StaticsInitialized;
-
     private: // Static Functions
-        inline static void InitializeStatics();
         inline static bool IsExtensionSupported(const char* extensionName);
         static void PrintAvailableExtensions();
+
+    private: // Static members
+        struct Statics
+        {
+            Statics();
+            std::unordered_set<std::string> m_SupportedExtensions = {};
+        };
+        static Statics s_Statics;
 
     private: // Members
         VkInstance m_VkInstance;
@@ -71,7 +67,7 @@ namespace Savanna::Rendering::Vulkan
         VulkanInstance(VkInstanceCreateInfo& createInfo);
 
         VulkanInstance();
-        VulkanInstance(VulkanInstance&& other);
+        VulkanInstance(VulkanInstance &&other);
 
         ~VulkanInstance();
 
@@ -89,9 +85,9 @@ namespace Savanna::Rendering::Vulkan
         inline const std::vector<const char*> GetActiveExtensions() const { return m_ActiveExtensions; }
 
         bool CheckValidationLayerSupport();
-        // bool RequestValidationLayerEnabled(const char* layerName);
 
     private: // Functions
+
         void SetupValidationLayersIfNeeded(
             VkInstanceCreateInfo* createInfo,
             VkDebugUtilsMessengerCreateInfoEXT* debugCreateInfo,
