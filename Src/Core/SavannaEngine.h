@@ -14,15 +14,16 @@
 // Profiler Headers
 
 /**
- * @brief General error codes for the engine. Modules may define their own error codes.
+ * @brief General error codes for the engine. Modules may define their own additional error codes.
  */
-typedef enum SavannaErrorCode
+typedef enum se_ErrorCode_t
 {
-    SavannaErrorCode_Failure = 0,
-    SavannaErrorCode_Success = 1,
-    SavannaErrorCode_InvalidArgument = 2,
-    SavannaErrorCode_OutOfMemory = 3,
-    SavannaErrorCode_NotImplemented = 4,
-    SavannaErrorCode_NotSupported = 5,
-    SavannaErrorCode_Unknown = 6,
-} SavannaErrorCode;
+    SavannaErrorCodeFailure = 0,
+    SavannaErrorCodeSuccess = 1,
+    SavannaErrorCodeInvalidArgument = 2,
+    SavannaErrorCodeOutOfMemory = 3,
+    SavannaErrorCodeNotImplemented = 4,
+    SavannaErrorCodeNotSupported = 5,
+    SavannaErrorCodeUnknown = 6,
+} se_ErrorCode_t;
+DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(se_ErrorCode_t, ErrorCode);
