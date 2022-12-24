@@ -1,8 +1,12 @@
 Write-Host "Preparing Savanna Development Environment..."
 Write-Host ""
 
-# $7z_dir="./BuildTools/7z";
-$ArtifactsJson="./Artifacts/Artifacts.json";
+# Run from the directory of the script
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+Set-Location $scriptDir
+
+# $7z_dir="$scriptDir/BuildTools/7z";
+$ArtifactsJson="$scriptDir/Artifacts/Artifacts.json";
 
 $Artifacts = Get-Content "$ArtifactsJson" -Raw | ConvertFrom-Json
 
@@ -14,7 +18,7 @@ foreach ($Artifact in $Artifacts)
 {
     foreach ($FileName in $($Artifact.FileNames))
     {
-        $Target = "./Artifacts/$($Artifact.Name)/$($Artifact.version)"
+        $Target = "$scriptDir/Artifacts/$($Artifact.Name)/$($Artifact.version)"
         if ( ! (Test-Path "$Target/$FileName" ))
         {
             $DownloadUrl = "$($Artifact.url)/$FileName"
@@ -52,13 +56,13 @@ foreach ($job in $jobs) {
 
 Write-Host "Artificats Acquired Finished..."
 
-$PythonExtractionDir = "./BuildTools/Python"
+$PythonExtractionDir = "$scriptDir/BuildTools/Python"
 
 if (! (Test-Path "$PythonExtractionDir" ) )
 {
     # Extract python for use with build scripts
     Write-Host "Extracting python..."
-    $PythonDir="./Artifacts/Python/"
+    $PythonDir="$scriptDir/Artifacts/Python/"
 
     $PythonZip=Get-ChildItem -Path $PythonDir -Include *.zip -Recurse
     Expand-Archive -Path $PythonZip -DestinationPath $PythonExtractionDir
@@ -67,7 +71,7 @@ if (! (Test-Path "$PythonExtractionDir" ) )
 Write-Host "Extracting Artifacts..."
 
 $pythonInstallPath = Get-ChildItem -Path $PythonExtractionDir -Include python.exe -Recurse | Resolve-Path
-$buildScriptPath = "./BuildMain.py" | Resolve-Path
+$buildScriptPath = "$scriptDir/BuildMain.py" | Resolve-Path
 & $pythonInstallPath $buildScriptPath --u
 
 Write-Host "Finished preparing Savanna Development Environment"

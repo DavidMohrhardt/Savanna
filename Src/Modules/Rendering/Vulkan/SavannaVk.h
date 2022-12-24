@@ -2,16 +2,11 @@
 
 #include <vulkan/vulkan.h>
 
-#include "VulkanRenderer.h"
-
-#include "Utilities/VulkanDefinitions.h"
-#include "Utilities/VulkanMacros.h"
-
 #if __cplusplus
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Rendering::Vk
 {
 
-} // namespace Savanna::Rendering::Vulkan
+} // namespace Savanna::Rendering::Vk
 #endif // end __cplusplus
 
 // typedef VkHandle (*SavannaVkFuncOverridePtr_t)();

@@ -5,11 +5,11 @@
 #include <vulkan/vulkan.h>
 #include <map>
 
-#include "VulkanDefinitions.h"
+#include "VkDefinitions.h"
 
 namespace Savanna
 {
-    namespace Vulkan
+    namespace Vk
     {
         const static std::map<VkResult, const char*> k_VkResultToStringTable
         {
@@ -61,7 +61,7 @@ namespace Savanna
             SAVANNA_ENUM_STRING_PAIR_DECL(VK_RESULT_MAX_ENUM)
         };
 
-        class VulkanResultUtils
+        class VkResultUtils
         {
         public:
             inline static const char* ToString(VkResult result)
@@ -69,9 +69,9 @@ namespace Savanna
                 return k_VkResultToStringTable.at(result);
             }
         private:
-            VulkanResultUtils() = delete;
+            VkResultUtils() = delete;
         };
-    } // namespace Vulkan
+    } // namespace Vk
 
 } // namespace Savanna
 

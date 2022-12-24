@@ -11,7 +11,7 @@
  *      - Use Class instead of Struct.
  *          - Structs should be reserved for pure data types.
  *      - Only single inheritance is allowed.  Any and all multiple inheritance classes will be tossed aside.  Don't waste your time.
- *      - Friend classes are acceptable except in the case where there would be more than one friend class. Outside of tests of course.
+ *      - Friend classes are acceptable except in the case where there would be more than one friend class. Acceptable in tests.
  * Templates:
  *      - Should be avoided if there are less than four generic use cases.
  *          - This is to cut down on compile time and obfuscation of the code base.
@@ -23,8 +23,8 @@
 /// - Namespaces follows the following format: Savanna::<ModuleName>::<OptionalSubModuleName>
 ///     Examples:
 ///     - Savanna (This is the root namespace and only used within the Core Library)
-///     - Savanna::Graphics (This is the Graphics namespace for the generalized graphics API)
-///     - Savanna::Graphics::Vulkan (This is the namespace for the Vulkan graphics implementation of the Savanna::Graphics namespace)
+///     - Savanna::Rendering (This is the Rendering namespace for the generalized graphics API)
+///     - Savanna::Rendering::Vk (This is the namespace for the Vulkan graphics implementation of the Savanna::Rendering namespace)
 namespace Savanna::CodingStandard
 {
     class ExampleClass

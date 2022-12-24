@@ -10,6 +10,12 @@ project(Savanna VERSION 0.1)
 # Set Universal variables
 set(module_path ${PROJECT_SOURCE_DIR}/../Buildscripts/CMake/Modules/*.cmake)
 
+# If on windows then run Prepare.ps1 which exists in the root directory
+if(WIN32)
+    # make sure to execute process from the root directory
+    execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${PROJECT_SOURCE_DIR}/../Prepare.ps1)
+endif()
+
 # Include all modules
 file(GLOB_RECURSE modules ${module_path})
 foreach(module ${modules})

@@ -1,14 +1,14 @@
 /**
- * @file VulkanDeviceChooser.cpp
+ * @file VkDeviceChooser.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
  * @date 2022-08-19
  */
 
-#include "VulkanDeviceChooser.h"
+#include "VkDeviceChooser.h"
 
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Rendering::Vk
 {
     bool CheckExtensionSupport(
         const VkPhysicalDevice device,
@@ -258,8 +258,8 @@ namespace Savanna::Rendering::Vulkan
     }
 
     uint32 ScoreDeviceDescriptor(
-        const VulkanPhysicalDeviceDescriptor& deviceDescriptor,
-        const VulkanDeviceScoringFuncs& scoringFunctionPtrs,
+        const VkPhysicalDeviceDescriptor& deviceDescriptor,
+        const VkDeviceScoringFuncs& scoringFunctionPtrs,
         uint32& score)
     {
         uint32 typeScore = 0;
@@ -297,12 +297,12 @@ namespace Savanna::Rendering::Vulkan
         return true;
     }
 
-    bool TryChooseVulkanDevice(
-        const VulkanPhysicalDevice* devices,
+    bool TryChooseVkDevice(
+        const VkPhysicalDevice* devices,
         const uint32& count,
-        const VulkanRendererCreateInfo* pCreateInfo,
-        VulkanPhysicalDevice* pOutSelectedDevice,
-        const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
+        const VkRendererCreateInfo* pCreateInfo,
+        VkPhysicalDevice* pOutSelectedDevice,
+        const VkDeviceScoringFuncs& scoringFunctionPtrs)
     {
         if (pOutSelectedDevice == nullptr)
         {
@@ -340,4 +340,4 @@ namespace Savanna::Rendering::Vulkan
 
         return foundDevice;
     }
-} // namespace Savanna::Vulkan
+} // namespace Savanna::Vk

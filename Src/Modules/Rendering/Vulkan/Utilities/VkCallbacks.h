@@ -3,9 +3,9 @@
 #include <SavannaEngine.h>
 
 #include <vulkan/vulkan.h>
-#include "VulkanDefinitions.h"
+#include "VkDefinitions.h"
 
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Rendering::Vk
 {
     static inline VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -20,4 +20,4 @@ namespace Savanna::Rendering::Vulkan
 
         return VK_FALSE;
     }
-} // namespace Vulkan
+} // namespace Vk

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(LIBRARY_NAME SavannaVulkan)
+set(LIBRARY_NAME SavannaVk)
 
 # Include all modules
 file(GLOB_RECURSE modules ${PROJECT_SOURCE_DIR}/Buildscripts/CMake/Modules/*.cmake)
