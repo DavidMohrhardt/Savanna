@@ -1,26 +1,13 @@
 #pragma once
 
-#include "CompilerDefinitions.h"
+// Savanna Interface API
 
-#if SAVANNA_COMPILER_MSVC
-
-/**
- * @brief Defines interface exporting to be __declspec(dllexport).
- */
-#define SAVANNA_INTERFACE_EXPORT __declspec(dllexport)
-
+#if defined(__CYGWIN__) || defined(Win32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    #define SAVANNA_INTERFACE_API __stdcall
+    #define SAVANNA_INTERFACE_EXPORT __declspec(dllexport)
+    #define SAVANNA_EXPORT(__type) extern "C" __type SAVANNA_INTERFACE_EXPORT SAVANNA_INTERFACE_API
 #else
-
-/**
- * @brief Defines interface exporting to be nothing.
- */
-#define SAVANNA_INTERFACE_EXPORT
-
+    #define SAVANNA_INTERFACE_API
+    #define SAVANNA_INTERFACE_EXPORT
+    #define SAVANNA_EXPORT(__type) extern "C" SAVANNA_INTERFACE_EXPORT __type SAVANNA_INTERFACE_API
 #endif
-
-/**
- * @brief Defines the common calling convention for interface functions to be __cdecl
- */
-#define SAVANNA_INTERFACE_CALL __cdecl
-
-#define SAVANNA_EXPORT(returnType) extern "C" SAVANNA_INTERFACE_EXPORT returnType SAVANNA_CALL

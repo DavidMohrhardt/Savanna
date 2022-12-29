@@ -9,9 +9,22 @@
  */
 #pragma once
 
+// Preprocessor definitions
+#include "PreprocessorDefinitions/ArchitectureDefinitions.h"
+#include "PreprocessorDefinitions/CompilerDefinitions.h"
+#include "PreprocessorDefinitions/EngineVersionDefinitions.h"
+#include "PreprocessorDefinitions/EngineWideDefinitions.h"
+#include "PreprocessorDefinitions/InterfaceDefinitions.h"
+#include "PreprocessorDefinitions/PlatformDefinitions.h"
+
+// Common types
 #include "Types/Primitive/PrimitiveTypes.h"
 #include "Types/Primitive/FloatingPointUnions.h"
 
+#include "Types/Enums/Enumeration.h"
+#include "Types/Enums/Flags.h"
+
+// Assertions
 #include "Assertions/SavannaAssertions.h"
 
 // These macro headers are guarded in case compiling with C rather than C++ so it's safe to include
@@ -20,15 +33,9 @@
 #include "Macros/CppTypeDefs.h"
 #include "Macros/Enums.h"
 
+// Some common math helpers
 #include "Math/MathHelpers.h"
 #include "Math/PointerMath.h"
-
-#include "PreprocessorDefinitions/ArchitectureDefinitions.h"
-#include "PreprocessorDefinitions/CompilerDefinitions.h"
-#include "PreprocessorDefinitions/EngineVersionDefinitions.h"
-#include "PreprocessorDefinitions/EngineWideDefinitions.h"
-#include "PreprocessorDefinitions/InterfaceDefinitions.h"
-#include "PreprocessorDefinitions/PlatformDefinitions.h"
 
 #ifdef __cplusplus
 

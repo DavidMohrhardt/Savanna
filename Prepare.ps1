@@ -54,7 +54,7 @@ foreach ($job in $jobs) {
     Receive-Job -Job $job | Out-Null
 }
 
-Write-Host "Artificats Acquired Finished..."
+Write-Host "Finished Acquiring Artifacts..."
 
 $PythonExtractionDir = "$scriptDir/BuildTools/Python"
 

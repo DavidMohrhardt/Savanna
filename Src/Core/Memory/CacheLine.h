@@ -125,6 +125,16 @@ namespace Savanna
             return &m_CacheLines;
         }
 
+        // Add operator overloads for using the underlying data type
+        inline T& operator*() { return m_Data; }
+        inline T* operator->() { return &m_Data; }
+        inline const T& operator*() const { return m_Data; }
+        inline const T* operator->() const { return &m_Data; }
+        inline operator T&() { return m_Data; }
+        inline operator const T&() const { return m_Data; }
+        inline operator T*() { return &m_Data; }
+        inline operator const T*() const { return &m_Data; }
+
     private:
         L1CacheWidthContainer(T&& instance) : m_Data(std::move(instance)) {}
 
