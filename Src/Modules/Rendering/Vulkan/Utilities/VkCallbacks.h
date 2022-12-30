@@ -5,7 +5,7 @@
 #include <vulkan/vulkan.h>
 #include "VkDefinitions.h"
 
-namespace Savanna::Rendering::Vk
+namespace Savanna::Gfx::Vk
 {
     static inline VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -15,9 +15,9 @@ namespace Savanna::Rendering::Vk
     {
         if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
         {
-            SAVANNA_FATAL_LOG("Validation Layer: %s", pCallbackData->pMessage);
+            SAVANNA_FATAL_LOG("Validation Layer: {}", pCallbackData->pMessage);
         }
 
         return VK_FALSE;
     }
-} // namespace Vk
+} // namespace Vulkan

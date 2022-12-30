@@ -24,7 +24,7 @@
 ///     Examples:
 ///     - Savanna (This is the root namespace and only used within the Core Library)
 ///     - Savanna::Rendering (This is the Rendering namespace for the generalized graphics API)
-///     - Savanna::Rendering::Vulkan (This is the namespace for the Vulkan graphics implementation of the Savanna::Rendering namespace)
+///     - Savanna::Gfx::Vulkan (This is the namespace for the Vulkan graphics implementation of the Savanna::Rendering namespace)
 namespace Savanna::CodingStandard
 {
     class ExampleClass

@@ -60,6 +60,6 @@ typedef enum __se_GfxDeviceCapabilityFlagsFlags
 
 /**
  * @brief When included in a C++ file, this macro declares a namespaced type definition for the type
- * __se_GfxDeviceCapabilityFlagsFlags with the fully justified name Savanna::Rendering::GfxDeviceCapabilityFlagsFlags.
+ * __se_GfxDeviceCapabilityFlagsFlags with the fully justified name Savanna::Gfx::GfxDeviceCapabilityFlagsFlags.
  */
 DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, __se_GfxDeviceCapabilityFlagsFlags, GfxDeviceCapabilityFlagsFlags);

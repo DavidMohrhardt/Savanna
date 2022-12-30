@@ -1,6 +1,6 @@
-#include "VulkanDebugMessenger.h"
+#include "VkDebugMessenger.h"
 
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Gfx::Vk
 {
     VkResult CreateDebugUtilsMessengerEXT(
         VkInstance instance,
@@ -19,36 +19,30 @@ namespace Savanna::Rendering::Vulkan
         }
     }
 
-    void VulkanDebugMessenger::PopulateDebugCreateInfo(
-        VulkanInstance* pVulkanInstance,
+    void DebugMessenger::PopulateDebugCreateInfo(
         VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
         void* pUserData)
     {
-        if (pVulkanInstance == nullptr || !pVulkanInstance->TryRequestExtension(k_DefaultDebuggingExtensionName))
-        {
-            return;
-        }
-
         pDebugCreateInfo->sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         pDebugCreateInfo->messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
         pDebugCreateInfo->messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        pDebugCreateInfo->pfnUserCallback = Savanna::Rendering::Vulkan::DebugCallback;
+        pDebugCreateInfo->pfnUserCallback = Savanna::Gfx::Vk::DebugCallback;
         pDebugCreateInfo->pUserData = pUserData; // Optional
     }
 
-    VulkanDebugMessenger::VulkanDebugMessenger(
-        VulkanInstance* pInstance,
+    DebugMessenger::DebugMessenger(
+        VkInstance instance,
         VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
         const VkAllocationCallbacks* pAllocationCallbacks)
-        : m_CreatorInstance(pInstance->GetVkInstance())
+        : m_CreatorInstance(instance)
         , m_AllocationCallbacks(pAllocationCallbacks)
     {
         VK_CALL_OR_THROW(
-            CreateDebugUtilsMessengerEXT(pInstance->GetVkInstance(), pDebugCreateInfo, pAllocationCallbacks, &m_DebugMessenger),
+            CreateDebugUtilsMessengerEXT(instance, pDebugCreateInfo, pAllocationCallbacks, &m_DebugMessenger),
             "Unable to create debug messenger.");
     }
 
-    VulkanDebugMessenger::~VulkanDebugMessenger()
+    DebugMessenger::~DebugMessenger()
     {
         PFN_vkDestroyDebugUtilsMessengerEXT func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(m_CreatorInstance, "vkDestroyDebugUtilsMessengerEXT");
         if (func != nullptr)
@@ -56,4 +50,4 @@ namespace Savanna::Rendering::Vulkan
             func(m_CreatorInstance, m_DebugMessenger, m_AllocationCallbacks);
         }
     }
-} // namespace Savanna::Rendering::Vulkan
+} // namespace Savanna::Gfx::Vk

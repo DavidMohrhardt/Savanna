@@ -10,9 +10,9 @@
 #pragma once
 
 #include <SavannaEngine.h>
-#include <SavannaVulkan.h>
+#include <SavannaVk.h>
 
-#include <Vulkan/VulkanRenderer.h>
+#include <Vulkan/VkRenderer.h>
 
 #include <Application/IApplication.h>
 #include <Types/Strings/HashString.h>
@@ -21,10 +21,9 @@
 
 #include "Window/GLFWWindowWrapper.h"
 
-namespace SavannaVulkan
+namespace Savanna::Application
 {
-    using namespace Savanna;
-    using namespace Savanna::Rendering::Vulkan;
+    using namespace Savanna::Gfx::Vk;
 
     class VulkanApplication : public Savanna::IApplication
     {
@@ -41,8 +40,8 @@ namespace SavannaVulkan
 
     private:
         GLFWWindowWrapper m_Window;
-        VulkanRenderer m_Renderer;
+        Renderer m_Renderer;
 
     private:
     };
-} // namespace SavannaVulkan
+} // namespace SavannaVk

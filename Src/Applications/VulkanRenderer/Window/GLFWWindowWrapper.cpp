@@ -1,7 +1,7 @@
 #include "GLFWWindowWrapper.h"
 #include <Profiling/Profiler.h>
 
-namespace SavannaVulkan
+namespace Savanna::Application
 {
     void InitGlfwWindow(GLFWwindow*& outWindow, int width = 1920, int height = 1080)
     {

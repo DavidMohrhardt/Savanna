@@ -17,6 +17,17 @@
 
 #if __cplusplus
 
+#define DECLARE_SAVANNA_FIXED_STRING_WITH_LENGTH(__strlen__) \
+    typedef struct alignas(8) \
+    { \
+        union \
+        { \
+            alignas(8) char characters[ __strlen__ ]; \
+            alignas(8) __se_byte bytes[ __strlen__ ]; \
+        }; \
+    } __se_FixedString##__strlen__; \
+    DECLARE_SAVANNA_CPP_FIXED_STRING_WITH_LENGTH(__strlen__);
+
 #define DECLARE_SAVANNA_CPP_FIXED_STRING_WITH_LENGTH(__strlen__) \
 namespace Savanna \
 { \
@@ -144,17 +155,6 @@ namespace Savanna \
 #else
 #define DECLARE_SAVANNA_CPP_FIXED_STRING(__strlen__)
 #endif
-
-#define DECLARE_SAVANNA_FIXED_STRING_WITH_LENGTH(__strlen__) \
-    typedef struct alignas(8) \
-    { \
-        union \
-        { \
-            alignas(8) char characters[ __strlen__ ]; \
-            alignas(8) __se_byte bytes[ __strlen__ ]; \
-        }; \
-    } __se_FixedString##__strlen__; \
-    DECLARE_SAVANNA_CPP_FIXED_STRING_WITH_LENGTH(__strlen__);
 
 // Declarations
 

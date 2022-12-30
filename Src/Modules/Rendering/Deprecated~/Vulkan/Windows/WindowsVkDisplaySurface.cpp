@@ -1,20 +1,19 @@
 /**
- * @file WindowsVulkanDisplaySurface.cpp
+ * @file WindowsVkDisplaySurface.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief Implements Windows specific Vulkan surface creation utilities.
+ * @brief Implements Windows specific Vk surface creation utilities.
  * @version 0.1
  * @date 2022-08-21
  *
  */
-#include "WindowsVulkanDisplaySurface.h"
-#include "NativeVulkanDisplaySurfaceInfo.h"
+#include "WindowsVkDisplaySurface.h"
 
-namespace Savanna::Rendering::Vulkan::Windows
+namespace Savanna::Gfx::Vulkan::Windows
 {
     void FillOutSurfaceCreateInfo(
         HINSTANCE hInstance,
         HWND hwndHandle,
-        VulkanSurfaceCreateInfoUnion* surfaceCreateInfo)
+        VkSurfaceCreateInfoUnion* surfaceCreateInfo)
     {
         surfaceCreateInfo->win32SurfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
         surfaceCreateInfo->win32SurfaceCreateInfo.pNext = nullptr;
@@ -22,4 +21,4 @@ namespace Savanna::Rendering::Vulkan::Windows
         surfaceCreateInfo->win32SurfaceCreateInfo.hinstance = hInstance;
         surfaceCreateInfo->win32SurfaceCreateInfo.hwnd = hwndHandle;
     }
-} // namespace Savanna::Rendering::Vulkan::Windows
+} // namespace Savanna::Gfx::Vulkan::Windows

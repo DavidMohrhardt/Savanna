@@ -11,21 +11,21 @@
 
 #include "VulkanApplication.h"
 
-#include "SavannaEngine.h"
+#include <SavannaEngine.h>
+#include <Utilities/Console.h>
 
 int main(int argc, char** argvs)
 {
     try
     {
-        using namespace SavannaVulkan;
-        std::unique_ptr<VulkanApplication> application
-            = std::unique_ptr<VulkanApplication>(new VulkanApplication());
+        using namespace Savanna::Application;
+        std::unique_ptr<VulkanApplication> app = std::unique_ptr<VulkanApplication>(new VulkanApplication());
 
-        application->Run();
+        app->Run();
     }
     catch(const std::exception& e)
     {
-        SAVANNA_FATAL_LOG("%s", e.what());
+        SAVANNA_FATAL_LOG("{}", e.what());
         return 1;
     }
 

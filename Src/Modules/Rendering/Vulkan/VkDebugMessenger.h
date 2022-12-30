@@ -1,14 +1,15 @@
 #pragma once
 
-#include "SavannaVulkan.h"
+#include "SavannaVk.h"
 
 #include <vulkan/vulkan.h>
 
-#include "Utilities/VulkanCallbacks.h"
+#include "VkContext.h"
+#include "Utilities/VkCallbacks.h"
 
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Gfx::Vk
 {
-    class VulkanDebugMessenger
+    class DebugMessenger
     {
     // Constants
     private:
@@ -22,9 +23,8 @@ namespace Savanna::Rendering::Vulkan
     private:
     public:
         static void PopulateDebugCreateInfo(
-            VulkanInstance* pVulkanInstance,
             VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
-            void* pUserData);
+            void* pUserData = nullptr);
 
     // Members
     private:
@@ -37,15 +37,15 @@ namespace Savanna::Rendering::Vulkan
     // Constructors/Destructors
     private:
     public:
-        VulkanDebugMessenger(
-            VulkanInstance* pInstance,
+        DebugMessenger(
+            VkInstance instance,
             VkDebugUtilsMessengerCreateInfoEXT* pDebugCreateInfo,
             const VkAllocationCallbacks* pAllocationCallbacks);
 
-        ~VulkanDebugMessenger();
+        ~DebugMessenger();
 
     // Functions
     public:
     private:
     };
-} // namespace Savanna::Rendering::Vulkan
+} // namespace Savanna::Gfx::Vk

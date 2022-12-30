@@ -7,9 +7,9 @@
 
 #include "VkDefinitions.h"
 
-namespace Savanna::Gfx::Vk
+namespace Savanna::Gfx::Vulkan
 {
-    const static std::map<VkResult, const char*> k_VkResultToStringTable
+    constexpr static std::map<VkResult, const char*> k_VkResultToStringTable
     {
         // Copied from <vulkancore.h>
         DECLARE_SAVANNA_ENUM_STRING_PAIR(VK_SUCCESS),
@@ -59,7 +59,7 @@ namespace Savanna::Gfx::Vk
         DECLARE_SAVANNA_ENUM_STRING_PAIR(VK_RESULT_MAX_ENUM)
     };
 
-    class VulkanResultUtils
+    class VkResultUtils
     {
     public:
         inline static const char* ToString(VkResult result)
@@ -67,8 +67,8 @@ namespace Savanna::Gfx::Vk
             return k_VkResultToStringTable.at(result);
         }
     private:
-        VulkanResultUtils() = delete;
+        VkResultUtils() = delete;
     };
-} // namespace Vulkan
+} // namespace Savanna::Render::Vk
 
 #undef DECLARE_SAVANNA_ENUM_STRING_PAIR

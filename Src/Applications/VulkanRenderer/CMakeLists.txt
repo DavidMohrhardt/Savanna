@@ -62,7 +62,7 @@ set(target_static_libs
 
 # Set the shared libs as well
 set(target_shared_libs
-	SavannaVulkan)
+	SavannaVk)
 
 set(core_include_dirs
 	# Savanna Core

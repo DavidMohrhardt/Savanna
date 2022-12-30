@@ -1,16 +1,20 @@
 /**
- * @file VulkanDeviceChooser.cpp
+ * @file VkPhysicalDeviceChooser.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
  * @date 2022-08-19
  */
 
-#include "VulkanDeviceChooser.h"
+#include "SavannaVk.h"
 
-namespace Savanna::Rendering::Vulkan
+#include "VkPhysicalDeviceChooser.h"
+
+#include <vector>
+
+namespace Savanna::Gfx::Vulkan::Utils
 {
-    bool CheckExtensionSupport(
+    static bool CheckExtensionSupport(
         const VkPhysicalDevice device,
         const char** requiredExtensions,
         const uint32 requiredExtensionCount)
@@ -48,7 +52,7 @@ namespace Savanna::Rendering::Vulkan
             }
             if (!found)
             {
-                SAVANNA_WARNING_LOG("Required Device Extension %s not found.", requiredExtensions[i]);
+                SAVANNA_WARNING_LOG("Required Device Extension {} not found.", requiredExtensions[i]);
                 allExtensionsFound = false;
             }
         }
@@ -257,38 +261,26 @@ namespace Savanna::Rendering::Vulkan
         return true;
     }
 
-    uint32 ScoreDeviceDescriptor(
-        const VulkanPhysicalDeviceDescriptor& deviceDescriptor,
-        const VulkanDeviceScoringFuncs& scoringFunctionPtrs,
+    uint32 CalculateDeviceScore(
+        const VkPhysicalDevice& device,
+        const VkPhysicalDeviceScoringFuncs& scoringFunctionPtrs,
         uint32& score)
     {
         uint32 typeScore = 0;
         uint32 featuresScore = 0;
         uint32 limitsScore = 0;
 
-        bool succeeded = scoringFunctionPtrs.m_DeviceFeatureScoringFunc != nullptr
-            ? scoringFunctionPtrs.m_DeviceFeatureScoringFunc(deviceDescriptor.features, featuresScore)
-            : ScoreDeviceFeatures(deviceDescriptor.features, featuresScore);
+        // get properties
+        VkPhysicalDeviceProperties deviceProperties;
+        vkGetPhysicalDeviceProperties(device, &deviceProperties);
 
-        if (!succeeded)
-        {
-            return false;
-        }
+        // get features
+        VkPhysicalDeviceFeatures deviceFeatures;
+        vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-        succeeded = scoringFunctionPtrs.m_DeviceTypeScoringFunc != nullptr
-            ? scoringFunctionPtrs.m_DeviceTypeScoringFunc(deviceDescriptor.properties.deviceType, typeScore)
-            : ScoreDeviceType(deviceDescriptor.properties.deviceType, typeScore);
-
-        if (!succeeded)
-        {
-            return false;
-        }
-
-        succeeded = scoringFunctionPtrs.m_DeviceLimitsScoringFunc != nullptr
-            ? scoringFunctionPtrs.m_DeviceLimitsScoringFunc(deviceDescriptor.properties.limits, limitsScore)
-            : ScoreDeviceLimits(deviceDescriptor.properties.limits, limitsScore);
-
-        if (!succeeded)
+        if (!scoringFunctionPtrs.m_DeviceTypeScoringFunc(deviceProperties.deviceType, typeScore)
+            || !scoringFunctionPtrs.m_DeviceFeatureScoringFunc(deviceFeatures, featuresScore)
+            || !scoringFunctionPtrs.m_DeviceLimitsScoringFunc(deviceProperties.limits, limitsScore))
         {
             return false;
         }
@@ -297,19 +289,54 @@ namespace Savanna::Rendering::Vulkan
         return true;
     }
 
-    bool TryChooseVulkanDevice(
-        const VulkanPhysicalDevice* devices,
-        const uint32& count,
-        const VulkanRendererCreateInfo* pCreateInfo,
-        VulkanPhysicalDevice* pOutSelectedDevice,
-        const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
+    void SortPhysicalDevicesByScore(
+        std::vector<VkPhysicalDevice>& devices,
+        const VkRendererCreateInfo& createInfo)
     {
-        if (pOutSelectedDevice == nullptr)
+        std::vector<uint32> scores;
+        scores.resize(devices.size());
+
+        VkPhysicalDeviceScoringFuncs scoringFuncs = {
+            ScoreDeviceType,
+            ScoreDeviceFeatures,
+            ScoreDeviceLimits
+        };
+        // VkPhysicalDeviceScoringFuncs scoringFuncs = {
+        //     createInfo.m_pDeviceTypeScoringFunc == nullptr ? ScoreDeviceType : createInfo.m_pDeviceTypeScoringFunc,
+        //     createInfo.m_pDeviceFeatureScoringFunc == nullptr ? ScoreDeviceFeatures : createInfo.m_pDeviceFeatureScoringFunc,
+        //     createInfo.m_pDeviceLimitsScoringFunc == nullptr ? ScoreDeviceLimits : createInfo.m_pDeviceLimitsScoringFunc
+        // };
+
+        for (uint32 i = 0; i < devices.size(); ++i)
         {
-            return false;
+            if (!CheckExtensionSupport(devices[i], createInfo.m_ppDeviceExtensions, createInfo.m_DeviceExtensionCount)
+                || !CalculateDeviceScore(devices[i], scoringFuncs, scores[i]))
+            {
+                scores[i] = 0;
+            }
         }
 
-        if (devices == nullptr || count == 0)
+        // sort devices by score
+        for (uint32 i = 0; i < devices.size(); ++i)
+        {
+            for (uint32 j = i + 1; j < devices.size(); ++j)
+            {
+                if (scores[i] < scores[j])
+                {
+                    std::swap(devices[i], devices[j]);
+                    std::swap(scores[i], scores[j]);
+                }
+            }
+        }
+    }
+
+    bool TryChoosePhysicalDevice(
+        const VkPhysicalDevice* pDevices,
+        const uint32& count,
+        const VkRendererCreateInfo& createInfo,
+        VkPhysicalDevice& outSelectedDevice)
+    {
+        if (pDevices == nullptr || count == 0)
         {
             return false;
         }
@@ -317,15 +344,22 @@ namespace Savanna::Rendering::Vulkan
         uint32 bestScore = 0;
         bool foundDevice = false;
 
+        VkPhysicalDeviceScoringFuncs scoringFuncs = {
+            ScoreDeviceType,
+            ScoreDeviceFeatures,
+            ScoreDeviceLimits
+        };
+        // VkPhysicalDeviceScoringFuncs scoringFuncs = {
+        //     createInfo.m_pDeviceTypeScoringFunc == nullptr ? ScoreDeviceType : createInfo.m_pDeviceTypeScoringFunc,
+        //     createInfo.m_pDeviceFeatureScoringFunc == nullptr ? ScoreDeviceFeatures : createInfo.m_pDeviceFeatureScoringFunc,
+        //     createInfo.m_pDeviceLimitsScoringFunc == nullptr ? ScoreDeviceLimits : createInfo.m_pDeviceLimitsScoringFunc
+        // };
+
         for (int i = 0; i < count; ++i)
         {
             uint32 score = 0;
-            if (!CheckExtensionSupport(devices[i].GetPhysicalDevice(), pCreateInfo->m_DeviceExtensions, pCreateInfo->m_DeviceExtensionsCount))
-            {
-                continue;
-            }
-
-            if (!ScoreDeviceDescriptor(devices[i].GetDescriptor(), scoringFunctionPtrs, score))
+            if (!CheckExtensionSupport(pDevices[i], createInfo.m_ppDeviceExtensions, createInfo.m_DeviceExtensionCount)
+                || !CalculateDeviceScore(pDevices[i], scoringFuncs, score))
             {
                 continue;
             }
@@ -334,10 +368,10 @@ namespace Savanna::Rendering::Vulkan
             {
                 bestScore = score;
                 foundDevice = true;
-                *pOutSelectedDevice = devices[i];
+                outSelectedDevice = pDevices[i];
             }
         }
 
         return foundDevice;
-    }
-} // namespace Savanna::Vulkan
+    } // namespace Utils
+} // namespace Savanna::Gfx::Vulkan

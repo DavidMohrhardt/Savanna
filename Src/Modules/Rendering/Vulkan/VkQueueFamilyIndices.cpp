@@ -1,17 +1,17 @@
-#include "VulkanQueueFamilyIndices.h"
+#include "VkQueueFamilyIndices.h"
 
 #include <vector>
 
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Gfx::Vk
 {
-    VulkanQueueFamilyIndices::VulkanQueueFamilyIndices(
+    QueueFamilyIndices::QueueFamilyIndices(
         const VkPhysicalDevice& physicalDevice,
         VkSurfaceKHR* surfacePtr)
     {
-        ParseQueueFamilyIndices(physicalDevice, surfacePtr);
+        PopulateQueueFamilyIndices(physicalDevice, surfacePtr);
     }
 
-    void VulkanQueueFamilyIndices::ParseQueueFamilyIndices(
+    void QueueFamilyIndices::PopulateQueueFamilyIndices(
         const VkPhysicalDevice& physicalDevice,
         VkSurfaceKHR* surfacePtr)
     {
@@ -71,7 +71,7 @@ namespace Savanna::Rendering::Vulkan
         }
     }
 
-    void VulkanQueueFamilyIndices::SetupQueueFamilyCreateInfos(
+    void QueueFamilyIndices::SetupQueueFamilyCreateInfos(
         VkDeviceQueueCreateInfo* queueCreateInfos,
         const uint32 queueCreateInfoCount)
     {
@@ -83,4 +83,4 @@ namespace Savanna::Rendering::Vulkan
             queueCreateInfos[i].queueCount = 1;
         }
     }
-} // namespace Savanna::Rendering::Vulkan
+} // namespace Savanna::Gfx::Vk

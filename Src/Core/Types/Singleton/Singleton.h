@@ -8,48 +8,43 @@
  */
 #pragma once
 
+#include <utility>
+#include <memory>
+
 namespace Savanna
 {
     template <typename T>
     class Singleton
     {
-    public:
-        static T& GetInstance()
-        {
-            static T instance;
-            return instance;
-        }
-    };
+    private:
+        inline static std::shared_ptr<T> s_pInstance = std::shared_ptr<T>(nullptr);
 
-    template <typename T>
-    class ContextSingleton
-    {
-        static T* s_Instance;
-        static Context& m_OwnerContextRef;
     public:
-        static T* Construct(Context& context)
+        template <typename... Args>
+        static T* Construct(Args&&... args)
         {
-            if (m_Instance == nullptr)
+            if (s_pInstance == nullptr)
             {
-                // m_Instance = new T(context);
-                m_OwnerContextRef = context;
+                s_pInstance = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
             }
-            return m_Instance;
+            return s_pInstance.get();
         }
 
-        static T* Get()
+        static std::shared_ptr<T> Get()
         {
-            return m_Instance;
+            if (s_pInstance == nullptr)
+            {
+                throw RuntimeErrorException("Singleton not constructed!");
+            }
+            return s_pInstance;
         }
 
         static void Destroy()
         {
-            if (m_Instance != nullptr)
+            if (s_pInstance != nullptr)
             {
-                // delete m_Instance;
-                m_Instance = nullptr;
+                s_pInstance = nullptr;
             }
         }
-
-    }
+    };
 } // namespace Savanna

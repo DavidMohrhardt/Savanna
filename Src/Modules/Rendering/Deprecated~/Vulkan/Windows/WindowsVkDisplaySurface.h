@@ -1,7 +1,7 @@
 /**
- * @file WindowsVulkanDisplaySurface.h
+ * @file WindowsVkDisplaySurface.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief Provides Windows specific Vulkan surface creation utilities.
+ * @brief Provides Windows specific Vk surface creation utilities.
  * @version 0.1
  * @date 2022-08-21
  *
@@ -17,15 +17,15 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Gfx::Vulkan
 {
-    struct VulkanSurfaceCreateInfoUnion;
+    struct VkSurfaceCreateInfoUnion;
 
     namespace Windows
     {
         /**
-         * @brief Fills out a Vulkan surface create info structure with the necessary information to
-         * create a Vulkan surface on Windows.
+         * @brief Fills out a Vk surface create info structure with the necessary information to
+         * create a Vk surface on Windows.
          *
          * @param hInstance The application's instance handle.
          * @param hwndHandle The application's window handle.
@@ -34,8 +34,8 @@ namespace Savanna::Rendering::Vulkan
         void FillOutSurfaceCreateInfo(
             HINSTANCE hInstance,
             HWND hwndHandle,
-            VulkanSurfaceCreateInfoUnion* outSurfaceCreateInfo);
-    } // namespace Savanna::Rendering::Vulkan::Windows
-} // namespace Savanna::Rendering::Vulkan
+            VkSurfaceCreateInfoUnion* outSurfaceCreateInfo);
+    } // namespace Savanna::Gfx::Vulkan::Windows
+} // namespace Savanna::Gfx::Vulkan
 
 #endif // SAVANNA_WINDOWS

@@ -10,8 +10,9 @@
 #include "VulkanApplication.h"
 
 // Savanna Vulkan Includes
-#include <Vulkan/NativeVulkanDisplaySurfaceInfo.h>
-#include <Vulkan/Utilities/VulkanCallbacks.h>
+#include <Vulkan/VkSurfaceCreateInfos.h>
+#include <Vulkan/Utilities/VkCallbacks.h>
+#include <Vulkan/Windows/WindowsVkDisplaySurface.h>
 
 // Savanna Includes
 #include <Profiling/Profiler.h>
@@ -24,21 +25,25 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
-namespace SavannaVulkan
+namespace Savanna::Application
 {
+    const char* k_ApplicationName = "Savanna";
+    const char* k_EngineName = "No Engine";
+
     VulkanApplication::VulkanApplication()
-        : m_Window(glfwCreateWindow(1920, 1080, "Savanna Vulkan", nullptr, nullptr))
+        : m_Window(glfwCreateWindow(1920, 1080, "Savanna", nullptr, nullptr))
     {
         using namespace Savanna;
-        using namespace Savanna::Rendering::Vulkan;
+        using namespace Savanna::Gfx::Vk;
         SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor");
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        const uint32_t deviceExtensionsCount = 1;
 
-        VulkanRendererCreateInfo rendererCreateInfo{};
-        rendererCreateInfo.m_ApplicationName = "Savanna Vulkan";
-        rendererCreateInfo.m_EngineName = "Savanna";
+        RendererCreateInfo rendererCreateInfo{};
+        rendererCreateInfo.m_ApplicationName = &k_ApplicationName;
+        rendererCreateInfo.m_EngineName = &k_EngineName;
         rendererCreateInfo.m_InstanceExtensions = glfwExtensions;
         rendererCreateInfo.m_InstanceExtensionsCount = glfwExtensionCount;
 
@@ -53,7 +58,7 @@ namespace SavannaVulkan
         rendererCreateInfo.m_DeviceExtensions = &swapChainExtensionName;
         rendererCreateInfo.m_DeviceExtensionsCount = 1;
 
-        m_Renderer = std::move(VulkanRenderer(&rendererCreateInfo));
+        m_Renderer = Renderer(&rendererCreateInfo);
     }
 
     VulkanApplication::~VulkanApplication()

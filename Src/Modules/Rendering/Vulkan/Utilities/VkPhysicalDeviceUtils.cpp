@@ -1,59 +1,71 @@
 /**
- * @file VkDeviceChooser.cpp
+ * @file VulkanPhysicalDevice.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @DavidMohrhardt Document
  * @version 0.1
- * @date 2022-08-19
+ * @date 2022-08-02
+ *
  */
 
-#include "VkDeviceChooser.h"
+#include "VkPhysicalDeviceUtils.h"
 
-namespace Savanna::Rendering::Vk
+#include "VkRendererCreateInfo.h"
+
+#include <Profiling/Profiler.h>
+
+#include <cstdlib>
+#include <mutex>
+#include <assert.h>
+#include <vector>
+#include <stdexcept>
+
+namespace Savanna::Gfx::Vk::Utils
 {
-    bool CheckExtensionSupport(
-        const VkPhysicalDevice device,
-        const char** requiredExtensions,
-        const uint32 requiredExtensionCount)
+    uint32 GetPhysicalDeviceCount(const VkInstance& instance)
     {
-        if (requiredExtensionCount == 0)
+        SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk::GetPhysicalDeviceCount);
+        static uint32 s_NumberOfDevices = 0;
+        // Should only be true once per run.
+        if (s_NumberOfDevices == 0) SAVANNA_BRANCH_UNLIKELY
         {
-            return true;
+            uint32 count = 0;
+            vkEnumeratePhysicalDevices(instance, &count, nullptr);
+            s_NumberOfDevices = count;
         }
+        return s_NumberOfDevices;
+    }
 
-        if (requiredExtensions == nullptr)
+    inline void GetPhysicalDeviceDescriptors(
+        const VkInstance& instance,
+        uint32 count,
+        PhysicalDeviceDescriptor* physicalDeviceDescriptorsPtr)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk::GetPhysicalDeviceDescriptors);
+        if (physicalDeviceDescriptorsPtr != nullptr)
         {
-            return false;
-        }
-
-        uint32 extensionCount = 0;
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-        if (extensionCount == 0)
-        {
-            return false;
-        }
-        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-        bool allExtensionsFound = true;
-        for (uint32 i = 0; i < requiredExtensionCount; ++i)
-        {
-            bool found = false;
-            for (uint32 j = 0; j < extensionCount; ++j)
+            std::vector<VkPhysicalDevice> physicalDevices(count);
+            vkEnumeratePhysicalDevices(instance, &count, physicalDevices.data());
+            for (int i = 0; i < count; ++i)
             {
-                if (strcmp(requiredExtensions[i], availableExtensions[j].extensionName) == 0)
-                {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-            {
-                SAVANNA_WARNING_LOG("Required Device Extension %s not found.", requiredExtensions[i]);
-                allExtensionsFound = false;
+                physicalDeviceDescriptorsPtr[i].physicalDevice = physicalDevices[i];
+                vkGetPhysicalDeviceProperties(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].properties);
+                vkGetPhysicalDeviceFeatures(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].features);
+                vkGetPhysicalDeviceMemoryProperties(physicalDevices[i], &physicalDeviceDescriptorsPtr[i].memoryProperties);
             }
         }
+    }
 
-        return allExtensionsFound;
+    void EnumeratePhysicalDeviceDescriptors(
+        const VkInstance& instance,
+        PhysicalDeviceDescriptor* physicalDeviceDescriptorsPtr,
+        uint32& count)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk::EnumeratePhysicalDeviceDescriptors);
+        count = GetPhysicalDeviceCount(instance);
+        if (physicalDeviceDescriptorsPtr != nullptr)
+        {
+            GetPhysicalDeviceDescriptors(instance, count, physicalDeviceDescriptorsPtr);
+        }
     }
 
     bool ScoreDeviceType(const VkPhysicalDeviceType& deviceType, uint32& outScore)
@@ -147,7 +159,7 @@ namespace Savanna::Rendering::Vk
     {
         // From https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceLimits.html#:~:text=The%20VkPhysicalDeviceLimits%20are%20properties%20of%20the%20physical%20device.,VkPhysicalDeviceProperties%20structure%20which%20is%20returned%20from%20vkGetPhysicalDeviceProperties.%20Description
 
-        // TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later
+        // TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later
         outScore += deviceLimits.maxImageDimension1D;
         outScore += deviceLimits.maxImageDimension2D;
         outScore += deviceLimits.maxImageDimension3D;
@@ -258,8 +270,8 @@ namespace Savanna::Rendering::Vk
     }
 
     uint32 ScoreDeviceDescriptor(
-        const VkPhysicalDeviceDescriptor& deviceDescriptor,
-        const VkDeviceScoringFuncs& scoringFunctionPtrs,
+        const PhysicalDeviceDescriptor& deviceDescriptor,
+        const VulkanDeviceScoringFuncs& scoringFunctionPtrs,
         uint32& score)
     {
         uint32 typeScore = 0;
@@ -297,47 +309,54 @@ namespace Savanna::Rendering::Vk
         return true;
     }
 
-    bool TryChooseVkDevice(
-        const VkPhysicalDevice* devices,
-        const uint32& count,
-        const VkRendererCreateInfo* pCreateInfo,
+    bool TryChooseVulkanDevice(
+        const PhysicalDeviceDescriptor* pDeviceDescs,
+        const uint32& deviceDescsCount,
         VkPhysicalDevice* pOutSelectedDevice,
-        const VkDeviceScoringFuncs& scoringFunctionPtrs)
+        uint32* pOutSelectedDeviceIndex,
+        const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
     {
-        if (pOutSelectedDevice == nullptr)
+        if ((pDeviceDescs == nullptr || deviceDescsCount == 0)
+            || (pOutSelectedDevice == nullptr && pOutSelectedDeviceIndex == nullptr)) SAVANNA_BRANCH_UNLIKELY
         {
             return false;
         }
 
-        if (devices == nullptr || count == 0)
+        if (deviceDescsCount == 1)
         {
-            return false;
+            *pOutSelectedDevice = pDeviceDescs[0].physicalDevice;
+            return true;
         }
 
+        uint32 index = 0;
         uint32 bestScore = 0;
         bool foundDevice = false;
 
-        for (int i = 0; i < count; ++i)
+        for (int i = 0; i < deviceDescsCount; ++i)
         {
             uint32 score = 0;
-            if (!CheckExtensionSupport(devices[i].GetPhysicalDevice(), pCreateInfo->m_DeviceExtensions, pCreateInfo->m_DeviceExtensionsCount))
-            {
-                continue;
-            }
-
-            if (!ScoreDeviceDescriptor(devices[i].GetDescriptor(), scoringFunctionPtrs, score))
+            if (!ScoreDeviceDescriptor(pDeviceDescs[i], scoringFunctionPtrs, score))
             {
                 continue;
             }
 
             if (score > bestScore)
             {
+                index = i;
                 bestScore = score;
                 foundDevice = true;
-                *pOutSelectedDevice = devices[i];
+                if (pOutSelectedDevice != nullptr)
+                {
+                    *pOutSelectedDevice = pDeviceDescs[i].physicalDevice;
+                }
             }
+        }
+
+        if (pOutSelectedDeviceIndex != nullptr)
+        {
+            *pOutSelectedDeviceIndex = index;
         }
 
         return foundDevice;
     }
-} // namespace Savanna::Vk
+} // namespace Savanna::Gfx::Vk

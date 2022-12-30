@@ -1,13 +1,15 @@
 #pragma once
 
 #include "SavannaEngine.h"
+#include "SavannaVk.h"
+#include "Vulkan/VkRenderer.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-namespace SavannaVulkan
+namespace Savanna::Application
 {
     class GLFWWindowWrapper
     {

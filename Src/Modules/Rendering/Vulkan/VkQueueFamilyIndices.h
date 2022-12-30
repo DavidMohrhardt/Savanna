@@ -1,17 +1,14 @@
 #pragma once
 
-// Standard Includes
-#include <optional>
+// Savanna Includes
+#include "SavannaVk.h"
 
 // Vulkan Includes
 #include <vulkan/vulkan.h>
 
-// Savanna Includes
-#include <Types/Primitive/PrimitiveTypes.h>
-
-namespace Savanna::Rendering::Vulkan
+namespace Savanna::Gfx::Vk
 {
-    struct VulkanQueueFamilyIndices
+    struct QueueFamilyIndices
     {
     public:
         std::optional<uint32> m_GraphicsQueueFamilyIndex;
@@ -21,17 +18,17 @@ namespace Savanna::Rendering::Vulkan
         std::optional<uint32> m_SparseBindingQueueFamilyIndex;
 
     public:
-        VulkanQueueFamilyIndices(const VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surfacePtr = nullptr);
+        QueueFamilyIndices(const VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surfacePtr = nullptr);
 
-        VulkanQueueFamilyIndices() = default;
-        VulkanQueueFamilyIndices(const VulkanQueueFamilyIndices& other) = default;
-        VulkanQueueFamilyIndices(VulkanQueueFamilyIndices&& other) = default;
-        VulkanQueueFamilyIndices& operator=(const VulkanQueueFamilyIndices& other) = default;
-        VulkanQueueFamilyIndices& operator=(VulkanQueueFamilyIndices&& other) = default;
-        ~VulkanQueueFamilyIndices() = default;
+        QueueFamilyIndices() = default;
+        QueueFamilyIndices(const QueueFamilyIndices& other) = default;
+        QueueFamilyIndices(QueueFamilyIndices&& other) = default;
+        QueueFamilyIndices& operator=(const QueueFamilyIndices& other) = default;
+        QueueFamilyIndices& operator=(QueueFamilyIndices&& other) = default;
+        ~QueueFamilyIndices() = default;
 
     public:
-        void ParseQueueFamilyIndices(const VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surfacePtr = nullptr);
+        void PopulateQueueFamilyIndices(const VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surfacePtr = nullptr);
         void SetupQueueFamilyCreateInfos(VkDeviceQueueCreateInfo* queueCreateInfos, const uint32 queueCreateInfoCount);
 
     public:
@@ -88,4 +85,4 @@ namespace Savanna::Rendering::Vulkan
                 || HasSparseBindingQueueFamilyIndex();
         }
     };
-} // namespace Savanna::Rendering::Vulkan
+} // namespace Savanna::Gfx::Vk
