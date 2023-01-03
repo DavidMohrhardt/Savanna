@@ -213,7 +213,6 @@ namespace Savanna::Core::Tests
         EXPECT_NO_THROW(Deallocate(result2, alignment));
         EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
 
-        // TODO : This test fails because of the bug in the implementation. Likely how I handle re-establishing the root is wrong.
         EXPECT_NO_THROW(Deallocate(result3, alignment));
         EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
     }
