@@ -129,7 +129,7 @@ namespace Savanna
         template<typename... Args>
         static void PrintLineSynchronous(std::string format, Args&&... args)
         {
-            Print(std::string(format), args);
+            Print(format, args...);
         }
 
         static void EnableFileLogging(bool shouldEnable)

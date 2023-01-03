@@ -12,7 +12,7 @@
 #include <Types/Primitive/PrimitiveTypes.h>
 #include <Utilities/Macros/CppTypeDefs.h>
 
-typedef enum __se_GfxDeviceCapabilityFlagsFlags
+typedef enum se_GfxDeviceCapabilityFlagsFlags
 {
     /**
      * @brief Indicates that the device does not support any of the capabilities listed below.
@@ -56,10 +56,10 @@ typedef enum __se_GfxDeviceCapabilityFlagsFlags
      * @brief Indicates that the device supports all of the capabilities listed below.
      */
     All = 0xFFFFFFFF
-} __se_GfxDeviceCapabilityFlagsFlags;
+} se_GfxDeviceCapabilityFlagsFlags;
 
 /**
  * @brief When included in a C++ file, this macro declares a namespaced type definition for the type
- * __se_GfxDeviceCapabilityFlagsFlags with the fully justified name Savanna::Gfx::GfxDeviceCapabilityFlagsFlags.
+ * se_GfxDeviceCapabilityFlagsFlags with the fully justified name Savanna::Gfx::GfxDeviceCapabilityFlagsFlags.
  */
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, __se_GfxDeviceCapabilityFlagsFlags, GfxDeviceCapabilityFlagsFlags);
+DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, se_GfxDeviceCapabilityFlagsFlags, GfxDeviceCapabilityFlagsFlags);

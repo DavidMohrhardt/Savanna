@@ -2,10 +2,10 @@
 
 #include "SavannaVk.h"
 
-typedef struct seVkPhysicalDeviceDescriptor_t
+typedef struct se_VkPhysicalDeviceDescriptor_t
 {
     VkPhysicalDeviceProperties properties;
     VkPhysicalDeviceFeatures features;
     VkPhysicalDeviceMemoryProperties memoryProperties;
-} seVkPhysicalDeviceDescriptor_t;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vulkan, seVkPhysicalDeviceDescriptor_t, VkPhysicalDeviceDescriptor);
+} se_VkPhysicalDeviceDescriptor_t;
+DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vulkan, se_VkPhysicalDeviceDescriptor_t, VkPhysicalDeviceDescriptor);

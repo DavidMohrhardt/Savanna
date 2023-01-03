@@ -27,11 +27,11 @@
     { \
         union \
         { \
-            alignas( L1CacheLineLength() ) __se_byte m_##KiBLength##Block[KibiBytesToBytes(KiBLength)]; \
-            alignas( L1CacheLineLength() ) __se_L1CacheLine m_##KiBLength##CacheLines[ GetL1CacheLineCount( KibiBytesToBytes(KiBLength) ) ]; \
+            alignas( L1CacheLineLength() ) se_byte m_##KiBLength##Block[KibiBytesToBytes(KiBLength)]; \
+            alignas( L1CacheLineLength() ) se_L1CacheLine m_##KiBLength##CacheLines[ GetL1CacheLineCount( KibiBytesToBytes(KiBLength) ) ]; \
         }; \
-    } __se_MemoryBlock##KiBLength##KiB; \
-    DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(__se_MemoryBlock##KiBLength##KiB, MemoryBlock##KiBLength##KiB)
+    } se_MemoryBlock##KiBLength##KiB; \
+    DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(se_MemoryBlock##KiBLength##KiB, MemoryBlock##KiBLength##KiB)
 
 /**
  * @brief returns the conversion from KiB to B.
@@ -111,22 +111,22 @@ DECLARE_SAVANNA_KIB_MEMORY_BLOCK(2048);
  * @brief
  */
 #define DECLARE_UNIFIED_MEMORY_BLOCK_STRUCT(__memoryBlockSize, __unionMembers) \
-    typedef struct __se_UnifiedMemoryBlock##__memoryBlockSize##KiB \
+    typedef struct se_UnifiedMemoryBlock##__memoryBlockSize##KiB \
     { \
         const static size_t k_BlockSize = __memoryBlockSize; \
         union \
         { \
-            __se_MemoryBlock##__memoryBlockSize##KiB m_##__memoryBlockSize##KiBBlock; \
+            se_MemoryBlock##__memoryBlockSize##KiB m_##__memoryBlockSize##KiBBlock; \
             __unionMembers \
         }; \
-    } __se_UnifiedMemoryBlock##__memoryBlockSize##KiB; \
-    DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF( __se_UnifiedMemoryBlock##__memoryBlockSize##KiB, UnifiedMemoryBlock##__memoryBlockSize##KiB);
+    } se_UnifiedMemoryBlock##__memoryBlockSize##KiB; \
+    DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF( se_UnifiedMemoryBlock##__memoryBlockSize##KiB, UnifiedMemoryBlock##__memoryBlockSize##KiB);
 
 /**
- * @brief Creates an array of __se_UnifiedMemoryBlocks that will fit to the size of the union of the given integer size in KiB.
+ * @brief Creates an array of se_UnifiedMemoryBlocks that will fit to the size of the union of the given integer size in KiB.
  */
 #define DECLARE_UNIFIED_SUB_BLOCK_ARRAY(__memoryBlockSize) \
-    __se_MemoryBlock##__memoryBlockSize##KiB m_##__memoryBlockSize##KiBBlocks[ GetRequiredLengthToFillUnion(k_BlockSize, __memoryBlockSize) ]
+    se_MemoryBlock##__memoryBlockSize##KiB m_##__memoryBlockSize##KiBBlocks[ GetRequiredLengthToFillUnion(k_BlockSize, __memoryBlockSize) ]
 
 /**
  * @brief

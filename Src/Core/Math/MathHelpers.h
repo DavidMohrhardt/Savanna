@@ -19,13 +19,13 @@
 #endif
 
 // SAVANNA_NO_DISCARD inline constexpr
-inline bool IsPowerOfTwo(const __se_int64 val)
+inline bool IsPowerOfTwo(const se_int64 val)
 {
     return val && !(val & (val - 1));
 }
 
 // SAVANNA_NO_DISCARD inline constexpr
-inline __se_int64 NextPowerOfTwo(const __se_int64 val)
+inline se_int64 NextPowerOfTwo(const se_int64 val)
 {
     return (val & ~(val - 1)) << 1;
 }
@@ -38,7 +38,7 @@ inline __se_int64 NextPowerOfTwo(const __se_int64 val)
  * @return The result of x % pow2Mod.
  */
 // SAVANNA_NO_DISCARD inline constexpr
-inline __se_int64 ModByPowerOfTwo(const __se_int64 x, const __se_int64 pow2Mod)
+inline se_int64 ModByPowerOfTwo(const se_int64 x, const se_int64 pow2Mod)
 {
     // As per https://en.wikipedia.org/wiki/Modulo_operation
     // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)

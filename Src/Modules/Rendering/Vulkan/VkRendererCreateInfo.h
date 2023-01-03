@@ -11,33 +11,32 @@
 #include <Utilities/SavannaCoding.h>
 #include <Types/Strings/FixedString.h>
 
-#include "VkRendererCreateFlags.h"
-#include "VkRendererQueueFlags.h"
+#include "VkQueueFlags.h"
 #include "VkSurfaceCreateInfos.h"
 
 #include <vulkan/vulkan.h>
 
-typedef struct seVkRendererCreateInfo_t
+typedef struct se_VkRendererCreateInfo_t
 {
-    const char** m_ApplicationName;
-    const char** m_EngineName;
+    const char* m_ApplicationName;
+    const char* m_EngineName;
 
-    seVkRendererCreateFlags_t m_CreateFlags;
-    seVkRendererQueueFlags_t m_QueueFlags;
+    se_Version m_ApplicationVersion;
+    se_Version m_EngineVersion;
 
-    const char** m_InstanceExtensions;
-    __se_uint32 m_InstanceExtensionsCount;
+    const char** m_ppEnabledLayerNames;
+    se_uint32 m_EnabledLayerCount;
 
-    const char** m_DeviceExtensions;
-    __se_uint32 m_DeviceExtensionsCount;
+    const char** m_ppInstanceExtensions;
+    se_uint32 m_InstanceExtensionsCount;
 
-    const char** m_EnabledLayerNames;
-    __se_uint32 m_EnabledLayerCount;
+    const char** m_ppDeviceExtensions;
+    se_uint32 m_DeviceExtensionsCount;
 
-    seVkSurfaceCreateInfo_t m_SurfaceCreateInfo;
-    VkSwapchainCreateInfoKHR m_SwapchainCreateInfo;
+    se_VkSurfaceCreateInfo_t m_SurfaceCreateInfo;
+    se_VkQueueFlagBits_t m_QueueFlags;
 
     VkAllocationCallbacks* m_pAllocationCallbacks;
     const void* m_pUserData;
-} seVkRendererCreateInfo_t;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, seVkRendererCreateInfo_t, RendererCreateInfo);
+} se_VkRendererCreateInfo_t;
+DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, se_VkRendererCreateInfo_t, RendererCreateInfo);

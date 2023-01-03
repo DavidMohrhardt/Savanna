@@ -59,7 +59,7 @@ namespace Savanna
 
     void* FreeListAllocator::Allocate(const size_t& size, const size_t& alignment)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::Allocate");
+        SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::Allocate);
         MemoryChunkHeader* current = m_Head;
         MemoryChunkHeader* previous = nullptr;
 

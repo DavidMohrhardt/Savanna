@@ -17,13 +17,13 @@
 /**
  * @brief
  */
-typedef struct __se_GfxDeviceDescriptor
+typedef struct se_GfxDeviceDescriptor
 {
-    __se_int64 m_Uid;
-    __se_GfxDeviceCapabilityFlagsFlags m_Capabilities;
-    __se_intptr m_PlatformSpecificData;
-} __se_GfxDeviceDescriptor;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, __se_GfxDeviceDescriptor, GfxDeviceDescriptor);
+    se_int64 m_Uid;
+    se_GfxDeviceCapabilityFlagsFlags m_Capabilities;
+    se_intptr m_PlatformSpecificData;
+} se_GfxDeviceDescriptor;
+DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, se_GfxDeviceDescriptor, GfxDeviceDescriptor);
 
 #if ENABLE_TODOS
 /**
@@ -34,12 +34,12 @@ DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, __se_GfxDeviceDescri
  * @param gfxDeviceDescriptors
  * @param deviceCount
  */
-void AcquireGfxDeviceDescriptors(__se_GfxDeviceDescriptor** outGfxDeviceDescriptors, sint32 deviceCount);
+void AcquireGfxDeviceDescriptors(se_GfxDeviceDescriptor** outGfxDeviceDescriptors, sint32 deviceCount);
 
 /**
  * @brief
  *
  * @param gfxDeviceDescriptors
  */
-void ReleaseGfxDeviceDescriptors(__se_GfxDeviceDescriptor** gfxDeviceDescriptors);
+void ReleaseGfxDeviceDescriptors(se_GfxDeviceDescriptor** gfxDeviceDescriptors);
 #endif

@@ -17,7 +17,7 @@
  * @brief TODO @DavidMohrhardt Document
  *
  */
-enum SavannaMemoryArena : __se_int32
+enum SavannaMemoryArena : se_int32
 {
     /**
      * @brief Represents Core Engine Memory Arena. Not to be used by users.

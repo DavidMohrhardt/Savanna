@@ -1,0 +1,16 @@
+#pragma once
+
+#include <vulkan/vulkan.h>
+#include <Types/Enums/Flags.h>
+
+typedef enum se_VkQueueFlagBits_t
+{
+    SE_VK_QUEUE_GRAPHICS_BIT = VK_QUEUE_GRAPHICS_BIT,
+    SE_VK_QUEUE_COMPUTE_BIT = VK_QUEUE_COMPUTE_BIT,
+    SE_VK_QUEUE_TRANSFER_BIT = VK_QUEUE_TRANSFER_BIT,
+    SE_VK_QUEUE_SPARSE_BINDING_BIT = VK_QUEUE_SPARSE_BINDING_BIT,
+    SE_VK_QUEUE_PROTECTED_BIT = VK_QUEUE_PROTECTED_BIT,
+    SE_VK_QUEUE_PRESENT_BIT = VK_QUEUE_PROTECTED_BIT << 1,
+    SE_VK_QUEUE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+} se_VkQueueFlagBits_t;
+DECLARE_NAMESPACED_FLAGS_WRAPPER(Savanna::Gfx::Vk, se_VkQueueFlagBits_t, QueueFlagBits, VkQueueFlagBits, se_uint32);

@@ -34,7 +34,6 @@ def main():
     args = ProcessArguments()
     SavannaLogging.SetLoggingLimiter(args)
     SavannaSubprocess.SetGlobalSubprocessExecutionSettings(args.dryrun)
-
     SavannaLogging.LogUI("Savanna Engine Build Tool")
 
     # Build Steps:
@@ -59,6 +58,7 @@ def main():
         SavannaLogging.LogUI("Dry Run Complete\n")
         return
     elif(args.unpackOnly):
+        SavannaLogging.LogUI("Unpack Complete\n")
         return
 
     SavannaCMake.InvokeCMakeForBuildTarget(currentBuildPlatform, "exe", args)

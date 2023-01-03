@@ -35,14 +35,16 @@ namespace Savanna::Gfx::Vk
         Context(const RendererCreateInfo* const pCreateInfo);
 
         Context();
+        Context(const Context &other) = delete;
         Context(Context &&other);
 
         ~Context();
 
     public: // Operators
-        Context& operator=(Context&& other);
-
         operator VkInstance() const { return m_Instance; }
+
+        Context& operator=(const Context &other) = delete;
+        Context& operator=(Context &&other);
 
     public: // Functions
         inline VkInstance GetVkInstance() const { return m_Instance; }

@@ -15,7 +15,7 @@ namespace Savanna::Gfx::Vk
     {
         if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
         {
-            SAVANNA_FATAL_LOG("Validation Layer: {}", pCallbackData->pMessage);
+            Console::Print("[SEVK] Validation Layer: {}", pCallbackData->pMessage);
         }
 
         return VK_FALSE;

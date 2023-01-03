@@ -10,9 +10,9 @@
 #include "VkRenderer.h"
 
 #include <Profiling/Profiler.h>
+#include <Utilities/Console.h>
 
 #include "Utilities/VkDefinitions.h"
-#include "Utilities/VkRendererInitializationCache.h"
 
 #include <vector>
 
@@ -33,12 +33,14 @@ namespace Savanna::Gfx::Vk
 
     Renderer::Renderer(Renderer&& other)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Renderer(Renderer&& other));
         *this = std::move(other);
     }
 
     Renderer::~Renderer()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::~Renderer());
+        Destroy();
     }
 
     Renderer& Renderer::operator=(Renderer&& other)
@@ -54,12 +56,23 @@ namespace Savanna::Gfx::Vk
     void Renderer::Initialize(const RendererCreateInfo* const pCreateInfo)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Initialize(const RendererCreateInfo* const pCreateInfo));
-        Utils::RendererInitializationCache::Construct(pCreateInfo);
-
         SAVANNA_ASSERT(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
-        m_Context = Context(pCreateInfo);
-        m_GfxDevice = GfxDevice(pCreateInfo, m_Context);
+        if (!m_Context.IsValid()) SAVANNA_BRANCH_LIKELY
+        {
+            m_Context = Context(pCreateInfo);
+            m_DisplaySurface = DisplaySurface(pCreateInfo, m_Context);
+            m_GfxDevice = GfxDevice(pCreateInfo, m_Context, &m_DisplaySurface);
+        }
+    }
 
-        Utils::RendererInitializationCache::Destroy();
+    void Renderer::Destroy()
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Destroy());
+        if (m_Context.IsValid()) SAVANNA_BRANCH_LIKELY
+        {
+            m_GfxDevice = GfxDevice();
+            m_DisplaySurface = DisplaySurface();
+            m_Context = Context();
+        }
     }
 } // namespace Savanna::Gfx::Vk

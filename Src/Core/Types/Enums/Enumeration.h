@@ -3,41 +3,24 @@
 #if defined(__cplusplus)
 #include <concepts>
 #include <type_traits>
-#endif
-
-#if defined(__cplusplus)
 
 #define DECLARE_NAMESPACED_ENUMERATION(__nameSpace, __cName, __cppName, __type, ...) \
     typedef enum __cName : __type { __VA_ARGS__ } __cName; \
     namespace __nameSpace { using __cppName = Savanna::Enumeration<__cName, __type>; }
 
-#else
-
-#define DECLARE_NAMESPACED_ENUMERATION(__cName, __cppName, __type, ...) \
-    typedef enum __cName : __type { __VA_ARGS__ } __cName;
-
-#endif // end __cplusplus
-
-#define DECLARE_SAVANNA_ENUM(__cName, __cppName, __type, ...) \
-    DECLARE_NAMESPACED_ENUMERATION(Savanna, __cName, __cppName, __type, __VA_ARGS__)
-
-#define DECLARE_SAVANNA_MODULE_ENUM(__moduleNamespace, __cName, __cppName, __type, ...) \
-    DECLARE_NAMESPACED_ENUMERATION(Savanna::__moduleNamespace, __cName, __cppName, __type, __VA_ARGS__)
-
-#if defined(__cplusplus)
 namespace Savanna
 {
     template <typename T>
-    concept Enum = std::is_enum_v<T>;
+    concept EnumReq = std::is_enum_v<T>;
 
     template <typename T>
-    concept StrongEnum = std::is_enum_v<T> && std::is_class_v<T>;
+    concept StrongEnumReq = std::is_enum_v<T> && std::is_class_v<T>;
 
     template <typename T>
-    concept EnumBackingType = std::is_integral_v<T>;
+    concept EnumBackingTypeReq = std::is_integral_v<T> || std::is_enum_v<T>;
 
     template <typename T, typename U>
-    requires Enum<T> && EnumBackingType<U>
+    requires EnumReq<T> && EnumBackingTypeReq<U>
     struct Enumeration
     {
         static_assert(std::is_convertible<T, U>());
@@ -114,4 +97,16 @@ namespace Savanna
         };
     };
 } // namespace Savanna
-#endif
+
+#else
+
+#define DECLARE_NAMESPACED_ENUMERATION(__cName, __cppName, __type, ...) \
+    typedef enum __cName : __type { __VA_ARGS__ } __cName;
+
+#endif // end __cplusplus
+
+#define DECLARE_SAVANNA_ENUM(__cName, __cppName, __type, ...) \
+    DECLARE_NAMESPACED_ENUMERATION(Savanna, __cName, __cppName, __type, __VA_ARGS__)
+
+#define DECLARE_SAVANNA_MODULE_ENUM(__moduleNamespace, __cName, __cppName, __type, ...) \
+    DECLARE_NAMESPACED_ENUMERATION(Savanna::__moduleNamespace, __cName, __cppName, __type, __VA_ARGS__)

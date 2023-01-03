@@ -24,6 +24,8 @@
 #include "Types/Enums/Enumeration.h"
 #include "Types/Enums/Flags.h"
 
+#include "Types/Version/Version.h"
+
 // Assertions
 #include "Assertions/SavannaAssertions.h"
 

@@ -85,7 +85,8 @@
 			"hash_map": "cpp",
 			"typeindex": "cpp",
 			"savannaexception.h": "c",
-			"string_view": "cpp"
+			"string_view": "cpp",
+			"bitset": "cpp"
 		},
 		"doxdocgen.generic.authorName": "David Mohrhardt",
 		"doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

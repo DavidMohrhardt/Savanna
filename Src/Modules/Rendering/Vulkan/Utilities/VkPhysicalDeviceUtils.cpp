@@ -324,7 +324,14 @@ namespace Savanna::Gfx::Vk::Utils
 
         if (deviceDescsCount == 1)
         {
-            *pOutSelectedDevice = pDeviceDescs[0].physicalDevice;
+            if (pOutSelectedDeviceIndex != nullptr)
+            {
+                *pOutSelectedDeviceIndex = 0;
+            }
+            if (pOutSelectedDevice != nullptr)
+            {
+                *pOutSelectedDevice = pDeviceDescs[0].physicalDevice;
+            }
             return true;
         }
 
@@ -359,4 +366,4 @@ namespace Savanna::Gfx::Vk::Utils
 
         return foundDevice;
     }
-} // namespace Savanna::Gfx::Vk
+} // namespace Savanna::Gfx::Vk::Utils

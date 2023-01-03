@@ -48,7 +48,7 @@ namespace Savanna::Gfx::Vulkan
         SAVANNA_INSERT_SCOPED_PROFILER(VkRenderer::Initialize);
         CreateInstance(rendererCreateInfo);
 
-        if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, seVkRendererCreateFlagsEnableSurface))
+        if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, se_VkRendererCreateFlagsEnableSurface))
             CreateSurface(rendererCreateInfo);
 
         SelectPhysicalDevice(rendererCreateInfo);
@@ -190,22 +190,22 @@ namespace Savanna::Gfx::Vulkan
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32> uniqueQueueFamilies = { };
 
-        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsGraphics))
+        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsGraphics))
         {
             uniqueQueueFamilies.insert(m_QueueFamilyIndices.m_GraphicsQueueFamilyIndex.value());
         }
 
-        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsCompute))
+        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsCompute))
         {
             uniqueQueueFamilies.insert(m_QueueFamilyIndices.m_ComputeQueueFamilyIndex.value());
         }
 
-        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsTransfer))
+        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsTransfer))
         {
             uniqueQueueFamilies.insert(m_QueueFamilyIndices.m_TransferQueueFamilyIndex.value());
         }
 
-        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsPresent))
+        if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsPresent))
         {
             uniqueQueueFamilies.insert(m_QueueFamilyIndices.m_PresentQueueFamilyIndex.value());
         }
@@ -242,33 +242,33 @@ namespace Savanna::Gfx::Vulkan
     void VkRenderer::GetQueueHandles(const VkRendererQueueFlags &requestedQueueFlags)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VkRenderer::GetQueueHandles);
-        if (requestedQueueFlags == seVkRendererQueueFlagsNone)
+        if (requestedQueueFlags == se_VkRendererQueueFlagsNone)
         {
             SAVANNA_WARNING_LOG("No queues requested");
             return;
         }
 
-        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, seVkRendererQueueFlagsGraphics))
+        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, se_VkRendererQueueFlagsGraphics))
         {
             vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.m_GraphicsQueueFamilyIndex.value(), 0, &m_GraphicsQueue);
         }
 
-        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, seVkRendererQueueFlagsCompute))
+        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, se_VkRendererQueueFlagsCompute))
         {
             vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.m_ComputeQueueFamilyIndex.value(), 0, &m_ComputeQueue);
         }
 
-        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, seVkRendererQueueFlagsTransfer))
+        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, se_VkRendererQueueFlagsTransfer))
         {
             vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.m_TransferQueueFamilyIndex.value(), 0, &m_TransferQueue);
         }
 
-        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, seVkRendererQueueFlagsPresent))
+        if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, se_VkRendererQueueFlagsPresent))
         {
             vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.m_PresentQueueFamilyIndex.value(), 0, &m_PresentQueue);
         }
 
-        // if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, seVkRendererQueueFlagsSparseBinding))
+        // if (VkRendererQueueFlags::HasFlag(requestedQueueFlags, se_VkRendererQueueFlagsSparseBinding))
         // {
         //     vkGetDeviceQueue(m_Device, m_QueueFamilyIndices.m_SparseBindingQueueFamilyIndex.value(), 0, &m_SparseBindingQueue);
         // }
@@ -279,12 +279,12 @@ namespace Savanna::Gfx::Vulkan
         SAVANNA_INSERT_SCOPED_PROFILER(VkRenderer::PopulateDeviceExtensionInfo);
         // If the user has specified that they want to define their own device extensions, use those
         // Otherwise, if the user has specified that they want to enable the swapchain, use that
-        if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, seVkRendererCreateFlagsEnableSwapchain))
+        if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, se_VkRendererCreateFlagsEnableSwapchain))
         {
             deviceCreateInfo.enabledExtensionCount = rendererCreateInfo.m_DeviceExtensionCount;
             deviceCreateInfo.ppEnabledExtensionNames = rendererCreateInfo.m_ppDeviceExtensions;
         }
-        else if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, seVkRendererCreateFlagsEnableSwapchain))
+        else if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, se_VkRendererCreateFlagsEnableSwapchain))
         {
             deviceCreateInfo.enabledExtensionCount = 1;
             deviceCreateInfo.ppEnabledExtensionNames = k_SwapchainExtension.data();
@@ -299,7 +299,7 @@ namespace Savanna::Gfx::Vulkan
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VkRenderer::PopulateAdditionalInstanceInfo);
         // If the user has specified validation layers, use them. Otherwise, use the default validation layer if enabled.
-        if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, seVkRendererCreateFlagsEnableValidationLayers))
+        if (VkRendererCreateFlags::HasFlag(rendererCreateInfo.m_CreateFlags, se_VkRendererCreateFlagsEnableValidationLayers))
         {
             if (rendererCreateInfo.m_ValidationLayerCount > 0)
             {
@@ -342,19 +342,19 @@ namespace Savanna::Gfx::Vulkan
         for (const auto& device : devices)
         {
             VkQueueFamilyIndices queueFamilyIndices(device);
-            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsGraphics) && !queueFamilyIndices.HasGraphicsQueueFamilyIndex())
+            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsGraphics) && !queueFamilyIndices.HasGraphicsQueueFamilyIndex())
             {
                 continue;
             }
-            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsCompute) && !queueFamilyIndices.HasComputeQueueFamilyIndex())
+            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsCompute) && !queueFamilyIndices.HasComputeQueueFamilyIndex())
             {
                 continue;
             }
-            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsTransfer) && !queueFamilyIndices.HasTransferQueueFamilyIndex())
+            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsTransfer) && !queueFamilyIndices.HasTransferQueueFamilyIndex())
             {
                 continue;
             }
-            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, seVkRendererQueueFlagsPresent) && !queueFamilyIndices.HasPresentQueueFamilyIndex())
+            if (VkRendererQueueFlags::HasFlag(rendererCreateInfo.m_QueueFlags, se_VkRendererQueueFlagsPresent) && !queueFamilyIndices.HasPresentQueueFamilyIndex())
             {
                 continue;
             }

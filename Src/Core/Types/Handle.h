@@ -12,10 +12,10 @@ typedef struct
     union
     {
         void* m_DataPtr;
-        s_byte m_HandleBytes[ sizeof(__se_intptr) ];
+        s_byte m_HandleBytes[ sizeof(se_intptr) ];
     };
-} __se_handle;
-DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(__se_handle, Handle);
+} se_handle;
+DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(se_handle, Handle);
 
 #ifdef __cplusplus
 

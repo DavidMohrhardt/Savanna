@@ -271,11 +271,11 @@ namespace Savanna::Gfx::Vulkan::Utils
         uint32 limitsScore = 0;
 
         // get properties
-        VkPhysicalDeviceProperties deviceProperties;
+        VkPhysicalDeviceProperties deviceProperties{};
         vkGetPhysicalDeviceProperties(device, &deviceProperties);
 
         // get features
-        VkPhysicalDeviceFeatures deviceFeatures;
+        VkPhysicalDeviceFeatures deviceFeatures{};
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
         if (!scoringFunctionPtrs.m_DeviceTypeScoringFunc(deviceProperties.deviceType, typeScore)

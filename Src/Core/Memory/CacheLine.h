@@ -20,14 +20,14 @@
 
 // Constants/Constexpr's
 #if __cplusplus && __cpp_lib_hardware_interference_size
-    static constexpr size_t __se_hardware_constructive_interference_size
+    static constexpr size_t se_hardware_constructive_interference_size
         = std::hardware_constructive_interference_size;
-    static constexpr size_t __se_hardware_destructive_interference_size
+    static constexpr size_t se_hardware_destructive_interference_size
         = std::hardware_destructive_interference_size;
 #else // !__cplusplus || !__cpp_lib_hardware_interference_size
     // 64 bytes on x86_64 | L1_CACHE_BYTES | L1_CACHE_SHIFT | __cacheline_aligned | ...
-    static constexpr size_t __se_hardware_constructive_interference_size = 64;
-    static constexpr size_t __se_hardware_destructive_interference_size = 64;
+    static constexpr size_t se_hardware_constructive_interference_size = 64;
+    static constexpr size_t se_hardware_destructive_interference_size = 64;
 #endif // end __cplusplus
 
 /**
@@ -39,9 +39,9 @@
 constexpr size_t L1CacheLineLength()
 {
 #if __cplusplus
-    return __se_hardware_destructive_interference_size;
+    return se_hardware_destructive_interference_size;
 #else // !__cplusplus
-    return __se_hardware_constructive_interference_size;
+    return se_hardware_constructive_interference_size;
 #endif // end __cplusplus
 }
 
@@ -70,20 +70,20 @@ constexpr size_t GetLengthInBytesToNextCacheLine(size_t bytesLength)
 }
 
 // Type Definitions
-typedef struct alignas(L1CacheLineLength()) __se_L1CacheLine
+typedef struct alignas(L1CacheLineLength()) se_L1CacheLine
 {
-    alignas(L1CacheLineLength()) __se_byte m_CacheLine[L1CacheLineLength()];
-} __se_L1CacheLine;
+    alignas(L1CacheLineLength()) se_byte m_CacheLine[L1CacheLineLength()];
+} se_L1CacheLine;
 
-typedef __se_L1CacheLine sCacheLine;
+typedef se_L1CacheLine sCacheLine;
 
 #define ENSURE_UNION_IS_L1_CACHE_ALIGNED \
-    __se_L1CacheLine m_EnsureCacheAligned[]
+    se_L1CacheLine m_EnsureCacheAligned[]
 
 #if __cplusplus
 namespace Savanna
 {
-    typedef __se_L1CacheLine L1CacheLine;
+    typedef se_L1CacheLine L1CacheLine;
 
     /// <summary>
     /// Estimates the number of a cachelines the type will need to be stored in at runtime.

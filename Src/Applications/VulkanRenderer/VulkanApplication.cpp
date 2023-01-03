@@ -12,6 +12,8 @@
 // Savanna Vulkan Includes
 #include <Vulkan/VkSurfaceCreateInfos.h>
 #include <Vulkan/Utilities/VkCallbacks.h>
+#include <Vulkan/Utilities/VkLayerUtils.h>
+#include <Vulkan/Utilities/VkExtensionUtils.h>
 #include <Vulkan/Windows/WindowsVkDisplaySurface.h>
 
 // Savanna Includes
@@ -33,19 +35,39 @@ namespace Savanna::Application
     VulkanApplication::VulkanApplication()
         : m_Window(glfwCreateWindow(1920, 1080, "Savanna", nullptr, nullptr))
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::ctor);
         using namespace Savanna;
         using namespace Savanna::Gfx::Vk;
-        SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::ctor");
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+        std::vector<const char*> extensions {
+#if SAVANNA_VULKAN_DEBUGGING
+            VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+#endif // ENABLE_VALIDATION_LAYERS
+        };
+
+        for (uint32_t i = 0; i < glfwExtensionCount; ++i)
+        {
+            extensions.push_back(glfwExtensions[i]);
+        }
+
+        std::vector<const char*> layers {
+#if SAVANNA_VULKAN_DEBUGGING
+            "VK_LAYER_KHRONOS_validation"
+#endif // ENABLE_VALIDATION_LAYERS
+        };
+
         const uint32_t deviceExtensionsCount = 1;
 
-        RendererCreateInfo rendererCreateInfo{};
-        rendererCreateInfo.m_ApplicationName = &k_ApplicationName;
-        rendererCreateInfo.m_EngineName = &k_EngineName;
-        rendererCreateInfo.m_InstanceExtensions = glfwExtensions;
-        rendererCreateInfo.m_InstanceExtensionsCount = glfwExtensionCount;
+        RendererCreateInfo rendererCreateInfo {0};
+        rendererCreateInfo.m_ApplicationName = k_ApplicationName;
+        rendererCreateInfo.m_EngineName = k_EngineName;
+        rendererCreateInfo.m_ppInstanceExtensions = extensions.data();
+        rendererCreateInfo.m_InstanceExtensionsCount = static_cast<uint32>(extensions.size());
+        rendererCreateInfo.m_ppEnabledLayerNames = layers.data();
+        rendererCreateInfo.m_EnabledLayerCount = static_cast<uint32>(layers.size());
 
 #if SAVANNA_WINDOWS
         Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &rendererCreateInfo.m_SurfaceCreateInfo);
@@ -54,16 +76,19 @@ namespace Savanna::Application
 #endif
 
         // TODO @DavidMohrhardt Allow for additional extensions to be added via queries
-        auto swapChainExtensionName = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
-        rendererCreateInfo.m_DeviceExtensions = &swapChainExtensionName;
-        rendererCreateInfo.m_DeviceExtensionsCount = 1;
+        std::vector<const char*> deviceExtensions {
+            // VK_KHR_SURFACE_EXTENSION_NAME,
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        };
+        rendererCreateInfo.m_ppDeviceExtensions = deviceExtensions.data();
+        rendererCreateInfo.m_DeviceExtensionsCount = static_cast<uint32>(deviceExtensions.size());
 
-        m_Renderer = Renderer(&rendererCreateInfo);
+        m_Renderer.Initialize(&rendererCreateInfo);
     }
 
     VulkanApplication::~VulkanApplication()
     {
-        SAVANNA_INSERT_SCOPED_PROFILER("VulkanApplication::dtor");
+        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
     }
 
     void VulkanApplication::Run()

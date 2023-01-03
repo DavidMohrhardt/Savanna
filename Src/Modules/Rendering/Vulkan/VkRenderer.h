@@ -15,6 +15,7 @@
 
 // Savanna Vulkan includes
 #include <VkContext.h>
+#include <VkDisplaySurface.h>
 #include <VkGfxDevice.h>
 #include <VkQueueFamilyIndices.h>
 #include <VkRendererCreateInfo.h>
@@ -25,6 +26,7 @@ namespace Savanna::Gfx::Vk
     {
     private:
         Context m_Context;
+        DisplaySurface m_DisplaySurface;
         GfxDevice m_GfxDevice;
 
     public:

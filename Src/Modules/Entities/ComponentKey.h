@@ -31,8 +31,8 @@
 #undef SE_INVALID_ID
 #define SE_INVALID_ID k_InvalidComponentKey.m_KeyTeeth
 
-typedef __se_uint32 se_ComponentKey_t;
-typedef __se_uint8 se_ComponentKeyMask_T;
+typedef se_uint32 se_ComponentKey_t;
+typedef se_uint8 se_ComponentKeyMask_T;
 
 // Mask the most significant 8 bits of the component ID to represent additional sets of components.
 // (2^8) * (64 - 8) - 1 possible unique component IDs as 0x0ul is reserved for invalid IDs.
