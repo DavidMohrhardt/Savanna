@@ -1,7 +1,12 @@
 # TODO
 
-Total TODOs: 119
+Total TODOs: 115
 ## Src
+
+### CMakeLists.txt
+
+- [L12 :# TODO @DavidMohrhardt - Figure out why this runs 2 times in VSCode.](../Src/CMakeLists.txt#L12)
+- [L13 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L13)
 
 ### DX12Application.cpp
 
@@ -26,7 +31,7 @@ Total TODOs: 119
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L50 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L50)
+- [L77 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L77)
 
 ### VulkanApplication.h
 
@@ -74,14 +79,9 @@ Total TODOs: 119
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Profiling/ProfilerManager.h#L3)
 
-### ProfilerMarker.cpp
+### ArraySlice.h
 
-- [L14 :// TODO @DavidMohrhardt Remove this and implement stacks for profiler markers.](../Src/Core/Profiling/ProfilerMarker.cpp#L14)
-- [L70 :// TODO @DavidMohrhardt Remove this and implement profiler marker stacks instead.](../Src/Core/Profiling/ProfilerMarker.cpp#L70)
-
-### ProfilerMarker.h
-
-- [L29 :// TODO @DavidMohrhardt: Add a way for the profiler to output the logs tabbed](../Src/Core/Profiling/ProfilerMarker.h#L29)
+- [L32 :// TODO @DavidMohrhardt consider disallowing copy and move construction.](../Src/Core/Types/Containers/Arrays/ArraySlice.h#L32)
 
 ### FloatingPointUnions.h
 
@@ -90,11 +90,24 @@ Total TODOs: 119
 
 ### Console.h
 
-- [L97 :// TODO](../Src/Core/Utilities/Console.h#L97)
+- [L104 :// TODO](../Src/Core/Utilities/Console.h#L104)
 
 ### LazyDllLoader.h
 
 - [L6 :#if ENABLE_TODOS // Unimplemented](../Src/Core/Utilities/DllLoader/LazyDllLoader.h#L6)
+
+### JacobianMatrix.cpp
+
+- [L79 :// TODO](../Src/Experimental/Modules/Animation/IK/JacobianMatrix.cpp#L79)
+
+### PhysicsComponent.cpp
+
+- [L27 :// TODO](../Src/Experimental/Modules/Physics/PhysicsComponent.cpp#L27)
+- [L41 :// TODO @DavidMohrhardt bring this code back up to speed](../Src/Experimental/Modules/Physics/PhysicsComponent.cpp#L41)
+
+### PhysicsManager.cpp
+
+- [L176 :// TODO](../Src/Experimental/Modules/Physics/PhysicsManager.cpp#L176)
 
 ### Assertions.h
 
@@ -105,28 +118,22 @@ Total TODOs: 119
 
 - [L93 :// TODO @davidmo](../Src/Experimental/Modules/Threading/Fibers/FiberAsmMacros.h#L93)
 
-### JacobianMatrix.cpp
-
-- [L79 :// TODO](../Src/Modules/Animation/IK/JacobianMatrix.cpp#L79)
-
 ### ComponentRegistry.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentRegistry.cpp#L3)
 - [L19 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L19)
-- [L32 :// TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L32)
-- [L33 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L33)
-- [L37 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L37)
-- [L46 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L46)
-- [L47 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L47)
-- [L51 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L51)
-- [L57 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L57)
-- [L58 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L58)
-- [L62 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L62)
-- [L68 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L68)
-- [L69 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L69)
-- [L73 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L73)
-- [L110 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L110)
-- [L112 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L112)
+- [L29 :// TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L29)
+- [L30 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L30)
+- [L32 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L32)
+- [L42 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L42)
+- [L43 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L43)
+- [L47 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L47)
+- [L53 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L53)
+- [L54 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L54)
+- [L58 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L58)
+- [L64 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L64)
+- [L65 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L65)
+- [L69 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L69)
 
 ### Entity.h
 
@@ -140,67 +147,62 @@ Total TODOs: 119
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ISystem.h#L3)
 
-### PhysicsComponent.cpp
+### ComponentParadigm.cpp
 
-- [L27 :// TODO](../Src/Modules/Physics/PhysicsComponent.cpp#L27)
-- [L41 :// TODO @DavidMohrhardt bring this code back up to speed](../Src/Modules/Physics/PhysicsComponent.cpp#L41)
-
-### PhysicsManager.cpp
-
-- [L176 :// TODO](../Src/Modules/Physics/PhysicsManager.cpp#L176)
+- [L43 :// TODO @DavidMohrhardt Release memory](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L43)
+- [L96 ://     //     // TODO @DavidMohrhardt Need to store the previous component layout to properly copy the data](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L96)
+- [L104 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L104)
+- [L118 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L118)
+- [L125 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L125)
 
 ### GfxApiEnumeration.h
 
 - [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L14)
 - [L20 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L20)
 - [L26 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L26)
-- [L32 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L32)
-- [L38 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L38)
-- [L44 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L44)
-- [L50 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L50)
+- [L32 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L32)
+- [L38 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L38)
+- [L44 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L44)
+- [L50 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L50)
 
 ### GfxDevice.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L3)
 - [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L17)
 
-### GfxDeviceCapabilities.h
+### GfxDeviceCapabilityFlags.c
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L3)
-- [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L17)
-- [L23 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L23)
-- [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L29)
-- [L35 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L35)
-- [L41 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L41)
-- [L47 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L47)
-- [L53 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L53)
-- [L59 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L59)
-- [L65 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L65)
-- [L72 :* this enumeration. Requires querying from TODO](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L72)
-- [L78 :* @brief TODO @DavidMohrhardt Document Construct a new declare savanna extended namespaced cpp type def object](../Src/Modules/Rendering/GfxDeviceCapabilities.h#L78)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.c#L3)
+- [L11 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.c#L11)
 
-### GfxDeviceDescriptor.c
+### GfxDeviceCapabilityFlags.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceDescriptor.c#L3)
-- [L11 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.c#L11)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.h#L3)
+- [L50 :* this enumeration. Requires querying from TODO](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.h#L50)
 
 ### GfxDeviceDescriptor.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L3)
 - [L27 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L27)
 
-### VulkanPhysicalDevice.cpp
+### VkRenderer.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/Vulkan/VulkanPhysicalDevice.cpp#L3)
+- [L67 :// TODO @DavidMohrhardt - Add loading of extensions, validation layers, and previous device ID](../Src/Modules/Rendering/Deprecated~/Vulkan/VkRenderer.h#L67)
 
-### VulkanRenderer.cpp
+### ISavannaVulkan.h
 
-- [L42 :// TODO @DavidMohrhardt make this function the constructor of the VulkanGraphicsDevice class.](../Src/Modules/Rendering/Vulkan/VulkanRenderer.cpp#L42)
+- [L3 :// TODO @DavidMohrhardt - Fill out with vulkan interface](../Src/Modules/Rendering/Deprecated~/Vulkan/Public/ISavannaVulkan.h#L3)
 
-### VulkanDeviceChooser.cpp
+### VkPhysicalDeviceChooser.cpp
 
-- [L82 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L82)
-- [L146 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VulkanDeviceChooser.cpp#L146)
+- [L89 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L89)
+- [L153 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L153)
+
+### VkPhysicalDeviceUtils.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
+- [L97 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L97)
+- [L161 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L161)
 
 ### SavannaTestRunner.h
 
@@ -267,8 +269,8 @@ Total TODOs: 119
 - [L17 :# TODO](../BuildScripts/Python/SavannaBuild.py#L17)
 - [L23 :# TODO Logging](../BuildScripts/Python/SavannaBuild.py#L23)
 - [L31 :#TODO @david.mohrhardt: Update this to be in submodules instead of one monster python script](../BuildScripts/Python/SavannaBuild.py#L31)
-- [L42 :# 2) Extract Artifacts if needed (TODO)](../BuildScripts/Python/SavannaBuild.py#L42)
-- [L43 :# 3) Invoke CMake For Project Generation or Build (TODO)](../BuildScripts/Python/SavannaBuild.py#L43)
+- [L41 :# 2) Extract Artifacts if needed (TODO)](../BuildScripts/Python/SavannaBuild.py#L41)
+- [L42 :# 3) Invoke CMake For Project Generation or Build (TODO)](../BuildScripts/Python/SavannaBuild.py#L42)
 
 ### SavannaCMake.py
 
