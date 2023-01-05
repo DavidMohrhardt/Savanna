@@ -6,6 +6,8 @@
 // Vulkan Includes
 #include <vulkan/vulkan.h>
 
+#include <optional>
+
 namespace Savanna::Gfx::Vk
 {
     struct QueueFamilyIndices

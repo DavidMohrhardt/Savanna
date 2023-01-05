@@ -76,9 +76,11 @@ namespace Savanna::Gfx::Vk
         VkQueue GetComputeQueue() const { return m_ComputeQueue.value_or(VK_NULL_HANDLE); }
         VkQueue GetSparseBindingQueue() const { return m_SparseBindingQueue.value_or(VK_NULL_HANDLE); }
 
+        QueueFamilyIndices GetQueueFamilyIndices() const { return m_QueueFamilyIndices; }
+
     public:
-        GfxDevice& operator=(GfxDevice&) { return *this; }
-        GfxDevice& operator=(GfxDevice&&) { return *this; }
+        GfxDevice& operator=(const GfxDevice& other) = delete;
+        GfxDevice& operator=(GfxDevice&& other);
 
         operator VkPhysicalDevice() const { return m_PhysicalDevice; }
         operator VkPhysicalDevice*() { return &m_PhysicalDevice; }

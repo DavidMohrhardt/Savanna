@@ -14,8 +14,6 @@
 
 namespace Savanna::Gfx::Vk::Utils
 {
-    struct RendererCreateInfo;
-
     typedef bool(*VulkanDeviceTypeScoringFunc)(const VkPhysicalDeviceType&, uint32& outScore);
     typedef bool(*VulkanDeviceFeatureScoringFunc)(const VkPhysicalDeviceFeatures&, uint32& outScore);
     typedef bool(*VulkanDeviceLimitsScoringFunc)(const VkPhysicalDeviceLimits&, uint32& outScore);

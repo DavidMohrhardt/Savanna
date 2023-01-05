@@ -21,6 +21,9 @@ typedef struct se_VkRendererCreateInfo_t
     const char* m_ApplicationName;
     const char* m_EngineName;
 
+    se_uint32 m_Width;
+    se_uint32 m_Height;
+
     se_Version m_ApplicationVersion;
     se_Version m_EngineVersion;
 
@@ -34,7 +37,7 @@ typedef struct se_VkRendererCreateInfo_t
     se_uint32 m_DeviceExtensionsCount;
 
     se_VkSurfaceCreateInfo_t m_SurfaceCreateInfo;
-    se_VkQueueFlagBits_t m_QueueFlags;
+    se_uint32 m_QueueFlags;
 
     VkAllocationCallbacks* m_pAllocationCallbacks;
     const void* m_pUserData;

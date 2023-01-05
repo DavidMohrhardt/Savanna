@@ -19,11 +19,20 @@
 
 namespace Savanna::Gfx::Vk
 {
+    /**
+     * @brief Default constructor. Sets the physical and logical device to VK_NULL_HANDLE.
+     *
+     */
     GfxDevice::GfxDevice()
         : m_PhysicalDevice(VK_NULL_HANDLE)
         , m_LogicalDevice(VK_NULL_HANDLE)
     {}
 
+    /**
+     * @brief Move constructor.
+     *
+     * @param other The other GfxDevice object.
+     */
     GfxDevice::GfxDevice(GfxDevice&& other)
         : m_PhysicalDevice(other.m_PhysicalDevice)
         , m_LogicalDevice(other.m_LogicalDevice)
@@ -32,18 +41,35 @@ namespace Savanna::Gfx::Vk
         other.m_LogicalDevice = VK_NULL_HANDLE;
     }
 
+    /**
+     * @brief Construct a new GfxDevice object by selecting a physical device and creating
+     * a logical device.
+     *
+     * @param pRendererCreateInfo Universal renderer create info.
+     * @param context The Vulkan rendering context.
+     * @param pDisplaySurface A pointer to the display surface. If nullptr, no surface has
+     * been created and presentation may be unavailable.
+     */
     GfxDevice::GfxDevice(
         const RendererCreateInfo *const pRendererCreateInfo,
         const Context &context,
         const DisplaySurface* const pDisplaySurface)
         : GfxDevice()
     {
-        QueueFamilyIndices selectedDeviceIndices;
-        CreatePhysicalDevice(pRendererCreateInfo, context, pDisplaySurface, selectedDeviceIndices);
-        CreateLogicalDevice(pRendererCreateInfo, context, selectedDeviceIndices);
+        CreatePhysicalDevice(pRendererCreateInfo, context, pDisplaySurface, m_QueueFamilyIndices);
+        CreateLogicalDevice(pRendererCreateInfo, context, m_QueueFamilyIndices);
         ConfigureQueues(pRendererCreateInfo->m_QueueFlags);
     }
 
+    /**
+     * @brief Construct a new GfxDevice object with a preselected physical device.
+     *
+     * @param pRendererCreateInfo Universal renderer create info.
+     * @param context The Vulkan rendering context
+     * @param pDisplaySurface A pointer to the display surface. If nullptr, no
+     * surface has been created and presentation may be unavailable.
+     * @param physicalDevice The preselected physical device.
+     */
     GfxDevice::GfxDevice(
         const RendererCreateInfo *const pRendererCreateInfo,
         const Context &context,
@@ -51,13 +77,18 @@ namespace Savanna::Gfx::Vk
         const VkPhysicalDevice &physicalDevice)
         : m_PhysicalDevice(physicalDevice)
         , m_LogicalDevice(VK_NULL_HANDLE)
+        , m_QueueFamilyIndices()
     {
         VkSurfaceKHR surface = pDisplaySurface != nullptr ? pDisplaySurface->GetSurface() : VK_NULL_HANDLE;
-        QueueFamilyIndices indices(m_PhysicalDevice, &surface);
-        CreateLogicalDevice(pRendererCreateInfo, context, indices);
+        m_QueueFamilyIndices.PopulateQueueFamilyIndices(m_PhysicalDevice, &surface);
+        CreateLogicalDevice(pRendererCreateInfo, context, m_QueueFamilyIndices);
         ConfigureQueues(pRendererCreateInfo->m_QueueFlags);
     }
 
+    /**
+     * @brief Destroy the Gfx Device by destroying the logical device.
+     *
+     */
     GfxDevice::~GfxDevice()
     {
         if (m_LogicalDevice != VK_NULL_HANDLE)
@@ -69,6 +100,14 @@ namespace Savanna::Gfx::Vk
         m_PhysicalDevice = VK_NULL_HANDLE;
     }
 
+    /**
+     * @brief Creates the physical device and populates the queue family indices.
+     *
+     * @param pRendererCreateInfo Universal renderer create info.
+     * @param context The Vulkan rendering context.
+     * @param pDisplaySurface A pointer to the display surface. If null, no surface has been created.
+     * @param outQueueFamilyIndices The output queue family indices. Populated by this function.
+     */
     void GfxDevice::CreatePhysicalDevice(
         const RendererCreateInfo* const pRendererCreateInfo,
         const Context &context,
@@ -90,25 +129,38 @@ namespace Savanna::Gfx::Vk
         outQueueFamilyIndices.PopulateQueueFamilyIndices(m_PhysicalDevice, &surface);
     }
 
+    /**
+     * @brief Creates the logical device based on the physical device.
+     *
+     * @param pRendererCreateInfo Universal renderer create info.
+     * @param context The Vulkan rendering context.
+     * @param queueFamilyIndices The queue family indices for the physical device.
+     */
     void GfxDevice::CreateLogicalDevice(
         const RendererCreateInfo* const pRendererCreateInfo,
         const Context& context,
         const QueueFamilyIndices& queueFamilyIndices)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(GfxDevice::CreateLogicalDevice());
-        uint32 numUniqueQueueFamilies = 0;
-        float queuePriority = 1.0f;
-        Utils::GetUniqueQueueFamilies(nullptr, &numUniqueQueueFamilies, pRendererCreateInfo, queueFamilyIndices, &queuePriority);
-        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(numUniqueQueueFamilies);
-        Utils::GetUniqueQueueFamilies(queueCreateInfos.data(), &numUniqueQueueFamilies, pRendererCreateInfo, queueFamilyIndices, &queuePriority);
 
-        VkPhysicalDeviceFeatures deviceFeatures = {};
+        uint32 numUniqueQueueFamilies = 0;
+        Utils::GetUniqueQueueFamilies(nullptr, numUniqueQueueFamilies, queueFamilyIndices);
+
+        float queuePriority = 1.0f;
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(numUniqueQueueFamilies);
+        Utils::GetUniqueQueueFamilies(queueCreateInfos.data(), numUniqueQueueFamilies, queueFamilyIndices, &queuePriority);
+
+        VkPhysicalDeviceFeatures deviceFeatures = {0};
         VkDeviceCreateInfo createInfo = {};
-        Utils::PopulateVkDeviceCreateInfo(&createInfo, pRendererCreateInfo, queueCreateInfos.data(), numUniqueQueueFamilies);//, &deviceFeatures);
+        Utils::PopulateVkDeviceCreateInfo(*pRendererCreateInfo, queueCreateInfos.data(), numUniqueQueueFamilies, createInfo);
 
 #if SAVANNA_VULKAN_DEBUGGING
         Utils::ValidateDeviceExtensions(m_PhysicalDevice, createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount);
 #endif
+
+        createInfo.flags = 0;
+        createInfo.pNext = nullptr;
+        // createInfo.pEnabledFeatures = &deviceFeatures;
 
         if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_LogicalDevice) != VK_SUCCESS)
         {
@@ -116,6 +168,11 @@ namespace Savanna::Gfx::Vk
         }
     }
 
+    /**
+     * @brief Configures VkQueues based on the queue flags.
+     *
+     * @param queueFlags The flags indicating which queues to configure.
+     */
     void GfxDevice::ConfigureQueues(const QueueFlagBits &queueFlags)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(GfxDevice::ConfigureQueues());
@@ -164,6 +221,32 @@ namespace Savanna::Gfx::Vk
             vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilyIndices.m_SparseBindingQueueFamilyIndex.value(), 0, &queue);
             m_SparseBindingQueue = queue;
         }
+    }
+
+    GfxDevice &GfxDevice::operator=(GfxDevice &&other)
+    {
+        if (this != &other)
+        {
+            m_PhysicalDevice = other.m_PhysicalDevice;
+            m_LogicalDevice = other.m_LogicalDevice;
+            m_GraphicsQueue = other.m_GraphicsQueue;
+            m_PresentQueue = other.m_PresentQueue;
+            m_TransferQueue = other.m_TransferQueue;
+            m_ComputeQueue = other.m_ComputeQueue;
+            m_SparseBindingQueue = other.m_SparseBindingQueue;
+            m_QueueFamilyIndices = other.m_QueueFamilyIndices;
+
+            other.m_PhysicalDevice = VK_NULL_HANDLE;
+            other.m_LogicalDevice = VK_NULL_HANDLE;
+            other.m_GraphicsQueue = std::nullopt;
+            other.m_PresentQueue = std::nullopt;
+            other.m_TransferQueue = std::nullopt;
+            other.m_ComputeQueue = std::nullopt;
+            other.m_SparseBindingQueue = std::nullopt;
+            other.m_QueueFamilyIndices = QueueFamilyIndices();
+        }
+
+        return *this;
     }
 
 } // namespace Savanna::Gfx::Vk

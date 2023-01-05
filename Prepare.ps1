@@ -26,7 +26,6 @@ foreach ($Artifact in $Artifacts)
             {
                 mkdir "$Target"
             }
-            Write-Host "Downloading $DownloadUrl"
             $files += @{
                 Uri = "$DownloadUrl"
                 OutFile = "$Target/$FileName"
@@ -38,10 +37,10 @@ foreach ($Artifact in $Artifacts)
 $jobs = @()
 
 foreach ($file in $files) {
-    $jobs += Start-ThreadJob -Name $file.OutFile -ScriptBlock {
-        $params = $using:file
-        Invoke-WebRequest @params
-    }
+    # for each file invoke a web request to download
+    Write-Host "Downloading $($file.Uri)"
+    # Download asynchronously
+    $jobs += Start-Job -ScriptBlock { param($file) Invoke-WebRequest @file } -ArgumentList $file
 }
 
 if ($jobs.Count -gt 0)

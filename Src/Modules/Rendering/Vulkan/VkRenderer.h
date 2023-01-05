@@ -19,6 +19,7 @@
 #include <VkGfxDevice.h>
 #include <VkQueueFamilyIndices.h>
 #include <VkRendererCreateInfo.h>
+#include <VkSwapchain.h>
 
 namespace Savanna::Gfx::Vk
 {
@@ -28,6 +29,7 @@ namespace Savanna::Gfx::Vk
         Context m_Context;
         DisplaySurface m_DisplaySurface;
         GfxDevice m_GfxDevice;
+        Swapchain m_Swapchain;
 
     public:
         Renderer() = default;

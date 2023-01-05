@@ -14,28 +14,23 @@
 namespace Savanna::Gfx::Vk::Utils
 {
     void GetUniqueQueueFamilies(
-        VkDeviceQueueCreateInfo* pQueueCreateInfos,
-        uint32_t* queueCreateInfoCount,
-        const se_VkRendererCreateInfo_t* const pRendererCreateInfo,
+        VkDeviceQueueCreateInfo *pQueueCreateInfos,
+        uint32& queueCreateInfoCount,
         const QueueFamilyIndices& queueFamilyIndices,
-        float* pQueuePriority);
+        float* pQueuePriority = nullptr);
 
-    void PopulateVkApplicationInfo(VkApplicationInfo &applicationInfo, const RendererCreateInfo* const pRendererCreateInfo);
+    void PopulateVkApplicationInfo(
+        const RendererCreateInfo& rendererCreateInfo,
+        VkApplicationInfo &applicationInfo);
 
     void PopulateVkInstanceCreateInfo(
-        VkInstanceCreateInfo* pInstanceCreateInfo,
-        const se_VkRendererCreateInfo_t* const pRendererCreateInfo,
-        VkApplicationInfo* pApplicationCreateInfo = nullptr);
+        const RendererCreateInfo& rendererCreateInfo,
+        const VkApplicationInfo* pApplicationCreateInfo,
+        VkInstanceCreateInfo& instanceCreateInfo);
 
     void PopulateVkDeviceCreateInfo(
-        VkDeviceCreateInfo* pDeviceCreateInfo,
-        const se_VkRendererCreateInfo_t* const pRendererCreateInfo,
-        const VkDeviceQueueCreateInfo* pQueueCreateInfos,
-        uint32 queueCreateInfoCount);
-
-    // void PopulateVkDeviceQueueCreateInfo(VkDeviceQueueCreateInfo& deviceQueueCreateInfo, const se_VkRendererCreateInfo_t* const pRendererCreateInfo);
-
-    void PopulateVkSwapchainCreateInfo(VkSwapchainCreateInfoKHR& swapchainCreateInfo, const se_VkRendererCreateInfo_t* const pRendererCreateInfo);
-
-    void PopulateVkPresentInfoKHR(VkPresentInfoKHR& presentInfo, const se_VkRendererCreateInfo_t* const pRendererCreateInfo);
+        const RendererCreateInfo& rendererCreateInfo,
+        const VkDeviceQueueCreateInfo* queueCreateInfo,
+        const uint32& queueCreateInfoCount,
+        VkDeviceCreateInfo& deviceCreateInfo);
 } // namespace Savanna::Gfx::Vk

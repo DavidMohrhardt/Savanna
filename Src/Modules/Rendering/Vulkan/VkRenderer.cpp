@@ -62,6 +62,10 @@ namespace Savanna::Gfx::Vk
             m_Context = Context(pCreateInfo);
             m_DisplaySurface = DisplaySurface(pCreateInfo, m_Context);
             m_GfxDevice = GfxDevice(pCreateInfo, m_Context, &m_DisplaySurface);
+            if (m_DisplaySurface.IsValid())
+            {
+                m_Swapchain = Swapchain(*pCreateInfo, m_GfxDevice, m_DisplaySurface);
+            }
         }
     }
 
@@ -70,6 +74,7 @@ namespace Savanna::Gfx::Vk
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Destroy());
         if (m_Context.IsValid()) SAVANNA_BRANCH_LIKELY
         {
+            m_Swapchain = Swapchain();
             m_GfxDevice = GfxDevice();
             m_DisplaySurface = DisplaySurface();
             m_Context = Context();

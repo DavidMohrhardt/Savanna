@@ -64,6 +64,8 @@ namespace Savanna::Application
         RendererCreateInfo rendererCreateInfo {0};
         rendererCreateInfo.m_ApplicationName = k_ApplicationName;
         rendererCreateInfo.m_EngineName = k_EngineName;
+        rendererCreateInfo.m_Width = 1920;
+        rendererCreateInfo.m_Height = 1080;
         rendererCreateInfo.m_ppInstanceExtensions = extensions.data();
         rendererCreateInfo.m_InstanceExtensionsCount = static_cast<uint32>(extensions.size());
         rendererCreateInfo.m_ppEnabledLayerNames = layers.data();
@@ -82,6 +84,8 @@ namespace Savanna::Application
         };
         rendererCreateInfo.m_ppDeviceExtensions = deviceExtensions.data();
         rendererCreateInfo.m_DeviceExtensionsCount = static_cast<uint32>(deviceExtensions.size());
+
+        rendererCreateInfo.m_QueueFlags = SE_VK_QUEUE_GRAPHICS_BIT | SE_VK_QUEUE_PRESENT_BIT;
 
         m_Renderer.Initialize(&rendererCreateInfo);
     }

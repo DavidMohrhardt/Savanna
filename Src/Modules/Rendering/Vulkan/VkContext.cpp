@@ -1,4 +1,4 @@
-#include "VkContext.h"
+                                                   #include "VkContext.h"
 
 #include "VkDebugMessenger.h"
 #include "VkRendererCreateInfo.h"
@@ -21,11 +21,26 @@ namespace Savanna::Gfx::Vk
         *this = std::move(other);
     }
 
+    // Context::Context(const RendererCreateInfo* const pRendererCreateInfo, const VkApplicationInfo& applicationInfo)
+    // {
+    //     SAVANNA_INSERT_SCOPED_PROFILER(Context::Context(const RendererCreateInfo *const pRendererCreateInfo));
+    //     VkInstanceCreateInfo instanceCreateInfo{};
+    //     Utils::PopulateVkInstanceCreateInfo(*pRendererCreateInfo, instanceCreateInfo);
+
+    //     CreateVkInstance(&instanceCreateInfo);
+    //     if (instanceCreateInfo.enabledLayerCount > 0)
+    //         CreateDebugMessenger(pRendererCreateInfo);
+    // }
+
     Context::Context(const RendererCreateInfo* const pRendererCreateInfo)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Context::Context(const RendererCreateInfo *const pRendererCreateInfo));
+
+        VkApplicationInfo applicationCreateInfo{};
+        Utils::PopulateVkApplicationInfo(*pRendererCreateInfo, applicationCreateInfo);
+
         VkInstanceCreateInfo instanceCreateInfo{};
-        Utils::PopulateVkInstanceCreateInfo(&instanceCreateInfo, pRendererCreateInfo);
+        Utils::PopulateVkInstanceCreateInfo(*pRendererCreateInfo, &applicationCreateInfo, instanceCreateInfo);
 
         CreateVkInstance(&instanceCreateInfo);
         if (instanceCreateInfo.enabledLayerCount > 0)

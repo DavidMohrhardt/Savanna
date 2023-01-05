@@ -6,16 +6,10 @@ namespace Savanna::Gfx::Vk::Utils
 {
     void GetUniqueQueueFamilies(
         VkDeviceQueueCreateInfo *pQueueCreateInfos,
-        uint32 *pQueueCreateInfoCount,
-        const RendererCreateInfo *const pRendererCreateInfo,
-        const QueueFamilyIndices &queueFamilyIndices,
+        uint32& queueCreateInfoCount,
+        const QueueFamilyIndices& queueFamilyIndices,
         float* pQueuePriority)
     {
-        if (pQueueCreateInfoCount == nullptr)
-        {
-            throw Savanna::RuntimeErrorException("pQueueCreateInfoCount is null");
-        }
-
         std::set<uint32> uniqueQueueFamilies = {};
 
         if (queueFamilyIndices.HasGraphicsQueueFamilyIndex())
@@ -33,7 +27,7 @@ namespace Savanna::Gfx::Vk::Utils
         if (queueFamilyIndices.HasPresentQueueFamilyIndex())
             uniqueQueueFamilies.insert(queueFamilyIndices.m_PresentQueueFamilyIndex.value());
 
-        *pQueueCreateInfoCount = static_cast<uint32>(uniqueQueueFamilies.size());
+        queueCreateInfoCount = static_cast<uint32>(uniqueQueueFamilies.size());
 
         if (pQueueCreateInfos != nullptr)
         {
@@ -50,77 +44,59 @@ namespace Savanna::Gfx::Vk::Utils
         }
     }
 
-    void PopulateVkApplicationInfo(VkApplicationInfo &applicationInfo, const RendererCreateInfo *const pRendererCreateInfo)
+    void PopulateVkApplicationInfo(
+        const RendererCreateInfo& rendererCreateInfo,
+        VkApplicationInfo &applicationInfo)
     {
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        applicationInfo.pApplicationName = rendererCreateInfo.m_ApplicationName;
+        applicationInfo.applicationVersion = VK_MAKE_API_VERSION(
+            rendererCreateInfo.m_ApplicationVersion.variant,
+            rendererCreateInfo.m_ApplicationVersion.major,
+            rendererCreateInfo.m_ApplicationVersion.minor,
+            rendererCreateInfo.m_ApplicationVersion.patch);
+
+        applicationInfo.pEngineName = rendererCreateInfo.m_EngineName;
+        applicationInfo.applicationVersion = VK_MAKE_API_VERSION(
+            rendererCreateInfo.m_EngineVersion.variant,
+            rendererCreateInfo.m_EngineVersion.major,
+            rendererCreateInfo.m_EngineVersion.minor,
+            rendererCreateInfo.m_EngineVersion.patch);
+
+        applicationInfo.apiVersion = VK_API_VERSION_1_3;
         applicationInfo.pNext = nullptr;
-        applicationInfo.pApplicationName = pRendererCreateInfo->m_ApplicationName;
-        applicationInfo.applicationVersion = VK_MAKE_API_VERSION(
-            pRendererCreateInfo->m_ApplicationVersion.variant,
-            pRendererCreateInfo->m_ApplicationVersion.major,
-            pRendererCreateInfo->m_ApplicationVersion.minor,
-            pRendererCreateInfo->m_ApplicationVersion.patch);
-
-        applicationInfo.pEngineName = pRendererCreateInfo->m_EngineName;
-        applicationInfo.applicationVersion = VK_MAKE_API_VERSION(
-            pRendererCreateInfo->m_EngineVersion.variant,
-            pRendererCreateInfo->m_EngineVersion.major,
-            pRendererCreateInfo->m_EngineVersion.minor,
-            pRendererCreateInfo->m_EngineVersion.patch);
-
-        applicationInfo.apiVersion = VK_API_VERSION_1_0;
     }
 
     void PopulateVkInstanceCreateInfo(
-        VkInstanceCreateInfo* pInstanceCreateInfo,
-        const RendererCreateInfo* const pRendererCreateInfo,
-        VkApplicationInfo* pApplicationCreateInfo)
+        const RendererCreateInfo& rendererCreateInfo,
+        const VkApplicationInfo* pApplicationCreateInfo,
+        VkInstanceCreateInfo& instanceCreateInfo)
     {
-        if (pRendererCreateInfo == nullptr)
-        {
-            throw Savanna::RuntimeErrorException("pRendererCreateInfo is null");
-        }
-
-        VkApplicationInfo applicationCreateInfo = {};
-        if (pApplicationCreateInfo != nullptr)
-        {
-            applicationCreateInfo = *pApplicationCreateInfo;
-        }
-        else
-        {
-            PopulateVkApplicationInfo(applicationCreateInfo, pRendererCreateInfo);
-        }
-
-        pInstanceCreateInfo->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        pInstanceCreateInfo->pNext = nullptr;
-        pInstanceCreateInfo->flags = 0;
-        pInstanceCreateInfo->pApplicationInfo = &applicationCreateInfo;
-        pInstanceCreateInfo->enabledLayerCount = static_cast<uint32>(pRendererCreateInfo->m_EnabledLayerCount);
-        pInstanceCreateInfo->ppEnabledLayerNames = pRendererCreateInfo->m_ppEnabledLayerNames;
-        pInstanceCreateInfo->enabledExtensionCount = static_cast<uint32>(pRendererCreateInfo->m_InstanceExtensionsCount);
-        pInstanceCreateInfo->ppEnabledExtensionNames = pRendererCreateInfo->m_ppInstanceExtensions;
+        instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+        instanceCreateInfo.pNext = nullptr;
+        instanceCreateInfo.flags = 0;
+        instanceCreateInfo.pApplicationInfo = pApplicationCreateInfo;
+        instanceCreateInfo.enabledLayerCount = static_cast<uint32>(rendererCreateInfo.m_EnabledLayerCount);
+        instanceCreateInfo.ppEnabledLayerNames = rendererCreateInfo.m_ppEnabledLayerNames;
+        instanceCreateInfo.enabledExtensionCount = static_cast<uint32>(rendererCreateInfo.m_InstanceExtensionsCount);
+        instanceCreateInfo.ppEnabledExtensionNames = rendererCreateInfo.m_ppInstanceExtensions;
     }
 
     void PopulateVkDeviceCreateInfo(
-        VkDeviceCreateInfo* pDeviceCreateInfo,
-        const RendererCreateInfo* const pRendererCreateInfo,
-        const VkDeviceQueueCreateInfo* pQueueCreateInfos,
-        uint32 queueCreateInfoCount)
+        const RendererCreateInfo& rendererCreateInfo,
+        const VkDeviceQueueCreateInfo* pQueueCreateInfo,
+        const uint32& queueCreateInfoCount,
+        VkDeviceCreateInfo& deviceCreateInfo)
     {
-        if (pDeviceCreateInfo == nullptr || pRendererCreateInfo == nullptr || pQueueCreateInfos == nullptr)
-        {
-            throw Savanna::RuntimeErrorException("pDeviceCreateInfo, pRendererCreateInfo, or pQueueCreateInfos is null");
-        }
-        pDeviceCreateInfo->sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        pDeviceCreateInfo->pNext = nullptr;
-        pDeviceCreateInfo->flags = 0;
-        pDeviceCreateInfo->queueCreateInfoCount = queueCreateInfoCount;
-        pDeviceCreateInfo->pQueueCreateInfos = pQueueCreateInfos;
-        pDeviceCreateInfo->enabledExtensionCount = static_cast<uint32>(pRendererCreateInfo->m_DeviceExtensionsCount);
-        pDeviceCreateInfo->ppEnabledExtensionNames = pRendererCreateInfo->m_ppDeviceExtensions;
-        pDeviceCreateInfo->enabledLayerCount = static_cast<uint32>(pRendererCreateInfo->m_EnabledLayerCount);
-        pDeviceCreateInfo->ppEnabledLayerNames = pRendererCreateInfo->m_ppEnabledLayerNames;
-        pDeviceCreateInfo->pEnabledFeatures = nullptr;
+        deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        deviceCreateInfo.pNext = nullptr;
+        deviceCreateInfo.flags = 0;
+        deviceCreateInfo.queueCreateInfoCount = queueCreateInfoCount;
+        deviceCreateInfo.pQueueCreateInfos = pQueueCreateInfo;
+        deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(rendererCreateInfo.m_DeviceExtensionsCount);
+        deviceCreateInfo.ppEnabledExtensionNames = rendererCreateInfo.m_ppDeviceExtensions;
+        deviceCreateInfo.enabledLayerCount = static_cast<uint32>(rendererCreateInfo.m_EnabledLayerCount);
+        deviceCreateInfo.ppEnabledLayerNames = rendererCreateInfo.m_ppEnabledLayerNames;
+        deviceCreateInfo.pEnabledFeatures = nullptr;
     }
-
 } // namespace Savanna::Gfx::Vk::Utils
