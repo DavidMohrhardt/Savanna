@@ -31,6 +31,9 @@ namespace Savanna::Gfx::Vk
         VkDevice m_Device;
         VkSurfaceKHR m_Surface;
 
+        std::vector<VkImage> m_SwapchainImages;
+        std::vector<VkImageView> m_SwapchainImageViews;
+
     public:
         // Constructors and destructors
         Swapchain();
@@ -50,6 +53,10 @@ namespace Savanna::Gfx::Vk
         VkSurfaceFormatKHR GetSurfaceFormat() const { return m_SurfaceFormat; }
         VkPresentModeKHR GetPresentMode() const { return m_PresentMode; }
         VkExtent2D GetExtent() const { return m_Extent; }
+
+    private:
+        void ConfigureSwapchainImageViews();
+        void ReleaseImageViews();
 
     public:
         // Operators

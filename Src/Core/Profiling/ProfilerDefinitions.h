@@ -1,5 +1,3 @@
 #pragma once
 
-#define ENABLE_DEEP_ENGINE_PROFILING 0
-
-
+#define ENABLE_DEEP_ENGINE_PROFILING 1
