@@ -46,11 +46,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/bin")
 # Windows specific settings
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-# Core Projects
-add_subdirectory(Core)
-
 # Editor Project
-add_subdirectory(Editor)
 
 # Modules
 add_subdirectory(Modules)

@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-set(LIBRARY_NAME Entities)
+set(LIBRARY_NAME Memory)
 
 set(UNDEFINED OFF)
 
 if (UNDEFINED)
-    message("Detected default static library template in use. Ensure that you have set Rendering and marked UNDEFINED as OFF in your CMAKE file.")
+    message("Detected default static library template in use. Ensure that you have set LIBRARY_NAME and marked UNDEFINED as OFF in your CMAKE file.")
     return()
 endif()
 
@@ -22,15 +22,39 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
 
-# Acquire all subdirectories, This is evil for the record)
-file(GLOB_RECURSE src
+# Acquire all source files in this directory, This is evil for the record)
+file(GLOB src
     ${CMAKE_CURRENT_LIST_DIR}/*.cpp
     ${CMAKE_CURRENT_LIST_DIR}/*.c
     ${CMAKE_CURRENT_LIST_DIR}/*.h
     ${CMAKE_CURRENT_LIST_DIR}/*.hpp)
 
+message ("before filter")
+message ("${src}")
+
 # Filter any directory that contains a '~' in it's path.
 list(FILTER src EXCLUDE REGEX "${CMAKE_CURRENT_LIST_DIR}/(.+)~(.+)")
+
+message ("after filter")
+message ("${src}")
+
+# file(GLOB_RECURSE cmake_lists ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt)
+
+# message ("after recurse")
+# message ("${src}")
+
+# message("Removing ${CMAKE_CURRENT_LIST_FILE} from list")
+# list(REMOVE_ITEM cmake_lists "${CMAKE_CURRENT_LIST_FILE}")
+# cmake_path(GET cmake_lists PARENT_PATH cmake_containing_directories)
+
+# message ("after remove cmakes")
+# message ("${src}")
+
+# # # Filter Subfolders with explicit cmake txt files
+# list(FILTER src EXCLUDE REGEX "${cmake_containing_directories}/.+")
+
+# message ("after remove src from subfolders")
+# message ("${src}")
 
 # Sort the files into Filters based on Folder Hierarchy
 SOURCE_GROUP_BY_FOLDER()
@@ -47,10 +71,7 @@ target_include_directories(
     ${CMAKE_CURRENT_LIST_DIR}
     ${ENGINE_MODULES_DIR}/Core)
 
-target_link_libraries(${app_name} ${target_static_libs}) #${target_shared_libs})
-add_dependencies(${LIBRARY_NAME} ${target_static_libs}) #${target_shared_libs})
-
 # Install Binaries in Build Folder
-install(TARGETS ${LIBRARY_NAME}
+install(TARGETS Memory
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)

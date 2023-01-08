@@ -6,6 +6,7 @@ set(app_name SavannaVulkanRenderer)
 
 # Define specific app modules
 set(app_modules ${CMAKE_CURRENT_LIST_DIR}/*.cmake)
+set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
 
 message("Generating ${app_name}")
 
@@ -66,9 +67,10 @@ set(target_shared_libs
 
 set(core_include_dirs
 	# Savanna Core
-	${CMAKE_SOURCE_DIR}/Core
-	${CMAKE_SOURCE_DIR}/Modules/Rendering
-	${CMAKE_SOURCE_DIR}/Modules/Rendering/Vulkan)
+	${ENGINE_MODULES_DIR}/Core
+	${Engine_MODULES_DIR}/Profiling
+	${ENGINE_MODULES_DIR}/Rendering
+	${ENGINE_MODULES_DIR}/Rendering/Vulkan)
 
 # TODO change when unpacking artifacts is normalized
 add_subdirectory(

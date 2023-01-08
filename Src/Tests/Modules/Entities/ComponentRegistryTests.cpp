@@ -3,7 +3,7 @@
 
 #include <Entities/ComponentRegistry.h>
 
-#include <Memory/CacheLine.h>
+#include <Types/Memory/CacheLine.h>
 
 #define DECLARE_COMPONENT_REGISTRY_TEST(__name) \
     DECLARE_ENTITIES_TEST(ComponentRegistry, __name)

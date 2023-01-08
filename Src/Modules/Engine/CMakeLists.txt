@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(LIBRARY_NAME Entities)
+set(LIBRARY_NAME Engine)
 
 set(UNDEFINED OFF)
 
@@ -15,12 +15,12 @@ foreach(module ${modules})
     include("${module}")
 endforeach()
 
+set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
+
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
 
 # Acquire all subdirectories, This is evil for the record)
 file(GLOB_RECURSE src

@@ -9,7 +9,7 @@
 #include "AllocatorTestUtils.h"
 
 #include <Memory/MemoryArena.h>
-#include <Memory/Allocators/FreeListAllocator.h>
+#include <Types/Memory/FreeListAllocator.h>
 #include <memory>
 
 #define DECLARE_FREE_LIST_TEST(__name) \
@@ -64,12 +64,12 @@ namespace Savanna::Core::Tests
 
         void Allocate(size_t size, size_t alignment, void** out_ptr)
         {
-            *out_ptr = m_Allocator.Allocate(size, alignment);
+            *out_ptr = m_Allocator.alloc(size, alignment);
         }
 
         void Deallocate(void* ptr, const size_t alignment)
         {
-            m_Allocator.Deallocate(ptr, alignment);
+            m_Allocator.free(ptr, alignment);
         }
 
     private:

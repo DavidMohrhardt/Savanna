@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SavannaEngine.h>
-#include <Memory/MemoryArena.h>
 #include <Types/Strings/FixedString.h>
 
 #include <memory>

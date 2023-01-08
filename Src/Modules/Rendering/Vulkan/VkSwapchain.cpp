@@ -127,6 +127,10 @@ namespace Savanna::Gfx::Vk
             throw std::runtime_error("Failed to create swap chain!");
         }
 
+        m_SurfaceFormat = surfaceFormat;
+        m_Extent = extent;
+        m_PresentMode = presentMode;
+
         ConfigureSwapchainImageViews();
     }
 
@@ -139,6 +143,7 @@ namespace Savanna::Gfx::Vk
 
     void Swapchain::ConfigureSwapchainImageViews()
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(Swapchain::ConfigureSwapchainImageViews())
         ReleaseImageViews();
 
         uint32 swapchainImageCount;
@@ -155,6 +160,7 @@ namespace Savanna::Gfx::Vk
         imageViewCreateInfo.format = m_SurfaceFormat.format;
         for (int i = 0; i < swapchainImageCount; ++i)
         {
+            imageViewCreateInfo.image = m_SwapchainImages[i];
             if (vkCreateImageView(m_Device, &imageViewCreateInfo, nullptr, &m_SwapchainImageViews[i]) != VK_SUCCESS)
                 throw std::runtime_error("Unable to create image view for swapchain image.");
         }
@@ -162,9 +168,13 @@ namespace Savanna::Gfx::Vk
 
     void Swapchain::ReleaseImageViews()
     {
-        for (const auto& imageView : m_SwapchainImageViews)
+        if (m_Device != VK_NULL_HANDLE)
         {
-            vkDestroyImageView(m_Device, imageView, nullptr);
+            for (const auto& imageView : m_SwapchainImageViews)
+            {
+                if (imageView != VK_NULL_HANDLE)
+                    vkDestroyImageView(m_Device, imageView, nullptr);
+            }
         }
     }
 
@@ -178,6 +188,8 @@ namespace Savanna::Gfx::Vk
             m_Extent = other.m_Extent;
             m_Device = other.m_Device;
             m_Surface = other.m_Surface;
+            m_SwapchainImages = std::move(other.m_SwapchainImages);
+            m_SwapchainImageViews = std::move(other.m_SwapchainImageViews);
 
             other.m_Swapchain = VK_NULL_HANDLE;
             other.m_SurfaceFormat = {};
@@ -185,6 +197,8 @@ namespace Savanna::Gfx::Vk
             other.m_Extent = {};
             other.m_Device = VK_NULL_HANDLE;
             other.m_Surface = VK_NULL_HANDLE;
+            other.m_SwapchainImages = std::vector<VkImage>();
+            other.m_SwapchainImageViews = std::vector<VkImageView>();
         }
         return *this;
     }

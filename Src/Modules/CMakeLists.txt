@@ -20,5 +20,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Code Modules
+add_subdirectory(Core)
+# add_subdirectory(Engine)
 add_subdirectory(Entities)
+add_subdirectory(IO)
+add_subdirectory(Memory)
+# TODO @DavidMohrhardt - Move profiling to a module
+# add_subdirectory(Profiling)
 add_subdirectory(Rendering)

@@ -7,7 +7,8 @@ if (UNDEFINED)
     return()
 endif()
 
-# set (LIBRARY_NAME UNDEFINED)
+set (LIBRARY_NAME UNDEFINED)
+set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
 
 message("-- Building ${LIBRARY_NAME}")
 

@@ -8,7 +8,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <Memory/Allocators/AllocatorUtils.h>
+#include <Types/Memory/AllocatorUtils.h>
 #include "AllocatorTestUtils.h"
 
 #define DECLARE_ALLOCATOR_UTILS_TEST(__name) \

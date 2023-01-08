@@ -1,6 +1,6 @@
 #include "MemoryTestUtils.h"
 
-#include <Memory/CacheLine.h>
+#include <Types/Memory/CacheLine.h>
 
 #define DECLARE_CACHE_LINE_TEST(__name) \
     DECLARE_MEMORY_TEST(CacheLineTest, __name)

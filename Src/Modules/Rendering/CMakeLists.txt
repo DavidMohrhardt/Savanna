@@ -20,6 +20,8 @@ endforeach()
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
+
 # Acquire all source files in this directory, This is evil for the record)
 file(GLOB src
     ${CMAKE_CURRENT_LIST_DIR}/*.cpp
@@ -52,7 +54,7 @@ target_include_directories(
     ${LIBRARY_NAME}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_SOURCE_DIR}/Core)
+    ${ENGINE_MODULES_DIR}/Core)
 
 # Install Binaries in Build Folder
 install(TARGETS Rendering

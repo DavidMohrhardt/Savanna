@@ -17,10 +17,11 @@
 #include "ParadigmLayoutDescriptor.h"
 
 // Core Includes
-#include <Math/MathHelpers.h>
-#include <Memory/MemoryBlocks.h>
-#include <Types/Containers/Arrays/ArraySlice.h>
 #include <Utilities/SavannaCoding.h>
+
+#include <Math/MathHelpers.h>
+#include <Types/Containers/Arrays/ArraySlice.h>
+#include <Types/Memory/MemoryBlocks.h>
 
 
 namespace Savanna::Entities

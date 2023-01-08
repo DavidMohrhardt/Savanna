@@ -10,8 +10,8 @@
 
 #include "Core/Memory/MemoryTestUtils.h"
 
-#include <Memory/Allocators/AllocatorType.h>
-#include <Memory/Allocators/AllocatorUtils.h>
+#include <Types/Memory/AllocatorType.h>
+#include <Types/Memory/AllocatorUtils.h>
 
 #define DECLARE_ALLOCATOR_TEST(__subFixture, __name) \
     DECLARE_MEMORY_TEST(Allocator_##__subFixture, __name)

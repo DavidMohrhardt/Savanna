@@ -95,8 +95,10 @@ namespace Savanna::Gfx::Vk::Utils
         deviceCreateInfo.pQueueCreateInfos = pQueueCreateInfo;
         deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(rendererCreateInfo.m_DeviceExtensionsCount);
         deviceCreateInfo.ppEnabledExtensionNames = rendererCreateInfo.m_ppDeviceExtensions;
-        deviceCreateInfo.enabledLayerCount = static_cast<uint32>(rendererCreateInfo.m_EnabledLayerCount);
-        deviceCreateInfo.ppEnabledLayerNames = rendererCreateInfo.m_ppEnabledLayerNames;
+        // Device level layers are no longer relevant in Vulkan 1.1 and above.
+        deviceCreateInfo.enabledLayerCount = 0;
+        deviceCreateInfo.ppEnabledLayerNames = nullptr;
+
         deviceCreateInfo.pEnabledFeatures = nullptr;
     }
 } // namespace Savanna::Gfx::Vk::Utils

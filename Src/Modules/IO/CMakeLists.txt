@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(LIBRARY_NAME Entities)
+set(LIBRARY_NAME IO)
 
 set(UNDEFINED OFF)
 
 if (UNDEFINED)
-    message("Detected default static library template in use. Ensure that you have set Rendering and marked UNDEFINED as OFF in your CMAKE file.")
+    message("Detected default static library template in use. Ensure that you have set LIBRARY_NAME set and marked UNDEFINED as OFF in your CMAKE file.")
     return()
 endif()
 

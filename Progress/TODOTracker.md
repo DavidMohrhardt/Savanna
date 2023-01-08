@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 115
+Total TODOs: 118
 ## Src
 
 ### CMakeLists.txt
@@ -31,7 +31,7 @@ Total TODOs: 115
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L77 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L77)
+- [L79 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L79)
 
 ### VulkanApplication.h
 
@@ -198,11 +198,24 @@ Total TODOs: 115
 - [L89 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L89)
 - [L153 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L153)
 
+### VkRendererCreateInfo.h
+
+- [L18 :// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers](../Src/Modules/Rendering/Vulkan/VkRendererCreateInfo.h#L18)
+
+### VkSwapchain.cpp
+
+- [L79 :// TODO @DavidMohrhardt: Get extents from renderer create info and pass them to the swapchain creation](../Src/Modules/Rendering/Vulkan/VkSwapchain.cpp#L79)
+- [L157 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Modules/Rendering/Vulkan/VkSwapchain.cpp#L157)
+
 ### VkPhysicalDeviceUtils.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
 - [L97 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L97)
 - [L161 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L161)
+
+### VkSwapchainUtils.cpp
+
+- [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Modules/Rendering/Vulkan/Utilities/VkSwapchainUtils.cpp#L18)
 
 ### SavannaTestRunner.h
 
@@ -240,7 +253,6 @@ Total TODOs: 115
 ### FreeListAllocatorTest.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTest.cpp#L3)
-- [L215 :// TODO : This test fails because of the bug in the implementation. Likely how I handle re-establishing the root is wrong.](../Src/Tests/Core/Memory/Allocators/FreeListAllocatorTest.cpp#L215)
 
 ### ModuleTestUtils.h
 

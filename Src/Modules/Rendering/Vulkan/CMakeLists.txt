@@ -16,6 +16,8 @@ FIND_VULKAN_OR_FAIL()
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+set(ENGINE_MODULES_DIR ${CMAKE_SOURCE_DIR}/Modules)
+
 # Acquire all subdirectories, This is evil for the record)
 file(GLOB_RECURSE src
     ${CMAKE_CURRENT_LIST_DIR}/*.cpp

@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan.h>
 
+// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers
 typedef struct se_VkRendererCreateInfo_t
 {
     const char* m_ApplicationName;
