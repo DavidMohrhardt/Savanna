@@ -28,7 +28,9 @@ typedef struct se_handle
         struct
         {
             se_uint8 m_ArenaId;
+            se_uint8 m_Generation;
             se_uint8 m_Offset;
+            se_uint8 m_Size;
         };
     };
 } se_handle;

@@ -16,37 +16,41 @@
 // #include <Types/ManagedObject.h>
 #include <Types/Memory/Allocators.h>
 
-#include <memory>
-
 #if defined(__cplusplus)
+
+#define SAVANNA_ALLOW_MEMORY_EXPANSION 1
+
+#include <memory>
+#include <vector>
 
 namespace Savanna
 {
     class MemoryArena
     {
     private:
-#if defined(SAVANNA_MEMORY_ALLOW_ARENA_RESIZE)
-        // TODO @DavidMohrhardt: Implement arena resizing
-        std::vector<Allocator> m_upAllocators;
+#if SAVANNA_ALLOW_MEMORY_EXPANSION
+        // How can we expand the memory of the arena if we go over budget
+        std::vector<std::unique_ptr<void*>> m_Buffers;
 #else
-        std::unique_ptr<Allocator> m_upAllocator;
-#endif // SAVANNA_MEMORY_ALLOW_ARENA_RESIZE
+        std::unique_ptr<void*> m_Root;
+#endif // SAVANNA_ALLOW_MEMORY_EXPANSION
+        size_t m_Size;
         uint8 m_ArenaId;
+        bool m_MemoryOwner;
 
     public:
-        template <typename T>
-        requires std::is_base_of_v<Allocator, T>
-        MemoryArena(const size_t &arenaSize, const size_t &arenaAlignment)
-            : m_upAllocator(nullptr)
-            , m_ArenaId(UINT8_MAX)
-        {
-            void* pBuffer = MemoryManager::Get()->RegisterArena(arenaSize, arenaAlignment, m_ArenaKind);
-            if (pBuffer == nullptr)
-            {
-                return;
-            }
+        MemoryArena(void* pBuffer, const size_t &size, const uint8 &arenaId, bool ownsMemory)
 
-            m_upAllocator = std::make_unique<T>(pBuffer, arenaSize, arenaAlignment);
+#if SAVANNA_ALLOW_MEMORY_EXPANSION
+            : m_Buffers(2)
+#else
+            : m_Root(std::make_unique<T>(pBuffer))
+#endif // SAVANNA_ALLOW_MEMORY_EXPANSION
+            , m_Size(size)
+            , m_ArenaId(arenaId)
+            , m_MemoryOwner(ownsMemory)
+        {
+            m_Buffers[0] = std::make_unique<void*>(pBuffer);
         }
 
         MemoryArena(const MemoryArena &other) = delete;
@@ -61,12 +65,6 @@ namespace Savanna
     public:
         void* Allocate(const size_t &requiredSize, const size_t &alignment);
         void Deallocate(void *const ptr, const size_t alignment);
-
-        inline const Allocator* GetAllocator() const
-        {
-            // Get the weak pointer to the allocator
-            return reinterpret_cast<Allocator*>(m_upAllocator.get());
-        }
 
         inline const uint8 GetArenaId() const
         {

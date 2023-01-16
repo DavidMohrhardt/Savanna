@@ -10,11 +10,11 @@
 #include "VulkanApplication.h"
 
 // Savanna Vulkan Includes
-#include <Vulkan/VkSurfaceCreateInfos.h>
-#include <Vulkan/Utilities/VkCallbacks.h>
-#include <Vulkan/Utilities/VkLayerUtils.h>
-#include <Vulkan/Utilities/VkExtensionUtils.h>
-#include <Vulkan/Windows/WindowsVkDisplaySurface.h>
+#include <VkSurfaceCreateInfos.h>
+#include <Utilities/VkCallbacks.h>
+#include <Utilities/VkLayerUtils.h>
+#include <Utilities/VkExtensionUtils.h>
+#include <Windows/WindowsVkDisplaySurface.h>
 
 // Savanna Includes
 #include <Profiling/Profiler.h>
@@ -22,7 +22,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <iostream>
 #include <string.h>
-#include <glm.hpp>
+#include <glm/glm.hpp>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

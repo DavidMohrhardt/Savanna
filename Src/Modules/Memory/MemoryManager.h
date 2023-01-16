@@ -17,14 +17,12 @@ namespace Savanna
 {
     class MemoryManager : public Singleton<MemoryManager>
     {
-    private:
+    public:
         static constexpr uint8 k_MaxArenaCount = 16;
 
     private:
-        FreeListAllocator m_CoreAllocator;
-        void* m_pCoreBuffer;
-        MemoryArena* m_pArenas;
-
+        MemoryArena m_RootArena;
+        MemoryArena* m_RegisteredArenas[k_MaxArenaCount];
         uint8 m_ArenaCount;
 
     public:

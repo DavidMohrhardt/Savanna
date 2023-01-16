@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SavannaEngine.h"
-#include "SavannaVk.h"
-#include "Vulkan/VkRenderer.h"
+#include <SavannaEngine.h>
+#include <SavannaVk.h>
+#include <VkRenderer.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>

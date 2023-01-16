@@ -50,6 +50,11 @@ if ($jobs.Count -gt 0)
 }
 
 foreach ($job in $jobs) {
+    # if a job failed, throw an error
+    if ($job.State -eq "Failed") {
+        $job | Receive-Job -ErrorVariable error
+        throw $error
+    }
     Receive-Job -Job $job | Out-Null
 }
 

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Application/IApplication.h"
+#include <Application/IApplication.h>
 #include "Window/WindowsRenderWindow.h"
 
 namespace SavannaDX12

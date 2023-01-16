@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 set(LIBRARY_NAME SavannaVk)
 
@@ -58,8 +58,8 @@ target_include_directories(
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_SOURCE_DIR}/Rendering)
 
-target_link_libraries(${LIBRARY_NAME} Core ${target_static_libs})
-add_dependencies(${LIBRARY_NAME} Core)
+target_link_libraries(${LIBRARY_NAME} SavannaCore ${target_static_libs})
+add_dependencies(${LIBRARY_NAME} SavannaCore)
 
 set(LIBRARIES ${LIBRARY_NAME})#_static ${LIBRARY_NAME}_shared)
 

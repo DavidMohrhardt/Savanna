@@ -1,7 +1,6 @@
 #pragma once
 
 // Savanna Interface API
-
 #if defined(__CYGWIN__) || defined(Win32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     #define SAVANNA_INTERFACE_API __stdcall
     #define SAVANNA_INTERFACE_EXPORT __declspec(dllexport)

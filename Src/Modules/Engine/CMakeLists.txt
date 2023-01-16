@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 set(LIBRARY_NAME Engine)
 
@@ -36,7 +36,7 @@ list(FILTER src EXCLUDE REGEX "${CMAKE_CURRENT_LIST_DIR}/(.+)~(.+)")
 SOURCE_GROUP_BY_FOLDER()
 
 # Set the target static libraries
-set(target_static_libs Core)
+set(target_static_libs SavannaCore)
 
 # Add Library
 add_library(${LIBRARY_NAME} STATIC ${src})
@@ -45,7 +45,7 @@ target_include_directories(
     ${LIBRARY_NAME}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
-    ${ENGINE_MODULES_DIR}/Core)
+    ${ENGINE_MODULES_DIR}/SavannaCore)
 
 target_link_libraries(${app_name} ${target_static_libs}) #${target_shared_libs})
 add_dependencies(${LIBRARY_NAME} ${target_static_libs}) #${target_shared_libs})

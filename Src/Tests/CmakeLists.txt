@@ -46,12 +46,12 @@ enable_testing()
 add_executable(${app_name} ${src})
 
 set(target_static_libs
-    Core
-    Entities)
+    SavannaCore
+    SavannaEntities)
 
 set(core_include_dirs
-	# Savanna Core
-	${CMAKE_SOURCE_DIR}/Core
+	# Savanna SavannaCore
+	${CMAKE_SOURCE_DIR}/SavannaCore
     ${CMAKE_SOURCE_DIR}/Modules/Entities)
 
 set(module_include_dirs
@@ -62,7 +62,7 @@ target_include_directories(
 	${app_name}
 	PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
-	# Core Libraries
+	# SavannaCore Libraries
 	${core_include_dirs}
     # Modules
     ${module_include_dirs})

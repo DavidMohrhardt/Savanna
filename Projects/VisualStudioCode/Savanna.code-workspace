@@ -88,7 +88,11 @@
 			"string_view": "cpp",
 			"bitset": "cpp",
 			"codecvt": "cpp",
-			"filesystem": "cpp"
+			"filesystem": "cpp",
+			"random": "cpp",
+			"ranges": "cpp",
+			"span": "cpp",
+			"stack": "cpp"
 		},
 		"doxdocgen.generic.authorName": "David Mohrhardt",
 		"doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

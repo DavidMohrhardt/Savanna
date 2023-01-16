@@ -18,27 +18,23 @@ namespace Savanna
 {
     static std::mutex s_RootMutex;
 
+    constexpr uint8 k_CoreArenaId = MemoryManager::k_MaxArenaCount + 1;
+
     MemoryManager::MemoryManager(const size_t &initialSize)
-        : m_CoreAllocator()
+        : m_RootArena(malloc(initialSize), initialSize, k_CoreArenaId, true)
+        , m_RegisteredArenas()
+        , m_ArenaCount(0)
     {
         SAVANNA_MEMORY_SAFETY_ASSERT(initialSize > sizeof(Allocator) * k_MaxArenaCount, "MemoryManager: Not enough memory to allocate arena allocators.");
         SAVANNA_MEMORY_SAFETY_ASSERT(IsPowerOfTwo(initialSize), "MemoryManager: Initial memory size must be a power of two.");
-
-        m_pCoreBuffer = malloc(initialSize);
-        SAVANNA_MEMORY_SAFETY_ASSERT(m_pCoreBuffer != nullptr, "MemoryManager: Failed to allocate memory.");
-
-        m_CoreAllocator = FreeListAllocator(m_pCoreBuffer, initialSize);
-
-        m_pArenas = m_CoreAllocator.Allocate<MemoryArena>(k_MaxArenaCount);
     }
 
     MemoryManager::~MemoryManager()
     {
         for (uint8 i = 0; i < m_ArenaCount; ++i)
         {
-            m_pArenas[i].~MemoryArena();
+            // Call the destructors manually since we own the memory.
+            m_RegisteredArenas[i]->~MemoryArena();
         }
-
-        free(m_pCoreBuffer);
     }
 } // namespace Savanna

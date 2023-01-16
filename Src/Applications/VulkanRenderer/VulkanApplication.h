@@ -12,7 +12,7 @@
 #include <SavannaEngine.h>
 #include <SavannaVk.h>
 
-#include <Vulkan/VkRenderer.h>
+#include <VkRenderer.h>
 
 #include <Application/IApplication.h>
 #include <Types/Strings/HashString.h>

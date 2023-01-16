@@ -18,6 +18,15 @@
         "OutputDirectory": "glm"
     },
     {
+        "Name": "glslang",
+        "Version": "master-tot",
+        "URL": "https://github.com/KhronosGroup/glslang/releases/download/master-tot",
+        "FileNames": [
+            "glslang-master-windows-x64-Debug.zip",
+            "glslang-master-windows-x64-Release.zip"
+        ]
+    },
+    {
         "Name": "Ninja",
         "Version": "1.11.0",
         "URL": "https://github.com/ninja-build/ninja/releases/download/v1.11.0",

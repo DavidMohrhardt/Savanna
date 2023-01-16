@@ -1,21 +1,15 @@
 # External Folder Exclusion Overrides
+# Exclude everything in the folder
+*
 
-bin
-[Aa]rtifacts/*
+# Include the following files
 ![Aa]rtifacts/DONOTDELETE.txt
 
-# TODO @DavidMohrhardt: Move extracted artifacts to a subfolder and exclude that folder from the repository.
-cmake*
-fmt*
-glfw*
-glm*
-imgui*
-ninja*
-python*
-[Vv]ulkan*
+# Allow the licenses folder to persist in the repository
+!Licenses/
 
 # Allow the submodules folder to persist in the repository
-![Ss]ubmodules
+![Ss]ubmodules/
 
 # Allow build dependencies to persist in the repository
 !BuildDependencies.json

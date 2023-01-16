@@ -1,22 +1,28 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.21)
 
 # Specify clang as the compiler to ensure supported language standards
-set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "clang")
+# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.
+# set(CMAKE_C_COMPILER "clang")
+# set(CMAKE_CXX_COMPILER "clang")
 
 # Defines project settings
 project(Savanna VERSION 0.1)
 
-# Set Universal variables
-set(module_path ${PROJECT_SOURCE_DIR}/../Buildscripts/CMake/Modules/*.cmake)
-
-# TODO @DavidMohrhardt - Figure out why this runs 2 times in VSCode.
 # TODO @DavidMohrhardt - Make multiple scripts for different platforms
 # If on windows then run Prepare.ps1 which exists in the root directory
-if(WIN32)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     # make sure to execute process from the root directory
     execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${PROJECT_SOURCE_DIR}/../Prepare.ps1)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
+
+# Set Global Variables
+set(CORE_LIBRARY_KIND "STATIC" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
+set(MULTI_COMPILE_LIBRARIES OFF CACHE BOOL "Set to ON to compile object libraries for each library and then create both static and shared libraries from the object libraries. Set to OFF to compile each library with the definition of ${CORE_LIBRARY_KIND}.")
+set(EXPORT_ALL_SYMBOLS OFF CACHE BOOL "Export all symbols for dynamic libraries")
+
+# Set Universal variables
+set(module_path ${PROJECT_SOURCE_DIR}/../Buildscripts/CMake/Modules/*.cmake)
 
 # Include all modules
 file(GLOB_RECURSE modules ${module_path})
@@ -43,9 +49,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/archives")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/libs")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/bin")
 
-# Windows specific settings
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
 # Editor Project
 
 # Modules
@@ -55,5 +58,5 @@ add_subdirectory(Modules)
 add_subdirectory(Tests)
 
 # Outside Application Testing Projects
-add_subdirectory(Applications/DX12Renderer)
+# add_subdirectory(Applications/DX12Renderer)
 add_subdirectory(Applications/VulkanRenderer)
