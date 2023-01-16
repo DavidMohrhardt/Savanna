@@ -13,7 +13,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw glm)
 
-set(core_libs SavannaCore SavannaVk)
+set(core_libs SavannaVk SavannaCore)
 set(core_include_dirs ${CMAKE_SOURCE_DIR}/Modules/Core/ ${CMAKE_SOURCE_DIR}/Modules/Gfx/Vulkan/)
 set(external_libs glfw glm)
 set(external_include_dirs)
