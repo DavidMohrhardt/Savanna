@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 include(FetchContent)
 
-FIND_VULKAN_OR_FAIL()
-
 FetchContent_Declare(
         glfw
         GIT_REPOSITORY https://github.com/glfw/glfw
@@ -12,6 +10,8 @@ FetchContent_Declare(
 	GIT_REPOSITORY https://github.com/g-truc/glm
 )
 FetchContent_MakeAvailable(glfw glm)
+
+FIND_VULKAN_OR_FAIL()
 
 set(core_libs SavannaVk SavannaCore)
 set(core_include_dirs ${CMAKE_SOURCE_DIR}/Modules/Core/ ${CMAKE_SOURCE_DIR}/Modules/Gfx/Vulkan/)

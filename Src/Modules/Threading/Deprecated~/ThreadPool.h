@@ -1,28 +1,25 @@
+/**
+ * @file ThreadPool.h
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
+ * @brief
+ * @version 0.1
+ * @date 2023-01-16
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
 #pragma once
+
+#include <SavannaEngine.h>
+#include <Utilities/SavannaCoding.h>
 
 #include <thread>
 #include <vector>
 
-
-#include "Types/Primitive/PrimitiveTypes.h"
-// #include "Containers/Stl/SavannaVector.h"
-
-namespace Savanna
+namespace Savanna::Threading
 {
-    class ThreadManager;
-
-    struct ThreadPoolDescriptor
+    class ThreadPool
     {
-        ThreadPoolDescriptor(uint16 threadCount) : m_ThreadCount(threadCount) {}
-
-        uint16 m_ThreadCount;
-    };
-
-    class ThreadPool : public SavannaClass<ThreadPool>
-    {
-    private:
-        friend class ThreadManager;
-
     public:
         const uint32 k_ProcessorCount = std::thread::hardware_concurrency();
         const uint32 k_AvailableThreads = k_ProcessorCount - 1; // Main thread is reserved
@@ -38,7 +35,6 @@ namespace Savanna
         {
             return m_ThreadPoolDescriptor;
         }
-    private:
 
     private:
         static std::thread::id s_MainThreadId;
@@ -48,13 +44,12 @@ namespace Savanna
         ThreadPool(const ThreadPoolDescriptor descriptor);
         ~ThreadPool();
 
-        static void InitializeDefaultValues(std::thread::id mainThreadId)
-        {
-            if (!s_IsInitialized)
-            {
-                s_MainThreadId = mainThreadId;
-                s_IsInitialized = true;;
-            }
-        }
+    public:
+        virtual void Start() = 0;
+        virtual void Stop() = 0;
+
+    public:
+        void Join();
     };
-}
+
+} // namespace Savanna::Threading

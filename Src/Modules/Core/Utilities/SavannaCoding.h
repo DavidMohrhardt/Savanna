@@ -10,12 +10,7 @@
 #pragma once
 
 // Preprocessor definitions
-#include "PreprocessorDefinitions/ArchitectureDefinitions.h"
-#include "PreprocessorDefinitions/CompilerDefinitions.h"
-#include "PreprocessorDefinitions/EngineVersionDefinitions.h"
-#include "PreprocessorDefinitions/EngineWideDefinitions.h"
-#include "PreprocessorDefinitions/InterfaceDefinitions.h"
-#include "PreprocessorDefinitions/PlatformDefinitions.h"
+#include "PreprocessorDefinitions/Definitions.h"
 
 // Common types
 #include "Types/Primitive/PrimitiveTypes.h"

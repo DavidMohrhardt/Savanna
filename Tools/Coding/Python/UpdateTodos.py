@@ -57,3 +57,5 @@ with open("./Progress/TODOTracker.md", 'w') as todoFile:
     todoFile.write("# TODO\n\n")
     todoFile.write("Total TODOs: " + str(total_todos) + "\n")
     todoFile.write(content)
+
+print("Found " + str(total_todos) + " TODOs in the codebase.")

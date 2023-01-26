@@ -1,12 +1,12 @@
 # TODO
 
-Total TODOs: 118
+Total TODOs: 119
 ## Src
 
 ### CMakeLists.txt
 
-- [L12 :# TODO @DavidMohrhardt - Figure out why this runs 2 times in VSCode.](../Src/CMakeLists.txt#L12)
-- [L13 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L13)
+- [L3 :# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.](../Src/CMakeLists.txt#L3)
+- [L10 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L10)
 
 ### DX12Application.cpp
 
@@ -24,10 +24,6 @@ Total TODOs: 118
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/DX12Renderer/Window/WindowsRenderWindow.h#L3)
 
-### CMakeLists.txt
-
-- [L72 :# TODO change when unpacking artifacts is normalized](../Src/Applications/VulkanRenderer/CMakeLists.txt#L72)
-
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
@@ -37,86 +33,65 @@ Total TODOs: 118
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.h#L3)
 
+### CMakeLists.txt
+
+- [L28 :# TODO @DavidMohrhardt - Move profiling to a module](../Src/Modules/CMakeLists.txt#L28)
+
 ### IApplication.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Application/IApplication.h#L3)
-- [L12 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Application/IApplication.h#L12)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Application/IApplication.h#L3)
+- [L12 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Application/IApplication.h#L12)
 
 ### MathHelpers.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Math/MathHelpers.h#L3)
-
-### CacheLine.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/CacheLine.h#L3)
-
-### MemoryArena.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/MemoryArena.h#L3)
-- [L16 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/MemoryArena.h#L16)
-
-### FreeListAllocator.cpp
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/FreeListAllocator.cpp#L3)
-
-### FreeListAllocator.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/FreeListAllocator.h#L3)
-
-### Mallocator.cpp
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/Mallocator.cpp#L3)
-
-### Mallocator.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Memory/Allocators/Mallocator.h#L3)
-
-### PlayerLoop.h
-
-- [L7 :// TODO @davidmo: move this over to a manager](../Src/Core/PlayerLoop/PlayerLoop.h#L7)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Math/MathHelpers.h#L3)
 
 ### ProfilerManager.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Profiling/ProfilerManager.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Profiling/ProfilerManager.h#L3)
 
 ### ArraySlice.h
 
-- [L32 :// TODO @DavidMohrhardt consider disallowing copy and move construction.](../Src/Core/Types/Containers/Arrays/ArraySlice.h#L32)
+- [L32 :// TODO @DavidMohrhardt consider disallowing copy and move construction.](../Src/Modules/Core/Types/Containers/Arrays/ArraySlice.h#L32)
+
+### CacheLine.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/CacheLine.h#L3)
+
+### FreeListAllocator.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/FreeListAllocator.cpp#L3)
+
+### FreeListAllocator.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/FreeListAllocator.h#L3)
+
+### Mallocator.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/Mallocator.cpp#L3)
+
+### Mallocator.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/Mallocator.h#L3)
 
 ### FloatingPointUnions.h
 
-- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L14)
-- [L34 :* @brief TODO @DavidMohrhardt Document](../Src/Core/Types/Primitive/FloatingPointUnions.h#L34)
+- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L14)
+- [L34 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L34)
 
 ### Console.h
 
-- [L104 :// TODO](../Src/Core/Utilities/Console.h#L104)
+- [L104 :// TODO](../Src/Modules/Core/Utilities/Console.h#L104)
 
-### LazyDllLoader.h
+### EngineArenas.h
 
-- [L6 :#if ENABLE_TODOS // Unimplemented](../Src/Core/Utilities/DllLoader/LazyDllLoader.h#L6)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Engine/Memory/EngineArenas.h#L3)
+- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Engine/Memory/EngineArenas.h#L14)
+- [L31 :* is only available until the end of a frame. TODO @DavidMohrhardt Document additional details.](../Src/Modules/Engine/Memory/EngineArenas.h#L31)
 
-### JacobianMatrix.cpp
+### PlayerLoop.h
 
-- [L79 :// TODO](../Src/Experimental/Modules/Animation/IK/JacobianMatrix.cpp#L79)
-
-### PhysicsComponent.cpp
-
-- [L27 :// TODO](../Src/Experimental/Modules/Physics/PhysicsComponent.cpp#L27)
-- [L41 :// TODO @DavidMohrhardt bring this code back up to speed](../Src/Experimental/Modules/Physics/PhysicsComponent.cpp#L41)
-
-### PhysicsManager.cpp
-
-- [L176 :// TODO](../Src/Experimental/Modules/Physics/PhysicsManager.cpp#L176)
-
-### Assertions.h
-
-- [L6 ://TODO](../Src/Experimental/Modules/Threading/Assertions.h#L6)
-- [L10 :// TODO](../Src/Experimental/Modules/Threading/Assertions.h#L10)
-
-### FiberAsmMacros.h
-
-- [L93 :// TODO @davidmo](../Src/Experimental/Modules/Threading/Fibers/FiberAsmMacros.h#L93)
+- [L7 :// TODO @davidmo: move this over to a manager](../Src/Modules/Engine/Player/PlayerLoop.h#L7)
 
 ### ComponentRegistry.cpp
 
@@ -155,67 +130,93 @@ Total TODOs: 118
 - [L118 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L118)
 - [L125 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L125)
 
+### JacobianMatrix.cpp
+
+- [L79 :// TODO](../Src/Modules/Experimental/Animation/IK/JacobianMatrix.cpp#L79)
+
+### PhysicsComponent.cpp
+
+- [L27 :// TODO](../Src/Modules/Experimental/Physics/PhysicsComponent.cpp#L27)
+- [L41 :// TODO @DavidMohrhardt bring this code back up to speed](../Src/Modules/Experimental/Physics/PhysicsComponent.cpp#L41)
+
+### PhysicsManager.cpp
+
+- [L176 :// TODO](../Src/Modules/Experimental/Physics/PhysicsManager.cpp#L176)
+
+### Assertions.h
+
+- [L6 ://TODO](../Src/Modules/Experimental/Threading/Assertions.h#L6)
+- [L10 :// TODO](../Src/Modules/Experimental/Threading/Assertions.h#L10)
+
+### FiberAsmMacros.h
+
+- [L93 :// TODO @davidmo](../Src/Modules/Experimental/Threading/Fibers/FiberAsmMacros.h#L93)
+
 ### GfxApiEnumeration.h
 
-- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L14)
-- [L20 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L20)
-- [L26 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L26)
-- [L32 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L32)
-- [L38 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L38)
-- [L44 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L44)
-- [L50 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxApiEnumeration.h#L50)
+- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L14)
+- [L20 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L20)
+- [L26 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L26)
+- [L32 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L32)
+- [L38 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L38)
+- [L44 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L44)
+- [L50 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L50)
 
 ### GfxDevice.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L3)
-- [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDevice.h#L17)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDevice.h#L3)
+- [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDevice.h#L17)
 
 ### GfxDeviceCapabilityFlags.c
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.c#L3)
-- [L11 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.c#L11)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.c#L3)
+- [L11 :#if ENABLE_TODOS](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.c#L11)
 
 ### GfxDeviceCapabilityFlags.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.h#L3)
-- [L50 :* this enumeration. Requires querying from TODO](../Src/Modules/Rendering/GfxDeviceCapabilityFlags.h#L50)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.h#L3)
+- [L50 :* this enumeration. Requires querying from TODO](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.h#L50)
 
 ### GfxDeviceDescriptor.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L3)
-- [L27 :#if ENABLE_TODOS](../Src/Modules/Rendering/GfxDeviceDescriptor.h#L27)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDeviceDescriptor.h#L3)
+- [L27 :#if ENABLE_TODOS](../Src/Modules/Gfx/GfxDeviceDescriptor.h#L27)
 
 ### VkRenderer.h
 
-- [L67 :// TODO @DavidMohrhardt - Add loading of extensions, validation layers, and previous device ID](../Src/Modules/Rendering/Deprecated~/Vulkan/VkRenderer.h#L67)
+- [L67 :// TODO @DavidMohrhardt - Add loading of extensions, validation layers, and previous device ID](../Src/Modules/Gfx/Deprecated~/Vulkan/VkRenderer.h#L67)
 
 ### ISavannaVulkan.h
 
-- [L3 :// TODO @DavidMohrhardt - Fill out with vulkan interface](../Src/Modules/Rendering/Deprecated~/Vulkan/Public/ISavannaVulkan.h#L3)
+- [L3 :// TODO @DavidMohrhardt - Fill out with vulkan interface](../Src/Modules/Gfx/Deprecated~/Vulkan/Public/ISavannaVulkan.h#L3)
 
 ### VkPhysicalDeviceChooser.cpp
 
-- [L89 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L89)
-- [L153 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Rendering/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L153)
+- [L89 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Gfx/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L89)
+- [L153 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Gfx/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L153)
 
 ### VkRendererCreateInfo.h
 
-- [L18 :// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers](../Src/Modules/Rendering/Vulkan/VkRendererCreateInfo.h#L18)
+- [L18 :// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers](../Src/Modules/Gfx/Vulkan/VkRendererCreateInfo.h#L18)
 
 ### VkSwapchain.cpp
 
-- [L79 :// TODO @DavidMohrhardt: Get extents from renderer create info and pass them to the swapchain creation](../Src/Modules/Rendering/Vulkan/VkSwapchain.cpp#L79)
-- [L157 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Modules/Rendering/Vulkan/VkSwapchain.cpp#L157)
+- [L79 :// TODO @DavidMohrhardt: Get extents from renderer create info and pass them to the swapchain creation](../Src/Modules/Gfx/Vulkan/VkSwapchain.cpp#L79)
+- [L157 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Modules/Gfx/Vulkan/VkSwapchain.cpp#L157)
 
 ### VkPhysicalDeviceUtils.cpp
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
-- [L97 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L97)
-- [L161 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Rendering/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L161)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
+- [L97 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L97)
+- [L161 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L161)
 
 ### VkSwapchainUtils.cpp
 
-- [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Modules/Rendering/Vulkan/Utilities/VkSwapchainUtils.cpp#L18)
+- [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Modules/Gfx/Vulkan/Utilities/VkSwapchainUtils.cpp#L18)
+
+### MemoryArena.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Memory/MemoryArena.h#L3)
 
 ### SavannaTestRunner.h
 

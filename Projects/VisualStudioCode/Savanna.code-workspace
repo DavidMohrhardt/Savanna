@@ -92,7 +92,11 @@
 			"random": "cpp",
 			"ranges": "cpp",
 			"span": "cpp",
-			"stack": "cpp"
+			"stack": "cpp",
+			"coroutine": "cpp",
+			"resumable": "cpp",
+			"future": "cpp",
+			"queue": "cpp"
 		},
 		"doxdocgen.generic.authorName": "David Mohrhardt",
 		"doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

@@ -14,11 +14,6 @@ namespace Savanna
      */
     class IApplication
     {
-    private:
-        // Context& m_Context;
-    protected:
-        // IApplication(Context&& context) : m_Context(std::move(context)) {}
-        // IApplication() : m_Context(DefaultContext()) {}
     public:
         IApplication() {}
 
@@ -29,7 +24,5 @@ namespace Savanna
 
     public:
         virtual void Run() = 0;
-
-        // Context& GetContext() { return m_Context; }
     };
 } // namespace Savanna

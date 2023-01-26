@@ -51,6 +51,30 @@ namespace Savanna
     {
         return reinterpret_cast<T*>(reinterpret_cast<uintptr>(ptr) - (args - ...));
     }
+
+    template <typename T, typename ...size_t>
+    T* operator+(const T* const ptr, size_t... args)
+    {
+        return Add(ptr, args...);
+    }
+
+    template <typename T, typename ...size_t>
+    T* operator-(const T* const ptr, size_t... args)
+    {
+        return Subtract(ptr, args...);
+    }
+
+    template <typename T, typename ...size_t>
+    T* operator+=(T* const ptr, size_t... args)
+    {
+        return Add(ptr, args...);
+    }
+
+    template <typename T, typename ...size_t>
+    T* operator-=(T* const ptr, size_t... args)
+    {
+        return Subtract(ptr, args...);
+    }
 } // namespace Savanna
 
 #endif
