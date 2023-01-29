@@ -13,6 +13,7 @@
 // Preprocessor definitions
 #include "ArchitectureDefinitions.h"
 #include "CompilerDefinitions.h"
+#include "CppVersionDefinitions.h"
 #include "EngineVersionDefinitions.h"
 #include "EngineWideDefinitions.h"
 #include "InterfaceDefinitions.h"

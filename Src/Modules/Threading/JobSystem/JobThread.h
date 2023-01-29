@@ -18,7 +18,7 @@
 
 namespace Savanna::Threading::Jobs
 {
-    class JobThread //: public ThreadHandler
+    class JobThread
     {
         friend class JobSystem;
 

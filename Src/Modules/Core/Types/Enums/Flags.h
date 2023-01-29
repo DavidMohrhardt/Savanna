@@ -12,90 +12,84 @@
 
 #include "Enumeration.h"
 
+#define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
+#define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type)
+
+#define DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, ...) \
+    typedef enum __cName : __value_type { __VA_ARGS__ } __cName;
+
 #if defined(__cplusplus)
 
 #include <bitset>
 #include <concepts>
 #include <type_traits>
 
-#define DECLARE_NAMESPACED_FLAGS_WRAPPER(__nameSpace, __cName, __cppName, __enumType, __type) \
-    namespace __nameSpace { using __cppName = Savanna::FlagWrapperEnumeration<__cName, __enumType, __type>; }
+#undef DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION
+#define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type) \
+    namespace __nameSpace { using __cppName = Savanna::FlagEnumeration<__cName, __value_type>; }
 
-#define DECLARE_NAMESPACED_FLAGS(__nameSpace, __cName, __cppName, __type, ...) \
-    typedef enum __cName : __type { __VA_ARGS__ } __cName; \
-    DECLARE_NAMESPACED_FLAGS_WRAPPER(__nameSpace, __cName, __cppName, __type)
+#undef DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION
+#define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type) \
+    namespace __nameSpace { using __cppName = Savanna::ExternalFlagEnumeration<__cName, __external_enum, __value_type>; }
 
-
-#else
-
-#define DECLARE_NAMESPACED_FLAGS_WRAPPER(__nameSpace, __cName, __cppName, __type)
-
-#define DECLARE_NAMESPACED_FLAGS(__cName, __cppName, __type, ...) \
-    DECLARE_NAMESPACED_ENUMERATION(__cName, __cppName, __type, __VA_ARGS__)
-
-#endif
-
-#if defined(__cplusplus)
 namespace Savanna
 {
-    template <typename T, typename U>
-    struct FlagEnumeration : public Enumeration<T, U>
+    template <typename enum_type, typename value_type>
+    struct FlagEnumeration : public Enumeration<enum_type, value_type>
     {
         FlagEnumeration() = default;
-        FlagEnumeration(const T& value) : Enumeration<T, U>(value) {}
-        FlagEnumeration(const U& value) : Enumeration<T, U>(value) {}
-        FlagEnumeration(const Enumeration<T, U>& other) : Enumeration<T, U>(other) {}
-        FlagEnumeration(Enumeration<T, U>&& other) : Enumeration<T, U>(std::move(other)) {}
+        FlagEnumeration(const enum_type& value) : Enumeration<enum_type, value_type>(value) {}
+        FlagEnumeration(const value_type& value) : Enumeration<enum_type, value_type>(value) {}
+        FlagEnumeration(const Enumeration<enum_type, value_type>& other) : Enumeration<enum_type, value_type>(other) {}
+        FlagEnumeration(Enumeration<enum_type, value_type>&& other) : Enumeration<enum_type, value_type>(std::move(other)) {}
         ~FlagEnumeration() = default;
 
-        bool HasFlag(const T& value) const { return static_cast<U>(this->m_Value) & static_cast<U>(value); }
-        bool HasFlag(const U& value) const { return static_cast<U>(this->m_Value) & value; }
-        bool Any(const T& value) const { return static_cast<U>(this->m_Value) & static_cast<U>(value); }
-        bool Any(const U& value) const { return static_cast<U>(this->m_Value) & value; }
-        bool All(const T& value) const { return (static_cast<U>(this->m_Value) & static_cast<U>(value)) == static_cast<U>(value); }
-        bool All(const U& value) const { return (static_cast<U>(this->m_Value) & value) == value; }
+        bool Any() const { return static_cast<value_type>(this->m_Value) != static_cast<value_type>(0); }
 
-        uint8 GetFlagCount() const { return static_cast<uint8>(std::bitset<sizeof(U) * 8>(static_cast<U>(this->m_Value)).count()); }
+        bool All(const enum_type& value) const { return (static_cast<value_type>(this->m_Value) & static_cast<value_type>(value)) == static_cast<value_type>(value); }
+        bool HasFlag(const enum_type& value) const { return static_cast<value_type>(this->m_Value) & static_cast<value_type>(value); }
 
-        static bool HasFlag(const T& value, const T& flag) { return static_cast<U>(value) & static_cast<U>(flag); }
-        static bool Any(const T& value, const T& flag) { return static_cast<U>(value) & static_cast<U>(flag); }
-        static bool All(const T& value, const T& flag) { return (static_cast<U>(value) & static_cast<U>(flag)) == static_cast<U>(flag); }
+        bool All(const value_type& value) const { return (static_cast<value_type>(this->m_Value) & value) == value; }
+        bool Any(const value_type& value) const { return static_cast<value_type>(this->m_Value) & value; }
+        bool HasFlag(const value_type& value) const { return static_cast<value_type>(this->m_Value) & value; }
+
+        uint8 GetFlagCount() const { return static_cast<uint8>(std::bitset<sizeof(value_type) * 8>(static_cast<value_type>(this->m_Value)).count()); }
+
+        static bool All(const enum_type& value, const enum_type& flag) { return (static_cast<value_type>(value) & static_cast<value_type>(flag)) == static_cast<value_type>(flag); }
+        static bool All(const value_type& value, const value_type& flag) { return (value & flag) == flag; }
+
+        static bool HasFlag(const enum_type& value, const enum_type& flag) { return static_cast<value_type>(value) & static_cast<value_type>(flag); }
+        static bool HasFlag(const value_type& value, const value_type& flag) { return value & flag; }
+
+        static uint8 GetFlagCount(const enum_type& value) { return static_cast<uint8>(std::bitset<sizeof(value_type) * 8>(static_cast<value_type>(value)).count()); }
+        static uint8 GetFlagCount(const value_type& value) { return static_cast<uint8>(std::bitset<sizeof(value_type) * 8>(value).count()); }
     };
 
-    template <typename T, typename U, typename V>
-    concept FlagWrapperEnumReq = EnumReq<T> && EnumBackingTypeReq<U> && std::is_convertible_v<T, V> && std::is_convertible_v<U, V> && std::is_integral_v<V>;
-
-    template <typename T, typename U, typename V>
-    requires FlagWrapperEnumReq<T, U, V>
-    struct FlagWrapperEnumeration : public FlagEnumeration<U, V>
+    template <typename enum_type, typename other_enum_type, typename value_type>
+    struct ExternalFlagEnumeration : public FlagEnumeration<enum_type, value_type>
     {
-        // Wraps an enumeration as a flag enumeration and uses a backing type of V.
-        FlagWrapperEnumeration() = default;
-        FlagWrapperEnumeration(const T& value) : FlagEnumeration<U, V>(static_cast<V>(value)) {}
-        FlagWrapperEnumeration(const U& value) : FlagEnumeration<U, V>(value) {}
-        FlagWrapperEnumeration(const V& value) : FlagEnumeration<U, V>(value) {}
-        FlagWrapperEnumeration(const FlagEnumeration<U, V>& other) : FlagEnumeration<U, V>(other) {}
-        FlagWrapperEnumeration(FlagEnumeration<U, V>&& other) : FlagEnumeration<U, V>(std::move(other)) {}
-        ~FlagWrapperEnumeration() = default;
+        ExternalFlagEnumeration() = default;
+        ExternalFlagEnumeration(const enum_type& value) : FlagEnumeration<enum_type, value_type>(value) {}
+        ExternalFlagEnumeration(const other_enum_type& value) : FlagEnumeration<enum_type, value_type>(static_cast<value_type>(value)) {}
+        ExternalFlagEnumeration(const value_type& value) : FlagEnumeration<enum_type, value_type>(value) {}
+        ExternalFlagEnumeration(const FlagEnumeration<enum_type, value_type>& other) : FlagEnumeration<enum_type, value_type>(other) {}
+        ExternalFlagEnumeration(FlagEnumeration<enum_type, value_type>&& other) : FlagEnumeration<enum_type, value_type>(std::move(other)) {}
+        ~ExternalFlagEnumeration() = default;
 
-        bool HasFlag(const T& value) const { return static_cast<V>(this->m_Value) & static_cast<V>(value); }
-        bool Any(const T& value) const { return static_cast<V>(this->m_Value) & static_cast<V>(value); }
-        bool All(const T& value) const { return (static_cast<V>(this->m_Value) & static_cast<V>(value)) == static_cast<V>(value); }
+        bool All(const enum_type& value) const { return (static_cast<value_type>(this->m_Value) & static_cast<value_type>(value)) == static_cast<value_type>(value); }
+        bool HasFlag(const enum_type& value) const { return static_cast<value_type>(this->m_Value) & static_cast<value_type>(value); }
 
-        static bool HasFlag(const T& value, const T& flag) { return static_cast<V>(value) & static_cast<V>(flag); }
-        static bool Any(const T& value, const T& flag) { return static_cast<V>(value) & static_cast<V>(flag); }
-        static bool All(const T& value, const T& flag) { return (static_cast<V>(value) & static_cast<V>(flag)) == static_cast<V>(flag); }
-
-        FlagWrapperEnumeration& operator=(const T& value) { this->m_Value = static_cast<U>(value); return *this; }
-        FlagWrapperEnumeration& operator=(const U& value) { this->m_Value = value; return *this; }
-        FlagWrapperEnumeration& operator=(const FlagEnumeration<U, V>& other) { this->m_Value = other.m_Value; return *this; }
-        FlagWrapperEnumeration& operator=(FlagEnumeration<U, V>&& other) { this->m_Value = std::move(other.m_Value); return *this; }
+        static bool All(const enum_type& value, const enum_type& flag) { return (static_cast<value_type>(value) & static_cast<value_type>(flag)) == static_cast<value_type>(flag); }
+        static bool HasFlag(const enum_type& value, const enum_type& flag) { return static_cast <value_type>(value) & static_cast<value_type>(flag); }
     };
 } // namespace Savanna
 #endif // end __cplusplus
 
-#define DECLARE_SAVANNA_FLAGS(__cName, __cppName, __type, ...) \
-    DECLARE_NAMESPACED_FLAGS(Savanna, __cName, __cppName, __type, __VA_ARGS__)
 
-#define DECLARE_SAVANNA_MODULE_FLAGS(__moduleNamespace, __cName, __cppName, __type, ...) \
-    DECLARE_NAMESPACED_FLAGS(Savanna::__moduleNamespace, __cName, __cppName, __type, __VA_ARGS__)
+#define DEFINE_SAVANNA_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
+
+#define DEFINE_SAVANNA_EXTERNAL_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type)

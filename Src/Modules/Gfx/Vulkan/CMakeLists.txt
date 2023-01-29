@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 FIND_VULKAN_OR_FAIL()
-set(core_libs SavannaCore) #SavannaGfx)
-set(core_include_dirs
-    ${CMAKE_SOURCE_DIR}/Modules/Core)
+set(core_libs
+    SavannaIO)
+    # SavannaCore)
+    #SavannaGfx)
+set(core_include_dirs "")
+    # ${CMAKE_SOURCE_DIR}/Modules/Core
+    # ${CMAKE_SOURCE_DIR}/Modules/IO)
     # ${CMAKE_SOURCE_DIR}/Modules/Gfx)
 set(external_libs ${VULKAN_LIB_LIST} ${HELPER_LIB_LIST})
 set(external_include_dirs "")

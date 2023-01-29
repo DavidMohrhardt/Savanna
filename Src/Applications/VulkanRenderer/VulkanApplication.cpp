@@ -32,6 +32,11 @@ namespace Savanna::Application
     const char* k_ApplicationName = "Savanna";
     const char* k_EngineName = "No Engine";
 
+    const char* k_DefaultShaderPaths[] = {
+        "Assets/Shaders/SPIRV/vert.spv",
+        "Assets/Shaders/SPIRV/vert.spv"
+    };
+
     VulkanApplication::VulkanApplication()
         : m_Window(glfwCreateWindow(1920, 1080, "Savanna", nullptr, nullptr))
     {
@@ -79,13 +84,12 @@ namespace Savanna::Application
 
         // TODO @DavidMohrhardt Allow for additional extensions to be added via queries
         std::vector<const char*> deviceExtensions {
-            // VK_KHR_SURFACE_EXTENSION_NAME,
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         };
         rendererCreateInfo.m_ppDeviceExtensions = deviceExtensions.data();
         rendererCreateInfo.m_DeviceExtensionsCount = static_cast<uint32>(deviceExtensions.size());
 
-        rendererCreateInfo.m_QueueFlags = SE_VK_QUEUE_GRAPHICS_BIT | SE_VK_QUEUE_PRESENT_BIT;
+        rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
 
         m_Renderer.Initialize(&rendererCreateInfo);
     }

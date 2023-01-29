@@ -78,6 +78,8 @@ namespace Savanna::Gfx::Vk
 
         QueueFamilyIndices GetQueueFamilyIndices() const { return m_QueueFamilyIndices; }
 
+        bool TryLoadShaderFromDisk(const char *const shaderPath);
+
     public:
         GfxDevice& operator=(const GfxDevice& other) = delete;
         GfxDevice& operator=(GfxDevice&& other);

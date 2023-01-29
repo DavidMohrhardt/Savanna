@@ -8,8 +8,6 @@ FetchContent(
     GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
 )
 
-FIND_VULKAN_OR_FAIL()
-
 set(core_libs SavannaVk SavannaIO SavannaCore)
 set(core_include_dirs
     ${CMAKE_SOURCE_DIR}/Modules/Core

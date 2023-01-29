@@ -12,7 +12,7 @@
 
 #include <vulkan/vulkan.h>
 
-DECLARE_SAVANNA_MODULE_ENUM(Gfx::Vk, se_VkSurfaceKind_t, SurfaceKind, se_uint32,
+DEFINE_SAVANNA_ENUM(Savanna::Gfx::Vk, seVkSurfaceKind_t, SurfaceKind, se_uint32,
     SE_VK_SURFACE_KIND_WIN32,
     SE_VK_SURFACE_KIND_MACOS,
     SE_VK_SURFACE_KIND_XLIB,
@@ -42,6 +42,6 @@ typedef struct se_VkSurfaceCreateInfo_t
         VkIosSurfaceCreateInfoMVK iosSurfaceCreateInfo;
 #endif
     };
-    se_VkSurfaceKind_t m_SurfaceKind;
+    seVkSurfaceKind_t m_SurfaceKind;
 } se_VkSurfaceCreateInfo_t;
 DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, se_VkSurfaceCreateInfo_t, SurfaceCreateInfo);

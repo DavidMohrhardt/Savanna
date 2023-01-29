@@ -12,7 +12,6 @@
 #define ENABLE_SAVANNA_ASSERTIONS 1
 #define SAVANNA_ENFORCE_MEMORY_SAFETY 1
 
-#include "Utilities/Macros/CppAttributes.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 #if __cplusplus

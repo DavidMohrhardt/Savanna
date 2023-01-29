@@ -10,6 +10,9 @@
 
 #include <Profiling/Profiler.h>
 
+// IO
+#include <FileStream.h>
+
 #include "VkRendererCreateInfo.h"
 
 #include "Utilities/VkExtensionUtils.h"
@@ -177,8 +180,13 @@ namespace Savanna::Gfx::Vk
     {
         SAVANNA_INSERT_SCOPED_PROFILER(GfxDevice::ConfigureQueues());
 
+        if (!queueFlags.Any())
+        {
+            return;
+        }
+
         if (!m_GraphicsQueue.has_value()
-            && queueFlags.HasFlag(SE_VK_QUEUE_GRAPHICS_BIT)
+            && queueFlags.HasFlag(seVkQueueFlagBitsGraphicsBit)
             && m_QueueFamilyIndices.HasGraphicsQueueFamilyIndex())
         {
             VkQueue queue;
@@ -187,7 +195,7 @@ namespace Savanna::Gfx::Vk
         }
 
         if (!m_PresentQueue.has_value()
-            && queueFlags.HasFlag(SE_VK_QUEUE_PRESENT_BIT)
+            && queueFlags.HasFlag(seVkQueueFlagBitsPresentBit)
             && m_QueueFamilyIndices.HasPresentQueueFamilyIndex())
         {
             VkQueue queue;
@@ -196,7 +204,7 @@ namespace Savanna::Gfx::Vk
         }
 
         if (!m_TransferQueue.has_value()
-            && queueFlags.HasFlag(SE_VK_QUEUE_TRANSFER_BIT)
+            && queueFlags.HasFlag(seVkQueueFlagBitsTransferBit)
             && m_QueueFamilyIndices.HasTransferQueueFamilyIndex())
         {
             VkQueue queue;
@@ -205,7 +213,7 @@ namespace Savanna::Gfx::Vk
         }
 
         if (!m_ComputeQueue.has_value()
-            && queueFlags.HasFlag(SE_VK_QUEUE_COMPUTE_BIT)
+            && queueFlags.HasFlag(seVkQueueFlagBitsComputeBit)
             && m_QueueFamilyIndices.HasComputeQueueFamilyIndex())
         {
             VkQueue queue;
@@ -214,13 +222,24 @@ namespace Savanna::Gfx::Vk
         }
 
         if (!m_SparseBindingQueue.has_value()
-            && queueFlags.HasFlag(SE_VK_QUEUE_SPARSE_BINDING_BIT)
+            && queueFlags.HasFlag(seVkQueueFlagBitsSparseBindingBit)
             && m_QueueFamilyIndices.HasSparseBindingQueueFamilyIndex())
         {
             VkQueue queue;
             vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilyIndices.m_SparseBindingQueueFamilyIndex.value(), 0, &queue);
             m_SparseBindingQueue = queue;
         }
+    }
+
+    bool GfxDevice::TryLoadShaderFromDisk(const char *const shaderPath)
+    {
+        IO::FileStream shaderStream = IO::FileStream(shaderPath);
+        IO::FileStream shaderMetadataStream = IO::FileStream(shaderPath);
+        if (shaderStream.IsOpen())
+        {
+            auto shaderCode = shaderStream.ReadFile();
+        }
+        return false;
     }
 
     GfxDevice &GfxDevice::operator=(GfxDevice &&other)

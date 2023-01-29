@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 macro(ADD_CORE_LIBRARY library_name library_sources)
     if (MULTI_COMPILE_LIBRARIES)
@@ -107,22 +107,37 @@ macro(FIND_SOURCE_FILES_AND_SUBDIRECTORIES)
     endforeach()
 endmacro()
 
+macro(ADD_MODULE_DEPENDENCY target_name module_name)
+    SET_CORE_LIBRARIES(${module_name} module_name)
+    SET_TARGET_CORE_DEPENDENCIES(${target_name} ${module_name})
+    set(module_dir ${CMAKE_SOURCE_DIR}/Modules)
+    target_include_directories(${target_name} PUBLIC ${module_dir})
+endmacro()
+
 macro(ADD_LIBS_FOR_BUILD target_name core_libs core_include_dirs external_libs external_include_dirs)
     # if core include dirs are specified, add them
     message(STATUS "Adding include directories for ${target_name}")
-    message(STATUS "Adding current directory to target includes: ${CMAKE_CURRENT_LIST_DIR}")
-    target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+
+    message(STATUS "Adding current directory to target includes: ${CMAKE_CURRENT_SOURCE_DIR}")
+    # Add the current directory to the include directories privately.
+    target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+    set (USE_MODULE_DEPENDENCY_MACRO FALSE)
 
     # if core libs are specified, link them
     if (core_libs)
-        message(STATUS "Adding core dependencies: ${core_libs}")
-        SET_CORE_LIBRARIES(${core_libs} core_libs)
-        SET_TARGET_CORE_DEPENDENCIES(${target_name} ${core_libs})
-    endif()
+        if (USE_MODULE_DEPENDENCY_MACRO)
+            ADD_MODULE_DEPENDENCY(${target_name} ${core_libs})
+        else()
+            message(STATUS "Adding core dependencies: ${core_libs}")
+            SET_CORE_LIBRARIES(${core_libs} core_libs)
+            SET_TARGET_CORE_DEPENDENCIES(${target_name} ${core_libs})
 
-    if (core_include_dirs)
-        message(STATUS "Adding core include directories: ${core_include_dirs}")
-        SET_TARGET_INCLUDE_DIRS(${target_name} PUBLIC "${core_include_dirs}")
+            if (core_include_dirs)
+                message(STATUS "Adding core include directories: ${core_include_dirs}")
+                SET_TARGET_INCLUDE_DIRS(${target_name} PUBLIC "${core_include_dirs}")
+            endif()
+        endif()
     endif()
 
     # if additional libs are specified, link them
@@ -161,7 +176,7 @@ macro(DECLARE_CORE_LIBRARY target_name core_libs core_include_dirs external_libs
     # Install the library
     INSTALL_CORE_LIB(${target_name})
 
-    message (STATUS "Finished ${target_name}\n")
+    message (STATUS "Finished Processing ${target_name}\n")
 endmacro()
 
 macro(CREATE_APP_WITH_LIBS target_name core_libs core_include_dirs external_libs external_include_dirs)
@@ -195,5 +210,5 @@ macro(CREATE_APP_WITH_LIBS target_name core_libs core_include_dirs external_libs
     # Install the executable
 	install(TARGETS ${target_name} RUNTIME DESTINATION bin)
 
-    message (STATUS "Finished ${target_name}\n")
+    message (STATUS "Finished Processing ${target_name}\n")
 endmacro()

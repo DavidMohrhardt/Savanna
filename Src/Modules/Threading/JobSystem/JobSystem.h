@@ -13,7 +13,6 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include "IJob.h"
 #include "JobThread.h"
 
 #include <atomic>
@@ -38,7 +37,8 @@ namespace Savanna::Threading::Jobs
         static std::thread::id s_MainThreadID;
 
     private:
-        static void AwaitJobs();
+        static void Awai
+        tJobs();
 
     private:
         std::vector<JobThread> m_JobThreads;

@@ -25,7 +25,6 @@
 #include "Assertions/SavannaAssertions.h"
 
 // These macro headers are guarded in case compiling with C rather than C++ so it's safe to include
-#include "Macros/CppAttributes.h"
 #include "Macros/CppCommonDefs.h"
 #include "Macros/CppTypeDefs.h"
 #include "Macros/Enums.h"
@@ -37,6 +36,7 @@
 #ifdef __cplusplus
 
 // For headers that explicitly only work in C++
+#include "Types/Classes/NonCopyable.h"
 #include "Types/Exceptions/SavannaException.h"
 
 #endif

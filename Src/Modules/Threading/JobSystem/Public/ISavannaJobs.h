@@ -73,7 +73,7 @@ namespace Savanna::Threading::Jobs
         void SetJobState(JobState state);
 
     protected:
-        virtual void ExecuteImpl(void* pData = nullptr) = 0;
+        virtual void ExecuteImpl() = 0;
 
     public:
         bool Execute(void* pData = nullptr);
