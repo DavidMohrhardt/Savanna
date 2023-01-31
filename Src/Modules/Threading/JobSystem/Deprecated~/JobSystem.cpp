@@ -12,7 +12,7 @@
 
 #include <mutex>
 
-namespace Savanna::Threading::Jobs
+namespace Savanna::Concurrency
 {
     std::thread::id JobSystem::s_MainThreadID;
 
@@ -114,4 +114,4 @@ namespace Savanna::Threading::Jobs
             return std::shared_ptr<IJob>();
         }
     }
-} // namespace Savanna::Threading::Jobs
+} // namespace Savanna::Concurrency

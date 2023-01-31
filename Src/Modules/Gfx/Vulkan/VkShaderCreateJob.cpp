@@ -2,9 +2,13 @@
 
 namespace Savanna::Gfx::Vk
 {
-    void VkShaderModuleCreationJob::Execute(void *pData)
+    bool VkShaderModuleCreationJob::Execute()
     {
-        VkResult result = vkCreateShaderModule(m_ShaderModuleCreateInfo.device, &m_ShaderModuleCreateInfo, nullptr, &m_OutShaderModule);
-        return (result == VK_SUCCESS);
+        VkResult result = vkCreateShaderModule(m_Device, &m_ShaderModuleCreateInfo, nullptr, &m_OutShaderModule);
+
+        if (result != VK_SUCCESS)
+        {
+            // SAVANNA_ERROR("Failed to create shader module!");
+        }
     }
 }

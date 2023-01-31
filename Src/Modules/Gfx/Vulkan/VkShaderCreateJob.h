@@ -19,11 +19,18 @@
 
 namespace Savanna::Gfx::Vk
 {
+    using namespace Savanna::Concurrency;
+
     struct VkShaderModuleCreationJob : public IJob
     {
+    public:
+        VkDevice m_Device;
         VkShaderModuleCreateInfo m_ShaderModuleCreateInfo;
+
+    private:
         VkShaderModule m_OutShaderModule;
 
-        virtual bool Execute(void* pData = nullptr) override;
+    public:
+        virtual bool Execute() override;
     };
 } // namespace Savanna::Gfx::Vk

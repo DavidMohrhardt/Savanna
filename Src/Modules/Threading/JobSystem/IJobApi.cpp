@@ -1,89 +1,14 @@
 /**
- * @file ISavannaJobs.h
+ * @file IJob.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
- * @date 2023-01-16
+ * @date 2023-01-30
  *
  * @copyright Copyright (c) 2023
  *
  */
-#pragma once
-#include <ISavannaInterface.h>
-
-/**
- * @brief Defines the accepted functor type for a given IJob in the C-Api
- */
-typedef void (*se_JobFunc_t)(void* data);
-
-typedef struct se_IJobFuncs_t
-{
-    se_JobFunc_t pExecuteFunc;
-    se_JobFunc_t pOnCompleteFunc;
-    se_JobFunc_t pOnCancelFunc;
-    se_JobFunc_t pOnErrorFunc;
-} se_IJob;
-
-/**
- * @brief The handle
- *
- */
-typedef se_JobHandle_t intptr_t;
-
-/**
- * @brief
- */
-typedef enum se_JobState_t
-{
-    k_SavannaJobStateInvalid,
-    k_SavannaJobStateReady,
-    k_SavannaJobStateRunning,
-    k_SavannaJobStateCompleted,
-    k_SavannaJobStateCount
-} se_JobState_t;
-
-/**
- * @brief
- */
-typedef enum se_JobPriority_t
-{
-    k_SavannaJobPriorityLow,
-    k_SavannaJobPriorityNormal,
-    k_SavannaJobPriorityHigh,
-    k_SavannaJobPriorityCount
-} se_JobPriority_t;
-
-#if defined(__cplusplus)
-
-#include <atomic>
-
-namespace Savanna::Concurrency
-{
-    class IJob
-    {
-    private:
-        friend class JobSystem;
-
-        public:
-            IJob() = default;
-            virtual ~IJob() = default;
-
-        public:
-            virtual void Execute() = 0;
-
-        protected:
-            virtual void OnComplete() {};
-            virtual void OnCancel() {};
-            virtual void OnError() {};
-
-        public:
-            const JobsState GetState() const;
-
-            const JobHandle Schedule(JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
-    };
-} // namespace Savanna::Concurrency
-
-#endif // end __cplusplus
+#include "Public/ISavannaJobs.h"
 
 /**
  * @brief Creates and schedules a job with the given jobFunc. The job will be executed on the next available thread.
@@ -97,7 +22,12 @@ namespace Savanna::Concurrency
  * precedence over jobs with a lower priority but lower priority jobs will still be executed.
  * @return The engine created JobHandle for the job. This can be used to query the state of the job and must be released with SavannaEngine_ReleaseNativeJob.
  */
-SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_ScheduleNativeJob(const se_IJobFuncs_t* pJobFunctions, void* pData, se_JobPriority_t priority, se_JobHandle_t dependency = k_InvalidJobHandle);
+SAVANNA_EXPORT(se_JobHandle_t) SavannaEngine_ScheduleNativeJob(const se_IJobFuncs_t* pJobFunctions, void* pData, se_JobPriority_t priority, se_JobHandle_t dependency = k_InvalidJobHandle)
+{
+    using namespace Savanna::Concurrency
+    CJob job(pJobFunctions, pData);
+    return JobSystem::Get().ScheduleJob(job, pData, priority, dependency);
+}
 
 /**
  * @brief Requests the destruction of a given job handle. Since jobs are allocated objects the handle must be returned to the engine when
@@ -105,7 +35,10 @@ SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_ScheduleNativeJob(const se_IJobFunc
  *
  * @param jobHandle The handle to the job to be released.
  */
-SAVANNA_IMPORT(void) SavannaEngine_ReleaseNativeJob(se_JobHandle_t jobHandle);
+SAVANNA_EXPORT(void) SavannaEngine_ReleaseNativeJob(se_JobHandle_t jobHandle)
+{
+    JobSystem::Get().ReleaseJob(jobHandle);
+}
 
 /**
  * @brief Appends many jobs to the job queue with the given priority. The jobs will be executed on the next available thread.
@@ -120,20 +53,36 @@ SAVANNA_IMPORT(void) SavannaEngine_ReleaseNativeJob(se_JobHandle_t jobHandle);
  *
  * @note The job handles must be released with SavannaEngine_ReleaseNativeJob.
  */
-SAVANNA_IMPORT(void) SavannaEngine_ScheduleNativeJobBatch(se_JobFunc_t* const pJobFuncs, void** ppData, se_uint32 jobCount, se_JobPriority_t* priorities, se_JobHandle_t* pOutJobHandles, se_JobHandle_t dependency = k_InvalidJobHandle);
+SAVANNA_EXPORT(void) SavannaEngine_ScheduleNativeJobBatch(se_IJobFuncs_t* const pJobFuncs, void** ppData, se_uint32 jobCount, se_JobPriority_t* priorities, se_JobHandle_t* pOutJobHandles, se_JobHandle_t dependency = k_InvalidJobHandle)
+{
+    using namespace Savanna::Concurrency
+    CJob* pJobs = new CJob[jobCount];
+    for (se_uint32 i = 0; i < jobCount; ++i)
+    {
+        pJobs[i] = CJob(pJobFuncs[i], ppData[i]);
+    }
+    JobSystem::Get().ScheduleJobBatch(pJobs, jobCount, priorities, pOutJobHandles, dependency);
+    delete[] pJobs;
+}
 
 /**
  * @brief Waits for the given job to complete.
  *
  * @param jobHandle The handle to the job to be waited on.
  */
-SAVANNA_IMPORT(void) SavannaEngine_WaitForJob(se_JobHandle_t jobHandle);
+SAVANNA_EXPORT(void) SavannaEngine_WaitForJob(se_JobHandle_t jobHandle)
+{
+    JobSystem::Get().WaitForJob(jobHandle);
+}
 
 /**
  * @brief Combines the given jobs into a single job that will wait for all of the given jobs to complete before executing.
  * The combined job will implicitly release all the given jobs once this job has been released using SavannaEngine_ReleaseNativeJob.
  */
-SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_CombineJobHandles(se_JobHandle_t* pJobHandles, se_uint32 jobCount);
+SAVANNA_EXPORT(se_JobHandle_t) SavannaEngine_CombineJobHandles(se_JobHandle_t* pJobHandles, se_uint32 jobCount)
+{
+    return JobSystem::Get().CombineJobHandles(pJobHandles, jobCount);
+}
 
 /**
  * @brief Returns the current state of the given job.
@@ -141,7 +90,10 @@ SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_CombineJobHandles(se_JobHandle_t* p
  * @param jobHandle The handle to the job to be queried.
  * @return The current state of the job.
  */
-SAVANNA_IMPORT(se_JobState_t) SavannaEngine_PollJobsState(se_JobHandle_t jobHandle);
+SAVANNA_EXPORT(se_JobState_t) SavannaEngine_PollJobsState(se_JobHandle_t jobHandle)
+{
+    return JobSystem::Get().PollJobState(jobHandle);
+}
 
 /**
  * @brief Returns true if the given job has completed.
@@ -149,4 +101,7 @@ SAVANNA_IMPORT(se_JobState_t) SavannaEngine_PollJobsState(se_JobHandle_t jobHand
  * @param jobHandle The handle to the job to be queried.
  * @return True if the job has completed.
  */
-SAVANNA_IMPORT(se_bool_t) SavannaEngine_IsJobCompleted(se_JobHandle_t jobHandle);
+SAVANNA_EXPORT(se_bool_t) SavannaEngine_IsJobCompleted(se_JobHandle_t jobHandle)
+{
+    return JobSystem::Get().IsJobCompleted(jobHandle);
+}

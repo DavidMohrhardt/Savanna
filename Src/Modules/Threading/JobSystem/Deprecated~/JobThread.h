@@ -16,7 +16,7 @@
 #include <atomic>
 #include <thread>
 
-namespace Savanna::Threading::Jobs
+namespace Savanna::Concurrency
 {
     class JobThread
     {
@@ -41,5 +41,5 @@ namespace Savanna::Threading::Jobs
         void Join();
         void Detach();
     };
-} // namespace Savanna::Threading::Jobs
+} // namespace Savanna::Concurrency
 

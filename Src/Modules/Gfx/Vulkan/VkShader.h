@@ -13,7 +13,7 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include <Public/ISavannaJobs.h>
+#include <FileStream.h>
 
 #include <vulkan/vulkan.h>
 
@@ -23,17 +23,24 @@ namespace Savanna::Gfx::Vk
     {
     private:
         VkShaderModule m_ShaderModule;
+        VkDevice m_Device;
 
     public:
-        VkShader(const byte* shaderCode, const size_t shaderCodeSize);
-        VkShader(const char* shaderPath);
-        VkShader(const VkShaderModuleCreateInfo& shaderModuleCreateInfo);
+        VkShader() SAVANNA_NO_EXCEPT;
+
+        VkShader(const VkDevice& device, const char* shaderPath);
+        VkShader(const VkDevice& device, const byte* shaderCode, const size_t shaderCodeSize);
+        VkShader(const VkDevice& device, const VkShaderModuleCreateInfo& shaderModuleCreateInfo);
+
         VkShader(const VkShader& other) SAVANNA_NO_EXCEPT;
         VkShader(VkShader&& other) SAVANNA_NO_EXCEPT;
-        VkShader& operator=(const VkShader& other) = delete;
+
         ~VkShader();
 
     public:
         VkShaderModule GetModule() const { return m_ShaderModule; }
+
+    private:
+        static VkShaderModule Create(const VkDevice& device, const VkShaderModuleCreateInfo& shaderModuleCreateInfo);
     };
 } // namespace Savanna::Gfx::Vulkan

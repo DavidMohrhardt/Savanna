@@ -9,6 +9,8 @@
 
 #include "LiteralString.h"
 
+#include "Utilities/Macros/CppCommonDefs.h"
+
 // Idea taken from https://stackoverflow.com/questions/2111667/compile-time-string-hashing
 
 #define SAVANNA_HASH_STRING( str ) \
@@ -18,7 +20,7 @@ namespace Savanna
 {
     // CRC32 Table
     // https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxrtfcp/2500f63e-a1ec-4605-a80d-d41ab63e80e9
-    static constexpr uint32_t crc_table[256] = {
+    static SAVANNA_CONSTEXPR_FUNCTION(uint32_t) crc_table[256] = {
         0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,
         0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
         0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -86,50 +88,72 @@ namespace Savanna
     };
 
     template<size_t idx>
-    consteval uint32_t crc32_consteval(const char * str)
+    SAVANNA_CONSTEVAL uint32_t crc32_consteval(const char * str)
     {
         return (crc32_consteval<idx-1>(str) >> 8) ^ crc_table[(crc32_consteval<idx-1>(str) ^ str[idx]) & 0x000000FF];
     }
 
     // This is the stop-recursion function
     template<>
-    consteval uint32_t crc32_consteval<size_t(-1)>(const char * str)
+    SAVANNA_CONSTEVAL uint32_t crc32_consteval<size_t(-1)>(const char * str)
     {
         return 0xFFFFFFFF;
     }
 
     // This doesn't take into account the nul char
     // #define COMPILE_TIME_CRC32_STR(x) (crc32<sizeof(x) - 2>(x) ^ 0xFFFFFFFF)
-    consteval int32_t evaluate_crc32_consteval(const char * str)
+    SAVANNA_CONSTEVAL int32_t evaluate_crc32_consteval(const char * str)
     {
         return crc32_consteval<sizeof(str) - 2>(str) ^ 0xFFFFFFFF;
     }
 
     template<size_t idx>
-    constexpr uint32_t crc32_constexpr(const char * str)
+    SAVANNA_CONSTEXPR_FUNCTION(uint32_t) crc32_constexpr(const char * str)
     {
         return (crc32_constexpr<idx-1>(str) >> 8) ^ crc_table[(crc32_constexpr<idx-1>(str) ^ str[idx]) & 0x000000FF];
     }
 
     // This is the stop-recursion function
     template<>
-    constexpr uint32_t crc32_constexpr<size_t(-1)>(const char * str)
+    SAVANNA_CONSTEXPR_FUNCTION(uint32_t) crc32_constexpr<size_t(-1)>(const char * str)
     {
         return 0xFFFFFFFF;
     }
 
     // This doesn't take into account the nul char
     // #define COMPILE_TIME_CRC32_STR(x) (crc32<sizeof(x) - 2>(x) ^ 0xFFFFFFFF)
-    constexpr int32_t evaluate_crc32_constexpr(const char * str)
+    SAVANNA_CONSTEXPR_FUNCTION(int32_t) evaluate_crc32_constexpr(const char * str)
     {
         return crc32_constexpr<sizeof(str) - 2>(str) ^ 0xFFFFFFFF;
     }
 
-    class HashString
+    /**
+     * @brief A base class for all Hashables.
+     *
+     */
+    class IHashable
     {
-    private:
-        static constexpr const char* k_None = "<None>";
+    public:
+        SAVANNA_NO_DISCARD virtual const int32 GetHash() const = 0;
+    };
 
+    /**
+     * @brief A base class for all HashStrings.
+     *
+     */
+    class IHashString : public IHashable
+    {
+    public:
+        static SAVANNA_CONSTEXPR_FUNCTION(const char*) k_None = "<None>";
+        static SAVANNA_CONSTEXPR int32 k_NoneHash = evaluate_crc32_consteval(k_None);
+    };
+
+    /**
+     * @brief A HashString that is evaluated at compile time.
+     *
+     */
+    class CRC32HashString : public IHashString
+    {
     private:
         int32 m_Hash;
 #if !SAVANNA_FORCE_STRING_HASHING
@@ -139,15 +163,15 @@ namespace Savanna
 
     public:
         template<size_t N>
-        consteval HashString(const char (&literal)[N]) :
-            m_Hash(evaluate_crc32_consteval(literal)),
+        SAVANNA_CONSTEVAL CRC32HashString(const char (&literal)[N])
+            : m_Hash(evaluate_crc32_consteval(literal))
 #if !SAVANNA_FORCE_STRING_HASHING
-            m_Literal(literal),
-            m_Length(N - 1)
+            , m_Literal(literal)
+            , m_Length(N - 1)
 #endif
         {}
 
-        consteval HashString(const char* str, size_t length)
+        SAVANNA_CONSTEVAL CRC32HashString(const char* str, size_t length)
         {
             m_Hash = evaluate_crc32_consteval(str);
 #if !SAVANNA_FORCE_STRING_HASHING
@@ -156,7 +180,7 @@ namespace Savanna
 #endif
         }
 
-        consteval HashString(const char* str, size_t length, int32 hash)
+        SAVANNA_CONSTEVAL CRC32HashString(const char* str, size_t length, int32 hash)
         {
             m_Hash = hash;
 #if !SAVANNA_FORCE_STRING_HASHING
@@ -165,49 +189,10 @@ namespace Savanna
 #endif
         }
 
-//         consteval HashString(const HashString& other)
-//         {
-//             m_Hash = other.m_Hash;
-// #if !SAVANNA_FORCE_STRING_HASHING
-//             m_Literal = other.m_Literal;
-//             m_Length = other.m_Length;
-// #endif
-//         }
-
-//         consteval HashString(HashString&& other)
-//         {
-//             m_Hash = other.m_Hash;
-// #if !SAVANNA_FORCE_STRING_HASHING
-//             m_Literal = other.m_Literal;
-//             m_Length = other.m_Length;
-// #endif
-//         }
-
-//         consteval HashString& operator=(const HashString& other)
-//         {
-//             m_Hash = other.m_Hash;
-// #if !SAVANNA_FORCE_STRING_HASHING
-//             m_Literal = other.m_Literal;
-//             m_Length = other.m_Length;
-// #endif
-//             return *this;
-//         }
-
-//         HashString& operator=(HashString&& other)
-//         {
-//             m_Hash = other.m_Hash;
-// #if !SAVANNA_FORCE_STRING_HASHING
-//             m_Literal = other.m_Literal;
-//             m_Length = other.m_Length;
-// #endif
-//             return *this;
-//         }
-
-        SAVANNA_NO_DISCARD const int32 GetHash() const { return m_Hash; }
+        SAVANNA_NO_DISCARD const int32 GetHash() const SAVANNA_OVERRIDE { return m_Hash; }
 
 #if SAVANNA_FORCE_STRING_HASHING
     public:
-
         const char* ToString()
         {
             return k_None;
@@ -234,11 +219,29 @@ namespace Savanna
 namespace std
 {
     template<>
-    struct hash<Savanna::HashString>
+    struct hash<Savanna::IHashable>
     {
-        size_t operator()(const Savanna::HashString & str) const
+        size_t operator()(const Savanna::IHashable* pHashable) const
         {
-            return str.GetHash();
+            return pHashable->GetHash();
+        }
+    };
+
+    template<>
+    struct hash<Savanna::IHashString>
+    {
+        size_t operator()(const Savanna::IHashString* pHashString) const
+        {
+            return pHashString->GetHash();
+        }
+    };
+
+    template<>
+    struct hash<Savanna::CRC32HashString>
+    {
+        size_t operator()(const Savanna::CRC32HashString& pHashString) const
+        {
+            return pHashString.GetHash();
         }
     };
 } // namespace std

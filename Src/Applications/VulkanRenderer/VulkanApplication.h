@@ -27,10 +27,10 @@ namespace Savanna::Application
 
     class VulkanApplication : public Savanna::IApplication
     {
-        static constexpr HashString k_MemoryArenaTags[] = {
-            HashString("Common"),
-            HashString("System"),
-            HashString("Graphics")
+        static constexpr CRC32HashString k_MemoryArenaTags[] = {
+            CRC32HashString("Common"),
+            CRC32HashString("System"),
+            CRC32HashString("Graphics")
         };
     public:
         VulkanApplication();
