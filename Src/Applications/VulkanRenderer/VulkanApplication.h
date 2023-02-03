@@ -15,7 +15,7 @@
 #include <VkRenderer.h>
 
 #include <Application/IApplication.h>
-#include <Types/Strings/HashString.h>
+#include <Types/Strings/CRC32HashString.h>
 
 #include <vector>
 

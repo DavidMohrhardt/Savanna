@@ -22,27 +22,22 @@ namespace Savanna::Gfx::Vk
     // Forward Declarations
     class DebugMessenger;
 
-    class Context
+    class Context : public NonCopyable
     {
     private: // Members
         VkInstance m_Instance;
         std::unique_ptr<DebugMessenger> m_DebugMessenger;
 
-    private: // Private Constructors
-
     public: // Constructors/Destructors
         Context(const RendererCreateInfo* const pCreateInfo);
 
         Context();
-        Context(const Context &other) = delete;
         Context(Context &&other);
 
         ~Context();
 
     public: // Operators
         operator VkInstance() const { return m_Instance; }
-
-        Context& operator=(const Context &other) = delete;
         Context& operator=(Context &&other);
 
     public: // Functions

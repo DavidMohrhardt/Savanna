@@ -11,27 +11,35 @@
 #pragma once
 #include <ISavannaInterface.h>
 
-/**
- * @brief Defines the accepted functor type for a given IJob in the C-Api
- */
-typedef void (*se_JobFunc_t)(void* data);
 
-typedef struct se_IJobFuncs_t
-{
-    se_JobFunc_t pExecuteFunc;
-    se_JobFunc_t pOnCompleteFunc;
-    se_JobFunc_t pOnCancelFunc;
-    se_JobFunc_t pOnErrorFunc;
-} se_IJob;
+#if defined(__cplusplus)
+
+#include <atomic>
+
+#endif // defined(__cplusplus)
 
 /**
- * @brief The handle
+ * @brief An opaque handle to a scheduled job.
  *
  */
-typedef se_JobHandle_t intptr_t;
+typedef se_int64 se_JobHandle_t;
 
 /**
- * @brief
+ * @brief An invalid job handle.
+ */
+const se_JobHandle_t k_InvalidJobHandle = 0LL;
+
+typedef enum se_JobResult_t
+{
+    k_SavannaJobResultInvalid,
+    k_SavannaJobResultSuccess,
+    k_SavannaJobResultError,
+    k_SavannaJobResultCancelled,
+    k_SavannaJobResultCount
+} se_JobResult_t;
+
+/**
+ * @brief Defines the accepted functor type for a given IJob in the C-Api
  */
 typedef enum se_JobState_t
 {
@@ -53,100 +61,197 @@ typedef enum se_JobPriority_t
     k_SavannaJobPriorityCount
 } se_JobPriority_t;
 
-#if defined(__cplusplus)
+/**
+ * @brief Defines the accepted functor type for a given IJob in the C-Api
+ */
+typedef se_JobResult_t (*se_JobExecuteFunc_t)(void*);
 
-#include <atomic>
+/**
+ * @brief Defines the accepted functor type for a given IJob in the C-Api
+ */
+typedef void(*se_JobResultCallbackFunc_t)(void*);
+
+typedef struct se_IJobInterface_t
+{
+    se_JobExecuteFunc_t executeFunc;
+    se_JobResultCallbackFunc_t onCompleteFunc;
+    se_JobResultCallbackFunc_t onCancelFunc;
+    se_JobResultCallbackFunc_t onErrorFunc;
+    void* pUserData;
+} se_IJobInterface_t;
+
+#if defined(__cplusplus)
 
 namespace Savanna::Concurrency
 {
+    using JobHandle = se_JobHandle_t;
+    using JobState = se_JobState_t;
+    using JobPriority = se_JobPriority_t;
+    using JobResult = se_JobResult_t;
+    using JobExecuteFunc = se_JobExecuteFunc_t;
+    using JobResultCallbackFunc = se_JobResultCallbackFunc_t;
+    using IJobInterface = se_IJobInterface_t;
+
+    /**
+     * @brief
+     *
+     */
     class IJob
     {
     private:
-        friend class JobSystem;
+        friend class JobManager;
 
-        public:
-            IJob() = default;
-            virtual ~IJob() = default;
+    public:
+        IJob() = default;
+        virtual ~IJob() = default;
 
-        public:
-            virtual void Execute() = 0;
+    protected:
+        virtual bool TryCancel() { return false; }
 
-        protected:
-            virtual void OnComplete() {};
-            virtual void OnCancel() {};
-            virtual void OnError() {};
+    public:
+        /**
+         * @brief Provides the implementation for the job. This function will be called on a worker thread.
+         * It is up to the implementation to handle any synchronization and thread safety. The job system will
+         * only provide scheduling services.
+         *
+         * @return true if the job was executed successfully.
+         * @return false if the job failed to execute.
+         */
+        virtual JobResult Execute() = 0;
 
-        public:
-            const JobsState GetState() const;
+        /**
+         * @brief Called when the job has completed successfully.
+         *
+         */
+        virtual void OnComplete() {};
 
-            const JobHandle Schedule(JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
+        /**
+         * @brief Called when the job has been cancelled. It is up to the implementation to handle cancellation.
+         *
+         */
+        virtual void OnCancel() {};
+
+        /**
+         * @brief Called when the job has failed to execute for any reason.
+         *
+         */
+        virtual void OnError() {};
+    };
+
+    class LowLevelJob : public IJob
+    {
+    private:
+        IJobInterface m_JobInterface = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
+    public:
+        LowLevelJob() = default;
+        LowLevelJob(const IJobInterface& jobInterface)
+            : m_JobInterface(jobInterface)
+        {
+        }
+        virtual ~LowLevelJob() = default;
+
+    public:
+        virtual JobResult Execute() override
+        {
+            return m_JobInterface.executeFunc != nullptr
+                ? m_JobInterface.executeFunc(m_JobInterface.pUserData)
+                : k_SavannaJobResultInvalid;
+        }
+
+        virtual void OnComplete() override
+        {
+            if (m_JobInterface.onCompleteFunc)
+            {
+                m_JobInterface.onCompleteFunc(m_JobInterface.pUserData);
+            }
+        }
+
+        virtual void OnCancel() override
+        {
+            if (m_JobInterface.onCancelFunc)
+            {
+                m_JobInterface.onCancelFunc(m_JobInterface.pUserData);
+            }
+        }
+
+        virtual void OnError() override
+        {
+            if (m_JobInterface.onErrorFunc)
+            {
+                m_JobInterface.onErrorFunc(m_JobInterface.pUserData);
+            }
+        }
+
+        void SetJobInterface(const IJobInterface& jobInterface)
+        {
+            m_JobInterface = jobInterface;
+        }
     };
 } // namespace Savanna::Concurrency
 
 #endif // end __cplusplus
 
 /**
- * @brief Creates and schedules a job with the given jobFunc. The job will be executed on the next available thread.
- *
- * @param jobHandle The handle to the job to be scheduled.
- * @param pData A pointer to the data to be passed to the job. This can be null for jobs that do not require data. The data must
- * be valid until the job is completed.
- * @param priority The priority of the job. The engine maintains a queue for each priority level and several threads are assigned
- * to each queue
- * but there are also general threads that take jobs in priority order. This means that jobs with a higher priority will take
- * precedence over jobs with a lower priority but lower priority jobs will still be executed.
- * @return The engine created JobHandle for the job. This can be used to query the state of the job and must be released with SavannaEngine_ReleaseNativeJob.
+ * @brief Requests a job handle from the job system. The job handle is used to schedule a job for execution
+ * as well as to wait for the job to complete. This function is thread safe and allocates memory from the
+ * job system's memory pool. The job handle must be released when it is no longer needed using the
+ * SavannaEngine_ReleaseJobHandle function.
  */
-SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_ScheduleNativeJob(const se_IJobFuncs_t* pJobFunctions, void* pData, se_JobPriority_t priority, se_JobHandle_t dependency = k_InvalidJobHandle);
+SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_AcquireJobHandle(const se_IJobInterface_t* pIJobInterface, se_JobPriority_t priority, se_JobHandle_t dependency = k_InvalidJobHandle);
 
 /**
- * @brief Requests the destruction of a given job handle. Since jobs are allocated objects the handle must be returned to the engine when
- * it is no longer needed. Safe to call on executing jobs as it will simply mark the job for destruction when it is completed.
- *
- * @param jobHandle The handle to the job to be released.
+ * @brief Releases a job handle back to the job system. This function is thread safe and frees memory from the
+ * job system's memory pool. The job handle must not be used after it has been released.
  */
-SAVANNA_IMPORT(void) SavannaEngine_ReleaseNativeJob(se_JobHandle_t jobHandle);
+SAVANNA_IMPORT(void) SavannaEngine_ReleaseJobHandle(se_JobHandle_t jobHandle);
 
 /**
- * @brief Appends many jobs to the job queue with the given priority. The jobs will be executed on the next available thread.
+ * @brief Schedules a job for execution. This function is thread safe and will return immediately. The job
+ * will be executed on a worker thread. The job handle must be released when it is no longer needed using the
+ * SavannaEngine_ReleaseJobHandle function. It is recommended to release the job handle via the se_IJobInterface_t
+ * callback functions.
  *
- * @param pJobFuncs An array of function pointers for jobs to be scheduled.
- * @param ppData An array of pointers to the data to be passed to the jobs. This can be null for jobs that do not require data. The data must be valid until the job is completed.
- * @param jobCount The number of jobs to be scheduled.
- * @param pPriorities An array of priorities for each job. The engine maintains a queue for each priority level and several threads are assigned to each queue
- * but there are also general threads that take jobs in priority order. This means that jobs with a higher priority will take precedence over jobs
- * with a lower priority but lower priority jobs will still be executed.
- * @param pOutJobHandles An output array of job handles that can be used to query the state of the jobs. Must be at least as large as jobCount.
- *
- * @note The job handles must be released with SavannaEngine_ReleaseNativeJob.
+ * @param jobHandle The job handle to schedule for execution.
+ * @return se_JobScheduleResult_t The result of the scheduling operation.
  */
-SAVANNA_IMPORT(void) SavannaEngine_ScheduleNativeJobBatch(se_JobFunc_t* const pJobFuncs, void** ppData, se_uint32 jobCount, se_JobPriority_t* priorities, se_JobHandle_t* pOutJobHandles, se_JobHandle_t dependency = k_InvalidJobHandle);
+SAVANNA_IMPORT(se_JobScheduleResult_t) SavannaEngine_ScheduleJob(se_JobHandle_t jobHandle);
 
 /**
- * @brief Waits for the given job to complete.
+ * @brief Waits for a job to complete. This function is thread safe and will block the calling thread until
+ * the job has completed.
  *
- * @param jobHandle The handle to the job to be waited on.
  */
-SAVANNA_IMPORT(void) SavannaEngine_WaitForJob(se_JobHandle_t jobHandle);
+SAVANNA_IMPORT(void) SavannaEngine_AwaitJobCompletion(se_JobHandle_t jobHandle);
 
 /**
- * @brief Combines the given jobs into a single job that will wait for all of the given jobs to complete before executing.
- * The combined job will implicitly release all the given jobs once this job has been released using SavannaEngine_ReleaseNativeJob.
+ * @brief Combines the dependencies of multiple jobs into a single job handle. This function is thread safe.
+ * The original job handles must be released manually still using the SavannaEngine_ReleaseJobHandle function.
+ * Releasing jobs prior to the completion of the combined job will result is a no op.
+ *
+ * @param pJobHandles An array of job handles to combine.
+ * @param jobCount The number of job handles in the array.
+ *
+ * @return se_JobHandle_t The combined job handle.
  */
-SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_CombineJobHandles(se_JobHandle_t* pJobHandles, se_uint32 jobCount);
+SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_CombineDependencies(se_JobHandle_t* pJobHandles, se_uint32 jobCount);
 
 /**
- * @brief Returns the current state of the given job.
+ * @brief Polls the state of a job. This function is thread safe and will return immediately.
  *
- * @param jobHandle The handle to the job to be queried.
- * @return The current state of the job.
+ * @param jobHandle The job handle to poll.
+ * @return se_JobState_t The state of the job.
  */
-SAVANNA_IMPORT(se_JobState_t) SavannaEngine_PollJobsState(se_JobHandle_t jobHandle);
+SAVANNA_IMPORT(se_JobState_t) SavannaEngine_PollJobState(se_JobHandle_t jobHandle);
 
 /**
- * @brief Returns true if the given job has completed.
+ * @brief Schedules a batch of jobs for execution. This function is thread safe and will return immediately.
+ * The job handles must be released when they are no longer needed using the SavannaEngine_ReleaseJobHandle
+ * function. It is recommended to release the job handles via the se_IJobInterface_t callback functions.
  *
- * @param jobHandle The handle to the job to be queried.
- * @return True if the job has completed.
+ * @param pJobHandles An array of job handles to schedule for execution.
+ * @param jobCount The number of job handles in the array.
+ * @param dependency The job handle to use as a dependency for the batch of jobs. This is optional and can be
+ * set to k_InvalidJobHandle if no dependency is needed.
  */
-SAVANNA_IMPORT(se_bool_t) SavannaEngine_IsJobCompleted(se_JobHandle_t jobHandle);
+SAVANNA_IMPORT(void) SavannaEngine_ScheduleJobBatch(se_JobHandle_t* pJobHandles, se_uint32 jobCount, se_JobHandle_t dependency = k_InvalidJobHandle);

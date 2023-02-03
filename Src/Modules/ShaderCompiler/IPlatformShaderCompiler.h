@@ -12,7 +12,7 @@
 
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
-#include <Types/Strings/HashString.h>
+#include <Types/Strings/CRC32HashString>
 
 #include <vector>
 #include <unordered_map>

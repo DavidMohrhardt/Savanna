@@ -7,6 +7,7 @@
 #include <cstring>
 #include <unordered_map>
 
+#include "IHashString.h"
 #include "LiteralString.h"
 
 #include "Utilities/Macros/CppCommonDefs.h"
@@ -126,27 +127,6 @@ namespace Savanna
     {
         return crc32_constexpr<sizeof(str) - 2>(str) ^ 0xFFFFFFFF;
     }
-
-    /**
-     * @brief A base class for all Hashables.
-     *
-     */
-    class IHashable
-    {
-    public:
-        SAVANNA_NO_DISCARD virtual const int32 GetHash() const = 0;
-    };
-
-    /**
-     * @brief A base class for all HashStrings.
-     *
-     */
-    class IHashString : public IHashable
-    {
-    public:
-        static SAVANNA_CONSTEXPR_FUNCTION(const char*) k_None = "<None>";
-        static SAVANNA_CONSTEXPR int32 k_NoneHash = evaluate_crc32_consteval(k_None);
-    };
 
     /**
      * @brief A HashString that is evaluated at compile time.
