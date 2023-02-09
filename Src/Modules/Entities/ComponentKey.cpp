@@ -58,14 +58,14 @@ namespace Savanna::Entities
 
     void ComponentKey::SetRingIndex(const se_ComponentKeyMask_T& componentKeyRingIndex)
     {
-        SAVANNA_ASSERT(componentKeyRingIndex <= k_MaxSetMaskValue && "Component key ring index is too large");
-        SAVANNA_ASSERT((componentKeyRingIndex << SAVANNA_ECS_KEY_TEETH_BIT_COUNT) > k_MaxKeyValue && "Component key ring index conflicts with key value");
+        SAVANNA_ASSERT(componentKeyRingIndex <= k_MaxSetMaskValue, "Component key ring index is too large");
+        SAVANNA_ASSERT((componentKeyRingIndex << SAVANNA_ECS_KEY_TEETH_BIT_COUNT) > k_MaxKeyValue, "Component key ring index conflicts with key value");
         m_ComponentKey.m_RingIndex = componentKeyRingIndex;
     }
 
     void ComponentKey::SetKeyValue(const se_ComponentKey_t& componentKeyValue)
     {
-        SAVANNA_ASSERT(componentKeyValue <= k_MaxKeyValue && "Component key value is too large");
+        SAVANNA_ASSERT(componentKeyValue <= k_MaxKeyValue, "Component key value is too large");
         m_ComponentKey.m_KeyTeeth = componentKeyValue;
     }
 

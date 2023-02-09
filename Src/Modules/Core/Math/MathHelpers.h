@@ -18,13 +18,11 @@
 #include <assert.h>
 #endif
 
-// SAVANNA_NO_DISCARD inline constexpr
 inline bool IsPowerOfTwo(const se_int64 val)
 {
     return val && !(val & (val - 1));
 }
 
-// SAVANNA_NO_DISCARD inline constexpr
 inline se_int64 NextPowerOfTwo(const se_int64 val)
 {
     return (val & ~(val - 1)) << 1;
@@ -42,7 +40,7 @@ inline se_int64 ModByPowerOfTwo(const se_int64 x, const se_int64 pow2Mod)
 {
     // As per https://en.wikipedia.org/wiki/Modulo_operation
     // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
-    SAVANNA_ASSERT(IsPowerOfTwo(pow2Mod) && "pow2Mod must be a power of two");
+    SAVANNA_ASSERT(IsPowerOfTwo(pow2Mod), "pow2Mod must be a power of two");
     return (x & (pow2Mod - 1));
 }
 

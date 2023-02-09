@@ -14,12 +14,12 @@
 #include "Utilities/PreprocessorDefinitions/CompilerDefinitions.h"
 
 #if SAVANNA_CPP11
-    #define SAVANNA_NO_EXCEPT noexcept
+    #define SAVANNA_NOEXCEPT noexcept
     #define SAVANNA_OVERRIDE override
     #define SAVANNA_FINAL final
     #define SAVANNA_CONSTEXPR constexpr
 #else
-    #define SAVANNA_NO_EXCEPT
+    #define SAVANNA_NOEXCEPT
     #define SAVANNA_OVERRIDE
     #define SAVANNA_FINAL
 #endif

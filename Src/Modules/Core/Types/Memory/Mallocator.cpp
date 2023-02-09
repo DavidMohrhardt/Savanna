@@ -35,7 +35,7 @@ namespace Savanna
     }
 
     template<class T>
-    inline void Mallocator<T>::deallocate(T* const p, size_t) const SAVANNA_NO_EXCEPT
+    inline void Mallocator<T>::deallocate(T* const p, size_t) const SAVANNA_NOEXCEPT
     {
         free(p);
     }

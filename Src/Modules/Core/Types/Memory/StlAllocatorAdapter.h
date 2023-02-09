@@ -47,22 +47,22 @@ namespace Savanna
             return reinterpret_cast<T*>(m_Allocator.alloc(size, alignment));
         }
 
-        constexpr void deallocate(T* p, size_t n) SAVANNA_NO_EXCEPT
+        constexpr void deallocate(T* p, size_t n) SAVANNA_NOEXCEPT
         {
             m_Allocator.Free(p, alignof(T));
         }
 
-        size_t MaxAllocationSize() const SAVANNA_NO_EXCEPT
+        size_t MaxAllocationSize() const SAVANNA_NOEXCEPT
         {
             return m_Allocator.GetSize();
         }
 
-        bool operator==(const StlAllocatorAdapter<T, Allocator>& rhs) const SAVANNA_NO_EXCEPT
+        bool operator==(const StlAllocatorAdapter<T, Allocator>& rhs) const SAVANNA_NOEXCEPT
         {
             return m_Allocator == rhs.m_Allocator;
         }
 
-        bool operator!=(const StlAllocatorAdapter<T, Allocator>& rhs) const SAVANNA_NO_EXCEPT
+        bool operator!=(const StlAllocatorAdapter<T, Allocator>& rhs) const SAVANNA_NOEXCEPT
         {
             return !(*this == rhs);
         }

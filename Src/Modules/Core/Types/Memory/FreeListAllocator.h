@@ -10,50 +10,33 @@
 #pragma once
 
 #include "Allocator.h"
+#include "MemoryChunkDescriptors.h"
 
 #include "Utilities/SavannaCoding.h"
 #include "Types/Memory/CacheLine.h"
 
 namespace Savanna
 {
-    class MemoryPool;
-
-    struct alignas(8) MemoryChunkHeader
-    {
-        MemoryChunkHeader* m_Next;
-        uint32 m_Size;
-    };
-
-    struct alignas(8) AllocatedChunkDescriptor
-    {
-        size_t m_Offset;
-        uint32 m_Size;
-    };
-
-    static_assert(sizeof(MemoryChunkHeader) == sizeof(AllocatedChunkDescriptor) && "MemoryChunkHeader and AllocatedChunkDescriptor must be the same size");
-
     /**
      * @brief
      */
-    class FreeListAllocator final : public Allocator
+    class FreeListAllocator : public Allocator, NonCopyable
     {
     private:
-        MemoryChunkHeader* m_Head;
+        MemoryChunkDescriptor* m_Head;
 
     public:
         FreeListAllocator();
         FreeListAllocator(void* root, size_t size);
-        FreeListAllocator(FreeListAllocator& other) = delete;
         FreeListAllocator(FreeListAllocator&& other);
 
         ~FreeListAllocator();
 
     public:
-        FreeListAllocator& operator=(FreeListAllocator& other) = delete;
         FreeListAllocator& operator=(FreeListAllocator&& other);
 
     public:
-        SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) override;
-        void free(void* const ptr, const size_t& alignment) override;
+        SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
+        void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
     };
 } // namespace Savanna

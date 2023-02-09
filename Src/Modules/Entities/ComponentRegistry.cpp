@@ -112,7 +112,7 @@ namespace Savanna::Entities::ComponentRegistry
         ComponentKey componentId = SE_INVALID_HANDLE;
         if (s_ComponentTypeMap.find(typeIndex) == s_ComponentTypeMap.end())
         {
-            SAVANNA_ASSERT(SavannaIsValidComponentKey(g_ComponentKeyCounter) && "Component ID overflow");
+            SAVANNA_ASSERT(SavannaIsValidComponentKey(g_ComponentKeyCounter), "Component ID overflow");
 
             componentId = g_ComponentKeyCounter;
             s_ComponentTypeMap.emplace(typeIndex, componentId);

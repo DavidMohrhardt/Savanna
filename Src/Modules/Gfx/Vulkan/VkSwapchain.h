@@ -44,7 +44,7 @@ namespace Savanna::Gfx::Vk
 
         Swapchain(const Swapchain &other) = delete;
 
-        Swapchain(Swapchain &&other) SAVANNA_NO_EXCEPT;
+        Swapchain(Swapchain &&other) SAVANNA_NOEXCEPT;
 
         ~Swapchain();
 

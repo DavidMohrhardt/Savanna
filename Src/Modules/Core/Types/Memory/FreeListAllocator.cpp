@@ -21,13 +21,13 @@ namespace Savanna
 
     FreeListAllocator::FreeListAllocator(void* root, size_t size)
         : Allocator(root, size)
-        , m_Head(reinterpret_cast<MemoryChunkHeader*>(root))
+        , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
     {
         if (m_Head != nullptr)
         {
             m_Head->m_Next = nullptr;
             m_Head->m_Size = static_cast<int32>(size);
-            m_AllocatedBytes = sizeof(MemoryChunkHeader);
+            m_AllocatedBytes = sizeof(MemoryChunkDescriptor);
         }
     }
 
@@ -59,11 +59,11 @@ namespace Savanna
     void* FreeListAllocator::alloc(const size_t& size, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::alloc);
-        MemoryChunkHeader* current = m_Head;
-        MemoryChunkHeader* previous = nullptr;
+        MemoryChunkDescriptor* current = m_Head;
+        MemoryChunkDescriptor* previous = nullptr;
 
-        MemoryChunkHeader* bestFit = nullptr;
-        MemoryChunkHeader* prevBestFit = nullptr;
+        MemoryChunkDescriptor* bestFit = nullptr;
+        MemoryChunkDescriptor* prevBestFit = nullptr;
 
         size_t bestFitSize, requiredSize, forwardAdjustment;
 
@@ -96,10 +96,10 @@ namespace Savanna
         void* outPtr = Add(&bestFit[1], forwardAdjustment);
         AllocatedChunkDescriptor* descPtr = &reinterpret_cast<AllocatedChunkDescriptor*>(outPtr)[-1];
 
-        if (bestFit->m_Size - requiredSize > sizeof(MemoryChunkHeader))
+        if (bestFit->m_Size - requiredSize > sizeof(MemoryChunkDescriptor))
         {
-            MemoryChunkHeader* newChunk = Add(bestFit + 1, requiredSize);
-            newChunk->m_Size = bestFit->m_Size - requiredSize - sizeof(MemoryChunkHeader);
+            MemoryChunkDescriptor* newChunk = Add(bestFit + 1, requiredSize);
+            newChunk->m_Size = bestFit->m_Size - requiredSize - sizeof(MemoryChunkDescriptor);
             newChunk->m_Next = bestFit->m_Next;
 
             if (prevBestFit != nullptr)
@@ -111,7 +111,7 @@ namespace Savanna
                 m_Head = newChunk;
             }
 
-            descPtr->m_Size = requiredSize + sizeof(MemoryChunkHeader);
+            descPtr->m_Size = requiredSize + sizeof(MemoryChunkDescriptor);
         }
         else
         {
@@ -137,19 +137,19 @@ namespace Savanna
     void FreeListAllocator::free(void* const ptr, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER("FreeListAllocator::free");
-        SAVANNA_MEMORY_SAFETY_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
-        SAVANNA_MEMORY_SAFETY_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkHeader), "Attempting to deallocate pointer from an empty allocator");
+        SAVANNA_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
+        SAVANNA_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkDescriptor), "Attempting to deallocate pointer from an empty allocator");
 
         AllocatedChunkDescriptor allocationDescriptor =
             reinterpret_cast<AllocatedChunkDescriptor*>(ptr)[-1];
 
         // Subtract the stored alignment adjustment to get the end of the actual header index into the pointer one place backwards to
-        MemoryChunkHeader* allocatedHeader =
-            &reinterpret_cast<MemoryChunkHeader*>(Subtract(ptr, allocationDescriptor.m_Offset))[-1];
+        MemoryChunkDescriptor* allocatedHeader =
+            &reinterpret_cast<MemoryChunkDescriptor*>(Subtract(ptr, allocationDescriptor.m_Offset))[-1];
         allocatedHeader->m_Size = allocationDescriptor.m_Size;
 
-        MemoryChunkHeader* previousHeader = nullptr;
-        MemoryChunkHeader* currentHeader = m_Head;
+        MemoryChunkDescriptor* previousHeader = nullptr;
+        MemoryChunkDescriptor* currentHeader = m_Head;
         while (currentHeader != nullptr)
         {
             if (reinterpret_cast<uintptr>(currentHeader) >= reinterpret_cast<uintptr>(allocatedHeader) + allocatedHeader->m_Size)

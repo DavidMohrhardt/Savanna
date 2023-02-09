@@ -28,7 +28,7 @@ namespace Savanna::IO
         VirtualFileSystem();
         VirtualFileSystem(const std::filesystem::path &realRootPath);
         VirtualFileSystem(const VirtualFileSystem &other) = delete;
-        VirtualFileSystem(VirtualFileSystem &&other) SAVANNA_NO_EXCEPT;
+        VirtualFileSystem(VirtualFileSystem &&other) SAVANNA_NOEXCEPT;
         ~VirtualFileSystem();
 
     public:

@@ -25,6 +25,6 @@ add_subdirectory(Core)
 add_subdirectory(Entities)
 add_subdirectory(Gfx)
 add_subdirectory(IO)
-add_subdirectory(Memory)
+# add_subdirectory(Memory)
 # TODO @DavidMohrhardt - Move profiling to a module
 # add_subdirectory(Profiling)

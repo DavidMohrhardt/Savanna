@@ -11,8 +11,8 @@ namespace Savanna::Gfx::Vk
     DisplaySurface::DisplaySurface(const RendererCreateInfo *const pCreateInfo, const Context &context)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(DisplaySurface::DisplaySurface(const RendererCreateInfo *const pCreateInfo, const Context &context));
-        SAVANNA_ASSERT(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
-        SAVANNA_ASSERT(context.IsValid() && "Context is not valid!");
+        SAVANNA_ASSERT(pCreateInfo != nullptr, "pCreateInfo is nullptr!");
+        SAVANNA_ASSERT(context.IsValid(), "Context is not valid!");
         if (m_Surface != VK_NULL_HANDLE) SAVANNA_BRANCH_UNLIKELY
         {
             SAVANNA_WARNING_LOG("DisplaySurface is already initialized!");

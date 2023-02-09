@@ -10,6 +10,7 @@
 
 # Allow the submodules folder to persist in the repository
 ![Ss]ubmodules/
+![Ss]ubmodules/**
 
 # Allow build dependencies to persist in the repository
 !BuildDependencies.json

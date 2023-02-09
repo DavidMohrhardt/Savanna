@@ -33,8 +33,8 @@ namespace Savanna::Entities
         : m_ParadigmMemory(pParadigmMemory)
         , m_ParadigmMemorySize(paradigmMemorySize)
     {
-        SAVANNA_ASSERT(pParadigmMemory != nullptr);
-        SAVANNA_ASSERT(paradigmMemorySize > 0);
+        SAVANNA_ASSERT(pParadigmMemory != nullptr, "Paradigm memory cannot be nullptr.");
+        SAVANNA_ASSERT(paradigmMemorySize > 0, "Paradigm memory size must be greater than 0.");
 
         memset(m_ParadigmKeyChain, 0, sizeof(ComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
     }

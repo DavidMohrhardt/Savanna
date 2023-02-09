@@ -14,7 +14,7 @@ namespace Savanna
 
     // Referenced from https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size
     // auto is utilized to make the template argument less annoying.
-    inline auto Now() SAVANNA_NO_EXCEPT { return std::chrono::high_resolution_clock::now(); }
+    inline auto Now() SAVANNA_NOEXCEPT { return std::chrono::high_resolution_clock::now(); }
 
     ProfilerMarker::ProfilerMarker(FixedString256&& markerName)
         : m_ProfilerMarkerName(std::move(markerName))

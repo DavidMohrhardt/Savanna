@@ -125,7 +125,7 @@ namespace Savanna \
         inline void CopyFrom(const char* cstring, size_t start, size_t size, size_t destOffset = 0) \
         {\
             size_t copyLength = size - start > size - 1 ? size - 1 : size - start; \
-            SAVANNA_ASSERT(copyLength < __strlen__ - m_StringLength - destOffset); \
+            SAVANNA_ASSERT(copyLength < __strlen__ - m_StringLength - destOffset, "The length of the copy is larger than the space allocated to the string!"); \
             memcpy(m_Bytes + destOffset, cstring, copyLength); \
             m_StringLength += copyLength;\
         }\

@@ -15,6 +15,7 @@
 
 #include <Public/ISavannaJobs.h>
 
+#include <atomic>
 #include <queue>
 #include <unordered_map>
 #include <vector>
@@ -23,8 +24,16 @@ namespace Savanna::Concurrency
 {
     class JobManager : public Singleton<JobManager>
     {
+    public:
+        static constexpr uint8 k_MaxThreadPoolSize = std::thread::hardware_concurrency() - 1;
+
     private:
-        std::vector<JobThreads> m_JobThreads;
+        static void ProcessJobs();
+
+    private:
+        uint8 m_ThreadPoolSize;
+        std::atomic_bool m_ProcessingJobs;
+        std::vector<std::thread> m_JobThreads;
 
         std::queue<JobHandle> m_LowPriorityJobs;
         std::queue<JobHandle> m_NormalPriorityJobs;
@@ -33,7 +42,7 @@ namespace Savanna::Concurrency
         std::unordered_map<JobHandle, JobState> m_JobHandles;
 
     public:
-        JobManager();
+        JobManager(uint8 threadPoolSize);
         ~JobManager();
 
     public:
@@ -41,12 +50,21 @@ namespace Savanna::Concurrency
         requires std::derived_from<T, IJob>
         JobHandle AcquireJobHandle(JobHandle dependency = k_InvalidJobHandle, Args... args)
         {
-            T* pJob = m_Pool.Allocate<T>();
-            pJob->T(std::forward<Args>(args)...);
-            return reinterpret_cast<JobHandle>(pJob);
+            void* pJob = nullptr;
+            if (dependency != k_InvalidJobHandle)
+            {
+                pJob = m_Pool.Allocate<DependentJob<T>>(dependency, T(std::forward<Args>(args)...)));
+            }
+            else
+            {
+                pJob = m_Pool.Allocate<T>();
+                reinterpret_cast<T*>(pJob)->T(std::forward(args)...);
+            }
+            return { pJob };
         }
 
-        JobHandle AcquireJobHandle(const IJobInterface* pIJobInterface, JobPriority priority, JobHandle dependency = k_InvalidJobHandle);
+        void Start();
+        void Stop(bool synchronized = false);
 
         void ReleaseJobHandle(JobHandle jobHandle);
 
@@ -59,15 +77,5 @@ namespace Savanna::Concurrency
         bool TryCancelJob(JobHandle jobHandle) SAVANNA_NOEXCEPT;
 
         SAVANNA_NO_DISCARD JobState GetJobState(JobHandle jobHandle);
-
-    private:
-        inline JobHandle GetNextAvailableJobHandle()
-        {
-            while (outHandle == k_InvalidJobHandle)
-            {
-                outHandle = m_JobHandleCounter.fetch_add(1);
-            }
-            return outHandle;
-        }
     };
 } // namespace Savanna::Concurrency

@@ -37,7 +37,7 @@ namespace Savanna::Gfx::Vk
             VkShaderModule* m_pOutShaderModule;
 
         public:
-            VkShaderModuleCreationJob(const VkDevice& device, const VkShaderModuleCreateInfo& shaderModuleCreateInfo, VkShaderModule* pOutShaderModule) SAVANNA_NO_EXCEPT
+            VkShaderModuleCreationJob(const VkDevice& device, const VkShaderModuleCreateInfo& shaderModuleCreateInfo, VkShaderModule* pOutShaderModule) SAVANNA_NOEXCEPT
                 : m_Device(device)
                 , m_ShaderModuleCreateInfo(shaderModuleCreateInfo)
                 , m_pOutShaderModule(pOutShaderModule)
@@ -71,14 +71,14 @@ namespace Savanna::Gfx::Vk
         std::unordered_map<JobHandle, ShaderModuleCreationJob> m_ActiveJobs;
 
     public:
-        VkShaderCache(const VkDevice& device) SAVANNA_NO_EXCEPT;
+        VkShaderCache(const VkDevice& device) SAVANNA_NOEXCEPT;
         ~VkShaderCache();
 
     public:
         JobHandle CreateShaderModuleAsync(const IHashString* pShaderName, const VkShaderModuleCreateInfo& shaderModuleCreateInfo);
     };
 
-    VkShaderCache::VkShaderCache(const VkDevice& device) SAVANNA_NO_EXCEPT
+    VkShaderCache::VkShaderCache(const VkDevice& device) SAVANNA_NOEXCEPT
         : m_Device(device)
         , m_IdToShaderModuleMap()
     {

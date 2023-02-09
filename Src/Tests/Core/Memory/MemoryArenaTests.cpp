@@ -9,7 +9,9 @@
 
 #include "MemoryTestUtils.h"
 
+#if ENABLE_MEMORY_ARENA_TESTS
 #include <Memory/MemoryArena.h>
+#endif
 
 #define DECLARE_MEMORY_ARENA_TEST(__subFixture, __name) \
     DECLARE_MEMORY_TEST(MemoryArena##__subFixture, __name)

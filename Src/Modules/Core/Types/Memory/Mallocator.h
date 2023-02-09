@@ -28,19 +28,19 @@ namespace Savanna
         {}
 
         // A converting copy constructor:
-        template<class U> Mallocator(const Mallocator<U>&) SAVANNA_NO_EXCEPT {}
-        template<class U> bool operator==(const Mallocator<U>&) const SAVANNA_NO_EXCEPT
+        template<class U> Mallocator(const Mallocator<U>&) SAVANNA_NOEXCEPT {}
+        template<class U> bool operator==(const Mallocator<U>&) const SAVANNA_NOEXCEPT
         {
             return true;
         }
 
-        template<class U> bool operator!=(const Mallocator<U>&) const SAVANNA_NO_EXCEPT
+        template<class U> bool operator!=(const Mallocator<U>&) const SAVANNA_NOEXCEPT
         {
             return false;
         }
 
         SAVANNA_NO_DISCARD inline T* allocate(const size_t n) const;
 
-        inline void deallocate(T* const p, size_t) const SAVANNA_NO_EXCEPT;
+        inline void deallocate(T* const p, size_t) const SAVANNA_NOEXCEPT;
     };
 } // namespace Savanna

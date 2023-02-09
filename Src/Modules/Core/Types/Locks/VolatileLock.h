@@ -22,7 +22,7 @@ namespace Savanna
          */
         void Acquire()
         {
-            SAVANNA_ASSERT(!m_Locked);
+            SAVANNA_ASSERT(!m_Locked, "Volatile lock is already acquired. Critical section integrity is compromised.");
             m_Locked = true;
         }
 
@@ -31,7 +31,7 @@ namespace Savanna
          */
         void Release()
         {
-            SAVANNA_ASSERT(m_Locked);
+            SAVANNA_ASSERT(m_Locked, "Volatile lock is already released. Critical section integrity is compromised.");
             m_Locked = false;
         }
     };

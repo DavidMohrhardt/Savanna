@@ -8,7 +8,6 @@
  */
 #include "AllocatorTestUtils.h"
 
-#include <Memory/MemoryArena.h>
 #include <Types/Memory/FreeListAllocator.h>
 #include <memory>
 
@@ -20,6 +19,7 @@
 
 namespace Savanna::Core::Tests
 {
+
     class FreeListAllocatorTest : public ::testing::Test
     {
     protected:
@@ -83,7 +83,7 @@ namespace Savanna::Core::Tests
     DECLARE_FREE_LIST_TEST_F(EnsureInitializationIsCorrect)
     {
         EXPECT_EQ(m_Allocator.GetSize(), GetSize());
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
         EXPECT_EQ(m_Allocator.GetSize(), GetSize());
     }
 
@@ -110,13 +110,13 @@ namespace Savanna::Core::Tests
         size_t size = 8;
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
-        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
 
         void* result2 = nullptr;
         EXPECT_NO_THROW(Allocate(size, alignment, &result2));
         EXPECT_NE(result2, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
     }
 
     DECLARE_FREE_LIST_TEST_F(DoesAllocatorProperlyRunOutOfMemoryWithAlignedPointers)
@@ -126,10 +126,10 @@ namespace Savanna::Core::Tests
         size_t size = 512;
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
 
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
         EXPECT_EQ(result, nullptr);
     }
 
@@ -149,11 +149,11 @@ namespace Savanna::Core::Tests
         size_t size = 512;
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
 
         EXPECT_NO_THROW(Deallocate(result, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
-        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
     }
 
     DECLARE_FREE_LIST_TEST_F(AllocateThenDeallocateInReverseOrder)
@@ -163,27 +163,27 @@ namespace Savanna::Core::Tests
         size_t size = 8;
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
-        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
 
         void* result2 = nullptr;
         EXPECT_NO_THROW(Allocate(size, alignment, &result2));
         EXPECT_NE(result2, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
 
         void* result3 = nullptr;
         EXPECT_NO_THROW(Allocate(size, alignment, &result3));
         EXPECT_NE(result3, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 4 + size * 3);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 4 + size * 3);
 
         EXPECT_NO_THROW(Deallocate(result3, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
 
         EXPECT_NO_THROW(Deallocate(result2, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
 
         EXPECT_NO_THROW(Deallocate(result, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
     }
 
     DECLARE_FREE_LIST_TEST_F(AllocateThenDeallocateInAllocationOrder)
@@ -193,27 +193,27 @@ namespace Savanna::Core::Tests
         size_t size = 8;
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
-        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
 
         void* result2 = nullptr;
         EXPECT_NO_THROW(Allocate(size, alignment, &result2));
         EXPECT_NE(result2, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
 
         void* result3 = nullptr;
         EXPECT_NO_THROW(Allocate(size, alignment, &result3));
         EXPECT_NE(result3, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 4 + size * 3);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 4 + size * 3);
 
         EXPECT_NO_THROW(Deallocate(result, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 3 + size * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
 
         EXPECT_NO_THROW(Deallocate(result2, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader) * 2 + size);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
 
         EXPECT_NO_THROW(Deallocate(result3, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
     }
 
     DECLARE_FREE_LIST_TEST_F(AllocateAndDeallocateAndAllocate)
@@ -223,18 +223,18 @@ namespace Savanna::Core::Tests
         size_t size = 512;
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
 
         EXPECT_NO_THROW(Deallocate(result, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
-        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
 
         EXPECT_NO_THROW(Allocate(size, alignment, &result));
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkHeader) * 2);
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
 
         EXPECT_NO_THROW(Deallocate(result, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkHeader));
-        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkHeader), reinterpret_cast<uintptr_t>(result));
+        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
+        EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
     }
 } // namespace Savanna::Tests::Memory::Allocators

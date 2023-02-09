@@ -56,7 +56,7 @@ namespace Savanna::Gfx::Vk
     void Renderer::Initialize(const RendererCreateInfo* const pCreateInfo)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Initialize(const RendererCreateInfo* const pCreateInfo));
-        SAVANNA_ASSERT(pCreateInfo != nullptr && "pCreateInfo is nullptr!");
+        SAVANNA_ASSERT(pCreateInfo != nullptr, "pCreateInfo is nullptr!");
         if (!m_Context.IsValid()) SAVANNA_BRANCH_LIKELY
         {
             m_Context = Context(pCreateInfo);

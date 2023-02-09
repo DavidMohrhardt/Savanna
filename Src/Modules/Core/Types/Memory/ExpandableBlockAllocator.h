@@ -19,6 +19,8 @@
 #include "MemoryBuffer.h"
 #include "MemoryChunkDescriptors.h"
 
+#include "Types/Containers/Arrays/ArraySlice.h"
+
 #include <vector>
 
 namespace Savanna
@@ -41,7 +43,7 @@ namespace Savanna
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
         void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
 
-        SAVANNA_NO_DISCARD ArraySlice GetReadonlyMemoryView(const size_t& start, const size_t& length) const;
+        // SAVANNA_NO_DISCARD ArraySlice<byte> GetReadonlyMemoryView(const size_t& start, const size_t& length) const;
 
     private:
         MemoryChunkDescriptor* AllocateAdditionalBuffers(size_t minimumSize);

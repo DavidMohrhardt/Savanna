@@ -25,20 +25,10 @@
 
 #if ENABLE_SAVANNA_ASSERTIONS
 
-#define SAVANNA_ASSERT(expression) assert(expression)
+#define SAVANNA_ASSERT(expression, msg) assert(expression && msg)
 
 #else // ENABLE_SAVANNA_ASSERTIONS
 
-#define SAVANNA_ASSERT(expression)
+#define SAVANNA_ASSERT(expression, msg)
 
 #endif // end ENABLE_SAVANNA_ASSERTIONS
-
-#if SAVANNA_ENFORCE_MEMORY_SAFETY
-
-#define SAVANNA_MEMORY_SAFETY_ASSERT(condition, message) assert(condition && "MemorySafetyAssertion::" message);
-
-#else
-
-#define SAVANNA_MEMORY_SAFETY_ASSERT(condition, message)
-
-#endif
