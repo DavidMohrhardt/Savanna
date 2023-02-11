@@ -11,6 +11,21 @@
 #include "PrimitiveTypes.h"
 #include "Utilities/Macros/CppTypeDefs.h"
 
+typedef union se_float16
+{
+    se_uint8   m_UBytes[2];
+    se_uint16  m_UInt16;
+    se_int8    m_Bytes[2];
+    se_int16   m_Int16;
+
+    struct
+    {
+        se_uint16 m_Sign : 1;
+        se_uint16 m_Exponent : 5;
+        se_uint16 m_Mantissa : 10;
+    }
+} se_float16;
+
 /**
  * @brief TODO @DavidMohrhardt Document
  *
@@ -24,6 +39,13 @@ typedef union se_float32
     se_int16    m_Halfs[2];
     se_int32    m_AsInt;
     float       m_SinglePrecision;
+
+    struct
+    {
+        se_uint32 m_Sign : 1;
+        se_uint32 m_Exponent : 8;
+        se_uint32 m_Mantissa : 23;
+    };
 } se_float32;
 
 /**
@@ -47,6 +69,13 @@ typedef union se_float64
     se_int64   m_Int64;
     float      m_SinglePrecision[2];
     double     m_DoublePrecision;
+
+    struct
+    {
+        se_uint64 m_Sign : 1;
+        se_uint64 m_Exponent : 11;
+        se_uint64 m_Mantissa : 52;
+    };
 } se_float64;
 typedef se_float64 se_double64;
 

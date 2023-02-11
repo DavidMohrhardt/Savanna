@@ -30,13 +30,6 @@ namespace Savanna
             SAVANNA_ASSERT(size > 0, "ArraySlice: size must be greater than 0.");
         }
 
-        // TODO @DavidMohrhardt consider disallowing copy and move construction.
-        ArraySlice(const ArraySlice&) = default;
-        ArraySlice(ArraySlice&&) = default;
-        ArraySlice& operator=(const ArraySlice&) = default;
-        ArraySlice& operator=(ArraySlice&&) = default;
-        ~ArraySlice() = default;
-
     public:
         void CopyTo(T* pDestination, const size_t& start = 0, const size_t& length = 1) const
         {

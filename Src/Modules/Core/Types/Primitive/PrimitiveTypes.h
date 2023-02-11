@@ -21,38 +21,61 @@ typedef int64_t             se_int64;
 typedef intptr_t            se_intptr;
 typedef uintptr_t           se_uintptr;
 
-typedef se_byte           s_byte;
-typedef se_ubyte          s_ubyte;
+typedef size_t              se_size;
 
-typedef se_uint8          s_uint8;
-typedef se_uint16         s_uint16;
-typedef se_uint32         s_uint32;
-typedef se_uint64         s_uint64;
-typedef se_int8           s_int8;
-typedef se_int16          s_int16;
-typedef se_int32          s_int32;
-typedef se_int64          s_int64;
+typedef se_int16            se_half_word;
+typedef se_uint16           se_uhalf_word;
+typedef se_int32            se_word;
+typedef se_uint32           se_uword;
+typedef se_int64            se_double_word;
+typedef se_uint64           se_udouble_word;
 
-typedef se_intptr         s_intptr;
-typedef se_uintptr        s_uintptr;
+// Union quadword
+typedef union se_quadword
+{
+    se_byte         bytes[16];
+    se_ubyte        ubytes[16];
+
+    se_half_word    halfwords[8];
+    se_uhalf_word   uhalfwords[8];
+
+    se_word         words[4];
+    se_uword        uwords[4];
+
+    se_double_word  dwords[2];
+    se_udouble_word udwords[2];
+} se_quadword;
 
 #if __cplusplus
 namespace Savanna
 {
-    // Namespaced typedefs
-    typedef se_byte       byte;
-    typedef se_ubyte      ubyte;
+    using byte = se_byte;
+    using ubyte = se_ubyte;
 
-    typedef se_uint8      uint8;
-    typedef se_uint16     uint16;
-    typedef se_uint32     uint32;
-    typedef se_uint64     uint64;
-    typedef se_int8       int8;
-    typedef se_int16      int16;
-    typedef se_int32      int32;
-    typedef se_int64      int64;
+    using uint8 = se_uint8;
+    using uint16 = se_uint16;
+    using uint32 = se_uint32;
+    using uint64 = se_uint64;
+    using int8 = se_int8;
+    using int16 = se_int16;
+    using int32 = se_int32;
+    using int64 = se_int64;
 
-    typedef se_intptr     intptr;
-    typedef se_uintptr    uintptr;
+    using half_word = se_half_word;
+    using uhalf_word = se_uhalf_word;
+
+    using word = se_word;
+    using uword = se_uword;
+
+    using double_word = se_double_word;
+    using udouble_word = se_udouble_word;
+
+    using quad_word = se_quadword;
+    using uquad_word = se_quadword;
+
+    using intptr = se_intptr;
+    using uintptr = se_uintptr;
+
+    using size = se_size;
 }
 #endif

@@ -25,6 +25,22 @@
 
 namespace Savanna
 {
+    // class VirtualMemoryTable : public NonCopyable, public Immovable
+    // {
+    // private:
+    //     std::vector<MemoryBuffer> m_MemoryPoolContainer;
+    //     MemoryChunkDescriptor* m_Head = nullptr;
+    //     MemoryChunkDescriptor* m_Tail = nullptr;
+
+    // public:
+    //     Vmemory() = default;
+    //     Vmemory();
+    //     ~Vmemory();
+
+    // public:
+
+    // }
+
     class ExpandableBlockAllocator : public Allocator, NonCopyable
     {
     private:

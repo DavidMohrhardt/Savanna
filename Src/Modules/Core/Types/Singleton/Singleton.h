@@ -20,6 +20,8 @@ namespace Savanna
         inline static std::shared_ptr<T> s_pInstance = std::shared_ptr<T>(nullptr);
 
     public:
+        static std::shared_ptr<T> Get();
+
         static void Register(std::shared_ptr<T> spInstance)
         {
             if (s_pInstance == nullptr)
@@ -29,13 +31,13 @@ namespace Savanna
         }
 
         template <typename... Args>
-        static T* Construct(Args&&... args)
+        static std::shared_ptr<T> Construct(Args&&... args)
         {
             if (s_pInstance == nullptr)
             {
                 s_pInstance = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
             }
-            return s_pInstance.get();
+            return Get();
         }
 
         static std::shared_ptr<T> Get()
