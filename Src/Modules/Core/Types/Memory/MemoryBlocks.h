@@ -302,6 +302,7 @@ DECLARE_UNIFIED_PAGE_STRUCT(
 );
 
 typedef void* (*se_PageAllocFunc)(size_t count);
+DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(se_PageAllocFunc, PageAllocFunc);
 
 se_PageAllocFunc GetPageAllocFuncForSize(size_t size);
 

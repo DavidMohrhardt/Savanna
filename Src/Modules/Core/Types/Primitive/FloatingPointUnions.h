@@ -23,7 +23,7 @@ typedef union se_float16
         se_uint16 m_Sign : 1;
         se_uint16 m_Exponent : 5;
         se_uint16 m_Mantissa : 10;
-    }
+    };
 } se_float16;
 
 /**

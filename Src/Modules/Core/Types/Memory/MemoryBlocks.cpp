@@ -1,6 +1,8 @@
 #include "MemoryBlocks.h"
 
-#include <unordered_map>
+#include <map>
+
+#if defined(__cplusplus)
 
 namespace Savanna
 {
@@ -11,9 +13,9 @@ namespace Savanna
     }
 
     // Create functions for allocating unified page memory
-    constexpr std::unordered_map<size_t, PageAllocFunc> m_PageAllocFuncs {
-        #define PAGE_ALLOC_FUNC_ENTRY(pageSize) { pageSize, AllocatePages<UnifiedPage##pageSizeKiB> }
-        PAGE_ALLOC_FUNC_ENTRY(1),
+    const std::map<size_t, PageAllocFunc> k_PageAllocFuncs {
+        #define PAGE_ALLOC_FUNC_ENTRY(pageSize) { pageSize, AllocatePages<UnifiedPage##pageSize##KiB> }
+        { 1, AllocatePages<se_Page1KiB> },
         PAGE_ALLOC_FUNC_ENTRY(2),
         PAGE_ALLOC_FUNC_ENTRY(4),
         PAGE_ALLOC_FUNC_ENTRY(8),
@@ -34,8 +36,8 @@ namespace Savanna
 
 se_PageAllocFunc GetPageAllocFuncForSize(size_t size)
 {
-    auto it = m_PageAllocFuncs.find(size);
-    if (it != m_PageAllocFuncs.end())
+    auto it = Savanna::k_PageAllocFuncs.find(size);
+    if (it != Savanna::k_PageAllocFuncs.end())
     {
         return it->second;
     }

@@ -50,17 +50,26 @@ namespace Savanna
         *ppOutTail = pBufferTail;
     }
 
-    ExpandableBlockAllocator::ExpandableBlockAllocator(size_t initialBufferCount, size_t bufferBlockSize)
+    ExpandableBlockAllocator::ExpandableBlockAllocator(
+        size_t initialBufferCount,
+        size_t bufferBlockSize,
+        bool contiguous /*= true*/)
         : m_BufferBlockSize(bufferBlockSize)
         , m_MemoryPoolContainer(initialBufferCount)
         , m_Head(nullptr)
         , m_Tail(nullptr)
     {
+        // If the buffers are contiguous, we need to allocate a single buffer that is large enough to hold all the buffers
+        if (contiguous)
+        {
+            bufferBlockSize *= initialBufferCount;
+            initialBufferCount = 1;
+        }
+
+        MemoryChunkDescriptor *pBufferHead, *pBufferTail;
         for (int i = 0; i < initialBufferCount; ++i)
         {
-            MemoryChunkDescriptor* pBufferHead, *pBufferTail;
-            MemoryBuffer buffer;
-            CreateBufferAndInitHeaders(m_BufferBlockSize, buffer, &pBufferHead, &pBufferTail);
+            CreateBufferAndInitHeaders(bufferBlockSize, m_MemoryPoolContainer[i], &pBufferHead, &pBufferTail);
 
             if (i == 0)
             {
@@ -72,6 +81,7 @@ namespace Savanna
             }
 
             m_Tail = pBufferTail;
+            m_AllocatedBytes += sizeof(MemoryChunkDescriptor) * 2;
         }
     }
 
@@ -104,7 +114,7 @@ namespace Savanna
         {
             forwardAdjustment = GetForwardAlignment(&current[1], alignment);
             requiredSize = size + forwardAdjustment;
-            if (current->m_Size >= requiredSize
+             if (current->m_Size >= requiredSize
                 && (bestFit == nullptr || current->m_Size < bestFitSize))
             {
                 bestFit = current;
@@ -117,7 +127,7 @@ namespace Savanna
                 }
             }
 
-            if (current->m_Next == nullptr) SAVANNA_BRANCH_HINT(unlikely)
+            if (bestFit == nullptr && current->m_Next == nullptr) SAVANNA_BRANCH_HINT(unlikely)
             {
                 current->m_Next = AllocateAdditionalBuffers(requiredSize);
             }
@@ -226,15 +236,14 @@ namespace Savanna
 
     MemoryChunkDescriptor* ExpandableBlockAllocator::AllocateAdditionalBuffers(size_t minimumSize)
     {
-        if (minimumSize < m_BufferBlockSize)
+        if (m_BufferBlockSize < minimumSize)
         {
             m_BufferBlockSize = NextPowerOfTwo(minimumSize);
         }
 
         MemoryChunkDescriptor* pBufferHead, *pBufferTail;
         m_MemoryPoolContainer.emplace_back(MemoryBuffer());
-        MemoryBuffer& buffer = m_MemoryPoolContainer.back();
-        CreateBufferAndInitHeaders(m_BufferBlockSize, buffer, &pBufferHead, &pBufferTail);
+        CreateBufferAndInitHeaders(m_BufferBlockSize, m_MemoryPoolContainer[m_MemoryPoolContainer.size() - 1], &pBufferHead, &pBufferTail);
 
         m_Tail->m_Next = pBufferHead;
         m_Tail = pBufferTail;

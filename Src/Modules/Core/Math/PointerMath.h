@@ -14,19 +14,19 @@
 
 inline size_t savanna_get_pointer_difference(const void* lhs, const void* rhs)
 {
-    return ((s_uintptr)lhs) > ((s_uintptr)rhs)
-        ? (size_t)((s_uintptr)lhs - (s_uintptr)rhs)
-        : (size_t)((s_uintptr)rhs - (s_uintptr)lhs);
+    return ((se_uintptr)lhs) > ((se_uintptr)rhs)
+        ? (size_t)((se_uintptr)lhs - (se_uintptr)rhs)
+        : (size_t)((se_uintptr)rhs - (se_uintptr)lhs);
 }
 
 inline size_t savanna_ptr_add(const void* const ptr, const size_t byteOffset)
 {
-    return (size_t)((s_uintptr)ptr + byteOffset);
+    return (size_t)((se_uintptr)ptr + byteOffset);
 }
 
 inline size_t savanna_ptr_sub(const void* const ptr, const size_t byteOffset)
 {
-    return (size_t)((s_uintptr)ptr - byteOffset);
+    return (size_t)((se_uintptr)ptr - byteOffset);
 }
 
 #if __cplusplus
