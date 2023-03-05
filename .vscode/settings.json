@@ -81,7 +81,11 @@
         "typeindex": "cpp",
         "savannaexception.h": "c",
         "queue": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "bitset": "cpp",
+        "random": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     },
     "doxdocgen.generic.authorName": "David Mohrhardt",
     "doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

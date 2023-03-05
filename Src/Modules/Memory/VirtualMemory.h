@@ -38,20 +38,26 @@ namespace Savanna
         virtual size_t GetPageSize() = 0;
     };
 
-    template <typename PAGE, size SIZE>
-    class PageVirtualMemorySpace : public IVirtualMemorySpace
+    template <size POOL_SIZE, size SIZE>
+    class VirtualPageMemorySpace : public IVirtualMemorySpace
     {
-        constexpr size k_PageSize = SIZE;
     private:
-        std::unordered_map<int32_t, std::unique_ptr<PAGE>> m_PageTable;
-        std::vector<std::unique_ptr<PAGE>> m_PagePool;
+        friend class VirtualMemoryManager;
+
+        constexpr size k_PageSize = SIZE;
+
+        struct Page
+        {
+            byte m_Data[SIZE];
+        };
+
+    private:
+        Page m_PagePool[POOL_SIZE];
+
+    private:
+        VirtualPageMemorySpace() {}
 
     public:
-        PageVirtualMemorySpace()
-        {
-            m_PagePool.reserve(100);
-        }
-
         void* Allocate(size_t size, size_t alignment) override
         {
             if (size > k_PageSize)
@@ -76,12 +82,12 @@ namespace Savanna
             m_PagePool.emplace_back(std::make_unique<PAGE>(reinterpret_cast<PAGE*>(ptr)));
         }
 
-        size_t GetAllocatedPageCount() override
+        const size_t GetAllocatedPageCount() const override
         {
             return m_PagePool.size();
         }
 
-        size_t GetPageSize() override
+        const inline size_t GetPageSize() const override
         {
             return k_PageSize;
         }
@@ -92,32 +98,21 @@ namespace Savanna
     public:
         template <typename T, typename... Args>
         requires std::derived_from<T, IVirtualMemorySpace>
-        static void Construct(Args... args)
+        inline void InitializeIVirtualMemorySpace(Args... args)
         {
-            auto pVirtualMemorySpace = new T(std::forward<Args>(args)...);
-            Singleton<VirtualMemoryManager>::Construct(pVirtualMemorySpace);
+            m_upVirtualMemorySpace = std::make_unique<T>(std::forward<Args>(args)...);
         }
 
-        static void Destroy()
-        {
-            Singleton<VirtualMemoryManager>::Destroy();
-            g_VirtualMemorySpace = nullptr;
-        }
-
-        static VirtualMemoryManager& GetInstance()
-        {
-            return Singleton<VirtualMemoryManager>::GetInstance();
-        }
     private:
         std::unique_ptr<IVirtualMemorySpace> m_upVirtualMemorySpace = nullptr;
-        VirtualMemoryManager(IVirtualMemorySpace* pVirtualMemorySpace);
 
     public:
+        VirtualMemoryManager();
         ~VirtualMemoryManager();
 
         void* Allocate(size_t size, size_t alignment);
         void Deallocate(void* ptr);
         void* GetAllocatedPageCount();
-        size_t GetPageSize();
+        inline const size_t GetPageSize() const { return m_upVirtualMemorySpace->GetPageSize(); }
     };
 } // namespace Savanna

@@ -85,13 +85,7 @@ namespace Savanna
         }
     }
 
-    ExpandableBlockAllocator::~ExpandableBlockAllocator()
-    {
-        for (MemoryBuffer& buffer : m_MemoryPoolContainer)
-        {
-            buffer.~MemoryBuffer();
-        }
-    }
+    ExpandableBlockAllocator::~ExpandableBlockAllocator() {}
 
     void* ExpandableBlockAllocator::alloc(const size_t& size, const size_t& alignment)
     {
