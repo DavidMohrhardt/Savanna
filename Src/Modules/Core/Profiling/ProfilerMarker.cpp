@@ -17,8 +17,8 @@ namespace Savanna
     inline auto Now() SAVANNA_NOEXCEPT { return std::chrono::high_resolution_clock::now(); }
 
     ProfilerMarker::ProfilerMarker(FixedString256&& markerName)
-        : m_ProfilerMarkerName(std::move(markerName))
-        , m_Sampling(false)
+        : m_Sampling(false)
+        , m_ProfilerMarkerName(std::move(markerName))
         , m_StartTime()
         , m_EndTime()
     {}

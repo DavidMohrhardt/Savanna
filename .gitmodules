@@ -1,3 +1,6 @@
-[submodule "External/Submodules/glslang"]
-	path = External/Submodules/glslang
+[submodule "Src/External/Vulkan-Headers"]
+	path = Src/External/Vulkan-Headers
+	url = git@github.com:KhronosGroup/Vulkan-Headers.git
+[submodule "Src/External/glslang"]
+	path = Src/External/glslang
 	url = git@github.com:KhronosGroup/glslang.git
