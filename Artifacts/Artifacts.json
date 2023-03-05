@@ -45,14 +45,5 @@
             "python-3.10.6-embed-amd64.zip"
         ],
         "OutputDirectory": "python"
-    },
-    {
-        "Name": "Vulkan",
-        "Version": "latest",
-        "URL": "https://sdk.lunarg.com/sdk/download/latest/windows",
-        "FileNames": [
-            "vulkan-runtime-components.zip"
-        ],
-        "OutputDirectory": "vulkan"
     }
 ]
