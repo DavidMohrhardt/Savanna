@@ -2,11 +2,11 @@
  * @file ExpandableBlockAllocatorTest.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief TODO @DavidMohrhardt Document
- * @version 0.1
+ * @version 0.0.1
  * @date 2022-08-08
  *
  */
-#include "AllocatorTestUtils.h"
+#include "AllocatorUnitTestWrapper.h"
 
 #include <Types/Memory/ExpandableBlockAllocator.h>
 #include <memory>
@@ -19,49 +19,50 @@
 
 namespace Savanna::Core::Tests
 {
-
     class ExpandableBlockAllocatorTest : public ::testing::Test
     {
     protected:
+        AllocatorUnitTestWrapper<ExpandableBlockAllocator>* m_WrappedAllocator;
+
         ExpandableBlockAllocatorTest()
-            : m_Allocator(1, 1024)
         {
         }
 
-        ~ExpandableBlockAllocatorTest() override {}
+        ~ExpandableBlockAllocatorTest() override = default;
 
         // If the constructor and destructor are not enough for setting up
         // and cleaning up each test, you can define the following methods:
-
         void SetUp() override
         {
-            // For Universal Setup
+            // Code here will be called immediately after the constructor (right
+            // before each test).
+            m_WrappedAllocator = new AllocatorUnitTestWrapper<ExpandableBlockAllocator>(1, 1024);
         }
 
         void TearDown() override
         {
             // Code here will be called immediately after each test (right
             // before the destructor).
+            delete m_WrappedAllocator;
         }
 
-        void Allocate(size_t size, size_t alignment, void** out_ptr)
+        constexpr size_t GetSizeForAllocator() const { return 1024; }
+
+        const uintptr GetRootAsUIntPtr() const
         {
-            *out_ptr = m_Allocator.alloc(size, alignment);
+            return reinterpret_cast<uintptr>(m_WrappedAllocator->GetRoot());
         }
 
-        void Deallocate(void* ptr, const size_t alignment)
+        const int GetSize() const
         {
-            m_Allocator.free(ptr, alignment);
+            return m_WrappedAllocator->GetSize();
         }
-
-    protected:
-        ExpandableBlockAllocator m_Allocator;
     };
 
     DECLARE_EXPANDABLE_BLOCK_TEST_F(EnsureValidAllocationDoesNotReturnNullptr)
     {
         void* ptr = nullptr;
-        Allocate(1, 1, &ptr);
+        ptr = m_WrappedAllocator->alloc(1, 1);
         EXPECT_NE(ptr, nullptr);
     }
 
@@ -70,7 +71,7 @@ namespace Savanna::Core::Tests
         void* result = nullptr;
         size_t alignment = 8;
         size_t size = 2048;
-        Allocate(size, alignment, &result);
+        result = m_WrappedAllocator->alloc(size, alignment);
         EXPECT_NE(result, nullptr);
     }
 
@@ -79,14 +80,14 @@ namespace Savanna::Core::Tests
         void* result = nullptr;
         size_t alignment = 8;
         size_t size = 8;
-        EXPECT_NO_THROW(Allocate(size, alignment, &result));
+        result = m_WrappedAllocator->alloc(size, alignment);
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size);
+        EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size);
 
         void* result2 = nullptr;
-        EXPECT_NO_THROW(Allocate(size, alignment, &result2));
+        result2 = m_WrappedAllocator->alloc(size, alignment);
         EXPECT_NE(result2, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 4 + size * 2);
+        EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 4 + size * 2);
     }
 
     DECLARE_EXPANDABLE_BLOCK_TEST_F(AllocateAndDeallocateBasicTest)
@@ -94,89 +95,79 @@ namespace Savanna::Core::Tests
         void* result = nullptr;
         size_t alignment = 8;
         size_t size = 512;
-        EXPECT_NO_THROW(Allocate(size, alignment, &result));
+        result = m_WrappedAllocator->alloc(size, alignment);
         EXPECT_NE(result, nullptr);
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 3);
+        EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), size + sizeof(MemoryChunkDescriptor) * 3);
 
-        EXPECT_NO_THROW(Deallocate(result, alignment));
-        EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2);
+        m_WrappedAllocator->free(result, alignment);
+        EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2);
     }
 
-    // DECLARE_EXPANDABLE_BLOCK_TEST_F(AllocateThenDeallocateInReverseOrder)
-    // {
-    //     void* result = nullptr;
-    //     size_t alignment = 8;
-    //     size_t size = 8;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result));
-    //     EXPECT_NE(result, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+    DECLARE_EXPANDABLE_BLOCK_TEST_F(AllocateThenDeallocateInReverseOrder)
+    {
+        constexpr size_t size = 8;
+        constexpr size_t alignment = 8;
+        constexpr uint32 initialMemoryChunkDescCount = 2;
 
-    //     void* result2 = nullptr;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result2));
-    //     EXPECT_NE(result2, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
+        constexpr size_t sizeOfOneAllocation = size + sizeof(MemoryChunkDescriptor);
+        size_t totalAllocations = m_WrappedAllocator->GetSize() / sizeOfOneAllocation;
 
-    //     void* result3 = nullptr;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result3));
-    //     EXPECT_NE(result3, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 4 + size * 3);
+        size_t originalSize = m_WrappedAllocator->GetSize();
 
-    //     EXPECT_NO_THROW(Deallocate(result3, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
+        void** ptrs = new void*[totalAllocations];
+        for (uint32 i = 0; i < totalAllocations; ++i)
+        {
+            ptrs[i] = m_WrappedAllocator->alloc(size, alignment);
+            EXPECT_NE(ptrs[i], nullptr);
+            auto totalMemoryChunkDescCount = (i + 1) + initialMemoryChunkDescCount;
+            EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), (size * (i + 1)) + sizeof(MemoryChunkDescriptor) * (totalMemoryChunkDescCount));
+        }
 
-    //     EXPECT_NO_THROW(Deallocate(result2, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+        auto totalBytes = m_WrappedAllocator->GetAllocatedBytes();
+        while (totalAllocations > 0)
+        {
+            totalBytes -= size;
+            totalBytes -= sizeof(MemoryChunkDescriptor);
+            m_WrappedAllocator->free(ptrs[(--totalAllocations) - initialMemoryChunkDescCount], alignment);
+            EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), totalBytes);
+        }
 
-    //     EXPECT_NO_THROW(Deallocate(result, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
-    // }
+        EXPECT_EQ(m_WrappedAllocator->GetSize(), originalSize);
 
-    // DECLARE_EXPANDABLE_BLOCK_TEST_F(AllocateThenDeallocateInAllocationOrder)
-    // {
-    //     void* result = nullptr;
-    //     size_t alignment = 8;
-    //     size_t size = 8;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result));
-    //     EXPECT_NE(result, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+        delete[] ptrs;
+    }
 
-    //     void* result2 = nullptr;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result2));
-    //     EXPECT_NE(result2, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
+    DECLARE_EXPANDABLE_BLOCK_TEST_F(AllocateThenDeallocateInAllocationOrder)
+    {
+        constexpr size_t size = 8;
+        constexpr size_t alignment = 8;
+        constexpr uint32 initialMemoryChunkDescCount = 2;
 
-    //     void* result3 = nullptr;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result3));
-    //     EXPECT_NE(result3, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 4 + size * 3);
+        constexpr size_t sizeOfOneAllocation = size + sizeof(MemoryChunkDescriptor);
+        size_t totalAllocations = m_WrappedAllocator->GetSize() / sizeOfOneAllocation;
 
-    //     EXPECT_NO_THROW(Deallocate(result, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 3 + size * 2);
+        size_t originalSize = m_WrappedAllocator->GetSize();
 
-    //     EXPECT_NO_THROW(Deallocate(result2, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor) * 2 + size);
+        void** ptrs = new void*[totalAllocations];
+        for (uint32 i = 0; i < totalAllocations; ++i)
+        {
+            ptrs[i] = m_WrappedAllocator->alloc(size, alignment);
+            EXPECT_NE(ptrs[i], nullptr);
+            auto totalMemoryChunkDescCount = (i + 1) + initialMemoryChunkDescCount;
+            EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), (size * (i + 1)) + sizeof(MemoryChunkDescriptor) * (totalMemoryChunkDescCount));
+        }
 
-    //     EXPECT_NO_THROW(Deallocate(result3, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
-    // }
+        auto totalBytes = m_WrappedAllocator->GetAllocatedBytes();
+        for (uint32 i = 0; i < totalAllocations; ++i)
+        {
+            totalBytes -= size;
+            totalBytes -= sizeof(MemoryChunkDescriptor);
+            m_WrappedAllocator->free(ptrs[i], alignment);
+            EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), totalBytes);
+        }
 
-    // DECLARE_EXPANDABLE_BLOCK_TEST_F(AllocateAndDeallocateAndAllocate)
-    // {
-    //     void* result = nullptr;
-    //     size_t alignment = 8;
-    //     size_t size = 512;
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result));
-    //     EXPECT_NE(result, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
+        EXPECT_EQ(m_WrappedAllocator->GetSize(), originalSize);
 
-    //     EXPECT_NO_THROW(Deallocate(result, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
-
-    //     EXPECT_NO_THROW(Allocate(size, alignment, &result));
-    //     EXPECT_NE(result, nullptr);
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), 512 + sizeof(MemoryChunkDescriptor) * 2);
-
-    //     EXPECT_NO_THROW(Deallocate(result, alignment));
-    //     EXPECT_EQ(m_Allocator.GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
-    // }
+        delete[] ptrs;
+    }
 } // namespace Savanna::Tests::Memory::Allocators

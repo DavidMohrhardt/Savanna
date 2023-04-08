@@ -59,7 +59,7 @@ namespace Savanna
         , m_Head(nullptr)
         , m_Tail(nullptr)
     {
-        // If the buffers are contiguous, we need to allocate a single buffer that is large enough to hold all the buffers
+        // If the buffers are initially contiguous, we need to allocate a single buffer that is large enough to hold all the buffers
         if (contiguous)
         {
             bufferBlockSize *= initialBufferCount;
