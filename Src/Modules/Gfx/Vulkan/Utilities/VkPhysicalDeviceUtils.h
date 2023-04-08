@@ -6,7 +6,7 @@
 #include <vulkan/vulkan.h>
 
 // Savanna Includes
-#include <Types/Primitive/PrimitiveTypes.h>
+#include <Types/Primitive/PrimitiveTypes.inl>
 
 // Module includes
 #include "VkPhysicalDeviceDescriptor.h"

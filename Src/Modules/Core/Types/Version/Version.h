@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 
 typedef struct se_Version
 {

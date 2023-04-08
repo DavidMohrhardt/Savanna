@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(glfw glm)
 
 FIND_VULKAN_OR_FAIL()
 
-set(core_libs SavannaVk SavannaIO SavannaCore)
+set(core_libs SavannaApplication SavannaVk SavannaIO SavannaCore)
 set(core_include_dirs ${CMAKE_SOURCE_DIR}/Modules/Core/ ${CMAKE_SOURCE_DIR}/Modules/IO ${CMAKE_SOURCE_DIR}/Modules/Gfx/Vulkan/)
 set(external_libs glfw glm)
 set(external_include_dirs)

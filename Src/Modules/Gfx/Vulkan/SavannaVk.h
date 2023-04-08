@@ -15,7 +15,3 @@ namespace Savanna::Gfx::Vulkan
 
 } // namespace Savanna::Gfx::Vulkan
 #endif // end __cplusplus
-
-// typedef VkHandle (*SavannaVkFuncOverridePtr_t)();
-
-// SAVANNA_EXPORT(void) savanna_rendering_vulkan_RegisterVkFunctionPtr(SavannaVkFuncOverridePtr_t functionPointer);

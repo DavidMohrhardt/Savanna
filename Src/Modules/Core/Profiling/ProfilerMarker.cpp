@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "Types/Strings/CRC32HashString.h"
+#include "Types/Strings/CompileTimeHashString.h"
 
 #include "Utilities/Console.h"
 #include "Utilities/SavannaCoding.h"

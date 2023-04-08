@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 #include "Types/Hashables/IHashable.h"
 
 namespace Savanna
@@ -21,8 +21,29 @@ namespace Savanna
      */
     class IHashString : public IHashable
     {
+        using cstr = const char*;
     public:
-        static SAVANNA_CONSTEXPR const char* k_None = "<None>";
-        static SAVANNA_CONSTEXPR int32 k_NoneHash = 0;
+        static SAVANNA_CONSTEXPR cstr k_None = "<None>";
     };
 } // namespace Savanna
+
+namespace std
+{
+    template<>
+    struct hash<Savanna::IHashable>
+    {
+        size_t operator()(const Savanna::IHashable* pHashable) const
+        {
+            return pHashable->GetHash();
+        }
+    };
+
+    template<>
+    struct hash<Savanna::IHashString>
+    {
+        size_t operator()(const Savanna::IHashString* pHashString) const
+        {
+            return pHashString->GetHash();
+        }
+    };
+}

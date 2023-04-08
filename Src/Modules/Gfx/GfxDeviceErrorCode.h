@@ -1,12 +1,12 @@
 #pragma once
 
-namespace Savanna
+namespace Savanna::Gfx
 {
-    enum GfxDeviceErrCode
+    enum DeviceErrorCode
     {
         ErrCodeInvalid,
         ErrCodeSuccess,
         ErrCodeUnableToInit,
         ErrCodeBadState,
     };
-} // namespace Savanna
+} // namespace Savanna::Gfx

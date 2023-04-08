@@ -65,6 +65,8 @@
     { \
     public: \
         __cName m_Data; \
+        __cppName(const __cName& data) : m_Data(data) {} \
+        __cppName(__cName&& data) : m_Data(std::move(data)) {} \
         __GEN_COMMON_DEFAULT_CONSTRUCTOR_AND_DESTRUCTOR(__cppName) \
         __GEN_COMMON_COPY_CONSTRUCTORS(__cppName) \
         __GEN_COMMON_MOVE_CONSTRUCTORS(__cppName) \

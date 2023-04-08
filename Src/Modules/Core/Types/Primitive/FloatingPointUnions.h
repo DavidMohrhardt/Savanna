@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "PrimitiveTypes.h"
+#include "PrimitiveTypes.inl"
 #include "Utilities/Macros/CppTypeDefs.h"
 
 typedef union se_float16

@@ -12,7 +12,7 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-DEFINE_SAVANNA_ENUM(Savanna::Gfx, seGfxApi_t, GfxApi, uint32_t,
+DEFINE_SAVANNA_ENUM(Savanna::Gfx, se_GfxApi_t, GfxApi, se_uint32,
     kSavannaGfxApiNone = 0,
     kSavannaGfxApiVulkan,
     kSavannaGfxApiDirectX12,
@@ -20,10 +20,9 @@ DEFINE_SAVANNA_ENUM(Savanna::Gfx, seGfxApi_t, GfxApi, uint32_t,
     kSavannaGfxApiOpenGL,
     kSavannaGfxApiOpenGLES,
     kSavannaGfxApiMetal,
-    kSavannaGfxApiWebGPU,
 );
 
-DEFINE_SAVANNA_FLAG_ENUMERATION(Savanna::Gfx, seGfxSupportedGfxApi_t, SupportedGraphicsApi, uint32_t,
+DEFINE_SAVANNA_FLAG_ENUMERATION(Savanna::Gfx, se_GfxSupportedGfxApi_t, SupportedGraphicsApi, se_uint32,
     kSavannaSupportedGfxApiNone = 0,
     kSavannaSupportedGfxApiAll = ~0,
 
@@ -33,5 +32,4 @@ DEFINE_SAVANNA_FLAG_ENUMERATION(Savanna::Gfx, seGfxSupportedGfxApi_t, SupportedG
     kSavannaSupportedGfxApiOpenGL = 1 << kSavannaGfxApiOpenGL,
     kSavannaSupportedGfxApiOpenGLES = 1 << kSavannaGfxApiOpenGLES,
     kSavannaSupportedGfxApiMetal = 1 << kSavannaGfxApiMetal,
-    kSavannaSupportedGfxApiWebGPU = 1 << kSavannaGfxApiWebGPU,
 );

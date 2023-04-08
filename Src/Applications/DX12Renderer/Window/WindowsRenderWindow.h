@@ -7,7 +7,7 @@
  *
  */
 
-#include <Types/Primitive/PrimitiveTypes.h>
+#include <Types/Primitive/PrimitiveTypes.inl>
 
 #include <string>
 #include <wtypes.h>

@@ -34,7 +34,7 @@ namespace Savanna::Gfx::Vk
                 VK_COMPONENT_SWIZZLE_IDENTITY, // r
                 VK_COMPONENT_SWIZZLE_IDENTITY, // g
                 VK_COMPONENT_SWIZZLE_IDENTITY, // b
-                VK_COMPONENT_SWIZZLE_IDENTITY // a
+                VK_COMPONENT_SWIZZLE_IDENTITY  // a
             },
             // VkImageSubresourceRange    subresourceRange;
             {
@@ -124,7 +124,7 @@ namespace Savanna::Gfx::Vk
 
         if (vkCreateSwapchainKHR(m_Device, &swapchainCreateInfo, nullptr, &m_Swapchain) != VK_SUCCESS)
         {
-            throw std::runtime_error("Failed to create swap chain!");
+            throw Savanna::RuntimeErrorException("Failed to create swap chain!");
         }
 
         m_SurfaceFormat = surfaceFormat;
@@ -162,7 +162,7 @@ namespace Savanna::Gfx::Vk
         {
             imageViewCreateInfo.image = m_SwapchainImages[i];
             if (vkCreateImageView(m_Device, &imageViewCreateInfo, nullptr, &m_SwapchainImageViews[i]) != VK_SUCCESS)
-                throw std::runtime_error("Unable to create image view for swapchain image.");
+                throw Savanna::RuntimeErrorException("Unable to create image view for swapchain image.");
         }
     }
 

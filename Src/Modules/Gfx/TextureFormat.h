@@ -12,10 +12,10 @@
 
 #include <Utilities/SavannaCoding.h>
 
-typedef enum se_TextureFormat_t
-{
+DEFINE_SAVANNA_ENUM(
+    Savanna::Gfx, se_TextureFormat_t, TextureFormat, se_uint64,
     // Copied from https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFormat.html
-    // Probably need to limit this. Force swizzling for like formats when importing maybe
+    // Probably need to limit this.
     UNKNOWN,
     R4G4_UNORM_PACK8,
     R4G4B4A4_UNORM_PACK16,
@@ -144,5 +144,4 @@ typedef enum se_TextureFormat_t
     X8_D24_UNORM_PACK32,
     D32_SFLOAT,
     S8_UINT,
-} se_TextureFormat_t;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Rendering, se_TextureFormat_t, TextureFormat);
+);

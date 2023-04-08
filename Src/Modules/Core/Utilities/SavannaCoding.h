@@ -13,7 +13,7 @@
 #include "PreprocessorDefinitions/Definitions.h"
 
 // Common types
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 #include "Types/Primitive/FloatingPointUnions.h"
 
 #include "Types/Enums/Enumeration.h"
@@ -26,6 +26,7 @@
 
 // These macro headers are guarded in case compiling with C rather than C++ so it's safe to include
 #include "Macros/CppCommonDefs.h"
+#include "Macros/CppFunctionality.h"
 #include "Macros/CppTypeDefs.h"
 #include "Macros/Enums.h"
 
@@ -36,6 +37,7 @@
 #ifdef __cplusplus
 
 // For headers that explicitly only work in C++
+#include "Types/Classes/Immovable.h"
 #include "Types/Classes/NonCopyable.h"
 #include "Types/Exceptions/SavannaException.h"
 

@@ -19,7 +19,7 @@ namespace Savanna::IO
         if (!std::filesystem::exists(m_RealRootPath))
         {
             // SAVANNA_ERROR("The specified root path does not exist!");
-            throw std::runtime_error("The specified root path does not exist!");
+            throw Savanna::RuntimeErrorException("The specified root path does not exist!");
         }
 
         for (const auto &entry : std::filesystem::recursive_directory_iterator(m_RealRootPath))

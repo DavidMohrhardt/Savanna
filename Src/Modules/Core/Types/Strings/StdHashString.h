@@ -10,10 +10,10 @@
  */
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 #include "Types/Hashables/IHashable.h"
 #include "Types/Strings/IHashString.h"
-#include "Types/Strings/CRC32HashString.h"
+#include "Types/Strings/CompileTimeHashString.h"
 
 #include <string>
 #include <unordered_map>

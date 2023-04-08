@@ -125,7 +125,7 @@ namespace Savanna::Gfx::Vk
 
         if (!Utils::TryChooseVulkanDevice(physicalDeviceDescriptors.data(), physicalDeviceDescriptors.size(), &m_PhysicalDevice, nullptr))
         {
-            throw std::runtime_error("No suitable physical device found");
+            throw Savanna::RuntimeErrorException("No suitable physical device found");
         }
 
         VkSurfaceKHR surface = pDisplaySurface != nullptr ? pDisplaySurface->GetSurface() : VK_NULL_HANDLE;
@@ -167,7 +167,7 @@ namespace Savanna::Gfx::Vk
 
         if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_LogicalDevice) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to create logical device!");
+            throw Savanna::RuntimeErrorException("failed to create logical device!");
         }
     }
 

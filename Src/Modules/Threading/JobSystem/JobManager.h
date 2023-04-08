@@ -42,7 +42,7 @@ namespace Savanna::Concurrency
         std::unordered_map<JobHandle, JobState> m_JobHandles;
 
     public:
-        JobManager(uint8 threadPoolSize);
+        JobManager(uint8 threadPoolSize = k_MaxThreadPoolSize);
         ~JobManager();
 
     public:

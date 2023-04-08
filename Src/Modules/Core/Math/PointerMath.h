@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 #include "Utilities/SavannaCoding.h"
 
 inline size_t savanna_get_pointer_difference(const void* lhs, const void* rhs)

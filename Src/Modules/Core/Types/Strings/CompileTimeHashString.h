@@ -132,7 +132,7 @@ namespace Savanna
      * @brief A HashString that is evaluated at compile time.
      *
      */
-    class CRC32HashString : public IHashString
+    class CompileTimeHashString : public IHashString
     {
     private:
         int32 m_Hash;
@@ -143,7 +143,7 @@ namespace Savanna
 
     public:
         template<size_t N>
-        SAVANNA_CONSTEVAL CRC32HashString(const char (&literal)[N])
+        SAVANNA_CONSTEVAL CompileTimeHashString(const char (&literal)[N])
             : m_Hash(evaluate_crc32_consteval(literal))
 #if !SAVANNA_FORCE_STRING_HASHING
             , m_Literal(literal)
@@ -151,7 +151,7 @@ namespace Savanna
 #endif
         {}
 
-        SAVANNA_CONSTEVAL CRC32HashString(const char* str, size_t length)
+        SAVANNA_CONSTEVAL CompileTimeHashString(const char* str, size_t length)
         {
             m_Hash = evaluate_crc32_consteval(str);
 #if !SAVANNA_FORCE_STRING_HASHING
@@ -160,7 +160,7 @@ namespace Savanna
 #endif
         }
 
-        SAVANNA_CONSTEVAL CRC32HashString(const char* str, size_t length, int32 hash)
+        SAVANNA_CONSTEVAL CompileTimeHashString(const char* str, size_t length, int32 hash)
         {
             m_Hash = hash;
 #if !SAVANNA_FORCE_STRING_HASHING
@@ -199,27 +199,9 @@ namespace Savanna
 namespace std
 {
     template<>
-    struct hash<Savanna::IHashable>
+    struct hash<Savanna::CompileTimeHashString>
     {
-        size_t operator()(const Savanna::IHashable* pHashable) const
-        {
-            return pHashable->GetHash();
-        }
-    };
-
-    template<>
-    struct hash<Savanna::IHashString>
-    {
-        size_t operator()(const Savanna::IHashString* pHashString) const
-        {
-            return pHashString->GetHash();
-        }
-    };
-
-    template<>
-    struct hash<Savanna::CRC32HashString>
-    {
-        size_t operator()(const Savanna::CRC32HashString& pHashString) const
+        size_t operator()(const Savanna::CompileTimeHashString& pHashString) const
         {
             return pHashString.GetHash();
         }

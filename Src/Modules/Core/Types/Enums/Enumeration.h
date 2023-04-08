@@ -11,6 +11,7 @@
 #pragma once
 
 #if defined(__cplusplus)
+
 #include <concepts>
 #include <type_traits>
 

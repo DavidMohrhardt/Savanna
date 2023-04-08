@@ -11,7 +11,7 @@
 #pragma once
 
 // Common Types
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 #include "Types/Primitive/FloatingPointUnions.h"
 #include "Utilities/PreprocessorDefinitions/EngineWideDefinitions.h"
 

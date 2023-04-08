@@ -20,14 +20,21 @@ namespace Savanna
         inline static std::shared_ptr<T> s_pInstance = std::shared_ptr<T>(nullptr);
 
     public:
-        static std::shared_ptr<T> Get();
-
         static void Register(std::shared_ptr<T> spInstance)
         {
             if (s_pInstance == nullptr)
             {
                 s_pInstance = spInstance;
             }
+        }
+
+        static std::shared_ptr<T> Get()
+        {
+            if (s_pInstance == nullptr)
+            {
+                throw RuntimeErrorException("Singleton not constructed!");
+            }
+            return s_pInstance;
         }
 
         template <typename... Args>
@@ -38,15 +45,6 @@ namespace Savanna
                 s_pInstance = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
             }
             return Get();
-        }
-
-        static std::shared_ptr<T> Get()
-        {
-            if (s_pInstance == nullptr)
-            {
-                throw RuntimeErrorException("Singleton not constructed!");
-            }
-            return s_pInstance;
         }
 
         static void Destroy()

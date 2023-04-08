@@ -111,13 +111,7 @@ namespace Savanna::Concurrency
 
     void JobManager::Stop(bool synchronized)
     {
-        // Compare and exchange the atomic started bool to false.
-        // If the bool is true, then we set it to false and return true.
-        // If the bool is false, then we return false.
-
-        // If started is true, then we set it to false and join the threads.
-        bool isStarted = m_ProcessingJobs.compare_exchange_weak(true, false, std::memory_order_release, std::memory_order_relaxed);
-        if (isStarted)
+        while (m_ProcessingJobs.compare_exchange_weak(true, false, std::memory_order_release, std::memory_order_relaxed))
         {
             for (const auto& thread : m_JobThreads)
             {

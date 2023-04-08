@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IComponentData.h"
-#include <Types/Strings/CRC32HashString>
+#include <Types/Strings/CompileTimeHashString>
 
 namespace Savanna::Entities
 {

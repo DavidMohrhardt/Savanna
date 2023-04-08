@@ -14,7 +14,7 @@
 
 #include "CacheLine.h"
 #include "Math/MathHelpers.h"
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 
 #include "Utilities/PreprocessorDefinitions/PlatformDefinitions.h"
 #include "Utilities/Macros/CppTypeDefs.h"

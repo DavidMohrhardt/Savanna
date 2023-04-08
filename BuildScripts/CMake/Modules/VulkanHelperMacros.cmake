@@ -42,9 +42,7 @@ macro(FIND_VULKAN_OR_FAIL)
 
         # Check if manual set path exists
         if(NOT EXISTS "${VULKAN_PATH}")
-            message("Error: Unable to locate this Vulkan SDK path VULKAN_PATH: ${VULKAN_PATH}, please specify correct path.
-            For more information on correct installation process, please refer to subsection 'Getting started with Lunar-G SDK'
-            and 'Setting up first project with CMake' in Chapter 3, 'Shaking hands with the device' in this book 'Learning Vulkan', ISBN - 9781786469809.")
+            message("Error: Unable to locate this Vulkan SDK path VULKAN_PATH: ${VULKAN_PATH}.")
         return()
         endif()
     endif()

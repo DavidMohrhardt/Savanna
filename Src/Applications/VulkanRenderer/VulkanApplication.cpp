@@ -91,7 +91,7 @@ namespace Savanna::Application
 
         rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
 
-        m_Renderer.Initialize(&rendererCreateInfo);
+        m_Renderer.Create(&rendererCreateInfo);
     }
 
     VulkanApplication::~VulkanApplication()

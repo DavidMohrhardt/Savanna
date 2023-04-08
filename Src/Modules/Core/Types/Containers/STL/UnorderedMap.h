@@ -16,7 +16,7 @@
 
 #include "Memory/Allocators/StlAllocatorAdapter.h"
 #include "Types/Strings/FixedString.h"
-#include "Types/Strings/CRC32HashString"
+#include "Types/Strings/CompileTimeHashString"
 
 
 namespace Savanna

@@ -28,7 +28,7 @@ namespace Savanna::Gfx::Vk
         , m_GfxDevice()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Renderer(const RendererCreateInfo* const pCreateInfo));
-        Initialize(pCreateInfo);
+        Create(pCreateInfo);
     }
 
     Renderer::Renderer(Renderer&& other)
@@ -53,15 +53,17 @@ namespace Savanna::Gfx::Vk
         return *this;
     }
 
-    void Renderer::Initialize(const RendererCreateInfo* const pCreateInfo)
+    void Renderer::Create(const RendererCreateInfo* const pCreateInfo)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Initialize(const RendererCreateInfo* const pCreateInfo));
+        SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Create(const RendererCreateInfo* const pCreateInfo));
         SAVANNA_ASSERT(pCreateInfo != nullptr, "pCreateInfo is nullptr!");
+
         if (!m_Context.IsValid()) SAVANNA_BRANCH_LIKELY
         {
             m_Context = Context(pCreateInfo);
             m_DisplaySurface = DisplaySurface(pCreateInfo, m_Context);
             m_GfxDevice = GfxDevice(pCreateInfo, m_Context, &m_DisplaySurface);
+
             if (m_DisplaySurface.IsValid())
             {
                 m_Swapchain = Swapchain(*pCreateInfo, m_GfxDevice, m_DisplaySurface);

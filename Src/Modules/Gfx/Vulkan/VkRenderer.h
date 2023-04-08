@@ -46,7 +46,7 @@ namespace Savanna::Gfx::Vk
         Renderer& operator=(Renderer&& other);
 
     public:
-        void Initialize(const RendererCreateInfo* const pCreateInfo);
+        void Create(const RendererCreateInfo* const pCreateInfo);
         void Destroy();
 
         const Context& GetContext() { return m_Context; }

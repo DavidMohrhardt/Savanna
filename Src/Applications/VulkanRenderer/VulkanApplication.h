@@ -15,7 +15,7 @@
 #include <VkRenderer.h>
 
 #include <Application/IApplication.h>
-#include <Types/Strings/CRC32HashString.h>
+#include <Types/Strings/CompileTimeHashString.h>
 
 #include <vector>
 
@@ -27,10 +27,10 @@ namespace Savanna::Application
 
     class VulkanApplication : public Savanna::IApplication
     {
-        static constexpr CRC32HashString k_MemoryArenaTags[] = {
-            CRC32HashString("Common"),
-            CRC32HashString("System"),
-            CRC32HashString("Graphics")
+        static constexpr CompileTimeHashString k_MemoryArenaTags[] = {
+            CompileTimeHashString("Common"),
+            CompileTimeHashString("System"),
+            CompileTimeHashString("Graphics")
         };
     public:
         VulkanApplication();

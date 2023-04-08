@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.h"
+#include "Types/Primitive/PrimitiveTypes.inl"
 
 namespace Savanna
 {

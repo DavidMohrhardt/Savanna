@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
 
-# Specify clang as the compiler to ensure supported language standards
-# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.
-# set(CMAKE_C_COMPILER "clang")
-# set(CMAKE_CXX_COMPILER "clang")
-
 # Defines project settings
 project(Savanna VERSION 0.1)
 
@@ -15,6 +10,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${PROJECT_SOURCE_DIR}/../Prepare.ps1)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
+
+# Specify clang as the compiler to ensure supported language standards
+# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.
+# set(CMAKE_C_COMPILER "llvm")
+# set(CMAKE_CXX_COMPILER "llvm++")
+
 
 # Set Global Variables
 set(CORE_LIBRARY_KIND "STATIC" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
