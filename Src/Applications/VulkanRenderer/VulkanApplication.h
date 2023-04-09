@@ -14,7 +14,7 @@
 
 #include <VkRenderer.h>
 
-#include <Application/IApplication.h>
+#include <IApplication.h>
 #include <Types/Strings/CompileTimeHashString.h>
 
 #include <vector>
