@@ -12,7 +12,6 @@
 
 #include "JobManager.h"
 
-
 SAVANNA_EXPORT(se_JobHandle_t) SavannaEngine_AcquireJobHandle(
     const se_IJobInterface_t* pIJobInterface,
     se_JobPriority_t priority,

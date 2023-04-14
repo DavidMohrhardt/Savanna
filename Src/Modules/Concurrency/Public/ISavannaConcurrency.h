@@ -11,3 +11,9 @@
 #pragma once
 
 #include "ISavannaJobs.h"
+
+SAVANNA_EXPORT(se_threadId_t) SavannaEngine_Concurrency_GetMainThreadId();
+
+SAVANNA_EXPORT(se_threadId_t) SavannaEngine_Concurrency_GetCurrentThreadId();
+
+SAVANNA_EXPORT(se_bool_t) SavannaEngine_Concurrency_IsMainThread();
