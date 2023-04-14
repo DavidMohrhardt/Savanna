@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.inl"
-#include "Utilities/Macros/CppCommonDefs.h"
+#include "Core/Types/Primitive/PrimitiveTypes.inl"
+#include "Core/Utilities/Macros/CppCommonDefs.h"
 
 #if SAVANNA_CPLUSPLUS
 namespace Savanna

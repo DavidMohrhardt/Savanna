@@ -16,11 +16,16 @@ endif()
 # set(CMAKE_C_COMPILER "llvm")
 # set(CMAKE_CXX_COMPILER "llvm++")
 
-
 # Set Global Variables
-set(CORE_LIBRARY_KIND "STATIC" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
+# set(CORE_LIBRARY_KIND "STATIC" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
+set(CORE_LIBRARY_KIND "SHARED" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
 set(MULTI_COMPILE_LIBRARIES OFF CACHE BOOL "Set to ON to compile object libraries for each library and then create both static and shared libraries from the object libraries. Set to OFF to compile each library with the definition of ${CORE_LIBRARY_KIND}.")
-set(EXPORT_ALL_SYMBOLS OFF CACHE BOOL "Export all symbols for dynamic libraries")
+
+if (CORE_LIBRARY_KIND STREQUAL "SHARED")
+    set(EXPORT_ALL_SYMBOLS ON CACHE BOOL "Export all symbols for dynamic libraries")
+else()
+    set(EXPORT_ALL_SYMBOLS OFF CACHE BOOL "Export all symbols for dynamic libraries")
+endif()
 
 # Set Universal variables
 set(module_path ${PROJECT_SOURCE_DIR}/../Buildscripts/CMake/Modules/*.cmake)

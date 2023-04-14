@@ -31,4 +31,5 @@ add_subdirectory(IO)
 # add_subdirectory(Profiling)
 
 add_subdirectory(OS)
-add_subdirectory(Plugins)
+# TODO: Plugins are not working due to LoadLibraryA symbol being unloadable
+# add_subdirectory(Plugins)

@@ -10,6 +10,9 @@
  */
 #include "ComponentParadigm.h"
 
+// #include <JobManager.h>
+// #include <ISavannaJobs.h>
+
 // C Standard Library Includes
 #include <cstring>
 
@@ -82,25 +85,53 @@ namespace Savanna::Entities
         }
     };
 
-    // void Paradigm::UpdateParadigmLayout()
-    // {
-    //     // For each component in the paradigm, update the component layout
-    //     // ComponentMetaData metaData = ComponentRegistry::AcquireComponentMetaDataFromKeyChain(m_ParadigmKeyChain);
-    //     // size_t totalSize = metaData.GetTotalSize();
-    //     // size_t numberOfComponents = metaData.GetNumberOfComponents();
+    void Paradigm::UpdateParadigmLayout()
+    {
+        // using namespace Savanna::Concurrency;
+        // LambdaJob updateJob = LambdaJob([m_ParadigmUpdateJobHandle]() -> JobResult
+        // {
+        //     JobManager::Get()->AwaitCompletion(m_ParadigmUpdateJobHandle);
+        //     LockGuard lock(m_DataLock);
 
-    //     // void* pScratchMemory = malloc(m_ParadigmMemorySize);
-    //     // memcpy(pScratchMemory, m_ParadigmMemory, m_ParadigmMemorySize);
+        //     // Compute the paradigm layout
+        //     size_t numberOfComponents = 0;
+        //     size_t totalSize = 0;
+        //     size_t componentSizeInfo[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
+        //     size_t componentAlignmentInfo[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
 
-    //     // for (size_t i = 0; i < numberOfComponents; i++)
-    //     // {
-    //     //     // TODO @DavidMohrhardt Need to store the previous component layout to properly copy the data
-    //     //     // to the new layout.
+        //     for (size_t i = 0; i < SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS; ++i)
+        //     {
+        //         if (m_ParadigmKeyChain[i].GetRingIndex() != 0)
+        //         {
+        //             const ComponentKey& componentKey = m_ParadigmKeyChain[i];
+        //             const ComponentMetaData& componentMetaData = ComponentRegistry::Get()->GetComponentMetaData(componentKey);
+        //             componentSizeInfo[numberOfComponents] = componentMetaData.GetTotalSize();
+        //             componentAlignmentInfo[numberOfComponents] = componentMetaData.GetNumberOfComponents();
+        //             totalSize += componentMetaData.GetTotalSize();
+        //             ++numberOfComponents;
+        //         }
+        //     }
 
-    //     // }
+        //     // Compute the number of paradigm buffers needed to transfer the current paradigm to the new layout
+        //     size_t numberOfParadigmBuffers = 0;
+        //     size_t paradigmBufferSize = 0;
+        //     size_t paradigmBufferAlignment = 0;
 
-    //     // ComponentRegistry::ReleaseComponentMetaDataFromKeyChain(metaData);
-    // }
+        //     for (size_t i = 0; i < numberOfComponents; ++i)
+        //     {
+        //         paradigmBufferSize += componentSizeInfo[i];
+        //         paradigmBufferAlignment = std::max(paradigmBufferAlignment, componentAlignmentInfo[i]);
+        //         if (paradigmBufferSize > SAVANNA_ECS_MAX_PARADIGM_BUFFER_SIZE)
+        //         {
+        //             paradigmBufferSize = 0;
+        //             ++numberOfParadigmBuffers;
+        //         }
+        //     }
+
+        //     return JobResult::Failure;
+        // });
+        // m_ParadigmUpdateJobHandle = JobManager::Get()->ScheduleJob(updateJob);
+    }
 
     // TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.
     void Paradigm::AddComponentToParadigmInternal(
@@ -128,8 +159,7 @@ namespace Savanna::Entities
         UpdateParadigmLayout();
     }
 
-    ArraySlice<ComponentKey> Paradigm::GetKeyChain() const
-    {
+    ArraySlice<ComponentKey> Paradigm::GetKeyChain() const {
         return ArraySlice<ComponentKey>(m_ParadigmKeyChain, SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
     }
 } // namespace Savanna::Entities

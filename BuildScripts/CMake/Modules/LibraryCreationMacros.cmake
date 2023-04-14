@@ -8,7 +8,7 @@ macro(ADD_CORE_LIBRARY library_name library_sources)
         add_library(${library_name}_shared SHARED ${library_sources})
         set_target_properties(${library_name}_shared PROPERTIES OUTPUT_NAME ${library_name})
     else()
-        add_library(${library_name} ${library_sources})
+        add_library(${library_name} ${CORE_LIBRARY_KIND} ${library_sources})
     endif()
 endmacro()
 
