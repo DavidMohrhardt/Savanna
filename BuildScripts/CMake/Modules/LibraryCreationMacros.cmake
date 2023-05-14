@@ -212,3 +212,52 @@ macro(CREATE_APP_WITH_LIBS target_name core_libs core_include_dirs external_libs
 
     message (STATUS "Finished Processing ${target_name}\n")
 endmacro()
+
+macro(PARSE_MODULE_CONFIG_JSON cur_name)
+    file(READ "${CMAKE_CURRENT_LIST_DIR}/${cur_name}_BuildConfig.json" module_json)
+    string(JSON name_var GET "${module_json}" Name)
+    string(JSON config_array_var GET "${module_json}" Configurations)
+
+    set (config_name "Release")
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+        set(config_name "Debug")
+    endif()
+
+    string(JSON config_array_length LENGTH  "${config_array_var}")
+    math(EXPR config_count "${config_array_length} - 1")
+    foreach (i RANGE ${config_count})
+        string (JSON config_item GET "${config_array_var}" ${i})
+        string (JSON config_item_name GET "${config_item}" Name)
+        if (${config_item_name} STREQUAL ${config_name})
+            # Iterate over another array of items
+            string(JSON config_item_array_var GET "${config_item}" Values)
+            string(JSON config_item_array_length LENGTH  "${config_item_array_var}")
+            math(EXPR config_item_count "${config_item_array_length} - 1")
+            foreach(j RANGE ${config_item_count})
+                # Get the Name and Value of each item
+                string(JSON config_item_item GET "${config_item_array_var}" ${j})
+                string(JSON config_item_item_name GET "${config_item_item}" Name)
+                string(JSON config_item_item_value GET "${config_item_item}" Value)
+                # Set the variable
+                set(${config_item_item_name} ${config_item_item_value})
+                message("Set ${config_item_item_name} to ${config_item_item_value}")
+            endforeach()
+
+        endif()
+    endforeach()
+endmacro()
+
+function(CONFIG_INPUT_HEADER cur_name)
+    message(STATUS "Configuring input header for ${cur_name}")
+    PARSE_MODULE_CONFIG_JSON(${cur_name})
+
+    # In the current directory, find the *.h.in file
+    file(GLOB input_header "${CMAKE_CURRENT_LIST_DIR}/*.h.in")
+
+    # The output header is the input header with the .in removed
+    string(REPLACE ".in" "" output_header "${input_header}")
+
+    # Configure the input header
+    configure_file(${input_header} ${output_header} @ONLY)
+
+endfunction()

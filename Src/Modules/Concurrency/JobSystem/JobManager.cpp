@@ -6,7 +6,7 @@
 
 namespace Savanna::Concurrency
 {
-    static std::mutex g_JobMutex;
+    static std::mutex s_JobQueueMutex;
 
     void JobManager::ProcessJobs()
     {
@@ -17,7 +17,7 @@ namespace Savanna::Concurrency
             JobHandle jobHandle = k_InvalidJobHandle;
 
             {
-                std::lock_guard<std::mutex> lock(g_JobMutex);
+                std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 
                 if (!m_HighPriorityJobs.empty())
                 {
@@ -35,35 +35,21 @@ namespace Savanna::Concurrency
                     m_LowPriorityJobs.pop();
                 }
 
-                m_JobHandles[jobHandle] = k_SavannaJobStateRunning;
+                // Check if the job has been removed from the queue
+                if (jobHandle == k_InvalidJobHandle || m_JobHandles.find(jobHandle) == m_JobHandles.end())
+                {
+                    jobHandle = k_InvalidJobHandle;
+                }
+                else
+                {
+                    m_JobHandles[jobHandle] = k_SavannaJobStateRunning;
+                }
             }
 
             if (jobHandle != k_InvalidJobHandle)
             {
-                IJob* pJob = reinterpret_cast<IJob*>(jobHandle.GetJobHandle());
-                JobResult result = pJob->Execute();
-
-                JobState state = k_SavannaJobStateCompleted;
-                switch (result)
-                {
-                case JobResult::k_Success:
-                    pJob->OnJobSucceeded();
-                    break;
-                case JobResult::k_Failure:
-                    pJob->OnJobFailed();
-                    break;
-                case JobResult::k_Cancelled:
-                    pJob->OnJobCancelled();
-                    state = k_SavannaJobStateCancelled;
-                    break;
-                }
-
-                {
-                    std::lock_guard<std::mutex> lock(g_JobMutex);
-                    m_JobHandles[jobHandle] = state;
-                }
-
-                pJob->OnJobFinished(result);
+                JobRunner runner = JobRunner(jobHandle);
+                runner.Run();
             }
 
             std::this_thread::yield();
@@ -128,24 +114,14 @@ namespace Savanna::Concurrency
         }
     }
 
-    JobHandle JobManager::AcquireJobHandle(const IJobInterface* pIJobInterface, JobPriority priority, JobHandle dependency)
+    JobHandle JobManager::AcquireJobHandle(const IJobInterface* pIJobInterface)
     {
-        if (pIJobInterface != nullptr)
+        if (pIJobInterface == nullptr) SAVANNA_BRANCH_UNLIKELY
         {
             return k_InvalidJobHandle;
         }
-        else if (dependency != k_InvalidJobHandle && GetJobState(dependency) != JobState::Completed)
-        {
-            DependentJob<BasicJob>* pJob = MemoryManager::Get()->Allocate<DependentJob<BasicJob>>(1);
-            pJob->DependentJob<BasicJob>(dependency, BasicJob(pIJobInterface));
-            return reinterpret_cast<JobHandle>(pJob);
-        }
-        else
-        {
-            BasicJob* pJob = MemoryManager::Get()->Allocate<BasicJob>(1);
-            pJob->BasicJob(pIJobInterface);
-            return reinterpret_cast<JobHandle>(pJob);
-        }
+
+        JobHandle jobHandle = MemoryManager::Get()->Allocate<LowLevelJob>(pIJobInterface);
     }
 
     void JobManager::ReleaseJobHandle(JobHandle jobHandle)
@@ -156,6 +132,11 @@ namespace Savanna::Concurrency
         }
     }
 
+    /**
+     * @brief Schedules a job to be executed by the job system.
+     * The job pointer must remain valid until the job has finished
+     * executing.
+    */
     JobHandle JobManager::ScheduleJob(IJob *pJob, JobPriority priority, JobHandle dependency)
     {
         JobHandle handle = k_InvalidJobHandle;
@@ -172,34 +153,25 @@ namespace Savanna::Concurrency
 
     void JobManager::ScheduleJob(JobHandle &handle, JobPriority priority)
     {
-        std::lock_guard<std::mutex> lock(g_JobMutex);
+        std::lock_guard<std::mutex> lock(s_JobQueueMutex);
         switch (priority)
         {
         case JobPriority::High:
-            for (size_t i = 0; i < jobCount; ++i)
-            {
-                m_HighPriorityJobs.push(handles[i]);
-            }
+            m_HighPriorityJobs.push(handle);
             break;
         case JobPriority::Normal:
-            for (size_t i = 0; i < jobCount; ++i)
-            {
-                m_NormalPriorityJobs.push(handles[i]);
-            }
+            m_NormalPriorityJobs.push(handle);
             break;
         case JobPriority::Low:
         default:
-            for (size_t i = 0; i < jobCount; ++i)
-            {
-                m_LowPriorityJobs.push(handles[i]);
-            }
+            m_LowPriorityJobs.push(handle);
             break;
         }
     }
 
     void JobManager::ScheduleJobBatch(JobHandle *handles, size_t jobCount, JobPriority priority)
     {
-        std::lock_guard<std::mutex> lock(g_JobMutex);
+        std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 
         switch (priority)
         {
@@ -227,7 +199,7 @@ namespace Savanna::Concurrency
 
     bool JobManager::TryCancelJob(JobHandle jobHandle)
     {
-        std::lock_guard<std::mutex> lock(g_JobMutex);
+        std::lock_guard<std::mutex> lock(s_JobQueueMutex);
         auto it = m_JobHandles.find(jobHandle);
         if (it != m_JobHandles.end())
         {
@@ -236,6 +208,7 @@ namespace Savanna::Concurrency
             case k_SavannaJobStateReady:
                 m_JobHandles.erase(it);
                 return true;
+
             case k_SavannaJobStateRunning:
                 if (static_cast<IJob*>(jobHandle)->Cancel())
                 {
@@ -243,8 +216,11 @@ namespace Savanna::Concurrency
                     return true;
                 }
                 break;
-            case k_SavannaJobStateCompleted:
+
             case k_SavannaJobStateCancelled:
+                return true;
+
+            case k_SavannaJobStateCompleted:
             default:
                 break;
             }
@@ -262,7 +238,7 @@ namespace Savanna::Concurrency
 
     JobState JobManager::GetJobState(JobHandle jobHandle)
     {
-        std::lock_guard<std::mutex> lock(g_JobMutex);
+        std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 
         auto it = m_JobHandles.find(jobHandle);
         if (it != m_JobHandles.end())

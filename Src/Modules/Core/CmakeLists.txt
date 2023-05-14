@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+set(name SavannaCore)
+
+CONFIG_INPUT_HEADER(${name})
 
 set(core_libs "")
 set(core_include_dirs "")

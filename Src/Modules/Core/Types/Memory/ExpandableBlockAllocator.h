@@ -20,30 +20,47 @@
 #include "MemoryChunkDescriptors.h"
 
 #include "Types/Containers/Arrays/ArraySlice.h"
-
-#include <vector>
+#include "Types/Containers/Arrays/DynamicArray.h"
 
 namespace Savanna
 {
     class ExpandableBlockAllocator : public Allocator, NonCopyable
     {
     private:
+
         size_t m_BufferBlockSize = 0;
 
-        std::vector<MemoryBuffer> m_MemoryPoolContainer;
+        DynamicArray<MemoryBuffer> m_MemoryPoolContainer;
+
         MemoryChunkDescriptor* m_Head = nullptr;
         MemoryChunkDescriptor* m_Tail = nullptr;
+
+        size_t m_AllocatedBytes = 0;
+        size_t m_Size = 0;
 
     public:
         ExpandableBlockAllocator() = default;
         ExpandableBlockAllocator(size_t initialBufferCount, size_t bufferBlockSize, bool contiguous = true);
         ~ExpandableBlockAllocator();
 
+        ExpandableBlockAllocator(ExpandableBlockAllocator&& other) { *this = std::move(other); }
+
+        ExpandableBlockAllocator& operator=(ExpandableBlockAllocator&& other);
+
     public:
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
         void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
 
+        SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const SAVANNA_OVERRIDE { return m_AllocatedBytes; }
+        SAVANNA_NO_DISCARD size_t GetSize() const SAVANNA_OVERRIDE { return m_Size; }
+
     private:
         MemoryChunkDescriptor* AllocateAdditionalBuffers(size_t minimumSize);
+
+        void CreateBufferWithMemoryChunkDescs(
+            const size_t bufferSize,
+            MemoryBuffer& outBuffer,
+            MemoryChunkDescriptor** ppOutHead,
+            MemoryChunkDescriptor** ppOutTail);
     };
 } // namespace Savanna

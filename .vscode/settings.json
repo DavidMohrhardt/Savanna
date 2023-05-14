@@ -90,7 +90,8 @@
         "codecvt": "cpp",
         "coroutine": "cpp",
         "resumable": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "*.in": "cpp"
     },
     "doxdocgen.generic.authorName": "David Mohrhardt",
     "doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

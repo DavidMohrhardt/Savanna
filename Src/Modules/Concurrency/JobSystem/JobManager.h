@@ -13,7 +13,9 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include <Public/ISavannaJobs.h>
+#include "Public/ISavannaJobs.h"
+
+#include "JobRunner.h"
 
 #include <atomic>
 #include <queue>
@@ -53,7 +55,7 @@ namespace Savanna::Concurrency
             void* pJob = nullptr;
             if (dependency != k_InvalidJobHandle)
             {
-                pJob = m_Pool.Allocate<DependentJob<T>>(dependency, T(std::forward<Args>(args)...)));
+                pJob = m_Pool.Allocate<JobRunner<T>>(dependency, T(std::forward<Args>(args)...));
             }
             else
             {

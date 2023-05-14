@@ -8,10 +8,7 @@
  */
 #pragma once
 
-// #define ENABLE_SAVANNA_ASSERTIONS_DEBUGGING 1
-#define ENABLE_SAVANNA_ASSERTIONS 1
-#define SAVANNA_ENFORCE_MEMORY_SAFETY 1
-
+#include "SavannaCoreConfiguration.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 #if __cplusplus
@@ -23,12 +20,14 @@
 #include <cassert>
 #endif // end __cplusplus
 
-#if ENABLE_SAVANNA_ASSERTIONS
-
 #define SAVANNA_ASSERT(expression, msg) assert(expression && msg)
 
-#else // ENABLE_SAVANNA_ASSERTIONS
+#if SAVANNA_ASSERTION_LEVEL > 0
 
-#define SAVANNA_ASSERT(expression, msg)
+#   define SAVANNA_DEBUG_ASSERT(expression, msg) assert(expression && msg)
 
-#endif // end ENABLE_SAVANNA_ASSERTIONS
+#else
+
+#   define SAVANNA_DEBUG_ASSERT(expression, msg)
+
+#endif // end SAVANNA_ASSERTION_LEVEL > 0

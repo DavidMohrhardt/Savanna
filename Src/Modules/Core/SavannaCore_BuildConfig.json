@@ -1,0 +1,78 @@
+{
+    "Name": "SavannaCore",
+    "Options": [
+        "SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION",
+        "SAVANNA_ENABLE_BOOT_CONFIG",
+        "SAVANNA_DEEP_ENGINE_PROFILING",
+        "SAVANNA_LOG_LEVEL",
+        "SAVANNA_ASSERTION_LEVEL"
+    ],
+    "Configurations": [
+        {
+            "Name": "Debug",
+            "Values": [
+                {
+                    "Name": "DEBUG_BUILD",
+                    "Value": "1"
+                },
+                {
+                    "Name": "RELEASE_BUILD",
+                    "Value": "0"
+                },
+                {
+                    "Name": "SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION",
+                    "Value": "1"
+                },
+                {
+                    "Name": "SAVANNA_ENABLE_BOOT_CONFIG",
+                    "Value": "1"
+                },
+                {
+                    "Name": "SAVANNA_DEEP_ENGINE_PROFILING",
+                    "Value": "1"
+                },
+                {
+                    "Name": "SAVANNA_LOG_LEVEL",
+                    "Value": "SAVANNA_LOG_LEVEL_DEBUG"
+                },
+                {
+                    "Name": "SAVANNA_ASSERTION_LEVEL",
+                    "Value": "SAVANNA_ASSERTION_LEVEL_DEBUG"
+                }
+            ]
+        },
+        {
+            "Name": "Release",
+            "Values": [
+                {
+                    "Name": "DEBUG_BUILD",
+                    "Value": "0"
+                },
+                {
+                    "Name": "RELEASE_BUILD",
+                    "Value": "1"
+                },
+                {
+                    "Name": "SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION",
+                    "Value": "0"
+                },
+                {
+                    "Name": "SAVANNA_ENABLE_BOOT_CONFIG",
+                    "Value": "0"
+                },
+                {
+                    "Name": "SAVANNA_DEEP_ENGINE_PROFILING",
+                    "Value": "0"
+                },
+                {
+                    "Name": "SAVANNA_LOG_LEVEL",
+                    "Value": "SAVANNA_LOG_LEVEL_FATAL"
+                },
+                {
+                    "Name": "SAVANNA_ASSERTION_LEVEL",
+                    "Value": "SAVANNA_ASSERTION_LEVEL_FATAL"
+                }
+            ]
+        }
+    ]
+}

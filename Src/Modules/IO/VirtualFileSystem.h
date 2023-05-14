@@ -11,6 +11,7 @@
 #pragma once
 
 #include <SavannaEngine.h>
+#include <Types/Singleton/Singleton.h>
 #include <Utilities/SavannaCoding.h>
 
 #include <filesystem>
@@ -18,7 +19,7 @@
 
 namespace Savanna::IO
 {
-    class VirtualFileSystem
+    class VirtualFileSystem : public Singleton<VirtualFileSystem>
     {
     private:
         std::filesystem::path m_RealRootPath;

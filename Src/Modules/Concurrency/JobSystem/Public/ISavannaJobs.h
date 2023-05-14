@@ -25,7 +25,7 @@
 typedef se_int64 se_JobHandle_t;
 
 /**
- * @brief An invalid job handle.
+ * @brief An invalid job handle. Is equal to 0LL.
  */
 const se_JobHandle_t k_InvalidJobHandle = 0LL;
 
@@ -39,14 +39,31 @@ typedef enum se_JobResult_t
 } se_JobResult_t;
 
 /**
- * @brief Defines the accepted functor type for a given IJob in the C-Api
+ * @brief Defines the state of a job.
  */
 typedef enum se_JobState_t
 {
+    /**
+     * @brief The job is invalid.
+    */
     k_SavannaJobStateInvalid,
+
+    /**
+     * @brief The job is ready to be scheduled.
+     */
     k_SavannaJobStateReady,
+
+    /**
+     * @brief The job is currently running.
+     */
     k_SavannaJobStateRunning,
+
+    /**
+     * @brief The job has been completed. Check the result.
+     */
     k_SavannaJobStateCompleted,
+
+
     k_SavannaJobStateCount
 } se_JobState_t;
 
@@ -71,12 +88,34 @@ typedef se_JobResult_t (*se_JobExecuteFunc_t)(void*);
  */
 typedef void(*se_JobResultCallbackFunc_t)(void*);
 
+/**
+ * @brief Defines a struct containing the function pointers for a given IJob in the C-Api.
+ */
 typedef struct se_IJobInterface_t
 {
+    /**
+     * @brief The function pointer to the execute function of the job.
+    */
     se_JobExecuteFunc_t executeFunc;
+
+    /**
+     * @brief The function pointer to the on complete function of the job.
+    */
     se_JobResultCallbackFunc_t onCompleteFunc;
+
+    /**
+     * @brief The function pointer to the on cancel function of the job.
+    */
     se_JobResultCallbackFunc_t onCancelFunc;
+
+    /**
+     * @brief The function pointer to the on error function of the job.
+    */
     se_JobResultCallbackFunc_t onErrorFunc;
+
+    /**
+     * @brief The user data pointer of the job. User data is passed to the execute function.
+    */
     void* pUserData;
 } se_IJobInterface_t;
 
@@ -149,7 +188,11 @@ namespace Savanna::Concurrency
             : m_JobInterface(jobInterface)
         {
         }
-        virtual ~LowLevelJob() = default;
+
+        virtual ~LowLevelJob()
+        {
+            SavannaEngine_ReleaseJobHandle(this);
+        }
 
     public:
         virtual JobResult Execute() override

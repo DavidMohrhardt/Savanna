@@ -26,12 +26,13 @@ namespace Savanna::Gfx::Vk::Utils
         SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk::GetPhysicalDeviceCount);
         static uint32 s_NumberOfDevices = 0;
         // Should only be true once per run.
-        if (s_NumberOfDevices == 0) SAVANNA_BRANCH_UNLIKELY
+        static auto s_Once = [instance]()
         {
             uint32 count = 0;
             vkEnumeratePhysicalDevices(instance, &count, nullptr);
             s_NumberOfDevices = count;
-        }
+            return true;
+        }();
         return s_NumberOfDevices;
     }
 

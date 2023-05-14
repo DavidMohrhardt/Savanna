@@ -1,33 +1,51 @@
-// #pragma once
+/**
+ * @file SavannaCoreConfiguration.h.in
+ * @brief Contains the definitions for all Savanna configuration macros. Must match the configuration json file.
+ * @version 0.1
+ * @date 2022-08-02
+ * @author
+*/
+#pragma once
 
-// // Major and Minor Version Definitions
+#cmakedefine DEBUG_BUILD @DEBUG_BUILD@
+#cmakedefine RELEASE_BUILD @RELEASE_BUILD@
 
-// /**
-//  * @brief
-//  *
-//  */
-// #define SAVANNA_VERSION_MAJOR @savanna_VERSION_MAJOR@
+/**
+ * @brief
+ *
+ */
+#cmakedefine SAVANNA_VERSION_MAJOR @SAVANNA_VERSION_MAJOR@
 
-// /**
-//  * @brief
-//  *
-//  */
-// #define SAVANNA_VERSION_MINOR @savanna_VERSION_MINOR@
+/**
+ * @brief
+ *
+ */
+#cmakedefine SAVANNA_VERSION_MINOR @SAVANNA_VERSION_MINOR@
 
-// /**
-//  * @brief
-//  *
-//  */
-// #define SAVANNA_VERSION_PATCH @savanna_VERSION_PATCH@
+/**
+ * @brief
+ *
+ */
+#cmakedefine SAVANNA_VERSION_PATCH @SAVANNA_VERSION_PATCH@
 
-// // #define SAVANNA_VERSION "@savanna_VERSION_MAJOR@
+// Flags
+/// Memory Manager
+#cmakedefine SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION @SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION@
+#cmakedefine SAVANNA_ENABLE_BOOT_CONFIG @SAVANNA_ENABLE_BOOT_CONFIG@
 
-// // Profiling Enabling Definitions
-// /**
-//  * @brief
-//  */
-// #define SAVANNA_ENABLE_DEEP_ENGINE_PROFILING @savanna_DEEP_ENGINE_PROFILING@
+/// Profiling Definitions
+/**
+ * @brief
+ */
+#cmakedefine SAVANNA_DEEP_ENGINE_PROFILING @SAVANNA_DEEP_ENGINE_PROFILING@
 
-// /**
-//  * @brief
-//  */
+/// Logging
+#define SAVANNA_LOG_LEVEL_FATAL 0
+#define SAVANNA_LOG_LEVEL_WARNING 1
+#define SAVANNA_LOG_LEVEL_DEBUG 2
+#cmakedefine SAVANNA_LOG_LEVEL @SAVANNA_LOG_LEVEL@
+
+/// Assertions
+#define SAVANNA_ASSERTION_LEVEL_NONE 0
+#define SAVANNA_ASSERTION_LEVEL_DEBUG 1
+#cmakedefine SAVANNA_ASSERTION_LEVEL @SAVANNA_ASSERTION_LEVEL@

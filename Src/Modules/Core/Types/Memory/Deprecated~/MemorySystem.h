@@ -18,6 +18,7 @@
 #include <Types/Memory/MemoryBlocks.h>
 
 #include <Types/Singleton/Singleton.h>
+#include "MemoryManager.h"
 
 namespace Savanna::Memory
 {
@@ -32,7 +33,7 @@ namespace Savanna::Memory
         MemoryManager() = default;
         ~MemoryManager();
 
-    public:
+      public:
         void Initialize(size_t size);
         void Shutdown();
 

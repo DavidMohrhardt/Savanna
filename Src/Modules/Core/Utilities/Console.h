@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "SavannaCoreConfiguration.h"
+
 // include va_start, va_end, va_list
 #include <stdarg.h>
 #include <stdio.h>
@@ -21,30 +23,12 @@
 #include <string_view>
 #include <utility>
 
-#define SAVANNA_VERBOSE_LOGGING_ENABLED 1
-#define SAVANNA_DEBUG_LOGGING_ENABLED 1
-#define SAVANNA_WARNING_LOGGING_ENABLED 1
-
-#if SAVANNA_VERBOSE_LOGGING_ENABLED
-
-#undef SAVANNA_DEBUG_LOGGING_ENABLED
-#define SAVANNA_DEBUG_LOGGING_ENABLED 1
-
-#endif
-
-#if SAVANNA_DEBUG_LOGGING_ENABLED
-
-#undef SAVANNA_WARNING_LOGGING_ENABLED
-#define SAVANNA_WARNING_LOGGING_ENABLED 1
-
-#endif
-
 #define SAVANNA_FATAL_LOG(...) \
 { \
     Savanna::Console::LogTagged(Savanna::Console::Tag::FATAL, __VA_ARGS__); \
 }
 
-#if SAVANNA_WARNING_LOGGING_ENABLED
+#if SAVANNA_LOG_LEVEL > 0
 #define SAVANNA_WARNING_LOG(...) \
     { \
         Savanna::Console::LogTagged(Savanna::Console::Tag::WARNING, __VA_ARGS__); \
@@ -53,7 +37,7 @@
     #define SAVANNA_WARNING_LOG(...)
 #endif
 
-#if SAVANNA_DEBUG_LOGGING_ENABLED
+#if SAVANNA_LOG_LEVEL >= SAVANNA_LOG_LEVEL_DEBUG
     #define SAVANNA_DEBUG_LOG(...) \
     { \
         Savanna::Console::LogTagged(Savanna::Console::Tag::DEBUG, __VA_ARGS__); \
@@ -87,13 +71,6 @@ namespace Savanna
 
         inline static bool fileLoggingEnabled = false;
 
-        inline const static std::map<Tag, std::string> k_Tags
-        {
-            { Tag::DEBUG, "[DEBUG]" },
-            { Tag::WARNING, "[WARNING]" },
-            { Tag::FATAL, "[FATAL]" },
-        };
-
         bool IsFileLoggingEnabled()
         {
             return fileLoggingEnabled;
@@ -122,8 +99,19 @@ namespace Savanna
         template<typename... Args>
         static void LogTagged(Tag tag, std::string format, Args&&... args)
         {
-            auto formatString = std::string(k_Tags.at(tag)).append(format);
-            Print(formatString.c_str(), args...);
+            switch (tag)
+            {
+            case Tag::DEBUG:
+                format = std::string("[DEBUG] ").append(format);
+                break;
+            case Tag::WARNING:
+                format = std::string("[WARNING] ").append(format);
+                break;
+            case Tag::FATAL:
+                format = std::string("[FATAL] ").append(format);
+                break;
+            }
+            Print(format.c_str(), args...);
         }
 
         template<typename... Args>

@@ -10,21 +10,39 @@
  */
 #pragma once
 
+#undef SE_LEAN_AND_MEAN_DEFINED
+#if defined(SE_LEAN_AND_MEAN)
+    #define SE_LEAN_AND_MEAN_DEFINED 1
+    #undef SE_LEAN_AND_MEAN
+#else
+    #define SE_LEAN_AND_MEAN_DEFINED 0
+#endif
+
 // Common Types
 #include "Types/Primitive/PrimitiveTypes.inl"
 #include "Types/Primitive/FloatingPointUnions.h"
 #include "Utilities/PreprocessorDefinitions/EngineWideDefinitions.h"
 
+#if SE_LEAN_AND_MEAN_DEFINED
+
 // Common Utilities
 #include "Utilities/Console.h"
 
-// Profiler Headers
+#else // !SE_LEAN_AND_MEAN_DEFINED
+
+// Coding includes
+#include "Utilities/SavannaCoding.h"
+
+// Profiling
+#include "Profiling/Profiler.h"
+#include "Utilities/Console.h"
+
+#endif // end SE_LEAN_AND_MEAN_DEFINED
 
 /**
  * @brief General error codes for the engine. Modules may define their own additional error codes.
  */
-typedef enum se_ErrorCode_t
-{
+DEFINE_SAVANNA_ENUM(Savanna, se_ErrorCode_t, ErrorCode, uint32_t,
     SavannaErrorCodeFailure = 0,
     SavannaErrorCodeSuccess = 1,
     SavannaErrorCodeInvalidArgument = 2,
@@ -32,5 +50,4 @@ typedef enum se_ErrorCode_t
     SavannaErrorCodeNotImplemented = 4,
     SavannaErrorCodeNotSupported = 5,
     SavannaErrorCodeUnknown = 6,
-} se_ErrorCode_t;
-DECLARE_SAVANNA_NAMESPACED_CPP_TYPE_DEF(se_ErrorCode_t, ErrorCode);
+);

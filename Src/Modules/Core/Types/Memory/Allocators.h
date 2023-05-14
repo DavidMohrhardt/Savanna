@@ -15,9 +15,7 @@
 
 #include "Allocator.h"
 #include "FreeListAllocator.h"
-// #include "IAllocator.h"
 #include "LinearAllocator.h"
-// #include "StackAllocator.h"
-// #include "Mallocator.h"
+#include "Mallocator.h"
 
 #include "StlAllocatorAdapter.h"

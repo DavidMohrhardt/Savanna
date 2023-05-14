@@ -16,45 +16,50 @@
 
 namespace Savanna
 {
-    inline static void CreateBufferAndInitHeaders(
+#if TODO_SPLIT_CONTIGUOUS_BUFFERS
+    inline static void SplitBufferIntoSubBuffers(
+        MemoryBuffer& buffer,
         const size_t bufferSize,
-        MemoryBuffer& outBuffer,
-        MemoryChunkDescriptor** ppOutHead,
-        MemoryChunkDescriptor** ppOutTail)
+        const size_t subBufferSize)
     {
-        SAVANNA_ASSERT(ppOutHead != nullptr, "Head is null!");
-        SAVANNA_ASSERT(ppOutTail != nullptr, "Tail is null!");
+        SAVANNA_ASSERT(buffer.GetBuffer() != nullptr, "Buffer is null!");
+        SAVANNA_ASSERT(bufferSize > 0, "Buffer size is 0!");
+        SAVANNA_ASSERT(subBufferSize > 0, "Sub buffer size is 0!");
+        SAVANNA_ASSERT(subBufferSize % bufferSize == 0, "Sub buffer size is not a multiple of buffer size!");
 
-        outBuffer = std::move(MemoryBuffer(bufferSize));
-        if (outBuffer.GetBuffer() == nullptr)
+        size_t bufferBlockSize = buffer.GetSize();
+        SAVANNA_ASSERT(subBufferSize >= bufferSize, "Buffer size is smaller than requested size!");
+
+        size_t subBufferCount = bufferBlockSize / subBufferSize;
+        SAVANNA_ASSERT(subBufferCount > 0, "Sub buffer count is 0!");
+
+        uint8_t* pBuffer = reinterpret_cast<uint8_t*>(buffer.GetBuffer());
+        for (size_t i = 0; i < subBufferCount; ++i)
         {
-            throw BadAllocationException();
+            MemoryChunkDescriptor* pBufferHead = reinterpret_cast<MemoryChunkDescriptor*>(pBuffer);
+            MemoryChunkDescriptor* pBufferTail = GetBackwardAlignedPtr<MemoryChunkDescriptor, MemoryChunkDescriptor>(
+                reinterpret_cast<MemoryChunkDescriptor*>(
+                    (pBuffer + subBufferSize) - sizeof(MemoryChunkDescriptor)
+                ),
+                alignof(MemoryChunkDescriptor));
+
+            pBufferHead->m_Size = GetPointerDifference(pBufferTail, (&pBufferHead[1]));
+            pBufferHead->m_Next = pBufferTail;
+
+            pBufferTail->m_Size = 0;
+            pBufferTail->m_Next = nullptr;
+
+            pBuffer += subBufferSize;
         }
-
-        size_t bufferBlockSize = outBuffer.GetSize();
-
-        MemoryChunkDescriptor* pBufferHead = reinterpret_cast<MemoryChunkDescriptor*>(outBuffer.GetBuffer());
-        MemoryChunkDescriptor* pBufferTail = GetBackwardAlignedPtr<MemoryChunkDescriptor, MemoryChunkDescriptor>(
-            reinterpret_cast<MemoryChunkDescriptor*>(
-                (reinterpret_cast<uint8_t*>(outBuffer.GetBuffer()) + bufferBlockSize) - sizeof(MemoryChunkDescriptor)
-            ),
-            alignof(MemoryChunkDescriptor));
-
-
-        pBufferHead->m_Size = GetPointerDifference(pBufferTail, (&pBufferHead[1]));
-        pBufferHead->m_Next = pBufferTail;
-        *ppOutHead = pBufferHead;
-
-        pBufferTail->m_Size = 0;
-        pBufferTail->m_Next = nullptr;
-        *ppOutTail = pBufferTail;
     }
+#endif
 
     ExpandableBlockAllocator::ExpandableBlockAllocator(
         size_t initialBufferCount,
         size_t bufferBlockSize,
         bool contiguous /*= true*/)
-        : m_BufferBlockSize(bufferBlockSize)
+        : Allocator(nullptr)
+        , m_BufferBlockSize(bufferBlockSize)
         , m_MemoryPoolContainer(initialBufferCount)
         , m_Head(nullptr)
         , m_Tail(nullptr)
@@ -69,7 +74,7 @@ namespace Savanna
         MemoryChunkDescriptor *pBufferHead, *pBufferTail;
         for (int i = 0; i < initialBufferCount; ++i)
         {
-            CreateBufferAndInitHeaders(bufferBlockSize, m_MemoryPoolContainer[i], &pBufferHead, &pBufferTail);
+            CreateBufferWithMemoryChunkDescs(bufferBlockSize, m_MemoryPoolContainer[i], &pBufferHead, &pBufferTail);
 
             if (i == 0)
             {
@@ -83,9 +88,38 @@ namespace Savanna
             m_Tail = pBufferTail;
             m_AllocatedBytes += sizeof(MemoryChunkDescriptor) * 2;
         }
+
+#if TODO_SPLIT_CONTIGUOUS_BUFFERS
+        if (contiguous)
+        {
+            // Split the buffer into the individual buffers of size m_BufferBlockSize
+            MemoryChunkDescriptor* current = m_Head;
+            MemoryChunkDescriptor* previous = nullptr;
+            MemoryChunkDescriptor* tail = m_Head->m_Next;
+        }
+#endif
+
+        m_Root = m_Head;
     }
 
     ExpandableBlockAllocator::~ExpandableBlockAllocator() {}
+
+    ExpandableBlockAllocator& ExpandableBlockAllocator::operator=(ExpandableBlockAllocator &&other)
+    {
+        if (this != &other)
+        {
+            Allocator::operator=(std::move(other));
+
+            SAVANNA_MOVE_MEMBER(m_BufferBlockSize, other);
+            SAVANNA_MOVE_MEMBER(m_MemoryPoolContainer, other);
+            SAVANNA_MOVE_MEMBER(m_Head, other);
+            SAVANNA_MOVE_MEMBER(m_Tail, other);
+            SAVANNA_MOVE_MEMBER(m_AllocatedBytes, other);
+            SAVANNA_MOVE_MEMBER(m_Size, other);
+        }
+
+        return *this;
+    }
 
     void* ExpandableBlockAllocator::alloc(const size_t& size, const size_t& alignment)
     {
@@ -182,6 +216,30 @@ namespace Savanna
         SAVANNA_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
         SAVANNA_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkDescriptor), "Attempting to deallocate pointer from an empty allocator");
 
+#if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION
+        // Check if the pointer is within the bounds of the allocator
+        auto ptrAsInt = reinterpret_cast<uintptr>(ptr);
+        auto head = m_Head;
+        bool found = false;
+        while (head != nullptr)
+        {
+            auto headAsInt = reinterpret_cast<uintptr>(head);
+            auto span = head->m_Size;
+            if (ptrAsInt >= headAsInt && ptrAsInt < headAsInt + span)
+            {
+                found = true;
+                break;
+            }
+
+            head = head->m_Next;
+        }
+
+        if (!found)
+        {
+            SAVANNA_ASSERT(false, "Attempting to deallocate pointer that was not allocated by this allocator");
+        }
+#endif
+
         AllocatedChunkDescriptor allocationDescriptor =
             reinterpret_cast<AllocatedChunkDescriptor*>(ptr)[-1];
 
@@ -236,12 +294,51 @@ namespace Savanna
         }
 
         MemoryChunkDescriptor* pBufferHead, *pBufferTail;
-        m_MemoryPoolContainer.emplace_back(MemoryBuffer());
-        CreateBufferAndInitHeaders(m_BufferBlockSize, m_MemoryPoolContainer[m_MemoryPoolContainer.size() - 1], &pBufferHead, &pBufferTail);
+        m_MemoryPoolContainer.Push(MemoryBuffer());
+        CreateBufferWithMemoryChunkDescs(m_BufferBlockSize, m_MemoryPoolContainer[m_MemoryPoolContainer.GetSize() - 1], &pBufferHead, &pBufferTail);
 
         m_Tail->m_Next = pBufferHead;
         m_Tail = pBufferTail;
 
         return pBufferHead;
     }
+
+    inline void ExpandableBlockAllocator::CreateBufferWithMemoryChunkDescs(
+        const size_t bufferSize,
+        MemoryBuffer& outBuffer,
+        MemoryChunkDescriptor** ppOutHead,
+        MemoryChunkDescriptor** ppOutTail)
+    {
+        SAVANNA_ASSERT(ppOutHead != nullptr, "Head is null!");
+        SAVANNA_ASSERT(ppOutTail != nullptr, "Tail is null!");
+
+        size_t newBufferSize = bufferSize + sizeof(MemoryChunkDescriptor) * 2;
+
+        outBuffer = std::move(MemoryBuffer(newBufferSize));
+        if (!outBuffer.IsValid())
+        {
+            throw BadAllocationException();
+        }
+
+        m_Size += outBuffer.GetSize();
+
+        size_t bufferBlockSize = outBuffer.GetSize();
+
+        MemoryChunkDescriptor* pBufferHead = reinterpret_cast<MemoryChunkDescriptor*>(outBuffer.GetBuffer());
+        MemoryChunkDescriptor* pBufferTail = GetBackwardAlignedPtr<MemoryChunkDescriptor, MemoryChunkDescriptor>(
+            reinterpret_cast<MemoryChunkDescriptor*>(
+                (reinterpret_cast<uint8_t*>(outBuffer.GetBuffer()) + bufferBlockSize) - sizeof(MemoryChunkDescriptor)
+            ),
+            alignof(MemoryChunkDescriptor));
+
+
+        pBufferHead->m_Size = GetPointerDifference(pBufferTail, (&pBufferHead[1]));
+        pBufferHead->m_Next = pBufferTail;
+        *ppOutHead = pBufferHead;
+
+        pBufferTail->m_Size = 0;
+        pBufferTail->m_Next = nullptr;
+        *ppOutTail = pBufferTail;
+    }
+
 } // namespace Savanna

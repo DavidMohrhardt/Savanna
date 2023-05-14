@@ -11,6 +11,8 @@
 
 #include "Utilities/SavannaCoding.h"
 
+#include "Allocator.h"
+
 namespace Savanna
 {
     /**
@@ -20,27 +22,15 @@ namespace Savanna
      * @tparam T
      */
     template <class T>
-    struct Mallocator
+    struct Mallocator : public Allocator
     {
         typedef T value_type;
 
-        Mallocator()
-        {}
+        Mallocator() = default;
+        Mallocator(const Mallocator&) = default;
 
-        // A converting copy constructor:
-        template<class U> Mallocator(const Mallocator<U>&) SAVANNA_NOEXCEPT {}
-        template<class U> bool operator==(const Mallocator<U>&) const SAVANNA_NOEXCEPT
-        {
-            return true;
-        }
 
-        template<class U> bool operator!=(const Mallocator<U>&) const SAVANNA_NOEXCEPT
-        {
-            return false;
-        }
-
-        SAVANNA_NO_DISCARD inline T* allocate(const size_t n) const;
-
-        inline void deallocate(T* const p, size_t) const SAVANNA_NOEXCEPT;
+        SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
+        void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
     };
 } // namespace Savanna

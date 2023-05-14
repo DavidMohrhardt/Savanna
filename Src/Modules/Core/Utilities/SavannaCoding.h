@@ -41,4 +41,6 @@
 #include "Types/Classes/NonCopyable.h"
 #include "Types/Exceptions/SavannaException.h"
 
+#include "Utilities/Semantics/Move.h"
+
 #endif

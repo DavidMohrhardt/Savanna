@@ -4,9 +4,12 @@ namespace Savanna::IO
 {
     VirtualFileSystem::VirtualFileSystem()
     {
+        // Get the current working directory
+        m_RealRootPath = std::filesystem::current_path();
     }
 
     VirtualFileSystem::VirtualFileSystem(const std::filesystem::path &realRootPath)
+        : m_RealRootPath(realRootPath)
     {
     }
 

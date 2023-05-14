@@ -18,19 +18,21 @@
 
 namespace Savanna
 {
-    template<typename T, typename Allocator>
-    requires std::is_base_of_v<Allocator, Allocator>
+    template<typename T, typename TAlloc>
+    requires std::is_base_of_v<TAlloc, Allocator>
     class StlAllocatorAdapter
     {
+    public:
+        using allocator_type = TAlloc;
+        using value_type = T;
+
     private:
-        Allocator m_Allocator;
+        allocator_type m_Allocator;
 
     public:
-        typedef T value_type;
-
         StlAllocatorAdapter() = delete;
 
-        StlAllocatorAdapter(Allocator& allocator)
+        StlAllocatorAdapter(allocator_type& allocator)
             : m_Allocator(other.m_Allocator)
         {}
 
@@ -40,14 +42,14 @@ namespace Savanna
 
         ~StlAllocatorAdapter() {}
 
-        SAVANNA_NO_DISCARD constexpr T* allocate(size_t n)
+        SAVANNA_NO_DISCARD constexpr value_type* allocate(size_t n)
         {
-            size_t size = n * sizeof(T);
-            size_t alignment = alignof(T);
+            size_t size = n * sizeof(value_type);
+            size_t alignment = alignof(value_type);
             return reinterpret_cast<T*>(m_Allocator.alloc(size, alignment));
         }
 
-        constexpr void deallocate(T* p, size_t n) SAVANNA_NOEXCEPT
+        constexpr void deallocate(value_type* p, size_t n) SAVANNA_NOEXCEPT
         {
             m_Allocator.Free(p, alignof(T));
         }
@@ -57,12 +59,12 @@ namespace Savanna
             return m_Allocator.GetSize();
         }
 
-        bool operator==(const StlAllocatorAdapter<T, Allocator>& rhs) const SAVANNA_NOEXCEPT
+        bool operator==(const StlAllocatorAdapter<value_type, allocator_type>& rhs) const SAVANNA_NOEXCEPT
         {
             return m_Allocator == rhs.m_Allocator;
         }
 
-        bool operator!=(const StlAllocatorAdapter<T, Allocator>& rhs) const SAVANNA_NOEXCEPT
+        bool operator!=(const StlAllocatorAdapter<value_type, allocator_type>& rhs) const SAVANNA_NOEXCEPT
         {
             return !(*this == rhs);
         }

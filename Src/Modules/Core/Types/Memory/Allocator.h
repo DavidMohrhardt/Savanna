@@ -17,13 +17,13 @@ namespace Savanna
     class Allocator
     {
     protected:
-        size_t m_Size;
-        size_t m_AllocatedBytes;
+        // size_t m_Size;
+        // size_t m_AllocatedBytes;
         void* m_Root;
 
     public:
         Allocator();
-        Allocator(void* root, size_t size);
+        Allocator(void* root);
         Allocator(Allocator& other) = delete;
         Allocator(Allocator&& other);
 
@@ -51,8 +51,8 @@ namespace Savanna
 
         const void* GetRoot() const { return m_Root; };
 
-        SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; };
-        SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; };
-        SAVANNA_NO_DISCARD bool IsValid() const { return m_Root != nullptr && m_Size > 0; }
+        SAVANNA_NO_DISCARD virtual size_t GetAllocatedBytes() const = 0;
+        SAVANNA_NO_DISCARD virtual size_t GetSize() const = 0;
+        SAVANNA_NO_DISCARD bool IsValid() const { return m_Root != nullptr && GetSize() > 0; }
     };
 } // namespace Savanna

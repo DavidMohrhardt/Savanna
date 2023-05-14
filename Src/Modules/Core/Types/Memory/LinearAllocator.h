@@ -20,6 +20,8 @@ namespace Savanna
     {
     private:
         void* m_Head;
+        size_t m_Size;
+        size_t m_AllocatedBytes;
 
     public:
         LinearAllocator();

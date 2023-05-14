@@ -20,7 +20,7 @@ namespace Savanna
     {}
 
     FreeListAllocator::FreeListAllocator(void* root, size_t size)
-        : Allocator(root, size)
+        : Allocator(root)
         , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
     {
         if (m_Head != nullptr)

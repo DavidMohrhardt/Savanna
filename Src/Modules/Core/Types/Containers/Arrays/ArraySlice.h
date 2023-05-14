@@ -33,8 +33,8 @@ namespace Savanna
     public:
         void CopyTo(T* pDestination, const size_t& start = 0, const size_t& length = 1) const
         {
-            SAVANNA_ASSERT(length < m_Size, "ArraySlice: length must be less than the size of the array.");
-            SAVANNA_ASSERT(pDestination != nullptr, "ArraySlice: pDestination must not be null.");
+            SAVANNA_DEBUG_ASSERT(length < m_Size, "ArraySlice: length must be less than the size of the array.");
+            SAVANNA_DEBUG_ASSERT(pDestination != nullptr, "ArraySlice: pDestination must not be null.");
             memcpy(pDestination, m_DataPtr, m_Size * sizeof(T));
         }
 

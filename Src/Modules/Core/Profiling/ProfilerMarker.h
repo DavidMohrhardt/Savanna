@@ -2,20 +2,20 @@
 
 #include <chrono>
 
-#include "ProfilerDefinitions.h"
+#include "SavannaCoreConfiguration.h"
 
 #include "Types/Strings/FixedString.h"
 
 #define SAVANNA_INSERT_SCOPED_PROFILER(functionName)
 
-#if ENABLE_DEEP_ENGINE_PROFILING
+#if SAVANNA_ENABLE_DEEP_ENGINE_PROFILING
 
 #undef SAVANNA_INSERT_SCOPED_PROFILER
 /**
  * @brief Inserts a scoped profiler into the code and begins profiling.
  */
 #define SAVANNA_INSERT_SCOPED_PROFILER( functionName ) \
-    Savanna::ProfilerMarker __savanna_ProfilerMarker_ = Savanna::ProfilerMarker( Savanna::FixedString256( #functionName  ) ); \
+    Savanna::ProfilerMarker __savanna_ProfilerMarker_funcName = Savanna::ProfilerMarker( Savanna::FixedString256( #functionName  ) ); \
     __savanna_ProfilerMarker_.BeginSample();
 
 #endif

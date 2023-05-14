@@ -19,7 +19,7 @@ namespace Savanna
     {}
 
     LinearAllocator::LinearAllocator(void* bufferPtr, size_t size)
-        : Allocator(bufferPtr, size)
+        : Allocator(bufferPtr)
         , m_Head(bufferPtr)
     {}
 

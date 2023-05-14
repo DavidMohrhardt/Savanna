@@ -9,7 +9,8 @@
 #pragma once
 
 #include <vector>
-#include "Memory/Allocators/StlAllocatorAdapter.h"
+
+#include "Types/Memory/Allocators.h"
 
 namespace Savanna
 {
