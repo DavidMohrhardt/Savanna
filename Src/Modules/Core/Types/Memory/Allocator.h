@@ -17,8 +17,6 @@ namespace Savanna
     class Allocator
     {
     protected:
-        // size_t m_Size;
-        // size_t m_AllocatedBytes;
         void* m_Root;
 
     public:

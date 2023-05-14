@@ -35,7 +35,7 @@ namespace Savanna
 #if SAVANNA_ENABLE_MEMORY_MANAGER_HEURISTIC
         // TODO - Generate a heuristic for the memory manager to allocate a reasonable amount of memory for a given platform
 #else
-        m_CoreAllocator = std::move(ExpandableBlockAllocator(k_DefaultCoreMemoryBlockCount, k_DefaultCoreMemoryBlockSize, true));
+
 #endif
 
         m_Initialized = true;
@@ -47,7 +47,7 @@ namespace Savanna
             return;
 
 #if SAVANNA_PLATFORM_INITIALIZES_MEMORY_MANAGER_MANUALLY
-        m_CoreAllocator = std::move(ExpandableBlockAllocator(0, 0, true));
+        m_CoreAllocator = std::move(ExpandablePageAllocator(0, 0, true));
         m_Initialized = false;
 #endif
     }

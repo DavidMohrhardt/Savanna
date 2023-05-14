@@ -4,7 +4,6 @@
 #include <Utilities/SavannaCoding.h>
 
 #include <Types/Singleton/EmbeddedSingleton.h>
-#include <Types/Memory/ExpandableBlockAllocator.h>
 
 namespace Savanna
 {
@@ -14,8 +13,6 @@ namespace Savanna
     {
     private:
         friend class EmbeddedSingleton<MemoryManager>;
-
-        ExpandableBlockAllocator m_CoreAllocator;
         bool m_Initialized;
 
     private:
