@@ -13,6 +13,8 @@
 #include "Profiling/Profiler.h"
 #include "Utilities/Assertions/SavannaAssertions.h"
 
+#include "Utilities/Semantics/Move.h"
+
 namespace Savanna
 {
     FreeListAllocator::FreeListAllocator()
@@ -22,20 +24,21 @@ namespace Savanna
     FreeListAllocator::FreeListAllocator(void* root, size_t size)
         : Allocator(root)
         , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
+        , m_Size(root != nullptr ? size : 0)
+        , m_AllocatedBytes(0)
     {
         if (m_Head != nullptr)
         {
             m_Head->m_Next = nullptr;
+            m_Size = size;
             m_Head->m_Size = static_cast<int32>(size);
             m_AllocatedBytes = sizeof(MemoryChunkDescriptor);
         }
     }
 
     FreeListAllocator::FreeListAllocator(FreeListAllocator&& other)
-        : Allocator(static_cast<Allocator&&>(other))
-        , m_Head(other.m_Head)
     {
-        other.m_Head = nullptr;
+        *this = std::move(other);
     }
 
     /**
@@ -48,10 +51,10 @@ namespace Savanna
     {
         if (this != &other)
         {
-            m_Root = other.m_Root;
-            m_Head = other.m_Head;
-            m_Size = other.m_Size;
-            m_AllocatedBytes = other.m_AllocatedBytes;
+            Allocator::operator=(static_cast<Allocator&&>(other));
+            SAVANNA_MOVE_MEMBER(m_Head, other);
+            SAVANNA_MOVE_MEMBER(m_Size, other);
+            SAVANNA_MOVE_MEMBER(m_AllocatedBytes, other);
         }
         return *this;
     }

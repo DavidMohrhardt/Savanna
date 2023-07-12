@@ -31,4 +31,20 @@ namespace Savanna::IO
         }
     }
 
+    std::filesystem::path VirtualFileSystem::GetFullPath(const std::filesystem::path &relativePath) const
+    {
+        return m_RealRootPath / relativePath;
+    }
+
+    std::string VirtualFileSystem::GetFileNameWithExtension(const std::filesystem::path &path) const
+    {
+        return path.filename().string();
+    }
+
+    std::string VirtualFileSystem::GetFileNameWithoutExtension(
+        const std::filesystem::path &path) const
+    {
+        return path.stem().string();
+    }
+
 } // namespace Savanna::IO

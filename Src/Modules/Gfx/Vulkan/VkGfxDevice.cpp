@@ -163,11 +163,10 @@ namespace Savanna::Gfx::Vk
 
         createInfo.flags = 0;
         createInfo.pNext = nullptr;
-        // createInfo.pEnabledFeatures = &deviceFeatures;
 
         if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_LogicalDevice) != VK_SUCCESS)
         {
-            throw Savanna::RuntimeErrorException("failed to create logical device!");
+            throw Savanna::RuntimeErrorException("Failed to create logical device!");
         }
     }
 

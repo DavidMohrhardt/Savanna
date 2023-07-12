@@ -37,9 +37,11 @@ namespace Savanna::Gfx::Vk
         : m_CreatorInstance(instance)
         , m_AllocationCallbacks(pAllocationCallbacks)
     {
-        VK_CALL_OR_THROW(
-            CreateDebugUtilsMessengerEXT(instance, pDebugCreateInfo, pAllocationCallbacks, &m_DebugMessenger),
-            "Unable to create debug messenger.");
+        auto result = CreateDebugUtilsMessengerEXT(instance, pDebugCreateInfo, pAllocationCallbacks, &m_DebugMessenger);
+        if (result != VK_SUCCESS)
+        {
+            throw Savanna::RuntimeErrorException("Unable to create debug messenger.");
+        }
     }
 
     DebugMessenger::~DebugMessenger()

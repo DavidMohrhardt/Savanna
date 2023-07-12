@@ -20,6 +20,7 @@
 #include <VkQueueFamilyIndices.h>
 #include <VkRendererCreateInfo.h>
 #include <VkSwapchain.h>
+#include <VkShaderCache.h>
 
 namespace Savanna::Gfx::Vk
 {
@@ -30,6 +31,7 @@ namespace Savanna::Gfx::Vk
         DisplaySurface m_DisplaySurface;
         GfxDevice m_GfxDevice;
         Swapchain m_Swapchain;
+        ShaderCache m_ShaderCache;
 
     public:
         Renderer() = default;
@@ -51,5 +53,7 @@ namespace Savanna::Gfx::Vk
 
         const Context& GetContext() { return m_Context; }
         const GfxDevice& GetGfxDevice() { return m_GfxDevice; }
+        const Swapchain& GetSwapchain() { return m_Swapchain; }
+        ShaderCache& GetShaderCache() { return m_ShaderCache; }
     };
 } // namespace Savanna::Gfx::Vk

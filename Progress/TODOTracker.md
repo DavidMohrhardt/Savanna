@@ -1,12 +1,12 @@
 # TODO
 
-Total TODOs: 119
+Total TODOs: 100
 ## Src
 
 ### CMakeLists.txt
 
-- [L3 :# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.](../Src/CMakeLists.txt#L3)
-- [L10 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L10)
+- [L5 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L5)
+- [L14 :# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.](../Src/CMakeLists.txt#L14)
 
 ### DX12Application.cpp
 
@@ -27,7 +27,7 @@ Total TODOs: 119
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L79 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L79)
+- [L84 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L84)
 
 ### VulkanApplication.h
 
@@ -35,12 +35,12 @@ Total TODOs: 119
 
 ### CMakeLists.txt
 
-- [L28 :# TODO @DavidMohrhardt - Move profiling to a module](../Src/Modules/CMakeLists.txt#L28)
+- [L30 :# TODO @DavidMohrhardt - Move profiling to a module](../Src/Modules/CMakeLists.txt#L30)
 
 ### IApplication.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Application/IApplication.h#L3)
-- [L12 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Application/IApplication.h#L12)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Application/IApplication.h#L3)
+- [L12 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Application/IApplication.h#L12)
 
 ### MathHelpers.h
 
@@ -49,10 +49,6 @@ Total TODOs: 119
 ### ProfilerManager.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Profiling/ProfilerManager.h#L3)
-
-### ArraySlice.h
-
-- [L32 :// TODO @DavidMohrhardt consider disallowing copy and move construction.](../Src/Modules/Core/Types/Containers/Arrays/ArraySlice.h#L32)
 
 ### CacheLine.h
 
@@ -74,14 +70,19 @@ Total TODOs: 119
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/Mallocator.h#L3)
 
+### MemoryChunkDescriptors.h
+
+- [L24 :// TODO: Instead of a pointer make this a uint32 offset from the start of the chunk](../Src/Modules/Core/Types/Memory/MemoryChunkDescriptors.h#L24)
+- [L35 :// TODO: When MemoryChunkDescriptor is changed to a uint32 offset, change this to a uint32](../Src/Modules/Core/Types/Memory/MemoryChunkDescriptors.h#L35)
+
 ### FloatingPointUnions.h
 
-- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L14)
-- [L34 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L34)
+- [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L29)
+- [L56 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L56)
 
 ### Console.h
 
-- [L104 :// TODO](../Src/Modules/Core/Utilities/Console.h#L104)
+- [L81 :// TODO](../Src/Modules/Core/Utilities/Console.h#L81)
 
 ### EngineArenas.h
 
@@ -124,11 +125,10 @@ Total TODOs: 119
 
 ### ComponentParadigm.cpp
 
-- [L43 :// TODO @DavidMohrhardt Release memory](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L43)
-- [L96 ://     //     // TODO @DavidMohrhardt Need to store the previous component layout to properly copy the data](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L96)
-- [L104 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L104)
-- [L118 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L118)
-- [L125 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L125)
+- [L46 :// TODO @DavidMohrhardt Release memory](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L46)
+- [L135 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L135)
+- [L149 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L149)
+- [L156 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L156)
 
 ### JacobianMatrix.cpp
 
@@ -143,6 +143,10 @@ Total TODOs: 119
 
 - [L176 :// TODO](../Src/Modules/Experimental/Physics/PhysicsManager.cpp#L176)
 
+### WindowsPluginLoader.cpp
+
+- [L4 :// TODO: For some reason the compiler just will not load the Kernel32 library. I have no idea why.](../Src/Modules/Experimental/Plugins/Loader/WindowsPluginLoader.cpp#L4)
+
 ### Assertions.h
 
 - [L6 ://TODO](../Src/Modules/Experimental/Threading/Assertions.h#L6)
@@ -151,49 +155,6 @@ Total TODOs: 119
 ### FiberAsmMacros.h
 
 - [L93 :// TODO @davidmo](../Src/Modules/Experimental/Threading/Fibers/FiberAsmMacros.h#L93)
-
-### GfxApiEnumeration.h
-
-- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L14)
-- [L20 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L20)
-- [L26 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L26)
-- [L32 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L32)
-- [L38 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L38)
-- [L44 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L44)
-- [L50 ://  * @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxApiEnumeration.h#L50)
-
-### GfxDevice.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDevice.h#L3)
-- [L17 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDevice.h#L17)
-
-### GfxDeviceCapabilityFlags.c
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.c#L3)
-- [L11 :#if ENABLE_TODOS](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.c#L11)
-
-### GfxDeviceCapabilityFlags.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.h#L3)
-- [L50 :* this enumeration. Requires querying from TODO](../Src/Modules/Gfx/GfxDeviceCapabilityFlags.h#L50)
-
-### GfxDeviceDescriptor.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/GfxDeviceDescriptor.h#L3)
-- [L27 :#if ENABLE_TODOS](../Src/Modules/Gfx/GfxDeviceDescriptor.h#L27)
-
-### VkRenderer.h
-
-- [L67 :// TODO @DavidMohrhardt - Add loading of extensions, validation layers, and previous device ID](../Src/Modules/Gfx/Deprecated~/Vulkan/VkRenderer.h#L67)
-
-### ISavannaVulkan.h
-
-- [L3 :// TODO @DavidMohrhardt - Fill out with vulkan interface](../Src/Modules/Gfx/Deprecated~/Vulkan/Public/ISavannaVulkan.h#L3)
-
-### VkPhysicalDeviceChooser.cpp
-
-- [L89 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Gfx/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L89)
-- [L153 :// TODO @DavidMohrhardt Just arbitrarily add the count for everything and fine tune later](../Src/Modules/Gfx/Deprecated~/Vulkan/Utilities/VkPhysicalDeviceChooser.cpp#L153)
 
 ### VkRendererCreateInfo.h
 
@@ -207,16 +168,12 @@ Total TODOs: 119
 ### VkPhysicalDeviceUtils.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
-- [L97 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L97)
-- [L161 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L161)
+- [L98 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L98)
+- [L162 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L162)
 
 ### VkSwapchainUtils.cpp
 
 - [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Modules/Gfx/Vulkan/Utilities/VkSwapchainUtils.cpp#L18)
-
-### MemoryArena.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Memory/MemoryArena.h#L3)
 
 ### SavannaTestRunner.h
 

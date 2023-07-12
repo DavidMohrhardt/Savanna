@@ -19,6 +19,12 @@
 // Savanna Includes
 #include <Profiling/Profiler.h>
 
+#include <JobSystem/JobManager.h>
+
+#include <VirtualFileSystem.h>
+
+#include <FileStream.h>
+
 #define GLFW_INCLUDE_VULKAN
 #include <iostream>
 #include <string.h>
@@ -34,15 +40,23 @@ namespace Savanna::Application
 
     const char* k_DefaultShaderPaths[] = {
         "Assets/Shaders/SPIRV/vert.spv",
-        "Assets/Shaders/SPIRV/vert.spv"
+        "Assets/Shaders/SPIRV/frag.spv"
+    };
+
+    const char* k_ShaderNames[] = {
+        "vert",
+        "frag"
     };
 
     VulkanApplication::VulkanApplication()
         : m_Window(glfwCreateWindow(1920, 1080, "Savanna", nullptr, nullptr))
+        , m_Renderer()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::ctor);
         using namespace Savanna;
         using namespace Savanna::Gfx::Vk;
+
+        IO::VirtualFileSystem::Construct();
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -92,11 +106,49 @@ namespace Savanna::Application
         rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
 
         m_Renderer.Create(&rendererCreateInfo);
+        auto& shaderCache = m_Renderer.GetShaderCache();
+
+        // Read shaders from disk
+        JobHandle shaderJobsHandle = k_InvalidJobHandle;
+        for (int i = 0; i < 2; ++i)
+        {
+            auto& shaderPath = k_DefaultShaderPaths[i];
+            FixedString64 name = k_ShaderNames[i];
+            // Get full path to shader
+            IO::FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
+            std::vector<char> shaderBytes = stream.ReadFile();
+            VkShaderModuleCreateInfo shaderModuleCreateInfo {};
+            shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+            shaderModuleCreateInfo.codeSize = shaderBytes.size();
+            shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(shaderBytes.data());
+            shaderModuleCreateInfo.flags = 0;
+            shaderModuleCreateInfo.pNext = nullptr;
+
+            // Create shader module
+            JobHandle cacheJob = shaderCache.TryCreateShaderAsync(
+                name,
+                m_Renderer.GetGfxDevice(),
+                shaderModuleCreateInfo);
+            if (cacheJob != k_InvalidJobHandle)
+            {
+                if (shaderJobsHandle == k_InvalidJobHandle)
+                {
+                    shaderJobsHandle = cacheJob;
+                }
+                else
+                {
+                    JobHandle jobHandles[] = { shaderJobsHandle, cacheJob };
+                    shaderJobsHandle = Concurrency::JobManager::Get()->CombineDependencies(jobHandles, 2);
+                }
+            }
+        }
+        JobManager::Get()->AwaitCompletion(shaderJobsHandle);
     }
 
     VulkanApplication::~VulkanApplication()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
+        IO::VirtualFileSystem::Destroy();
     }
 
     void VulkanApplication::Run()

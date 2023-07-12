@@ -22,17 +22,25 @@ namespace Savanna::IO
     class VirtualFileSystem : public Singleton<VirtualFileSystem>
     {
     private:
+        friend class Singleton<VirtualFileSystem>;
+
         std::filesystem::path m_RealRootPath;
         std::unordered_map<std::filesystem::file_type, std::vector<std::filesystem::path>> m_FileTypeMap;
 
-    public:
+    private:
         VirtualFileSystem();
         VirtualFileSystem(const std::filesystem::path &realRootPath);
         VirtualFileSystem(const VirtualFileSystem &other) = delete;
-        VirtualFileSystem(VirtualFileSystem &&other) SAVANNA_NOEXCEPT;
-        ~VirtualFileSystem();
 
     public:
+        ~VirtualFileSystem();
+
         void ParseFileSystem();
+
+        std::filesystem::path GetFullPath(const std::filesystem::path &relativePath) const;
+
+        std::string GetFileNameWithExtension(const std::filesystem::path &path) const;
+
+        std::string GetFileNameWithoutExtension(const std::filesystem::path &path) const;
     };
 } // namespace Savanna::IO

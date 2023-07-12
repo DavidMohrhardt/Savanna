@@ -76,6 +76,7 @@ namespace Savanna::Gfx::Vk
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::Destroy());
         if (m_Context.IsValid()) SAVANNA_BRANCH_LIKELY
         {
+            m_ShaderCache = ShaderCache();
             m_Swapchain = Swapchain();
             m_GfxDevice = GfxDevice();
             m_DisplaySurface = DisplaySurface();

@@ -75,8 +75,6 @@ typedef struct alignas(L1CacheLineLength()) se_L1CacheLine
     alignas(L1CacheLineLength()) se_byte m_CacheLine[L1CacheLineLength()];
 } se_L1CacheLine;
 
-typedef se_L1CacheLine sCacheLine;
-
 #define ENSURE_UNION_IS_L1_CACHE_ALIGNED \
     se_L1CacheLine m_EnsureCacheAligned[]
 
@@ -107,9 +105,26 @@ namespace Savanna
     struct alignas(L1CacheLineLength()) L1CacheWidthContainer
     {
     public:
+        static constexpr size_t k_L1CacheLineCount = GetL1CacheLineCount(sizeof(T));
+
         static inline L1CacheWidthContainer<T> MakeUnifiedCacheContainer(T& instance)
         {
             return L1CacheWidthContainer<T>(instance);
+        }
+
+        static inline L1CacheWidthContainer<T> MakeUnifiedCacheContainer(T&& instance)
+        {
+            return L1CacheWidthContainer<T>(std::move(instance));
+        }
+
+        L1CacheWidthContainer(const L1CacheWidthContainer& other)
+            : m_Data(other.m_Data)
+        {
+        }
+
+        L1CacheWidthContainer(L1CacheWidthContainer&& other)
+            : m_Data(std::move(other.m_Data))
+        {
         }
 
         ~L1CacheWidthContainer()
@@ -135,9 +150,19 @@ namespace Savanna
         inline operator T*() { return &m_Data; }
         inline operator const T*() const { return &m_Data; }
 
-    private:
-        L1CacheWidthContainer(T&& instance) : m_Data(std::move(instance)) {}
+        inline L1CacheWidthContainer& operator=(const L1CacheWidthContainer& other)
+        {
+            m_Data = other.m_Data;
+            return *this;
+        }
 
+        inline L1CacheWidthContainer& operator=(L1CacheWidthContainer&& other)
+        {
+            m_Data = std::move(other.m_Data);
+            return *this;
+        }
+
+    private:
         union
         {
             T m_Data;

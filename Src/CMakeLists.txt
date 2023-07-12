@@ -13,13 +13,15 @@ endif()
 
 # Specify clang as the compiler to ensure supported language standards
 # TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.
-# set(CMAKE_C_COMPILER "llvm")
-# set(CMAKE_CXX_COMPILER "llvm++")
+set(CMAKE_C_COMPILER "llvm" CACHE STRING "Set the C compiler to use")
+set(CMAKE_CXX_COMPILER "llvm++" CACHE STRING "Set the C++ compiler to use")
 
 # Set Global Variables
-# set(CORE_LIBRARY_KIND "STATIC" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
-set(CORE_LIBRARY_KIND "SHARED" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)")
-set(MULTI_COMPILE_LIBRARIES OFF CACHE BOOL "Set to ON to compile object libraries for each library and then create both static and shared libraries from the object libraries. Set to OFF to compile each library with the definition of ${CORE_LIBRARY_KIND}.")
+set(CORE_LIBRARY_KIND "SHARED" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)" FORCE)
+set(MULTI_COMPILE_LIBRARIES OFF CACHE BOOL "Set to ON to compile object libraries for each library and then create both static and shared libraries from the object libraries. Set to OFF to compile each library with the definition of ${CORE_LIBRARY_KIND}." FORCE)
+
+message(STATUS "Core Library Type: ${CORE_LIBRARY_KIND} ")
+message(STATUS "Multi Compile Libraries: ${MULTI_COMPILE_LIBRARIES} ")
 
 if (CORE_LIBRARY_KIND STREQUAL "SHARED")
     set(EXPORT_ALL_SYMBOLS ON CACHE BOOL "Export all symbols for dynamic libraries")

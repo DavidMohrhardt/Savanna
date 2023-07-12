@@ -91,7 +91,9 @@
         "coroutine": "cpp",
         "resumable": "cpp",
         "stack": "cpp",
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "shared_mutex": "cpp",
+        "*.rh": "cpp"
     },
     "doxdocgen.generic.authorName": "David Mohrhardt",
     "doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

@@ -8,6 +8,9 @@
 
 #endif
 
+#ifndef SAVANNA_CORE_PRIMITIVES
+#define SAVANNA_CORE_PRIMITIVES
+
 // Global namespace typedefs
 typedef bool                se_bool;
 typedef char                se_byte;
@@ -81,8 +84,9 @@ namespace Savanna
 
     using size = se_size;
 }
-#endif
+#endif // !__cplusplus
 
+#endif // !SAVANNA_CORE_PRIMITIVES
 
 #if __cplusplus
     // Savanna Interface API
@@ -138,4 +142,4 @@ typedef struct ISavannaPluginLifecycle
 */
 SAVANNA_EXPORT(se_InterfaceHandle_t) Savanna_RegisterPluginInterface(const ISavannaPluginLifecycle* pInterface);
 
-SAVANNA_EXPORT(const void*) Savanna_GetPluginInterface(const se_InterfaceHandle_t handle);
+// SAVANNA_EXPORT(const void*) Savanna_GetPluginInterface(const se_InterfaceHandle_t handle);

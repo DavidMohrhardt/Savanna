@@ -9,7 +9,6 @@
 
 namespace Savanna
 {
-
     class VolatileLock
     {
     private:
@@ -34,16 +33,38 @@ namespace Savanna
             SAVANNA_ASSERT(m_Locked, "Volatile lock is already released. Critical section integrity is compromised.");
             m_Locked = false;
         }
+
+        /**
+         * @brief Check if the volatile lock is acquired.
+         *
+         * @return true if the volatile lock is acquired.
+         * @return false if the volatile lock is released.
+         */
+        SAVANNA_NO_DISCARD inline bool IsAcquired() const noexcept
+        {
+            return m_Locked;
+        }
+
+        SAVANNA_NO_DISCARD VolatileLock& AwaitLock() noexcept
+        {
+            while (IsAcquired())
+            {
+                // Spin
+            }
+            Acquire();
+            return *this;
+        }
     };
 
     class VolatileLockGuard
     {
     private:
         VolatileLock& m_Lock;
+
     public:
-        VolatileLockGuard(VolatileLock& lock) : m_Lock(lock)
+        VolatileLockGuard(VolatileLock& lock)
+            : m_Lock(lock.AwaitLock())
         {
-            lock.Acquire();
         }
 
         ~VolatileLockGuard()
@@ -51,9 +72,4 @@ namespace Savanna
             m_Lock.Release();
         }
     };
-
-    // SAVANNA_EXPORT(void*) Savanna_VolatileLock_CreateVolatileLock();
-    // SAVANNA_EXPORT(void) Savanna_VolatileLock_Acquire(void* lockHandle);
-    // SAVANNA_EXPORT(void) Savanna_VolatileLock_Release(void* lockHandle);
-    // SAVANNA_EXPORT(void) Savanna_VolatileLock_DestroyVolatileLock(void*);
 } // namespace Savanna

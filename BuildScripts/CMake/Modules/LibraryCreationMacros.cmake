@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 macro(ADD_CORE_LIBRARY library_name library_sources)
     if (MULTI_COMPILE_LIBRARIES)
+        message (STATUS "Multi-compile core library: ${library_name}")
         add_library(${library_name}_static STATIC ${library_sources})
         set_target_properties(${library_name}_static PROPERTIES OUTPUT_NAME ${library_name})
 
         add_library(${library_name}_shared SHARED ${library_sources})
         set_target_properties(${library_name}_shared PROPERTIES OUTPUT_NAME ${library_name})
     else()
+        message (STATUS "Adding core library: ${library_name} as ${CORE_LIBRARY_KIND}")
         add_library(${library_name} ${CORE_LIBRARY_KIND} ${library_sources})
     endif()
 endmacro()
@@ -35,8 +37,13 @@ macro(SET_TARGET_CORE_DEPENDENCIES target_name dependencies)
             add_dependencies(${target_name}_shared ${dependencies}_shared)
         endforeach()
     else()
-        target_link_libraries(${target_name} ${dependencies})
-        add_dependencies(${target_name} ${dependencies})
+        if (SEPARATE_ENGINE_MODULES_TO_LIBRARIES)
+            target_link_libraries(${target_name} ${dependencies})
+            add_dependencies(${target_name} ${dependencies})
+        else()
+            target_link_libraries(${target_name} "Savanna")
+            add_dependencies(${target_name} "Savanna")
+        endif()
     endif()
 endmacro()
 
@@ -63,6 +70,7 @@ macro(SET_CORE_LIBRARIES library_names out_library_names)
     set(processed_library_names "")
     if (MULTI_COMPILE_LIBRARIES)
         foreach (library_name IN ITEMS ${library_names})
+            message(STATUS "Processing core library: ${library_name} as ${CORE_LIBRARY_KIND}")
             if (CORE_LIBRARY_KIND STREQUAL "STATIC")
                 set(processed_library_names ${processed_library_names} ${library_name}_static)
             elseif (CORE_LIBRARY_KIND STREQUAL "SHARED")
@@ -72,9 +80,9 @@ macro(SET_CORE_LIBRARIES library_names out_library_names)
             endif()
         endforeach()
     else()
-        set(${processed_library_names} ${library_names}})
+        set(processed_library_names "${library_names}")
     endif()
-    set(${out_library_names} ${processed_library_names})
+    set(out_library_names "${processed_library_names}")
 endmacro()
 
 macro(FIND_SOURCE_FILES_AND_SUBDIRECTORIES)
@@ -95,14 +103,15 @@ macro(FIND_SOURCE_FILES_AND_SUBDIRECTORIES)
             list(FILTER src EXCLUDE REGEX ${subdir})
             continue()
         endif()
-
-        # Check if the subdirectory has a CMakeLists.txt file
-        file(GLOB CMakeLists ${subdir}/CMakeLists.txt)
-        if (CMakeLists)
-            # Add the subdirectory
-            add_subdirectory(${subdir})
-            # Filter out the subdirectory from the source list
-            list(FILTER src EXCLUDE REGEX ${subdir})
+        if (ALLOW_GLOBBING_SUBDIRS_WITH_CMAKELISTS)
+            # Check if the subdirectory has a CMakeLists.txt file
+            file(GLOB CMakeLists ${subdir}/CMakeLists.txt)
+            if (CMakeLists)
+                # Add the subdirectory
+                add_subdirectory(${subdir})
+                # Filter out the subdirectory from the source list
+                list(FILTER src EXCLUDE REGEX ${subdir})
+            endif()
         endif()
     endforeach()
 endmacro()
@@ -207,9 +216,6 @@ macro(CREATE_APP_WITH_LIBS target_name core_libs core_include_dirs external_libs
 	set_property(TARGET ${Recipe_Name} PROPERTY RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_CURRENT_SOURCE_DIR}/binaries)
 	set_property(TARGET ${Recipe_Name} PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_SOURCE_DIR}/binaries)
 
-    # Install the executable
-	install(TARGETS ${target_name} RUNTIME DESTINATION bin)
-
     message (STATUS "Finished Processing ${target_name}\n")
 endmacro()
 
@@ -240,7 +246,7 @@ macro(PARSE_MODULE_CONFIG_JSON cur_name)
                 string(JSON config_item_item_value GET "${config_item_item}" Value)
                 # Set the variable
                 set(${config_item_item_name} ${config_item_item_value})
-                message("Set ${config_item_item_name} to ${config_item_item_value}")
+                message(STATUS "Set ${config_item_item_name} to ${config_item_item_value}")
             endforeach()
 
         endif()

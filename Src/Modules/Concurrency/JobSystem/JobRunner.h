@@ -13,8 +13,7 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include <Public/ISavannaJobs.h>
-#include <JobManager.h>
+#include "ISavannaJobs.h"
 
 namespace Savanna::Concurrency
 {

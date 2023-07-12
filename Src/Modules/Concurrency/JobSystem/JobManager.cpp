@@ -1,54 +1,87 @@
 #include "JobManager.h"
 
-#include "DependentJob.h"
-
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
 #include <mutex>
+#endif
 
 namespace Savanna::Concurrency
 {
+
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
     static std::mutex s_JobQueueMutex;
+#endif
+
+    class DependencyAwaiterJob : public IJob
+    {
+    private:
+        std::vector<JobHandle> m_Dependencies;
+
+    public:
+        DependencyAwaiterJob(const std::vector<JobHandle>& dependencies)
+            : m_Dependencies(dependencies)
+        {}
+
+        ~DependencyAwaiterJob() {}
+
+        JobResult Execute() override
+        {
+            for (const auto& dependency : m_Dependencies)
+            {
+                JobManager::Get()->AwaitJobOrExecuteImmediateInternal(dependency);
+            }
+            return k_SavannaJobResultSuccess;
+        }
+    };
 
     void JobManager::ProcessJobs()
     {
-        SAVANNA_ASSERT(!ThreadManager::IsMainThread(), "JobManager::ProcessJobs() must not be called from the main thread.");
+        // SAVANNA_ASSERT(!ThreadManager::IsMainThread(), "JobManager::ProcessJobs() must not be called from the main thread.");
+        auto pJobManager = Get();
 
-        while (m_ProcessingJobs.load())
+        auto& lowPriorityJobQueue = pJobManager->m_LowPriorityJobs;
+        auto& normalPriorityJobQueue = pJobManager->m_NormalPriorityJobs;
+        auto& highPriorityJobQueue = pJobManager->m_HighPriorityJobs;
+
+        auto& jobHandles = pJobManager->m_JobHandles;
+
+        while (pJobManager->m_ProcessingJobs.load())
         {
             JobHandle jobHandle = k_InvalidJobHandle;
 
             {
-                std::lock_guard<std::mutex> lock(s_JobQueueMutex);
-
-                if (!m_HighPriorityJobs.empty())
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
+        std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
+                if (!highPriorityJobQueue.empty())
                 {
-                    jobHandle = m_HighPriorityJobs.front();
-                    m_HighPriorityJobs.pop();
+                    jobHandle = highPriorityJobQueue.front();
+                    highPriorityJobQueue.pop();
                 }
-                else if (!m_NormalPriorityJobs.empty())
+                else if (!normalPriorityJobQueue.empty())
                 {
-                    jobHandle = m_NormalPriorityJobs.front();
-                    m_NormalPriorityJobs.pop();
+                    jobHandle = normalPriorityJobQueue.front();
+                    normalPriorityJobQueue.pop();
                 }
-                else if (!m_LowPriorityJobs.empty())
+                else if (!lowPriorityJobQueue.empty())
                 {
-                    jobHandle = m_LowPriorityJobs.front();
-                    m_LowPriorityJobs.pop();
+                    jobHandle = lowPriorityJobQueue.front();
+                    lowPriorityJobQueue.pop();
                 }
 
                 // Check if the job has been removed from the queue
-                if (jobHandle == k_InvalidJobHandle || m_JobHandles.find(jobHandle) == m_JobHandles.end())
+                if (jobHandle == k_InvalidJobHandle || jobHandles.find(jobHandle) == jobHandles.end())
                 {
                     jobHandle = k_InvalidJobHandle;
                 }
                 else
                 {
-                    m_JobHandles[jobHandle] = k_SavannaJobStateRunning;
+                    jobHandles[jobHandle] = k_SavannaJobStateRunning;
                 }
             }
 
-            if (jobHandle != k_InvalidJobHandle)
+            if (jobHandle != k_InvalidJobHandle && pJobManager->GetJobState(jobHandle) == JobState::k_SavannaJobStateReady)
             {
-                JobRunner runner = JobRunner(jobHandle);
+                JobRunner runner { reinterpret_cast<IJob*>(jobHandle) };
                 runner.Run();
             }
 
@@ -57,78 +90,66 @@ namespace Savanna::Concurrency
     }
 
     JobManager::JobManager(uint8 threadPoolSize)
-        : m_ThreadPoolSize(threadPoolSize), m_IsRunning(false), m_JobThreads(), m_HighPriorityJobs(), m_NormalPriorityJobs(), m_LowPriorityJobs()
+        : m_ThreadPoolSize(threadPoolSize)
+        , m_ProcessingJobs(false)
+        , m_JobThreads()
+        , m_HighPriorityJobs()
+        , m_NormalPriorityJobs()
+        , m_LowPriorityJobs()
+        , m_JobHandles()
     {
         SAVANNA_ASSERT(
             threadPoolSize > 0,
             "JobManager::JobManager: threadPoolSize must be greater than 0.");
 
-        SAVANNA_ASSERT(
-            threadPoolSize <= std::thread::hardware_concurrency - 1,
-            "JobManager::JobManager: threadPoolSize must be less than the number of available cores - 1 for the main thread.");
+        // SAVANNA_ASSERT(
+        //     threadPoolSize <= std::thread::hardware_concurrency - 1,
+        //     "JobManager::JobManager: threadPoolSize must be less than the number of available cores - 1 for the main thread.");
     }
 
     JobManager::~JobManager()
     {
-        for (auto& jobThread : m_JobThreads)
-        {
-            jobThread.Stop();
-        }
-
-        for (auto& job : jobThread.GetJobs())
-        {
-            MemoryManager::Get()->Deallocate(job);
-        }
+        Stop(true);
     }
 
     void JobManager::Start()
     {
         // If the atomic started bool is false, then we set it to true and spin up the threads.
-        bool isNotStarted = m_ProcessingJobs.compare_exchange_weak(false, true, std::memory_order_release, std::memory_order_relaxed);
+        bool isNotStarted = m_ProcessingJobs.exchange(true, std::memory_order_release);
         if (isNotStarted)
         {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
+            std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
             m_JobThreads.resize(m_ThreadPoolSize);
             for (int i = 0; i < m_JobThreads.size(); ++i)
             {
-                m_JobThreads[i] = std::thread(&ProcessJobs, &m_JobThreads[i]);
+                m_JobThreads[i] = std::thread(ProcessJobs);
             }
         }
     }
 
     void JobManager::Stop(bool synchronized)
     {
-        while (m_ProcessingJobs.compare_exchange_weak(true, false, std::memory_order_release, std::memory_order_relaxed))
+        while (m_ProcessingJobs.exchange(false, std::memory_order_release))
         {
-            for (const auto& thread : m_JobThreads)
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
+            std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
+            // for (const auto& thread : m_JobThreads)
+            for (int i = 0; i < m_JobThreads.size(); ++i)
             {
-                if (synchronized)
+                if (synchronized && m_JobThreads[i].joinable())
                 {
-                    thread.join();
+                    m_JobThreads[i].join();
                 }
                 else
                 {
-                    thread.detach();
+                    m_JobThreads[i].detach();
                 }
             }
             m_JobThreads.clear();
-        }
-    }
-
-    JobHandle JobManager::AcquireJobHandle(const IJobInterface* pIJobInterface)
-    {
-        if (pIJobInterface == nullptr) SAVANNA_BRANCH_UNLIKELY
-        {
-            return k_InvalidJobHandle;
-        }
-
-        JobHandle jobHandle = MemoryManager::Get()->Allocate<LowLevelJob>(pIJobInterface);
-    }
-
-    void JobManager::ReleaseJobHandle(JobHandle jobHandle)
-    {
-        if (jobHandle != k_InvalidJobHandle)
-        {
-            MemoryManager::Get()->Deallocate(jobHandle);
+            return;
         }
     }
 
@@ -153,16 +174,18 @@ namespace Savanna::Concurrency
 
     void JobManager::ScheduleJob(JobHandle &handle, JobPriority priority)
     {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
         switch (priority)
         {
-        case JobPriority::High:
+        case k_SavannaJobPriorityHigh:
             m_HighPriorityJobs.push(handle);
             break;
-        case JobPriority::Normal:
+        case k_SavannaJobPriorityNormal:
             m_NormalPriorityJobs.push(handle);
             break;
-        case JobPriority::Low:
+        case k_SavannaJobPriorityLow:
         default:
             m_LowPriorityJobs.push(handle);
             break;
@@ -171,23 +194,25 @@ namespace Savanna::Concurrency
 
     void JobManager::ScheduleJobBatch(JobHandle *handles, size_t jobCount, JobPriority priority)
     {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
 
         switch (priority)
         {
-        case JobPriority::High:
+        case k_SavannaJobPriorityHigh:
             for (size_t i = 0; i < jobCount; ++i)
             {
                 m_HighPriorityJobs.push(handles[i]);
             }
             break;
-        case JobPriority::Normal:
+        case k_SavannaJobPriorityNormal:
             for (size_t i = 0; i < jobCount; ++i)
             {
                 m_NormalPriorityJobs.push(handles[i]);
             }
             break;
-        case JobPriority::Low:
+        case k_SavannaJobPriorityLow:
         default:
             for (size_t i = 0; i < jobCount; ++i)
             {
@@ -197,9 +222,11 @@ namespace Savanna::Concurrency
         }
     }
 
-    bool JobManager::TryCancelJob(JobHandle jobHandle)
+    bool JobManager::TryCancelJob(JobHandle jobHandle) noexcept
     {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
         auto it = m_JobHandles.find(jobHandle);
         if (it != m_JobHandles.end())
         {
@@ -210,17 +237,16 @@ namespace Savanna::Concurrency
                 return true;
 
             case k_SavannaJobStateRunning:
-                if (static_cast<IJob*>(jobHandle)->Cancel())
+                if (reinterpret_cast<IJob*>(jobHandle)->TryCancel())
                 {
                     m_JobHandles.erase(it);
                     return true;
                 }
                 break;
 
-            case k_SavannaJobStateCancelled:
+            case k_SavannaJobStateCompleted:
                 return true;
 
-            case k_SavannaJobStateCompleted:
             default:
                 break;
             }
@@ -230,7 +256,7 @@ namespace Savanna::Concurrency
 
     void JobManager::AwaitCompletion(JobHandle jobHandle)
     {
-        while (GetJobState(jobHandle) != JobState::Completed)
+        while (GetJobState(jobHandle) != k_SavannaJobStateCompleted)
         {
             std::this_thread::yield();
         }
@@ -238,14 +264,57 @@ namespace Savanna::Concurrency
 
     JobState JobManager::GetJobState(JobHandle jobHandle)
     {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
 
         auto it = m_JobHandles.find(jobHandle);
         if (it != m_JobHandles.end())
         {
             return it->second;
         }
-        return JobState::Invalid;
+        return k_SavannaJobStateInvalid;
+    }
+
+    JobHandle JobManager::CombineDependencies(
+        JobHandle *handles,
+        size_t jobCount)
+    {
+        if (jobCount == 0 || handles == nullptr)
+        {
+            return k_InvalidJobHandle;
+        }
+
+        return ScheduleJob(
+            new AutomaticJob<DependencyAwaiterJob>(std::vector<JobHandle>(handles, handles + jobCount)),
+            k_SavannaJobPriorityHigh);
+    }
+
+    JobResult JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency)
+    {
+        IJob* pJob = nullptr;
+        {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
+            std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
+
+            JobState dependencyState = m_JobHandles[dependency];
+            if (dependencyState == k_SavannaJobStateReady)
+            {
+                m_JobHandles[dependency] = k_SavannaJobStateRunning;
+                pJob = reinterpret_cast<IJob*>(dependency);
+            }
+        }
+
+        if (pJob != nullptr)
+        {
+            return pJob->Execute();
+        }
+        else
+        {
+            AwaitCompletion(dependency);
+            return k_SavannaJobResultSuccess;
+        }
     }
 } // namespace Savanna::Concurrency
 

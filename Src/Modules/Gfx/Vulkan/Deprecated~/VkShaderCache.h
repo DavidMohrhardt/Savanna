@@ -13,7 +13,7 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include <Public/ISavannaJobs.h>
+#include <ISavannaJobs.h>
 
 #include <vulkan/vulkan.h>
 
@@ -67,12 +67,12 @@ namespace Savanna::Gfx::Vk
 
     private:
         VkDevice m_Device;
-        std::unordered_map<const int32, VkShaderModule> m_IdToShaderModuleMap;
+        std::unordered_map<FixedString64, VkShaderModule> m_IdToShaderModuleMap;
         std::unordered_map<JobHandle, ShaderModuleCreationJob> m_ActiveJobs;
 
     public:
         VkShaderCache(const VkDevice& device) SAVANNA_NOEXCEPT;
-        ~VkShaderCache();
+        ~VkShaderCache() {}
 
     public:
         JobHandle CreateShaderModuleAsync(const IHashString* pShaderName, const VkShaderModuleCreateInfo& shaderModuleCreateInfo);

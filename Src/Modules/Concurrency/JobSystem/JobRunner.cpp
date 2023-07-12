@@ -1,4 +1,5 @@
 #include "JobRunner.h"
+#include "JobManager.h"
 
 namespace Savanna::Concurrency
 {
@@ -15,21 +16,23 @@ namespace Savanna::Concurrency
     {
         if (m_Dependency != k_InvalidJobHandle)
         {
-            JobManager::GetInstance().AwaitJobOrExecuteImmediateInternal(m_Dependency);
+            JobManager::Get()->AwaitJobOrExecuteImmediateInternal(m_Dependency);
         }
 
-        void result = m_pJob->Execute();
+        auto result = m_pJob->Execute();
 
         switch (result)
         {
-        case JobResult::k_Success:
-            m_pJob->OnJobSucceeded();
+        case k_SavannaJobResultSuccess:
+            m_pJob->OnComplete();
             break;
-        case JobResult::k_Failure:
-            m_pJob->OnJobFailed();
+        case k_SavannaJobResultError:
+            m_pJob->OnError();
             break;
-        case JobResult::k_Cancelled:
-            m_pJob->OnJobCancelled();
+        case k_SavannaJobResultCancelled:
+            m_pJob->OnCancel();
+            break;
+        default:
             break;
         }
     }

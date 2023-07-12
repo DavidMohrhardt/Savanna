@@ -6,7 +6,7 @@
  * @date 2022-08-08
  *
  */
-#include "AllocatorUnitTestWrapper.h"
+#include "AllocatorUnitTestAdaptor.h"
 
 #include <Types/Memory/FreeListAllocator.h>
 #include <memory>
@@ -19,7 +19,7 @@ namespace Savanna::Core::Tests
     class FreeListAllocatorTest : public ::testing::Test
     {
     protected:
-        AllocatorUnitTestWrapper<FreeListAllocator>* m_WrappedAllocator;
+        AllocatorUnitTestAdaptor<FreeListAllocator>* m_WrappedAllocator;
 
         FreeListAllocatorTest()
         {
@@ -33,7 +33,7 @@ namespace Savanna::Core::Tests
         {
             // Code here will be called immediately after the constructor (right
             // before each test).
-            m_WrappedAllocator = new AllocatorUnitTestWrapper<FreeListAllocator>(malloc(1024), 1024);
+            m_WrappedAllocator = new AllocatorUnitTestAdaptor<FreeListAllocator>(malloc(1024), 1024);
         }
 
         void TearDown() override

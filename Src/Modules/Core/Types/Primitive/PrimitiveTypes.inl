@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef SAVANNA_CORE_PRIMITIVES
+#define SAVANNA_CORE_PRIMITIVES
+
 #include <stdint.h>
 
 #ifndef __cplusplus
@@ -82,3 +85,5 @@ namespace Savanna
     using size = se_size;
 }
 #endif
+
+#endif // !SAVANNA_CORE_PRIMITIVES

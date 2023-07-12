@@ -15,11 +15,11 @@
 #include <VkRenderer.h>
 
 #include <IApplication.h>
-#include <Types/Strings/CompileTimeHashString.h>
-
-#include <vector>
+#include <Types/Strings/FixedString.h>
 
 #include "Window/GLFWWindowWrapper.h"
+
+#include <vector>
 
 namespace Savanna::Application
 {
@@ -27,11 +27,6 @@ namespace Savanna::Application
 
     class VulkanApplication : public Savanna::IApplication
     {
-        static constexpr CompileTimeHashString k_MemoryArenaTags[] = {
-            CompileTimeHashString("Common"),
-            CompileTimeHashString("System"),
-            CompileTimeHashString("Graphics")
-        };
     public:
         VulkanApplication();
         ~VulkanApplication();

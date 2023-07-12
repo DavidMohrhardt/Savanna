@@ -1,5 +1,5 @@
 /**
- * @file AllocatorUnitTestWrapper.h
+ * @file AllocatorUnitTestAdaptor.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief TODO @DavidMohrhardt Document
  * @version 0.1
@@ -15,24 +15,23 @@ namespace Savanna::Core::Tests
 {
     template <typename TAllocator>
     requires std::is_base_of_v<Allocator, TAllocator>
-    class AllocatorUnitTestWrapper
+    class AllocatorUnitTestAdaptor
     {
     private:
         using AllocatorType = TAllocator;
         AllocatorType m_Allocator;
 
-        AllocatorUnitTestWrapper() = delete;
+        AllocatorUnitTestAdaptor() = delete;
 
     public:
         template <typename... Args>
-        AllocatorUnitTestWrapper(Args&&... args)
+        AllocatorUnitTestAdaptor(Args&&... args)
             : m_Allocator(std::forward<Args>(args)...)
         {}
 
-        ~AllocatorUnitTestWrapper() {}
+        ~AllocatorUnitTestAdaptor() {}
 
     private:
-        // TODO @DavidMohrhardt: Refactor the test framework for allocators to use the new allocator interface
         inline bool ValidateAllocation(
             void* const ptr,
             const size_t& oldAllocatedBytes,

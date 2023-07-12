@@ -29,7 +29,6 @@ namespace Savanna
         Mallocator() = default;
         Mallocator(const Mallocator&) = default;
 
-
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
         void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
     };

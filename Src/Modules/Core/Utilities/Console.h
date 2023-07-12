@@ -25,13 +25,13 @@
 
 #define SAVANNA_FATAL_LOG(...) \
 { \
-    Savanna::Console::LogTagged(Savanna::Console::Tag::FATAL, __VA_ARGS__); \
+    Savanna::Console::Print("[FATAL]: " __VA_ARGS__); \
 }
 
 #if SAVANNA_LOG_LEVEL > 0
 #define SAVANNA_WARNING_LOG(...) \
     { \
-        Savanna::Console::LogTagged(Savanna::Console::Tag::WARNING, __VA_ARGS__); \
+        Savanna::Console::Print("[WARNING]: " __VA_ARGS__); \
     }
 #else
     #define SAVANNA_WARNING_LOG(...)
@@ -40,7 +40,7 @@
 #if SAVANNA_LOG_LEVEL >= SAVANNA_LOG_LEVEL_DEBUG
     #define SAVANNA_DEBUG_LOG(...) \
     { \
-        Savanna::Console::LogTagged(Savanna::Console::Tag::DEBUG, __VA_ARGS__); \
+        Savanna::Console::Print("[DEBUG]: " __VA_ARGS__); \
     }
 #else
     #define SAVANNA_DEBUG_LOG(...)
@@ -94,24 +94,6 @@ namespace Savanna
         {
             const std::lock_guard<std::mutex> lock(s_UniversalConsoleLock);
             std::cout << dyna_print(format, args...) << std::endl;
-        }
-
-        template<typename... Args>
-        static void LogTagged(Tag tag, std::string format, Args&&... args)
-        {
-            switch (tag)
-            {
-            case Tag::DEBUG:
-                format = std::string("[DEBUG] ").append(format);
-                break;
-            case Tag::WARNING:
-                format = std::string("[WARNING] ").append(format);
-                break;
-            case Tag::FATAL:
-                format = std::string("[FATAL] ").append(format);
-                break;
-            }
-            Print(format.c_str(), args...);
         }
 
         template<typename... Args>

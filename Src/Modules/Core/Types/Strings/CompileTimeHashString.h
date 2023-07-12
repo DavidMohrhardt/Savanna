@@ -151,14 +151,14 @@ namespace Savanna
 #endif
         {}
 
-        SAVANNA_CONSTEVAL CompileTimeHashString(const char* str, size_t length)
-        {
-            m_Hash = evaluate_crc32_consteval(str);
-#if !SAVANNA_FORCE_STRING_HASHING
-            m_Literal = str;
-            m_Length = length;
-#endif
-        }
+//         SAVANNA_CONSTEVAL CompileTimeHashString(const char* str, size_t length)
+//         {
+//             m_Hash = evaluate_crc32_consteval(str);
+// #if !SAVANNA_FORCE_STRING_HASHING
+//             m_Literal = str;
+//             m_Length = length;
+// #endif
+//         }
 
         SAVANNA_CONSTEVAL CompileTimeHashString(const char* str, size_t length, int32 hash)
         {
