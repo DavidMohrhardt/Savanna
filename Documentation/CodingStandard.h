@@ -32,12 +32,17 @@ namespace Savanna::CodingStandard
     private:
         // Private members go here
         bool m_IsExample;
+
     public:
-        // Public members go here
+        // Public members go here. If no public members can be ignored.
+        bool m_IsPublicExample;
+        int m_Counter;
+
     public:
         // Constructors and destructors should have their own public/private/protected sections.
         ExampleClass();
         ~ExampleClass();
+
     private:
         ExampleClass(const ExampleClass& other);
 

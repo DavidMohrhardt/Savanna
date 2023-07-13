@@ -10,9 +10,10 @@
  */
 #pragma once
 
-#include <SavannaEngine.h>
-#include <Types/Singleton/Singleton.h>
-#include <Utilities/SavannaCoding.h>
+#include "SavannaEngine.h"
+#include "Utilities/SavannaCoding.h"
+
+#include "Types/Singleton/Singleton.h"
 
 #include <filesystem>
 #include <unordered_map>

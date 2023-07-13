@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 include(FetchContent)
 
 FetchContent_Declare(

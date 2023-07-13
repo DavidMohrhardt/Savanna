@@ -1,8 +1,8 @@
 #pragma once
 
 // Core Engine Includes
-#include <SavannaEngine.h>
-#include <Utilities/SavannaCoding.h>
+#include "SavannaEngine.h"
+#include "Utilities/SavannaCoding.h"
 #include <Types/Strings/FixedString.h>
 #include <Types/Singleton/Singleton.h>
 

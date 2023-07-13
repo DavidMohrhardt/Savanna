@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21)
 
 # Defines project settings
 project(Savanna VERSION 0.1)
@@ -20,11 +20,8 @@ set(CMAKE_CXX_COMPILER "llvm++" CACHE STRING "Set the C++ compiler to use")
 set(CORE_LIBRARY_KIND "SHARED" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)" FORCE)
 set(MULTI_COMPILE_LIBRARIES OFF CACHE BOOL "Set to ON to compile object libraries for each library and then create both static and shared libraries from the object libraries. Set to OFF to compile each library with the definition of ${CORE_LIBRARY_KIND}." FORCE)
 
-if (${MULTI_COMPILE_LIBRARIES})
-    message(STATUS "Multi Compile Libraries: ${MULTI_COMPILE_LIBRARIES}")
-else()
-    message(STATUS "Core Library Type: ${CORE_LIBRARY_KIND} ")
-endif()
+message(STATUS "Core Library Type: ${CORE_LIBRARY_KIND} ")
+message(STATUS "Multi Compile Libraries: ${MULTI_COMPILE_LIBRARIES} ")
 
 if (CORE_LIBRARY_KIND STREQUAL "SHARED")
     set(EXPORT_ALL_SYMBOLS ON CACHE BOOL "Export all symbols for dynamic libraries")
@@ -54,22 +51,23 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Command to output information to the console
 # Useful for displaying errors, warnings, and debugging
-# message ("\tcxx Flags:" ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_DEBUGGING_FLAGS})
+message ("\tcxx Flags:" ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_DEBUGGING_FLAGS})
 
-# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/archives")
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/libs")
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/archives")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/libs")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/bin")
 
 # Debug and Release Builds must Generate
 
 # Editor Project
 
 # Modules
+# add_subdirectory(Modules)
 add_subdirectory(Runtime)
 
 # Tests
-# add_subdirectory(Tests)
+add_subdirectory(Tests)
 
 # Outside Application Testing Projects
 # add_subdirectory(Applications/DX12Renderer)
-# add_subdirectory(Applications/VulkanRenderer)
+add_subdirectory(Applications/VulkanRenderer)

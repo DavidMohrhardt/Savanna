@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include <SavannaEngine.h>
-#include <Utilities/SavannaCoding.h>
+#include "SavannaEngine.h"
+#include "Utilities/SavannaCoding.h"
 #include <Types/Singleton/EmbeddedSingleton.h>
 
 namespace Savanna::Concurrency

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
 macro(ADD_CORE_LIBRARY library_name library_sources)
     if (MULTI_COMPILE_LIBRARIES)
@@ -85,7 +85,7 @@ macro(SET_CORE_LIBRARIES library_names out_library_names)
     set(out_library_names "${processed_library_names}")
 endmacro()
 
-macro(FIND_SOURCE_FILES_AND_SUBDIRECTORIES)
+macro(FIND_SOURCE_FILES_AND_SUBDIRS)
     # Acquire all source files in this directory, This is evil for the record)
     file(GLOB_RECURSE src
         ${CMAKE_CURRENT_LIST_DIR}/*.cpp
@@ -114,7 +114,7 @@ macro(FIND_SOURCE_FILES_AND_SUBDIRECTORIES)
             endif()
         endif()
     endforeach()
-endmacro()
+endmacro(FIND_SOURCE_FILES_AND_SUBDIRS)
 
 macro(ADD_MODULE_DEPENDENCY target_name module_name)
     SET_CORE_LIBRARIES(${module_name} module_name)
@@ -171,7 +171,7 @@ macro(DECLARE_CORE_LIBRARY target_name core_libs core_include_dirs external_libs
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
     # Find all source files and subdirectories
-    FIND_SOURCE_FILES_AND_SUBDIRECTORIES()
+    FIND_SOURCE_FILES_AND_SUBDIRS()
 
     # Sort the files into Filters based on Folder Hierarchy
     SOURCE_GROUP_BY_FOLDER()
@@ -197,7 +197,7 @@ macro(CREATE_APP_WITH_LIBS target_name core_libs core_include_dirs external_libs
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
     # Find all source files and subdirectories
-    FIND_SOURCE_FILES_AND_SUBDIRECTORIES()
+    FIND_SOURCE_FILES_AND_SUBDIRS()
 
     # Sort the files into Filters based on Folder Hierarchy
     SOURCE_GROUP_BY_FOLDER()
@@ -219,7 +219,9 @@ macro(CREATE_APP_WITH_LIBS target_name core_libs core_include_dirs external_libs
     message (STATUS "Finished Processing ${target_name}\n")
 endmacro()
 
-macro(PARSE_MODULE_CONFIG_JSON cur_name)
+function(CONFIG_INPUT_HEADER cur_name)
+    message(STATUS "Configuring input header for ${cur_name}")
+
     file(READ "${CMAKE_CURRENT_LIST_DIR}/${cur_name}_BuildConfig.json" module_json)
     string(JSON name_var GET "${module_json}" Name)
     string(JSON config_array_var GET "${module_json}" Configurations)
@@ -251,11 +253,6 @@ macro(PARSE_MODULE_CONFIG_JSON cur_name)
 
         endif()
     endforeach()
-endmacro()
-
-function(CONFIG_INPUT_HEADER cur_name)
-    message(STATUS "Configuring input header for ${cur_name}")
-    PARSE_MODULE_CONFIG_JSON(${cur_name})
 
     # In the current directory, find the *.h.in file
     file(GLOB input_header "${CMAKE_CURRENT_LIST_DIR}/*.h.in")

@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <SavannaEngine.h>
-#include <Utilities/SavannaCoding.h>
+#include "SavannaEngine.h"
+#include "Utilities/SavannaCoding.h"
 
 DEFINE_SAVANNA_ENUM(Savanna::Gfx, se_GfxApi_t, GfxApi, se_uint32,
     kSavannaGfxApiNone = 0,

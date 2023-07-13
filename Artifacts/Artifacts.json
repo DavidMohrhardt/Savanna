@@ -2,9 +2,9 @@
     {
         "Name": "Cmake",
         "Version": "3.10.0",
-        "URL": "https://github.com/Kitware/CMake/releases/download/v3.24.0",
+        "URL": "https://github.com/Kitware/CMake/releases/download/v3.26.0",
         "FileNames": [
-            "cmake-3.24.0-windows-x86_64.zip"
+            "cmake-3.26.0-windows-x86_64.zip"
         ],
         "OutputDirectory": "cmake"
     },

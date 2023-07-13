@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include <Utilities/SavannaCoding.h>
+#include "Utilities/SavannaCoding.h"
 
 DEFINE_SAVANNA_ENUM(
     Savanna::Gfx, se_TextureFormat_t, TextureFormat, se_uint64,

@@ -9,7 +9,7 @@
 
 #include "Entities.h"
 
-#include <Utilities/SavannaCoding.h>
+#include "Utilities/SavannaCoding.h"
 
 // While realistically extern "C" does not respect namespace, it's just easier if C++ functions
 // need to be defined here as well as the public API.

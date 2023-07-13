@@ -17,7 +17,7 @@
 #include "ParadigmLayoutDescriptor.h"
 
 // Core Includes
-#include <Utilities/SavannaCoding.h>
+#include "Utilities/SavannaCoding.h"
 
 #include <Math/MathHelpers.h>
 #include <Types/Containers/Arrays/ArraySlice.h>

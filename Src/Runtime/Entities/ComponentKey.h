@@ -11,7 +11,7 @@
 #ifndef __SAVANNA_COMPONENT_KEY_H__
 #define __SAVANNA_COMPONENT_KEY_H__
 
-#include <Utilities/SavannaCoding.h>
+#include "Utilities/SavannaCoding.h"
 
 #undef SAVANNA_ECS_KEY_TEETH_BIT_COUNT
 #define SAVANNA_ECS_KEY_TEETH_BIT_COUNT 24
