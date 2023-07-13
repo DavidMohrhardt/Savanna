@@ -2,6 +2,12 @@
 
 #include <Profiling/Profiler.h>
 
+#if SAVANNA_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <vulkan/vulkan_win32.h>
+#endif // OS Select
+
 namespace Savanna::Gfx::Vk
 {
     DisplaySurface::DisplaySurface()

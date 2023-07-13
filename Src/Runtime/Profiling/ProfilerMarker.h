@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-#include "SavannaCoreConfiguration.h"
+#include "SavannaConfiguration.h"
 
 #include "Types/Strings/FixedString.h"
 

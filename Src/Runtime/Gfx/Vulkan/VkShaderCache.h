@@ -73,12 +73,12 @@ namespace Savanna::Gfx::Vk
         bool TryCreateShader(
             const FixedString64& shaderName,
             const VkDevice& device,
-            std::vector<const byte>&& shaderBinary);
+            std::vector<uint32_t>& shaderBinary);
 
         JobHandle TryCreateShaderAsync(
             const FixedString64& shaderName,
             const VkDevice& device,
-            std::vector<const byte>&& shaderBinary);
+            std::vector<uint32_t>& shaderBinary);
 
     private:
         inline void RegisterShaderModule(const FixedString64& shaderName, VkShaderModule shaderModule)

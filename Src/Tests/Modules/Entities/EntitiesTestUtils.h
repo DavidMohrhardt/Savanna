@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include <Entities/Entities.h>
+#include <Entities/SavannaEntities.h>
 
 #include "Modules/ModuleTestUtils.h"
 

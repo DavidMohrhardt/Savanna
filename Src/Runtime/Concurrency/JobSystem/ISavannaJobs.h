@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include <ISavannaExtension.h>
+#include "Public/ISavannaExtension.h"
 
 #if defined(__cplusplus)
 
@@ -249,8 +249,11 @@ namespace Savanna::Concurrency
         template <typename ...Args>
         AutomaticJob(Args... args)
             : m_Job(args...)
-        {
-        }
+        {}
+
+        AutomaticJob(T&& job)
+            : m_Job(std::move(job))
+        {}
 
     private:
         virtual ~AutomaticJob() override {}

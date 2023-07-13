@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "SavannaCoreConfiguration.h"
+#include "SavannaConfiguration.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 #if __cplusplus

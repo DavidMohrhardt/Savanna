@@ -13,8 +13,7 @@ function(SUBDIRLIST result firstdir curdir)
             LIST(APPEND dirlist ${curdir}/${child})
         endIF()
     endforeach()
-    set(${result} ${dirlist})
-    return(PROPAGATE ${result})
+    set(${result} ${dirlist} PARENT_SCOPE)
 endfunction()
 
 # Collects all source files in the given directory and potentially subdirectories
@@ -47,8 +46,8 @@ function(collect_sources_in_dir out_src_list directory)
     if (recursion_requested)
         # Acquire all source files in this directory, This is evil for the record)
         file(GLOB_RECURSE src_list
-            ${directory}/*.cpp
-            ${directory}/*.c)
+            ${directory}/*.c*
+            ${directory}/*.h*)
 
         SUBDIRLIST(subdirs ${directory} ${directory})
 
@@ -64,11 +63,9 @@ function(collect_sources_in_dir out_src_list directory)
             endif()
 
             if (ARG_RECURSIVE_LIMITED)
-                # Check if the subdirectory has a CMakeLists.txt file
+                # # Check if the subdirectory has a CMakeLists.txt file
                 file(GLOB CMakeLists ${subdir}/CMakeLists.txt)
                 if (CMakeLists)
-                    # Add the subdirectory
-                    add_subdirectory(${subdir})
                     # Filter out the subdirectory from the source list
                     list(FILTER src_list EXCLUDE REGEX ${subdir})
                 endif() # CMakeLists
@@ -77,10 +74,8 @@ function(collect_sources_in_dir out_src_list directory)
         endforeach()
     else() # Not recursive,
         file(GLOB src_list
-            ${directory}/*.cpp
-            ${directory}/*.c
-            ${directory}/*.h
-            ${directory}/*.hpp)
+            ${directory}/*.c*
+            ${directory}/*.h*)
     endif()
 
     set(${out_src_list} ${src_list} PARENT_SCOPE)

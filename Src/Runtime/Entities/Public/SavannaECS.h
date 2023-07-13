@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "Entities.h"
+#include "SavannaEntities.h"
 
 #ifndef SAVANNA_DECLARE_ECS_COMPONENT_STRUCT
 /**

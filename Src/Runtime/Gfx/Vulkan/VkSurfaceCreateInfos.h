@@ -12,6 +12,15 @@
 
 #include <vulkan/vulkan.h>
 
+#if SAVANNA_WINDOWS
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <vulkan/vulkan_win32.h>
+#undef WIN32_LEAN_AND_MEAN
+
+#endif
+
 DEFINE_SAVANNA_ENUM(Savanna::Gfx::Vk, seVkSurfaceKind_t, SurfaceKind, se_uint32,
     SE_VK_SURFACE_KIND_WIN32,
     SE_VK_SURFACE_KIND_MACOS,

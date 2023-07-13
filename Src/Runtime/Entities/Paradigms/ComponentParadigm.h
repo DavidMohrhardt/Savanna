@@ -12,7 +12,7 @@
  */
 #pragma once
 
-#include "Entities.h"
+#include "SavannaEntities.h"
 
 #include "ParadigmLayoutDescriptor.h"
 

@@ -24,23 +24,18 @@ namespace Savanna::Gfx::Vk
         ShaderCache* m_pShaderCache;
         const FixedString64 m_ShaderName;
         VkDevice m_Device;
-        std::vector<const byte> m_ShaderBinary;
-        // VkShaderModuleCreateInfo m_ShaderModuleCreateInfo;
-        VkShaderModule m_OutShaderModule;
+        std::vector<uint32_t> m_ShaderBinary;
 
     public:
         ShaderModuleCreationJob(
             ShaderCache* pShaderCache,
             const FixedString64 &shaderName,
             const VkDevice& device,
-            // const VkShaderModuleCreateInfo& shaderModuleCreateInfo) SAVANNA_NOEXCEPT
-            const std::vector<const byte>&& shaderBinary) SAVANNA_NOEXCEPT
+            std::vector<uint32_t>& shaderBinary) SAVANNA_NOEXCEPT
             : m_pShaderCache(pShaderCache)
             , m_ShaderName(shaderName)
             , m_Device(device)
-            // , m_ShaderModuleCreateInfo(shaderModuleCreateInfo)
             , m_ShaderBinary(std::move(shaderBinary))
-            , m_OutShaderModule()
         {}
 
     public:
@@ -49,33 +44,24 @@ namespace Savanna::Gfx::Vk
             SAVANNA_ASSERT(m_pShaderCache != nullptr, "Shader cache is null!");
             SAVANNA_ASSERT(m_Device != VK_NULL_HANDLE, "Device is null!");
 
-            VkShaderModuleCreateInfo shaderModuleCreateInfo{};
-            shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-            shaderModuleCreateInfo.codeSize = m_ShaderBinary.size();
-            shaderModuleCreateInfo.pCode = static_cast<const uint32_t*>(m_ShaderBinary.data());
-            shaderModuleCreateInfo.flags = 0;
-
-            VkShaderModule shaderModule{};
-            VkResult result = vkCreateShaderModule(m_Device, &shaderModuleCreateInfo, nullptr, &shaderModule);
-            if (result != VK_SUCCESS)
-            {
-                SAVANNA_WARNING_LOG("Failed to create shader module! Error code: {}!", ResultToString(result));
-                return k_SavannaJobResultError;
-            }
-
-            m_pShaderCache->RegisterShaderModule(m_ShaderName, shaderModule);
-            m_OutShaderModule = shaderModule;
-
-            return k_SavannaJobResultSuccess;
+            return m_pShaderCache->TryCreateShader(m_ShaderName, m_Device, m_ShaderBinary)
+                ? k_SavannaJobResultSuccess
+                : k_SavannaJobResultError;
         }
     };
 
     bool ShaderCache::TryCreateShader(
         const FixedString64 &shaderName,
         const VkDevice &device,
-        std::vector<const byte>&& shaderBinary)
+        std::vector<uint32_t>& shaderBinary)
     {
-        VkShaderModule shaderModule;
+        VkShaderModuleCreateInfo shaderModuleCreateInfo{};
+        shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        shaderModuleCreateInfo.codeSize = shaderBinary.size();
+        shaderModuleCreateInfo.pCode = static_cast<const uint32_t*>(shaderBinary.data());
+        shaderModuleCreateInfo.flags = 0;
+
+        VkShaderModule shaderModule{};
         VkResult result = vkCreateShaderModule(device, &shaderModuleCreateInfo, nullptr, &shaderModule);
         if (result != VK_SUCCESS)
         {
@@ -90,12 +76,10 @@ namespace Savanna::Gfx::Vk
     JobHandle ShaderCache::TryCreateShaderAsync(
         const FixedString64& shaderName,
         const VkDevice& device,
-        std::vector<const byte>&& shaderBinary)
-        // const VkShaderModuleCreateInfo& shaderModuleCreateInfo)
+        std::vector<uint32_t>& shaderBinary)
     {
-        // m_ShaderModuleMap[shaderName] = VK_NULL_HANDLE;
         return JobManager::Get()->ScheduleJob(
-            new AutomaticJob<ShaderModuleCreationJob>(this, shaderName, device, std::move(shaderBinary)),
+            new AutomaticJob<ShaderModuleCreationJob>(this, shaderName, device, shaderBinary),
             JobPriority::k_SavannaJobPriorityHigh);
     }
 } // namespace Savanna::Gfx::Vk

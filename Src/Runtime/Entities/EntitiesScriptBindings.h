@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "Entities.h"
+#include "SavannaEntities.h"
 
 #include "Utilities/SavannaCoding.h"
 
