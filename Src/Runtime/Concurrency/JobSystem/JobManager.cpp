@@ -89,8 +89,6 @@ namespace Savanna::Concurrency
             {
                 JobRunner runner {reinterpret_cast<IJob*>(jobHandle)};
                 runner.Run();
-                std::lock_guard<std::mutex> lock(s_JobQueueMutex);
-                pJobManager->m_JobHandles[jobHandle] = JobState::k_SavannaJobStateCompleted;
             }
 
             std::this_thread::yield();
@@ -280,10 +278,18 @@ namespace Savanna::Concurrency
 
     void JobManager::AwaitCompletion(JobHandle jobHandle)
     {
-        while (GetJobState(jobHandle) != k_SavannaJobStateCompleted)
+        do
         {
+            {
+#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
+                std::lock_guard<std::mutex> lock(s_JobQueueMutex);
+#endif
+                if (m_JobHandles.find(jobHandle) == m_JobHandles.end())
+                    return;
+            }
+
             std::this_thread::yield();
-        }
+        } while (true);
     }
 
     JobState JobManager::GetJobState(JobHandle jobHandle)
