@@ -49,7 +49,7 @@ namespace Savanna::Gfx::Vk
             m_ShaderModuleMap.reserve(8);
         }
 
-        ~ShaderCache() = default;
+        ~ShaderCache();
 
         ShaderCache(const ShaderCache&) = delete;
 
@@ -75,27 +75,16 @@ namespace Savanna::Gfx::Vk
             const VkDevice& device,
             std::vector<uint32_t>& shaderBinary);
 
-        JobHandle TryCreateShaderAsync(
+        JobHandle ScheduleCreateShaderJob(
             const FixedString64& shaderName,
             const VkDevice& device,
             std::vector<uint32_t>& shaderBinary);
 
+        bool TryGetShaderModule(const FixedString64& shaderName, VkShaderModule& outShaderModule);
+
     private:
-        inline void RegisterShaderModule(const FixedString64& shaderName, VkShaderModule shaderModule)
-        {
-            std::lock_guard<std::mutex> lock(m_DataMutex);
-            m_ShaderModuleMap[shaderName] = shaderModule;
-        }
+        void Clear();
 
-        void Clear()
-        {
-            std::lock_guard<std::mutex> lock(m_DataMutex);
-            for (auto& shaderModule : m_ShaderModuleMap)
-            {
-                vkDestroyShaderModule(m_Device, shaderModule.second, nullptr);
-            }
-
-            m_ShaderModuleMap.clear();
-        }
+        void RegisterShaderModule(const FixedString64& shaderName, VkShaderModule shaderModule);
     };
 } // namespace Savanna::Gfx::Vk

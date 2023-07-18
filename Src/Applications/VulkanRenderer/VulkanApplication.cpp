@@ -53,13 +53,33 @@ namespace Savanna::Application
         , m_Renderer()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::ctor);
+
+        CreateRenderer();
+        CreateShaderModules();
+    }
+
+    VulkanApplication::~VulkanApplication()
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
+
+        Concurrency::JobManager::Get()->Stop(true);
+        Concurrency::JobManager::Destroy();
+
+        IO::VirtualFileSystem::Destroy();
+    }
+
+    void VulkanApplication::Run()
+    {
+        while(!m_Window.ShouldClose())
+        {
+            m_Window.PollEvents();
+        }
+    }
+
+    void VulkanApplication::CreateRenderer()
+    {
         using namespace Savanna;
         using namespace Savanna::Gfx::Vk;
-
-        Concurrency::JobManager::Construct((uint8)std::thread::hardware_concurrency());
-        IO::VirtualFileSystem::Construct();
-
-        Concurrency::JobManager::Get()->Start();
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -109,6 +129,15 @@ namespace Savanna::Application
         rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
 
         m_Renderer.Create(&rendererCreateInfo);
+    }
+
+    void VulkanApplication::CreateShaderModules()
+    {
+        Concurrency::JobManager::Construct((uint8)std::thread::hardware_concurrency());
+        IO::VirtualFileSystem::Construct();
+
+        Concurrency::JobManager::Get()->Start();
+
         auto& shaderCache = m_Renderer.GetShaderCache();
 
         // Read shaders from disk
@@ -122,7 +151,7 @@ namespace Savanna::Application
             std::vector<uint32_t> shaderBytes = stream.ReadFile<uint32_t>();
 
             // Create shader module
-            JobHandle cacheJob = shaderCache.TryCreateShaderAsync(
+            JobHandle cacheJob = shaderCache.ScheduleCreateShaderJob(
                 name,
                 m_Renderer.GetGfxDevice(),
                 shaderBytes);
@@ -140,23 +169,5 @@ namespace Savanna::Application
             }
         }
         JobManager::Get()->AwaitCompletion(shaderJobsHandle);
-    }
-
-    VulkanApplication::~VulkanApplication()
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
-
-        Concurrency::JobManager::Get()->Stop(true);
-        Concurrency::JobManager::Destroy();
-
-        IO::VirtualFileSystem::Destroy();
-    }
-
-    void VulkanApplication::Run()
-    {
-        while(!m_Window.ShouldClose())
-        {
-            m_Window.PollEvents();
-        }
     }
 }

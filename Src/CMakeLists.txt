@@ -42,12 +42,14 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 # Useful for displaying errors, warnings, and debugging
 message (STATUS "\tcxx Flags:" ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_DEBUGGING_FLAGS})
 
-# Debug and Release Builds must Generate
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../build/archives")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../build/libs")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../build/bin")
 
 # Editor Project
 
 # Runtime Library
-set(SAVANNA_CORE_LIBRARY_TYPE STATIC)
+set(SAVANNA_CORE_LIBRARY_TYPE SHARED)
 add_subdirectory(Runtime)
 
 # Outside Application Testing Projects

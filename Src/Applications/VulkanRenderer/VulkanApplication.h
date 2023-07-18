@@ -33,9 +33,11 @@ namespace Savanna::Application
         void Run();
 
     private:
+        void CreateRenderer();
+        void CreateShaderModules();
+
         GLFWWindowWrapper m_Window;
         Renderer m_Renderer;
 
-    private:
     };
 } // namespace SavannaVk

@@ -37,6 +37,7 @@ add_executable(${SAVANNA_ACTIVE_TARGET} ${src})
 # Link libraries
 find_package(Vulkan REQUIRED)
 
+add_dependencies(${SAVANNA_ACTIVE_TARGET} Savanna)
 target_link_libraries(${SAVANNA_ACTIVE_TARGET} Savanna glfw glm Vulkan::Vulkan)
 include_savanna_directories(${SAVANNA_ACTIVE_TARGET} ${CMAKE_SOURCE_DIR}/Runtime)
 target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${Vulkan_INCLUDE_DIRS})
@@ -45,7 +46,7 @@ target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${Vulkan_INCLUDE_DIRS
 add_custom_target(TARGET )
 add_custom_command(TARGET ${SAVANNA_ACTIVE_TARGET} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_LIST_DIR}/Assets $<TARGET_FILE_DIR:${SAVANNA_ACTIVE_TARGET}>/Assets)
+        ${CMAKE_CURRENT_LIST_DIR}/Assets/Shaders/SPIRV $<TARGET_FILE_DIR:${SAVANNA_ACTIVE_TARGET}>/Assets/SPIRV)
 
 # Install the executable
 install(TARGETS ${SAVANNA_ACTIVE_TARGET}

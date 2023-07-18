@@ -14,10 +14,8 @@ namespace Savanna::Concurrency
     JobResult JobRunner::Run()
     {
         auto jobManager = JobManager::Get();
-
-        jobManager->SetJobState(reinterpret_cast<JobHandle>(m_pJob), JobState::k_SavannaJobStateRunning);
         auto result = m_pJob->Execute();
-        jobManager->SetJobState(reinterpret_cast<JobHandle>(m_pJob), JobState::k_SavannaJobStateCompleted);
+        jobManager->OnJobCompletedInternal(reinterpret_cast<JobHandle>(m_pJob));
 
         switch (result)
         {

@@ -75,5 +75,6 @@ namespace Savanna::Concurrency
     private:
         JobResult AwaitJobOrExecuteImmediateInternal(JobHandle dependency);
         void SetJobState(JobHandle handle, JobState state);
+        void OnJobCompletedInternal(JobHandle handle);
     };
 } // namespace Savanna::Concurrency

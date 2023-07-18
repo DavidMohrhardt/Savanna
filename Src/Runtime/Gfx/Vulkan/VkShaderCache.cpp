@@ -55,6 +55,11 @@ namespace Savanna::Gfx::Vk
         }
     };
 
+    ShaderCache::~ShaderCache()
+    {
+        Clear();
+    }
+
     bool ShaderCache::TryCreateShader(
         const FixedString64 &shaderName,
         const VkDevice &device,
@@ -78,13 +83,54 @@ namespace Savanna::Gfx::Vk
         return true;
     }
 
-    JobHandle ShaderCache::TryCreateShaderAsync(
+    JobHandle ShaderCache::ScheduleCreateShaderJob(
         const FixedString64& shaderName,
         const VkDevice& device,
         std::vector<uint32_t>& shaderBinary)
     {
-        return JobManager::Get()->ScheduleJob(
-            new AutomaticJob<ShaderModuleCreationJob>(this, shaderName, device, shaderBinary),
-            JobPriority::k_SavannaJobPriorityHigh);
+        JobHandle handle = k_InvalidJobHandle;
+        {
+            std::lock_guard<std::mutex> lock(m_DataMutex);
+            if (m_ShaderModuleMap.find(shaderName) != m_ShaderModuleMap.end())
+            {
+                return k_InvalidJobHandle;
+            }
+
+            handle = JobManager::Get()->ScheduleJob(
+                new AutomaticJob<ShaderModuleCreationJob>(this, shaderName, device, shaderBinary),
+                JobPriority::k_SavannaJobPriorityHigh);
+
+            m_ShaderModuleMap[shaderName] = {0};
+        }
+
+        return handle;
+    }
+
+    bool ShaderCache::TryGetShaderModule(const FixedString64 &shaderName, VkShaderModule &outShaderModule)
+    {
+        std::lock_guard<std::mutex> lock(m_DataMutex);
+        if (m_ShaderModuleMap.find(shaderName) != m_ShaderModuleMap.end())
+        {
+            outShaderModule = m_ShaderModuleMap[shaderName];
+            return true;
+        }
+        return false;
+    }
+
+    void ShaderCache::Clear()
+    {
+        std::lock_guard<std::mutex> lock(m_DataMutex);
+        for (auto& shaderModule : m_ShaderModuleMap)
+        {
+            vkDestroyShaderModule(m_Device, shaderModule.second, nullptr);
+        }
+
+        m_ShaderModuleMap.clear();
+    }
+
+    void ShaderCache::RegisterShaderModule(const FixedString64& shaderName, VkShaderModule shaderModule)
+    {
+        std::lock_guard<std::mutex> lock(m_DataMutex);
+        m_ShaderModuleMap[shaderName] = shaderModule;
     }
 } // namespace Savanna::Gfx::Vk
