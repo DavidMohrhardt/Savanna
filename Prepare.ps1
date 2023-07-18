@@ -100,7 +100,7 @@ if ($null -ne $vulkanSdkPath)
     }
     # run glslc.exe to compile shaders to spirv
     # Get the Src directory in the project
-    $srcDir = Get-ChildItem -Path $scriptDir -Include Assets -Recurse
+    $srcDir = Get-ChildItem -Path "$scriptDir/Src" -Include Assets -Recurse
 
     # Get all the hlsl and glsl files in the Src directory
     $hlslFiles = Get-ChildItem -Path $srcDir -Include *.hlsl -Recurse
@@ -121,7 +121,8 @@ if ($null -ne $vulkanSdkPath)
     foreach ($file in $filesToCompile)
     {
         $fileName = Split-Path -Leaf $file
-        $spirvDir = "$scriptDir\Assets\Shaders\SPIRV"
+        $fileDir = Split-Path $file
+        $spirvDir = "$fileDir\SPIRV"
         if (! (Test-Path $spirvDir))
         {
             mkdir $spirvDir

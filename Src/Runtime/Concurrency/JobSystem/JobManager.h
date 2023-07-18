@@ -26,10 +26,10 @@
 
 namespace Savanna::Concurrency
 {
-    class JobManager : public Singleton<JobManager>
+    class JobManager final : public Singleton<JobManager>
     {
     private:
-        friend class Singleton<JobManager>;
+        DECLARE_SINGLETON_CLASS(JobManager);
         friend class DependencyAwaiterJob;
         friend class JobRunner;
 
@@ -50,9 +50,10 @@ namespace Savanna::Concurrency
         std::unordered_map<JobHandle, JobState> m_JobHandles;
 
         JobManager(uint8 threadPoolSize);
-        ~JobManager();
 
     public:
+        ~JobManager();
+
         void Start();
         void Stop(bool synchronized = false);
 
@@ -73,5 +74,6 @@ namespace Savanna::Concurrency
 
     private:
         JobResult AwaitJobOrExecuteImmediateInternal(JobHandle dependency);
+        void SetJobState(JobHandle handle, JobState state);
     };
 } // namespace Savanna::Concurrency

@@ -3,23 +3,21 @@
 
 namespace Savanna::Concurrency
 {
-    JobRunner::JobRunner(IJob *pJob, JobHandle dependency)
+    JobRunner::JobRunner(IJob *pJob)
         : m_pJob(pJob)
-        , m_Dependency(dependency)
     {
 
     }
 
     JobRunner::~JobRunner() {}
 
-    void JobRunner::Run()
+    JobResult JobRunner::Run()
     {
-        if (m_Dependency != k_InvalidJobHandle)
-        {
-            JobManager::Get()->AwaitJobOrExecuteImmediateInternal(m_Dependency);
-        }
+        auto jobManager = JobManager::Get();
 
+        jobManager->SetJobState(reinterpret_cast<JobHandle>(m_pJob), JobState::k_SavannaJobStateRunning);
         auto result = m_pJob->Execute();
+        jobManager->SetJobState(reinterpret_cast<JobHandle>(m_pJob), JobState::k_SavannaJobStateCompleted);
 
         switch (result)
         {
@@ -35,5 +33,7 @@ namespace Savanna::Concurrency
         default:
             break;
         }
+
+        return result;
     }
 }

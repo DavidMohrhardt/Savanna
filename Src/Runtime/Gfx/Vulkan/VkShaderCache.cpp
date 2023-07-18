@@ -9,6 +9,7 @@
  *
  */
 #include "VkShaderCache.h"
+#include "Utilities/Semantics/Move.h"
 
 #include <JobSystem/JobManager.h>
 
@@ -37,6 +38,10 @@ namespace Savanna::Gfx::Vk
             , m_Device(device)
             , m_ShaderBinary(std::move(shaderBinary))
         {}
+
+        ShaderModuleCreationJob(ShaderModuleCreationJob &&) = default;
+        // TODO determine why this operator doesn't work as expected.
+        // ShaderModuleCreationJob& operator=(ShaderModuleCreationJob&&) noexcept = default;
 
     public:
         virtual JobResult Execute() SAVANNA_OVERRIDE

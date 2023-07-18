@@ -39,13 +39,13 @@ namespace Savanna::Application
     const char* k_EngineName = "No Engine";
 
     const char* k_DefaultShaderPaths[] = {
-        "Assets/Shaders/SPIRV/vert.spv",
-        "Assets/Shaders/SPIRV/frag.spv"
+        "Assets/Shaders/SPIRV/SimpleTriangle.vert.spv",
+        "Assets/Shaders/SPIRV/SimpleTriangle.frag.spv"
     };
 
     const char* k_ShaderNames[] = {
-        "vert",
-        "frag"
+        "SimpleTriangleVertex",
+        "SimpleTriangleFragment"
     };
 
     VulkanApplication::VulkanApplication()
@@ -56,7 +56,10 @@ namespace Savanna::Application
         using namespace Savanna;
         using namespace Savanna::Gfx::Vk;
 
+        Concurrency::JobManager::Construct((uint8)std::thread::hardware_concurrency());
         IO::VirtualFileSystem::Construct();
+
+        Concurrency::JobManager::Get()->Start();
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -116,19 +119,13 @@ namespace Savanna::Application
             FixedString64 name = k_ShaderNames[i];
             // Get full path to shader
             IO::FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
-            std::vector<char> shaderBytes = stream.ReadFile();
-            VkShaderModuleCreateInfo shaderModuleCreateInfo {};
-            shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-            shaderModuleCreateInfo.codeSize = shaderBytes.size();
-            shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(shaderBytes.data());
-            shaderModuleCreateInfo.flags = 0;
-            shaderModuleCreateInfo.pNext = nullptr;
+            std::vector<uint32_t> shaderBytes = stream.ReadFile<uint32_t>();
 
             // Create shader module
             JobHandle cacheJob = shaderCache.TryCreateShaderAsync(
                 name,
                 m_Renderer.GetGfxDevice(),
-                shaderModuleCreateInfo);
+                shaderBytes);
             if (cacheJob != k_InvalidJobHandle)
             {
                 if (shaderJobsHandle == k_InvalidJobHandle)
@@ -148,6 +145,10 @@ namespace Savanna::Application
     VulkanApplication::~VulkanApplication()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
+
+        Concurrency::JobManager::Get()->Stop(true);
+        Concurrency::JobManager::Destroy();
+
         IO::VirtualFileSystem::Destroy();
     }
 

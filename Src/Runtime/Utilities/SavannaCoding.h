@@ -29,6 +29,7 @@
 #include "Macros/CppFunctionality.h"
 #include "Macros/CppTypeDefs.h"
 #include "Macros/Enums.h"
+#include "Macros/PlatformSpecific.h"
 
 // Some common math helpers
 #include "Math/MathHelpers.h"

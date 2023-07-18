@@ -93,7 +93,8 @@
         "stack": "cpp",
         "*.in": "cpp",
         "shared_mutex": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "semaphore": "cpp"
     },
     "doxdocgen.generic.authorName": "David Mohrhardt",
     "doxdocgen.generic.authorEmail": "https://github.com/DavidMohrhardt/Savanna",

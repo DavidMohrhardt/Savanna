@@ -113,3 +113,38 @@ function(collect_sources_in_current_dir out_src_list)
 
     set(${out_src_list} ${src_list} PARENT_SCOPE)
 endfunction(collect_sources_in_current_dir)
+
+# Calls target_include_directory on all directories with a CMakeLists.txt in Src/Runtime folder
+# of the Savanna project. This is a highly specialized function and should not be used for any
+# other purposes
+#
+# Args
+# in_target: The input target to include the Savanna core includes directories.
+function(include_savanna_directories TARGET DIRECTORY)
+    # Special case to grab the DIRECTORY as well if needs be
+    if(EXISTS "${DIRECTORY}/CMakeLists.txt")
+        message (STATUS "Including ${DIRECTORY} in ${TARGET}")
+        target_include_directories(${TARGET} PRIVATE ${DIRECTORY})
+    endif()
+    file(GLOB_RECURSE CMAKELISTS_FILES "${DIRECTORY}/*/CMakeLists.txt")
+    foreach(CMAKELISTS_FILE ${CMAKELISTS_FILES})
+        get_filename_component(SUBDIRECTORY ${CMAKELISTS_FILE} DIRECTORY)
+        message (STATUS "Including ${SUBDIRECTORY} in ${TARGET}")
+        target_include_directories(${TARGET} PRIVATE ${SUBDIRECTORY})
+    endforeach()
+endfunction()
+
+# Using the source list, create a source group for each
+# Will essentially help recreate the folder structure in
+# Visual Studio instead of all cpp files being in one folder.
+function(SOURCE_GROUP_BY_FOLDER)
+    message(STATUS "Setting up source groups")
+    collect_sources_in_current_dir(_source_list RECURSIVE)
+    # message("Processing Source list: ${_source_list}")
+    foreach(_source IN ITEMS ${_source_list})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
+        string(REPLACE "/" "\\" _group_path "${_group_path}")
+        source_group("${_group_path}" FILES "${_source}")
+    endforeach()
+endfunction(SOURCE_GROUP_BY_FOLDER)

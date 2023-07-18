@@ -35,7 +35,20 @@ namespace Savanna::IO
         ~FileStream();
 
     public:
-        std::vector<char> ReadFile();
+        template<typename T>
+        std::vector<T> ReadFile()
+        {
+            if (!m_FileStream.is_open())
+            {
+                throw Savanna::RuntimeErrorException("File is not open!");
+            }
+
+            std::vector<T> buffer(m_FileStream.seekg(0, std::ios::end).tellg());
+            m_FileStream.seekg(0, std::ios::beg);
+            m_FileStream.read(reinterpret_cast<char*>(buffer.data()), buffer.size() * sizeof(T));
+
+            return buffer;
+        }
 
     public:
         inline bool IsOpen() const { return m_FileStream.is_open(); }

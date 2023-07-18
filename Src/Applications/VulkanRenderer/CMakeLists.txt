@@ -11,30 +11,46 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw glm)
 
-FIND_VULKAN_OR_FAIL()
+set(SAVANNA_ACTIVE_TARGET SavannaVkRenderer)
 
-# set(core_libs SavannaVk  SavannaConcurrency SavannaIO SavannaCore)
-# set(core_libs SavannaCore SavannaIO SavannaConcurrency SavannaVk)
-set(core_libs SavannaVk SavannaIO SavannaConcurrency SavannaCore)
-set(core_include_dirs
-        ${CMAKE_SOURCE_DIR}/Public
-        ${CMAKE_SOURCE_DIR}/Modules/Core
-        ${CMAKE_SOURCE_DIR}/Modules/IO
-        ${CMAKE_SOURCE_DIR}/Modules/Application
-        ${CMAKE_SOURCE_DIR}/Modules/Concurrency
-        ${CMAKE_SOURCE_DIR}/Modules/Gfx/Vulkan)
+message(STATUS "Building [${SAVANNA_ACTIVE_TARGET}] Application")
 
-set(external_libs glfw glm)
-set(external_include_dirs)
+# set(core_libs Savanna)
+# set(external_libs glfw glm)
+# set(external_include_dirs)
 
-CREATE_APP_WITH_LIBS(SavannaVkRenderer "${core_libs}" "${core_include_dirs}" "${external_libs}" "${external_include_dirs}")
+message(STATUS "Processing: ${SAVANNA_ACTIVE_TARGET}")
+
+collect_sources_in_current_dir(src RECURSIVE_LIMITED)
+
+# Sort the files into Filters based on Folder Hierarchy
+SOURCE_GROUP_BY_FOLDER()
+
+# Turn on the ability to create folders to organize projects (.vcproj)
+# It creates "CMakePredefinedTargets" folder by default and adds CMake
+# defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# Add Executable
+add_executable(${SAVANNA_ACTIVE_TARGET} ${src})
+
+# Link libraries
+find_package(Vulkan REQUIRED)
+
+target_link_libraries(${SAVANNA_ACTIVE_TARGET} Savanna glfw glm Vulkan::Vulkan)
+include_savanna_directories(${SAVANNA_ACTIVE_TARGET} ${CMAKE_SOURCE_DIR}/Runtime)
+target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${Vulkan_INCLUDE_DIRS})
 
 # Copy Assets folder to install directory
-add_custom_command(TARGET SavannaVkRenderer POST_BUILD
+add_custom_target(TARGET )
+add_custom_command(TARGET ${SAVANNA_ACTIVE_TARGET} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_LIST_DIR}/Assets $<TARGET_FILE_DIR:SavannaVkRenderer>/Assets)
-
+        ${CMAKE_CURRENT_LIST_DIR}/Assets $<TARGET_FILE_DIR:${SAVANNA_ACTIVE_TARGET}>/Assets)
 
 # Install the executable
-install(TARGETS ${target_name} RUNTIME DESTINATION bin/Debug)
-
+install(TARGETS ${SAVANNA_ACTIVE_TARGET}
+            EXPORT ${SAVANNA_ACTIVE_TARGET}Targets
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

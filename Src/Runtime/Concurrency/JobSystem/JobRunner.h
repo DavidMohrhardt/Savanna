@@ -21,13 +21,12 @@ namespace Savanna::Concurrency
     {
     private:
         IJob* m_pJob;
-        JobHandle m_Dependency;
 
     public:
-        JobRunner(IJob* pJob, JobHandle dependency = k_InvalidJobHandle);
+        JobRunner(IJob* pJob);
         ~JobRunner();
 
     public:
-        void Run();
+        JobResult Run();
     };
 } // namespace Savanna::Concurrency

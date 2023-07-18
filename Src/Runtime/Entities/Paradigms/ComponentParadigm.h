@@ -14,6 +14,7 @@
 
 #include "SavannaEntities.h"
 
+#include "ComponentKey.h"
 #include "ParadigmLayoutDescriptor.h"
 
 // Core Includes
@@ -144,7 +145,9 @@ namespace Savanna::Entities
             }
 
             ComponentKey componentKey = IComponentData<T>::GetKey();
-            if (!SECompareKeys(componentKey, m_ParadigmKeyChain[componentKey.m_Set]))
+            if (!SavannaCompareKeys(
+                    componentKey,
+                    m_ParadigmKeyChain[componentKey.GetRingIndex()]))
             {
                 // This component is not in this paradigm
                 return nullptr;

@@ -11,28 +11,24 @@
 #include <utility>
 #include <memory>
 
+#define DECLARE_SINGLETON_CLASS(__className) \
+    friend class Singleton<__className>; \
+    friend class std::shared_ptr<__className>;
+
 namespace Savanna
 {
     template <typename T>
     class Singleton
     {
     private:
-        inline static std::shared_ptr<T> s_pInstance = std::shared_ptr<T>(nullptr);
+        inline static std::shared_ptr<T> s_pInstance = nullptr;
 
     public:
-        static void Register(std::shared_ptr<T> spInstance)
-        {
-            if (s_pInstance == nullptr)
-            {
-                s_pInstance = spInstance;
-            }
-        }
-
         static std::shared_ptr<T> Get()
         {
             if (s_pInstance == nullptr)
             {
-                throw RuntimeErrorException("Singleton not constructed!");
+                throw RuntimeErrorException("[Singleton] Not yet constructed!");
             }
             return s_pInstance;
         }

@@ -7,7 +7,8 @@ Savanna::IO::FileStream::FileStream(const char *filePath)
 {
     if (!m_FileStream.is_open())
     {
-        throw Savanna::RuntimeErrorException("Failed to open file!");
+        Console::PrintLineSynchronous("{} failed to open.", filePath);
+        throw Savanna::RuntimeErrorException("[Savanna::IO::FileStream] Failed to open file!");
     }
 }
 
@@ -33,18 +34,4 @@ Savanna::IO::FileStream::~FileStream()
     {
         m_FileStream.close();
     }
-}
-
-std::vector<char> Savanna::IO::FileStream::ReadFile()
-{
-    if (!m_FileStream.is_open())
-    {
-        throw Savanna::RuntimeErrorException("File is not open!");
-    }
-
-    std::vector<char> buffer(m_FileStream.seekg(0, std::ios::end).tellg());
-    m_FileStream.seekg(0, std::ios::beg);
-    m_FileStream.read(buffer.data(), buffer.size());
-
-    return buffer;
 }

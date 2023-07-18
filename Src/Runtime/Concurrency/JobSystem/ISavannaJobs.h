@@ -266,15 +266,15 @@ namespace Savanna::Concurrency
     public:
         AutomaticJob(const AutomaticJob&) = delete;
         AutomaticJob(AutomaticJob&& other) noexcept
-            : m_pJob(std::move(other.m_pJob))
+            : m_Job(std::move(other.m_Job))
         {
-            SAVANNA_MOVE_MEMBER(m_pJob, other);
+            SAVANNA_MOVE_MEMBER(m_Job, other);
         }
 
         AutomaticJob& operator=(const AutomaticJob&) = delete;
         AutomaticJob& operator=(AutomaticJob&& other) noexcept
         {
-            SAVANNA_MOVE_MEMBER(m_pJob, other);
+            SAVANNA_MOVE_MEMBER(m_Job, other);
             return *this;
         }
 

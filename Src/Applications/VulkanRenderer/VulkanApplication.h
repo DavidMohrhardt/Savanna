@@ -14,7 +14,6 @@
 
 #include <VkRenderer.h>
 
-#include <IApplication.h>
 #include <Types/Strings/FixedString.h>
 
 #include "Window/GLFWWindowWrapper.h"
@@ -25,7 +24,7 @@ namespace Savanna::Application
 {
     using namespace Savanna::Gfx::Vk;
 
-    class VulkanApplication : public Savanna::IApplication
+    class VulkanApplication
     {
     public:
         VulkanApplication();

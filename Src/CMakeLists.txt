@@ -17,20 +17,6 @@ set(CMAKE_C_COMPILER "llvm" CACHE STRING "Set the C compiler to use")
 set(CMAKE_CXX_COMPILER "llvm++" CACHE STRING "Set the C++ compiler to use")
 
 # Set Global Variables
-set(CORE_LIBRARY_KIND "SHARED" CACHE STRING "Set the kind of library to build (STATIC, SHARED, MODULE)" FORCE)
-set(MULTI_COMPILE_LIBRARIES OFF CACHE BOOL "Set to ON to compile object libraries for each library and then create both static and shared libraries from the object libraries. Set to OFF to compile each library with the definition of ${CORE_LIBRARY_KIND}." FORCE)
-
-if (${MULTI_COMPILE_LIBRARIES})
-    message(STATUS "Multi Compile Libraries: ${MULTI_COMPILE_LIBRARIES}")
-else()
-    message(STATUS "Core Library Type: ${CORE_LIBRARY_KIND} ")
-endif()
-
-if (CORE_LIBRARY_KIND STREQUAL "SHARED")
-    set(EXPORT_ALL_SYMBOLS ON CACHE BOOL "Export all symbols for dynamic libraries")
-else()
-    set(EXPORT_ALL_SYMBOLS OFF CACHE BOOL "Export all symbols for dynamic libraries")
-endif()
 
 # Set Universal variables
 set(module_path ${PROJECT_SOURCE_DIR}/../Buildscripts/CMake/Modules/*.cmake)
@@ -44,7 +30,7 @@ endforeach()
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+# set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set General Standards
 set(CMAKE_CXX_STANDARD 20)
@@ -54,22 +40,18 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 
 # Command to output information to the console
 # Useful for displaying errors, warnings, and debugging
-# message ("\tcxx Flags:" ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_DEBUGGING_FLAGS})
-
-# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/archives")
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/libs")
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../Builds/bin")
+message (STATUS "\tcxx Flags:" ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_DEBUGGING_FLAGS})
 
 # Debug and Release Builds must Generate
 
 # Editor Project
 
-# Modules
+# Runtime Library
+set(SAVANNA_CORE_LIBRARY_TYPE SHARED)
 add_subdirectory(Runtime)
+
+# Outside Application Testing Projects
+add_subdirectory(Applications/VulkanRenderer)
 
 # Tests
 # add_subdirectory(Tests)
-
-# Outside Application Testing Projects
-# add_subdirectory(Applications/DX12Renderer)
-# add_subdirectory(Applications/VulkanRenderer)

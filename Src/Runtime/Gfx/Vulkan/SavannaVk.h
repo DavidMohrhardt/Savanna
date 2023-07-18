@@ -12,6 +12,8 @@
 #if __cplusplus
 namespace Savanna::Gfx::Vulkan
 {
-
+#if SAVANNA_VK_DYNAMIC_INCLUDE
+    VkGetInstanceProcAddrFunc s_GetInstanceProcAddr = nullptr;
+#endif // SAVANNA_VK_DYNAMIC_INCLUDE
 } // namespace Savanna::Gfx::Vulkan
 #endif // end __cplusplus

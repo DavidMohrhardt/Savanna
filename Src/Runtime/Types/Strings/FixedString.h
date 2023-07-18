@@ -25,10 +25,9 @@ namespace Savanna \
     private: \
         \
     public: \
-        FixedString##__strlen__() : m_StringLength(0) {} \
+        FixedString##__strlen__() = default; \
 \
         FixedString##__strlen__(const char* cstring, size_t start, size_t size) \
-            : m_StringLength(0)\
         { \
             memset(m_Bytes, 0, __strlen__); \
             if (cstring != nullptr && start < size) \
@@ -49,30 +48,32 @@ namespace Savanna \
             : FixedString##__strlen__(str.c_str(), 0, str.length()) \
         {} \
 \
+        FixedString##__strlen__(FixedString##__strlen__&& other) \
+        { \
+            CopyFrom(other.m_Characters, 0, __strlen__); \
+            memset(other.m_Bytes, 0, __strlen__); \
+        } \
+\
         void SetCharacter(char character, size_t position) \
         { \
-            if (position > m_StringLength || position < 0) \
+            if (position > __strlen__ || position < 0) \
             { \
                 return; \
             } \
             m_Characters[position] = character; \
-            if (character == '\0') \
-            { \
-                m_StringLength = position; \
-            } \
         } \
 \
         void Append(char character) \
         { \
-            if (m_StringLength < __strlen__) \
+            if (GetStringLength() < __strlen__ - 1) \
             { \
-                m_Characters[m_StringLength] = character; \
-                m_StringLength++; \
+                m_Characters[GetStringLength()] = character; \
             } \
         } \
 \
         void Append(std::string const str, size_t start = 0)\
         {\
+            SAVANNA_ASSERT(str.length() - start < __strlen__ - 1, "Can't append string.");\
             CopyFrom(str.c_str(), start, str.length());\
         }\
 \
@@ -103,7 +104,7 @@ namespace Savanna \
             return *this; \
         } \
 \
-        const size_t GetStringLength() const { return m_StringLength; } \
+        const size_t GetStringLength() const { return strlen(m_Characters); } \
 \
         template<typename TPrimitive> FixedString##__strlen__(const char* format, TPrimitive primitive) \
         { \
@@ -125,6 +126,13 @@ namespace Savanna \
             return result ^ (__strlen__ << 1); \
         } \
 \
+        FixedString##__strlen__& operator=(FixedString##__strlen__&& other) \
+        { \
+            CopyFrom(other.m_Characters, 0, __strlen__); \
+            memset(other.m_Bytes, 0, __strlen__); \
+            return *this; \
+        } \
+\
         operator se_FixedString##__strlen__&() { return m_CFixedString; } \
         operator const se_FixedString##__strlen__&() const { return m_CFixedString; } \
         se_byte& operator[](size_t index) { return m_Bytes[index]; } \
@@ -133,9 +141,8 @@ namespace Savanna \
         void CopyFrom(const char* cstring, size_t start, size_t size, size_t destOffset = 0) \
         {\
             size_t copyLength = size - start > size - 1 ? size - 1 : size - start; \
-            SAVANNA_ASSERT(copyLength < __strlen__ - m_StringLength - destOffset, "The length of the copy is larger than the space allocated to the string!"); \
+            SAVANNA_ASSERT(copyLength < __strlen__ - GetStringLength() - destOffset, "The length of the copy is larger than the space allocated to the string!"); \
             memcpy(m_Bytes + destOffset, cstring, copyLength); \
-            m_StringLength += copyLength;\
         }\
 \
         union \
@@ -144,8 +151,6 @@ namespace Savanna \
             alignas(8) char m_Characters[ __strlen__ ]; \
             alignas(8) se_byte m_Bytes[ __strlen__ ]; \
         }; \
-    private:\
-        alignas(8) size_t m_StringLength; \
     }; \
 \
 } /* namespace Savanna */ \
