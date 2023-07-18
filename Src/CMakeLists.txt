@@ -47,7 +47,7 @@ message (STATUS "\tcxx Flags:" ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_DEBUGGING_FLAGS})
 # Editor Project
 
 # Runtime Library
-set(SAVANNA_CORE_LIBRARY_TYPE SHARED)
+set(SAVANNA_CORE_LIBRARY_TYPE STATIC)
 add_subdirectory(Runtime)
 
 # Outside Application Testing Projects
