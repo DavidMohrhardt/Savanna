@@ -2,5 +2,5 @@
 $pythonInstallPath = Get-ChildItem -Path "./BuildTools/Python" -Include python.exe -Recurse | Resolve-Path
 $scriptPath = "./Tools/Coding/Python/UpdateTodos.py" | Resolve-Path
 
-# # Invoke Python
+# Invoke Python
 & $pythonInstallPath $scriptPath $args

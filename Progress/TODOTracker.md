@@ -8,6 +8,11 @@ Total TODOs: 100
 - [L5 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L5)
 - [L14 :# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.](../Src/CMakeLists.txt#L14)
 
+### CMakeLists.txt.old
+
+- [L5 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt.old#L5)
+- [L14 :# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.](../Src/CMakeLists.txt.old#L14)
+
 ### DX12Application.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/DX12Renderer/DX12Application.cpp#L3)
@@ -27,153 +32,150 @@ Total TODOs: 100
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L84 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L84)
+- [L101 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L101)
 
 ### VulkanApplication.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.h#L3)
 
-### CMakeLists.txt
+### CMakeLists.txt.old
 
-- [L30 :# TODO @DavidMohrhardt - Move profiling to a module](../Src/Modules/CMakeLists.txt#L30)
-
-### IApplication.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Application/IApplication.h#L3)
-- [L12 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Application/IApplication.h#L12)
-
-### MathHelpers.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Math/MathHelpers.h#L3)
-
-### ProfilerManager.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Profiling/ProfilerManager.h#L3)
-
-### CacheLine.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/CacheLine.h#L3)
-
-### FreeListAllocator.cpp
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/FreeListAllocator.cpp#L3)
-
-### FreeListAllocator.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/FreeListAllocator.h#L3)
-
-### Mallocator.cpp
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/Mallocator.cpp#L3)
-
-### Mallocator.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Memory/Mallocator.h#L3)
-
-### MemoryChunkDescriptors.h
-
-- [L24 :// TODO: Instead of a pointer make this a uint32 offset from the start of the chunk](../Src/Modules/Core/Types/Memory/MemoryChunkDescriptors.h#L24)
-- [L35 :// TODO: When MemoryChunkDescriptor is changed to a uint32 offset, change this to a uint32](../Src/Modules/Core/Types/Memory/MemoryChunkDescriptors.h#L35)
-
-### FloatingPointUnions.h
-
-- [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L29)
-- [L56 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Core/Types/Primitive/FloatingPointUnions.h#L56)
-
-### Console.h
-
-- [L81 :// TODO](../Src/Modules/Core/Utilities/Console.h#L81)
-
-### EngineArenas.h
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Engine/Memory/EngineArenas.h#L3)
-- [L14 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Engine/Memory/EngineArenas.h#L14)
-- [L31 :* is only available until the end of a frame. TODO @DavidMohrhardt Document additional details.](../Src/Modules/Engine/Memory/EngineArenas.h#L31)
-
-### PlayerLoop.h
-
-- [L7 :// TODO @davidmo: move this over to a manager](../Src/Modules/Engine/Player/PlayerLoop.h#L7)
+- [L34 :# TODO @DavidMohrhardt - Move profiling to a module](../Src/Runtime/CMakeLists.txt.old#L34)
 
 ### ComponentRegistry.cpp
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ComponentRegistry.cpp#L3)
-- [L19 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L19)
-- [L29 :// TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L29)
-- [L30 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L30)
-- [L32 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L32)
-- [L42 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L42)
-- [L43 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L43)
-- [L47 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L47)
-- [L53 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L53)
-- [L54 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L54)
-- [L58 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L58)
-- [L64 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Modules/Entities/ComponentRegistry.cpp#L64)
-- [L65 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L65)
-- [L69 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Modules/Entities/ComponentRegistry.cpp#L69)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/ComponentRegistry.cpp#L3)
+- [L19 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L19)
+- [L29 :// TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.](../Src/Runtime/Entities/ComponentRegistry.cpp#L29)
+- [L30 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L30)
+- [L32 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L32)
+- [L42 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Runtime/Entities/ComponentRegistry.cpp#L42)
+- [L43 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L43)
+- [L47 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L47)
+- [L53 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Runtime/Entities/ComponentRegistry.cpp#L53)
+- [L54 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L54)
+- [L58 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L58)
+- [L64 :// TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.](../Src/Runtime/Entities/ComponentRegistry.cpp#L64)
+- [L65 :#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L65)
+- [L69 :#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY](../Src/Runtime/Entities/ComponentRegistry.cpp#L69)
 
 ### Entity.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/Entity.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/Entity.h#L3)
 
 ### IComponentData.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/IComponentData.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/IComponentData.h#L3)
 
 ### ISystem.h
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Entities/ISystem.h#L3)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/ISystem.h#L3)
 
 ### ComponentParadigm.cpp
 
-- [L46 :// TODO @DavidMohrhardt Release memory](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L46)
-- [L135 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L135)
-- [L149 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L149)
-- [L156 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Modules/Entities/Paradigms/ComponentParadigm.cpp#L156)
+- [L46 :// TODO @DavidMohrhardt Release memory](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L46)
+- [L135 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L135)
+- [L149 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L149)
+- [L156 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L156)
 
 ### JacobianMatrix.cpp
 
-- [L79 :// TODO](../Src/Modules/Experimental/Animation/IK/JacobianMatrix.cpp#L79)
+- [L79 :// TODO](../Src/Runtime/Experimental~/Animation/IK/JacobianMatrix.cpp#L79)
 
 ### PhysicsComponent.cpp
 
-- [L27 :// TODO](../Src/Modules/Experimental/Physics/PhysicsComponent.cpp#L27)
-- [L41 :// TODO @DavidMohrhardt bring this code back up to speed](../Src/Modules/Experimental/Physics/PhysicsComponent.cpp#L41)
+- [L27 :// TODO](../Src/Runtime/Experimental~/Physics/PhysicsComponent.cpp#L27)
+- [L41 :// TODO @DavidMohrhardt bring this code back up to speed](../Src/Runtime/Experimental~/Physics/PhysicsComponent.cpp#L41)
 
 ### PhysicsManager.cpp
 
-- [L176 :// TODO](../Src/Modules/Experimental/Physics/PhysicsManager.cpp#L176)
+- [L176 :// TODO](../Src/Runtime/Experimental~/Physics/PhysicsManager.cpp#L176)
 
 ### WindowsPluginLoader.cpp
 
-- [L4 :// TODO: For some reason the compiler just will not load the Kernel32 library. I have no idea why.](../Src/Modules/Experimental/Plugins/Loader/WindowsPluginLoader.cpp#L4)
+- [L4 :// TODO: For some reason the compiler just will not load the Kernel32 library. I have no idea why.](../Src/Runtime/Experimental~/Plugins/Loader/WindowsPluginLoader.cpp#L4)
 
 ### Assertions.h
 
-- [L6 ://TODO](../Src/Modules/Experimental/Threading/Assertions.h#L6)
-- [L10 :// TODO](../Src/Modules/Experimental/Threading/Assertions.h#L10)
+- [L6 ://TODO](../Src/Runtime/Experimental~/Threading/Assertions.h#L6)
+- [L10 :// TODO](../Src/Runtime/Experimental~/Threading/Assertions.h#L10)
 
 ### FiberAsmMacros.h
 
-- [L93 :// TODO @davidmo](../Src/Modules/Experimental/Threading/Fibers/FiberAsmMacros.h#L93)
+- [L93 :// TODO @davidmo](../Src/Runtime/Experimental~/Threading/Fibers/FiberAsmMacros.h#L93)
+
+### CMakeLists.txt
+
+- [L27 :# TODO Some of this code has OS specific code in it. Ensure it's properly excluded.](../Src/Runtime/Gfx/Vulkan/CMakeLists.txt#L27)
 
 ### VkRendererCreateInfo.h
 
-- [L18 :// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers](../Src/Modules/Gfx/Vulkan/VkRendererCreateInfo.h#L18)
+- [L18 :// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers](../Src/Runtime/Gfx/Vulkan/VkRendererCreateInfo.h#L18)
+
+### VkShaderCache.cpp
+
+- [L42 :// TODO determine why this operator doesn't work as expected.](../Src/Runtime/Gfx/Vulkan/VkShaderCache.cpp#L42)
 
 ### VkSwapchain.cpp
 
-- [L79 :// TODO @DavidMohrhardt: Get extents from renderer create info and pass them to the swapchain creation](../Src/Modules/Gfx/Vulkan/VkSwapchain.cpp#L79)
-- [L157 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Modules/Gfx/Vulkan/VkSwapchain.cpp#L157)
+- [L79 :// TODO @DavidMohrhardt: Get extents from renderer create info and pass them to the swapchain creation](../Src/Runtime/Gfx/Vulkan/VkSwapchain.cpp#L79)
+- [L157 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Runtime/Gfx/Vulkan/VkSwapchain.cpp#L157)
 
 ### VkPhysicalDeviceUtils.cpp
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
-- [L98 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L98)
-- [L162 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Modules/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L162)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L3)
+- [L98 :// TODO @DavidMohrhardt Just arbitrarily add 1 for everything and fine tune later](../Src/Runtime/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L98)
+- [L162 :// TODO @DavidMohrhardt Just arbitrarily add the deviceDescsCount for everything and fine tune later](../Src/Runtime/Gfx/Vulkan/Utilities/VkPhysicalDeviceUtils.cpp#L162)
 
 ### VkSwapchainUtils.cpp
 
-- [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Modules/Gfx/Vulkan/Utilities/VkSwapchainUtils.cpp#L18)
+- [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Runtime/Gfx/Vulkan/Utilities/VkSwapchainUtils.cpp#L18)
+
+### MathHelpers.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Math/MathHelpers.h#L3)
+
+### DynamicLibraryManager.h
+
+- [L32 :// TODO currently unsupported. Libraries stay loaded for the duration of the program](../Src/Runtime/OS/DynamicLibraryManager.h#L32)
+
+### ProfilerManager.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Profiling/ProfilerManager.h#L3)
+
+### CacheLine.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/CacheLine.h#L3)
+
+### FreeListAllocator.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/FreeListAllocator.cpp#L3)
+
+### FreeListAllocator.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/FreeListAllocator.h#L3)
+
+### Mallocator.cpp
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/Mallocator.cpp#L3)
+
+### Mallocator.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/Mallocator.h#L3)
+
+### MemoryChunkDescriptors.h
+
+- [L24 :// TODO: Instead of a pointer make this a uint32 offset from the start of the chunk](../Src/Runtime/Types/Memory/MemoryChunkDescriptors.h#L24)
+- [L35 :// TODO: When MemoryChunkDescriptor is changed to a uint32 offset, change this to a uint32](../Src/Runtime/Types/Memory/MemoryChunkDescriptors.h#L35)
+
+### FloatingPointUnions.h
+
+- [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive/FloatingPointUnions.h#L29)
+- [L56 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive/FloatingPointUnions.h#L56)
+
+### Console.h
+
+- [L81 :// TODO](../Src/Runtime/Utilities/Console.h#L81)
 
 ### SavannaTestRunner.h
 
@@ -203,6 +205,10 @@ Total TODOs: 100
 ### AllocatorTestUtils.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/AllocatorTestUtils.h#L3)
+
+### AllocatorUnitTestAdaptor.h
+
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Tests/Core/Memory/Allocators/AllocatorUnitTestAdaptor.h#L3)
 
 ### AllocatorUtilsTests.cpp
 
