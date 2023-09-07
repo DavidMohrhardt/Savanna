@@ -27,7 +27,7 @@ namespace Savanna::Concurrency
         {
             for (const auto& dependency : m_Dependencies)
             {
-                JobManager::Get()->AwaitJobOrExecuteImmediateInternal(dependency);
+                JobManager::Get().AwaitJobOrExecuteImmediateInternal(dependency);
             }
             return k_SavannaJobResultSuccess;
         }
@@ -35,10 +35,7 @@ namespace Savanna::Concurrency
 
     void JobManager::ProcessJobs()
     {
-        // SAVANNA_ASSERT(!ThreadManager::IsMainThread(), "JobManager::ProcessJobs() must not be called from the main thread.");
-        auto pJobManager = Get();
-
-        while (pJobManager->m_ProcessingJobs.load())
+        while (JobManager::Get().m_ProcessingJobs.load())
         {
             JobHandle jobHandle = k_InvalidJobHandle;
 
@@ -50,25 +47,25 @@ namespace Savanna::Concurrency
                     continue;
                 }
 #endif
-                if (!pJobManager->m_HighPriorityJobs.empty())
+                if (!JobManager::Get().m_HighPriorityJobs.empty())
                 {
-                    jobHandle = pJobManager->m_HighPriorityJobs.front();
-                    pJobManager->m_HighPriorityJobs.pop();
+                    jobHandle = JobManager::Get().m_HighPriorityJobs.front();
+                    JobManager::Get().m_HighPriorityJobs.pop();
                 }
-                else if (!pJobManager->m_NormalPriorityJobs.empty())
+                else if (!JobManager::Get().m_NormalPriorityJobs.empty())
                 {
-                    jobHandle = pJobManager->m_NormalPriorityJobs.front();
-                    pJobManager->m_NormalPriorityJobs.pop();
+                    jobHandle = JobManager::Get().m_NormalPriorityJobs.front();
+                    JobManager::Get().m_NormalPriorityJobs.pop();
                 }
-                else if (!pJobManager->m_LowPriorityJobs.empty())
+                else if (!JobManager::Get().m_LowPriorityJobs.empty())
                 {
-                    jobHandle = pJobManager->m_LowPriorityJobs.front();
-                    pJobManager-> m_LowPriorityJobs.pop();
+                    jobHandle = JobManager::Get().m_LowPriorityJobs.front();
+                    JobManager::Get(). m_LowPriorityJobs.pop();
                 }
 
                 if (jobHandle != k_InvalidJobHandle)
                 {
-                    if (pJobManager->m_JobHandles.find(jobHandle) == pJobManager->m_JobHandles.end())
+                    if (JobManager::Get().m_JobHandles.find(jobHandle) == JobManager::Get().m_JobHandles.end())
                     {
                         // Job has already been completed elsewhere either by a dependent that got dequeued before it
                         // or a manual await call. Skip it.
@@ -76,7 +73,7 @@ namespace Savanna::Concurrency
                     }
                     else
                     {
-                        pJobManager->m_JobHandles[jobHandle] = k_SavannaJobStateRunning;
+                        JobManager::Get().m_JobHandles[jobHandle] = k_SavannaJobStateRunning;
                     }
                 }
 
@@ -85,45 +82,55 @@ namespace Savanna::Concurrency
 #endif
             }
 
-            if (jobHandle != k_InvalidJobHandle && pJobManager->GetJobState(jobHandle) == JobState::k_SavannaJobStateRunning)
+            if (jobHandle != k_InvalidJobHandle && JobManager::Get().GetJobState(jobHandle) == JobState::k_SavannaJobStateRunning)
             {
-                JobRunner runner {reinterpret_cast<IJob*>(jobHandle)};
-                runner.Run();
+                IJob* pJob = reinterpret_cast<IJob*>(jobHandle);
+                switch (pJob->Execute())
+                {
+                    case k_SavannaJobResultSuccess:
+                        pJob->OnComplete();
+                        break;
+                    case k_SavannaJobResultCancelled:
+                        pJob->OnCancel();
+                        break;
+                    case k_SavannaJobResultError:
+                    default:
+                        pJob->OnError();
+                        break;
+                }
+                JobManager::Get().OnJobCompletedInternal(jobHandle);
             }
 
             std::this_thread::yield();
         }
     }
 
-    JobManager::JobManager(uint8 threadPoolSize)
-        : m_ThreadPoolSize(threadPoolSize)
+    JobManager::JobManager()
+        : m_ThreadPoolSize()
         , m_ProcessingJobs(false)
         , m_JobThreads()
         , m_HighPriorityJobs()
         , m_NormalPriorityJobs()
         , m_LowPriorityJobs()
         , m_JobHandles()
-    {
-        SAVANNA_ASSERT(
-            threadPoolSize > 0,
-            "JobManager::JobManager: threadPoolSize must be greater than 0.");
+    {}
 
-        // SAVANNA_ASSERT(
-        //     threadPoolSize <= std::thread::hardware_concurrency - 1,
-        //     "JobManager::JobManager: threadPoolSize must be less than the number of available cores - 1 for the main thread.");
+    JobManager::~JobManager() {}
+
+    bool JobManager::InitializeInternal()
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::InitializeInternal());
+        m_ThreadPoolSize = (uint8)std::thread::hardware_concurrency() - 1;
+        m_JobThreads.reserve(m_ThreadPoolSize);
+        return true;
     }
 
-    JobManager::~JobManager()
+    void JobManager::StartInternal()
     {
-        Stop(true);
-    }
-
-    void JobManager::Start()
-    {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::StartInternal());
         // If the atomic started bool is false, then we set it to true and spin up the threads.
         bool expected = false;
-        bool desired = true;
-        if (m_ProcessingJobs.compare_exchange_strong(expected, desired))
+        if (m_ProcessingJobs.compare_exchange_weak(expected, true, std::memory_order_release))
         {
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
             std::lock_guard<std::mutex> lock(s_JobQueueMutex);
@@ -136,8 +143,9 @@ namespace Savanna::Concurrency
         }
     }
 
-    void JobManager::Stop(bool synchronized)
+    void JobManager::StopInternal()
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::StopInternal());
         while (m_ProcessingJobs.exchange(false, std::memory_order_release))
         {
             {
@@ -146,14 +154,7 @@ namespace Savanna::Concurrency
 #endif
                 for (int i = 0; i < m_JobThreads.size(); ++i)
                 {
-                    // if (synchronized && m_JobThreads[i].joinable())
-                    {
-                        m_JobThreads[i].join();
-                    }
-                    // else
-                    // {
-                    //     m_JobThreads[i].detach();
-                    // }
+                    m_JobThreads[i].join();
                 }
                 m_JobThreads.clear();
             }
@@ -168,6 +169,14 @@ namespace Savanna::Concurrency
         }
     }
 
+    void JobManager::ShutdownInternal()
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ShutdownInternal());
+        StopInternal();
+        m_JobHandles.clear();
+        m_JobThreads.clear();
+    }
+
     /**
      * @brief Schedules a job to be executed by the job system.
      * The job pointer must remain valid until the job has finished
@@ -175,6 +184,7 @@ namespace Savanna::Concurrency
     */
     JobHandle JobManager::ScheduleJob(IJob *pJob, JobPriority priority, JobHandle dependency)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ScheduleJob(IJob *pJob, JobPriority priority, JobHandle dependency));
         JobHandle handle = k_InvalidJobHandle;
 
         if (pJob != nullptr)
@@ -191,6 +201,8 @@ namespace Savanna::Concurrency
     {
         if (handle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return;
+
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ScheduleJob(JobHandle &handle, JobPriority priority));
 
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
@@ -216,6 +228,10 @@ namespace Savanna::Concurrency
 
     void JobManager::ScheduleJobBatch(JobHandle *handles, size_t jobCount, JobPriority priority)
     {
+        if (handles == nullptr || jobCount == 0) SAVANNA_BRANCH_UNLIKELY
+            return;
+
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ScheduleJobBatch(JobHandle *handles, size_t jobCount, JobPriority priority));
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 #endif
@@ -246,6 +262,10 @@ namespace Savanna::Concurrency
 
     bool JobManager::TryCancelJob(JobHandle jobHandle) noexcept
     {
+        if (jobHandle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
+            return false;
+
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::TryCancelJob(JobHandle jobHandle));
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 #endif
@@ -266,10 +286,8 @@ namespace Savanna::Concurrency
                 }
                 break;
 
-            case k_SavannaJobStateCompleted:
-                return false;
-
             default:
+                m_JobHandles.erase(it);
                 break;
             }
         }
@@ -278,6 +296,10 @@ namespace Savanna::Concurrency
 
     void JobManager::AwaitCompletion(JobHandle jobHandle)
     {
+        if (jobHandle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
+            return;
+
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::AwaitCompletion(JobHandle jobHandle));
         do
         {
             {
@@ -292,8 +314,19 @@ namespace Savanna::Concurrency
         } while (true);
     }
 
+    void JobManager::AwaitCompletion(JobHandle* pJobHandles, size_t jobCount)
+    {
+        JobHandle combinedJobHandles = CombineDependencies(pJobHandles, jobCount);
+        AwaitCompletion(combinedJobHandles);
+    }
+
     JobState JobManager::GetJobState(JobHandle jobHandle)
     {
+        if (jobHandle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
+            return k_SavannaJobStateInvalid;
+
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::GetJobState(JobHandle jobHandle));
+
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 #endif
@@ -310,18 +343,23 @@ namespace Savanna::Concurrency
         JobHandle *handles,
         size_t jobCount)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::CombineDependencies(JobHandle *handles, size_t jobCount));
         if (jobCount == 0 || handles == nullptr)
         {
             return k_InvalidJobHandle;
         }
 
         return ScheduleJob(
-            new AutomaticJob<DependencyAwaiterJob>(std::vector<JobHandle>(handles, handles + jobCount)),
+            SAVANNA_NEW(TemporaryJob<DependencyAwaiterJob>, std::vector<JobHandle>(handles, handles + jobCount)),
             k_SavannaJobPriorityHigh);
     }
 
     JobResult JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency));
+        if (dependency == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
+            return k_SavannaJobResultError;
+
         IJob* pJob = nullptr;
         {
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
@@ -337,8 +375,23 @@ namespace Savanna::Concurrency
 
         if (pJob != nullptr)
         {
-            JobRunner runner { pJob };
-            return runner.Run();
+            JobResult result = pJob->Execute();
+            switch (result)
+            {
+                case k_SavannaJobResultSuccess:
+                    pJob->OnComplete();
+                    break;
+                case k_SavannaJobResultCancelled:
+                    pJob->OnCancel();
+                    break;
+                case k_SavannaJobResultError:
+                default:
+                    pJob->OnError();
+                    break;
+            }
+
+            OnJobCompletedInternal(dependency);
+            return result;
         }
         else
         {
@@ -347,16 +400,9 @@ namespace Savanna::Concurrency
         }
     }
 
-    void JobManager::SetJobState(JobHandle handle, JobState state)
-    {
-#if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
-        std::lock_guard<std::mutex> lock(s_JobQueueMutex);
-#endif
-        m_JobHandles[handle] = state;
-    }
-
     void JobManager::OnJobCompletedInternal(JobHandle handle)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(JobManager::OnJobCompletedInternal(JobHandle handle));
 #if !USE_LOCKLESS_CONCURRENCY_STRUCTURES
         std::lock_guard<std::mutex> lock(s_JobQueueMutex);
 #endif

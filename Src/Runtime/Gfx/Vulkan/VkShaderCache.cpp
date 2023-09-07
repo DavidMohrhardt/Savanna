@@ -96,8 +96,8 @@ namespace Savanna::Gfx::Vk
                 return k_InvalidJobHandle;
             }
 
-            handle = JobManager::Get()->ScheduleJob(
-                new AutomaticJob<ShaderModuleCreationJob>(this, shaderName, device, shaderBinary),
+            handle = JobManager::Get().ScheduleJob(
+                SAVANNA_NEW(TemporaryJob<ShaderModuleCreationJob>, this, shaderName, device, shaderBinary),
                 JobPriority::k_SavannaJobPriorityHigh);
 
             m_ShaderModuleMap[shaderName] = {0};

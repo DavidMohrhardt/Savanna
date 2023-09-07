@@ -8,11 +8,6 @@
  */
 #pragma once
 
-#include <utility>
-#include <memory>
-
-#include "Singleton.h"
-
 namespace Savanna
 {
     template <typename T>

@@ -33,141 +33,179 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
-namespace Savanna::Application
+using namespace Savanna;
+using namespace Savanna::Concurrency;
+using namespace Savanna::IO;
+
+using namespace Savanna::Gfx::Vk;
+
+const char* k_ApplicationName = "Savanna";
+const char* k_EngineName = "No Engine";
+
+const char* k_DefaultShaderPaths[] = {
+    "Assets/SPIRV/SimpleTriangle.vert.spv",
+    "Assets/SPIRV/SimpleTriangle.frag.spv"
+};
+
+const char* k_ShaderNames[] = {
+    "SimpleTriangleVertex",
+    "SimpleTriangleFragment"
+};
+
+VulkanApplication::VulkanApplication(int argc, char** argvs)
+    : m_Window(1920, 1080)
+    , m_Renderer()
 {
-    const char* k_ApplicationName = "Savanna";
-    const char* k_EngineName = "No Engine";
+    SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::ctor);
 
-    const char* k_DefaultShaderPaths[] = {
-        "Assets/Shaders/SPIRV/SimpleTriangle.vert.spv",
-        "Assets/Shaders/SPIRV/SimpleTriangle.frag.spv"
-    };
+    // Initialize File System
+    VirtualFileSystem::Construct(argvs[0]);
 
-    const char* k_ShaderNames[] = {
-        "SimpleTriangleVertex",
-        "SimpleTriangleFragment"
-    };
+    // Init Renderer
+    CreateRenderer();
+    CreateShaderModules();
+}
 
-    VulkanApplication::VulkanApplication()
-        : m_Window(glfwCreateWindow(1920, 1080, "Savanna", nullptr, nullptr))
-        , m_Renderer()
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::ctor);
+VulkanApplication::~VulkanApplication()
+{
+    SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
 
-        CreateRenderer();
-        CreateShaderModules();
-    }
+    IO::VirtualFileSystem::Destroy();
+}
 
-    VulkanApplication::~VulkanApplication()
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
-
-        Concurrency::JobManager::Get()->Stop(true);
-        Concurrency::JobManager::Destroy();
-
-        IO::VirtualFileSystem::Destroy();
-    }
-
-    void VulkanApplication::Run()
+void VulkanApplication::Run()
+{
+    try
     {
         while(!m_Window.ShouldClose())
         {
+            // SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::Run::Frame);
             m_Window.PollEvents();
         }
     }
-
-    void VulkanApplication::CreateRenderer()
+    catch(const std::exception& e)
     {
-        using namespace Savanna;
-        using namespace Savanna::Gfx::Vk;
+        SAVANNA_FATAL_LOG("{}", e.what());
+    }
+}
 
-        uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+void VulkanApplication::CreateRenderer()
+{
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-        std::vector<const char*> extensions {
+    std::vector<const char*> extensions {
 #if SAVANNA_VULKAN_DEBUGGING
-            VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif // ENABLE_VALIDATION_LAYERS
-        };
+    };
 
-        for (uint32_t i = 0; i < glfwExtensionCount; ++i)
-        {
-            extensions.push_back(glfwExtensions[i]);
-        }
-
-        std::vector<const char*> layers {
-#if SAVANNA_VULKAN_DEBUGGING
-            "VK_LAYER_KHRONOS_validation"
-#endif // ENABLE_VALIDATION_LAYERS
-        };
-
-        const uint32_t deviceExtensionsCount = 1;
-
-        RendererCreateInfo rendererCreateInfo {0};
-        rendererCreateInfo.m_ApplicationName = k_ApplicationName;
-        rendererCreateInfo.m_EngineName = k_EngineName;
-        rendererCreateInfo.m_Width = 1920;
-        rendererCreateInfo.m_Height = 1080;
-        rendererCreateInfo.m_ppInstanceExtensions = extensions.data();
-        rendererCreateInfo.m_InstanceExtensionsCount = static_cast<uint32>(extensions.size());
-        rendererCreateInfo.m_ppEnabledLayerNames = layers.data();
-        rendererCreateInfo.m_EnabledLayerCount = static_cast<uint32>(layers.size());
-
-#if SAVANNA_WINDOWS
-        Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &rendererCreateInfo.m_SurfaceCreateInfo);
-#else
-        #error "Unsupported platform!"
-#endif
-
-        // TODO @DavidMohrhardt Allow for additional extensions to be added via queries
-        std::vector<const char*> deviceExtensions {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        };
-        rendererCreateInfo.m_ppDeviceExtensions = deviceExtensions.data();
-        rendererCreateInfo.m_DeviceExtensionsCount = static_cast<uint32>(deviceExtensions.size());
-
-        rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
-
-        m_Renderer.Create(&rendererCreateInfo);
+    for (uint32_t i = 0; i < glfwExtensionCount; ++i)
+    {
+        extensions.push_back(glfwExtensions[i]);
     }
 
-    void VulkanApplication::CreateShaderModules()
+    std::vector<const char*> layers {
+#if SAVANNA_VULKAN_DEBUGGING
+        "VK_LAYER_KHRONOS_validation"
+#endif // ENABLE_VALIDATION_LAYERS
+    };
+
+    const uint32_t deviceExtensionsCount = 1;
+
+    RendererCreateInfo rendererCreateInfo {0};
+    rendererCreateInfo.m_ApplicationName = k_ApplicationName;
+    rendererCreateInfo.m_EngineName = k_EngineName;
+    rendererCreateInfo.m_Width = 1920;
+    rendererCreateInfo.m_Height = 1080;
+    rendererCreateInfo.m_ppInstanceExtensions = extensions.data();
+    rendererCreateInfo.m_InstanceExtensionsCount = static_cast<uint32>(extensions.size());
+    rendererCreateInfo.m_ppEnabledLayerNames = layers.data();
+    rendererCreateInfo.m_EnabledLayerCount = static_cast<uint32>(layers.size());
+
+#if SAVANNA_WINDOWS
+    Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &rendererCreateInfo.m_SurfaceCreateInfo);
+#else
+    #error "Unsupported platform!"
+#endif
+
+    // TODO @DavidMohrhardt Allow for additional extensions to be added via queries
+    std::vector<const char*> deviceExtensions {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    };
+    rendererCreateInfo.m_ppDeviceExtensions = deviceExtensions.data();
+    rendererCreateInfo.m_DeviceExtensionsCount = static_cast<uint32>(deviceExtensions.size());
+
+    rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
+
+    m_Renderer.Create(&rendererCreateInfo);
+}
+
+void VulkanApplication::CreateShaderModules()
+{
+    SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules);
+
+    struct ShaderCreateJobInput
     {
-        Concurrency::JobManager::Construct((uint8)std::thread::hardware_concurrency());
-        IO::VirtualFileSystem::Construct();
+        const char* m_ShaderPath;
+        FixedString64 m_ShaderName;
+        Renderer& m_Renderer;
+    };
 
-        Concurrency::JobManager::Get()->Start();
+    ShaderCreateJobInput inputData[2]
+    {
+        ShaderCreateJobInput{k_DefaultShaderPaths[0], k_ShaderNames[0], m_Renderer},
+        ShaderCreateJobInput{k_DefaultShaderPaths[1], k_ShaderNames[1], m_Renderer}
+    };
 
-        auto& shaderCache = m_Renderer.GetShaderCache();
-
-        // Read shaders from disk
-        JobHandle shaderJobsHandle = k_InvalidJobHandle;
-        for (int i = 0; i < 2; ++i)
+    JobExecuteFunc shaderJobFunc = [](void* pUserData) -> JobResult
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules::ShaderCreateJob);
+        if (pUserData == nullptr)
         {
-            auto& shaderPath = k_DefaultShaderPaths[i];
-            FixedString64 name = k_ShaderNames[i];
+            SAVANNA_FATAL_LOG("Shader job data is null!");
+            return JobResult::k_SavannaJobResultError;
+        }
+
+        ShaderCreateJobInput* pShaderCreateJobInput = reinterpret_cast<ShaderCreateJobInput*>(pUserData);
+
+        auto& shaderPath = pShaderCreateJobInput->m_ShaderPath;
+        auto& shaderName = pShaderCreateJobInput->m_ShaderName;
+        auto& renderer = pShaderCreateJobInput->m_Renderer;
+
+        try
+        {
             // Get full path to shader
             IO::FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
             std::vector<uint32_t> shaderBytes = stream.ReadFile<uint32_t>();
 
             // Create shader module
-            JobHandle cacheJob = shaderCache.ScheduleCreateShaderJob(
-                name,
-                m_Renderer.GetGfxDevice(),
-                shaderBytes);
-            if (cacheJob != k_InvalidJobHandle)
-            {
-                if (shaderJobsHandle == k_InvalidJobHandle)
-                {
-                    shaderJobsHandle = cacheJob;
-                }
-                else
-                {
-                    JobHandle jobHandles[] = { shaderJobsHandle, cacheJob };
-                    shaderJobsHandle = Concurrency::JobManager::Get()->CombineDependencies(jobHandles, 2);
-                }
-            }
+            return renderer.GetShaderCache().TryCreateShader(shaderName, renderer.GetGfxDevice(), shaderBytes)
+                ? JobResult::k_SavannaJobResultSuccess
+                : JobResult::k_SavannaJobResultError;
         }
-        JobManager::Get()->AwaitCompletion(shaderJobsHandle);
-    }
+        catch(const std::exception& e)
+        {
+            SAVANNA_FATAL_LOG("Failed to create shader module: {}", e.what());
+            return JobResult::k_SavannaJobResultError;
+        }
+    };
+
+    // Read shaders from disk
+    PrimitiveJob shaderCreateJobs[2]
+    {
+        PrimitiveJob{shaderJobFunc, &inputData[0]},
+        PrimitiveJob{shaderJobFunc, &inputData[1]}
+    };
+
+    // Schedule shader creation jobs
+    JobHandle shaderJobHandles[2]
+    {
+        JobManager::Get().ScheduleJob(&shaderCreateJobs[0]),
+        JobManager::Get().ScheduleJob(&shaderCreateJobs[1])
+    };
+
+    // Wait for shader creation jobs to complete
+    JobManager::Get().AwaitCompletion(shaderJobHandles[0]);
+    JobManager::Get().AwaitCompletion(shaderJobHandles[1]);
 }

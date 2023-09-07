@@ -16,9 +16,9 @@ namespace Savanna
     // auto is utilized to make the template argument less annoying.
     inline auto Now() SAVANNA_NOEXCEPT { return std::chrono::high_resolution_clock::now(); }
 
-    ProfilerMarker::ProfilerMarker(FixedString256&& markerName)
+    ProfilerMarker::ProfilerMarker(const char* markerName)
         : m_Sampling(false)
-        , m_ProfilerMarkerName(std::move(markerName))
+        , m_ProfilerMarkerName(markerName)
         , m_StartTime()
         , m_EndTime()
     {}
@@ -60,7 +60,7 @@ namespace Savanna
             m_Sampling = false;
             // ProfilerManager::EndProfilerMarker(this);
             SAVANNA_LOG("[Profiler] {} {}ms Elapsed",
-                m_ProfilerMarkerName.c_str(),
+                m_ProfilerMarkerName,
                 Poll());
         }
     }

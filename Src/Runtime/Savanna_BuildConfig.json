@@ -38,6 +38,10 @@
                 {
                     "Name": "SAVANNA_ASSERTION_LEVEL",
                     "Value": "SAVANNA_ASSERTION_LEVEL_DEBUG"
+                },
+                {
+                    "Name": "SAVANNA_DEFAULT_MEMORY_POOL_SIZE",
+                    "Value": "(1024 * 64)"
                 }
             ]
         },
@@ -71,6 +75,10 @@
                 {
                     "Name": "SAVANNA_ASSERTION_LEVEL",
                     "Value": "SAVANNA_ASSERTION_LEVEL_FATAL"
+                },
+                {
+                    "Name": "SAVANNA_DEFAULT_MEMORY_POOL_SIZE",
+                    "Value": "(1024 * 64)"
                 }
             ]
         }

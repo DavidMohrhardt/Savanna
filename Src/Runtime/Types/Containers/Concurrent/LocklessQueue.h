@@ -41,7 +41,7 @@ namespace Savanna
 
         void Push(const T& data)
         {
-            Node* newNode = new Node();
+            Node* newNode = SAVANNA_NEW(Node);
             newNode->m_Data = data;
             newNode->m_Next = nullptr;
 

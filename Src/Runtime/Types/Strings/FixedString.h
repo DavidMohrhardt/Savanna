@@ -23,9 +23,8 @@ namespace Savanna \
     class FixedString##__strlen__ \
     { \
     private: \
-        \
     public: \
-        FixedString##__strlen__() = default; \
+        FixedString##__strlen__() { memset(this, 0, sizeof(FixedString##__strlen__)); } \
 \
         FixedString##__strlen__(const char* cstring, size_t start, size_t size) \
         { \
@@ -36,7 +35,7 @@ namespace Savanna \
             } \
         } \
 \
-        FixedString##__strlen__(const char* cstring = "") \
+        FixedString##__strlen__(const char* cstring) \
             : FixedString##__strlen__(cstring, 0, strlen(cstring) + 1) \
         {} \
 \
@@ -152,6 +151,7 @@ namespace Savanna \
             alignas(8) se_byte m_Bytes[ __strlen__ ]; \
         }; \
     }; \
+    static_assert(sizeof(FixedString##__strlen__) == __strlen__,  "FixedString##__strlen__ is not of size " #__strlen__); \
 \
 } /* namespace Savanna */ \
 namespace std \
@@ -169,7 +169,7 @@ namespace std \
             return result ^ (__strlen__ << 1); \
         } \
     }; \
-} // namespace std
+}
 
 
 #else

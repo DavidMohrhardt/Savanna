@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "SavannaConfiguration.h"
+#include "SavannaConfiguration.gen.h"
 #include "ProfilerMarker.h"
 
 namespace Savanna

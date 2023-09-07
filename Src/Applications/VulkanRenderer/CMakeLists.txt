@@ -1,27 +1,38 @@
 cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
-include(FetchContent)
-
-FetchContent_Declare(
-        glfw
-        GIT_REPOSITORY https://github.com/glfw/glfw
-)
-FetchContent_Declare(
-	glm
-	GIT_REPOSITORY https://github.com/g-truc/glm
-)
-FetchContent_MakeAvailable(glfw glm)
 
 set(SAVANNA_ACTIVE_TARGET SavannaVkRenderer)
 
 message(STATUS "Building [${SAVANNA_ACTIVE_TARGET}] Application")
 
-# set(core_libs Savanna)
-# set(external_libs glfw glm)
-# set(external_include_dirs)
+include(FetchContent)
 
-message(STATUS "Processing: ${SAVANNA_ACTIVE_TARGET}")
+message (STATUS "Fetching glfw")
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw
+)
 
-collect_sources_in_current_dir(src RECURSIVE_LIMITED)
+message (STATUS "Fetching glm")
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm
+)
+
+if (${CMAKE_VERSION} VERSION_GREATER "3.8.0")
+    # Ensure C++ standard is propogated from the project to ABSL
+    set(ABSL_PROPAGATE_CXX_STD ON)
+endif()
+
+message (STATUS "Fetching protobuf")
+FetchContent_Declare(
+    protobuf
+    GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
+    GIT_TAG "v23.4"
+)
+
+FetchContent_MakeAvailable(glfw glm protobuf)
+
+collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
 
 # Sort the files into Filters based on Folder Hierarchy
 SOURCE_GROUP_BY_FOLDER()
@@ -35,18 +46,29 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_executable(${SAVANNA_ACTIVE_TARGET} ${src})
 
 # Link libraries
+# TODO Make find Vulkan QUIET and enable the runtime loader for vulkan in the case it's not just defined
 find_package(Vulkan REQUIRED)
 
-add_dependencies(${SAVANNA_ACTIVE_TARGET} Savanna)
-target_link_libraries(${SAVANNA_ACTIVE_TARGET} Savanna glfw glm Vulkan::Vulkan)
-include_savanna_directories(${SAVANNA_ACTIVE_TARGET} ${CMAKE_SOURCE_DIR}/Runtime)
-target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${Vulkan_INCLUDE_DIRS})
+add_dependencies(   ${SAVANNA_ACTIVE_TARGET}
+                    Savanna)
+
+target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
+                        Savanna
+                        glfw
+                        glm
+                        Vulkan::Vulkan)
+                        # protobuf::libprotobuf)
+
+include_savanna_directories(${SAVANNA_ACTIVE_TARGET}
+                            ${CMAKE_SOURCE_DIR}/Runtime)
+
+target_include_directories( ${SAVANNA_ACTIVE_TARGET}
+                            PUBLIC ${Vulkan_INCLUDE_DIRS})
 
 # Copy Assets folder to install directory
-add_custom_target(TARGET )
-add_custom_command(TARGET ${SAVANNA_ACTIVE_TARGET} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_LIST_DIR}/Assets/Shaders/SPIRV $<TARGET_FILE_DIR:${SAVANNA_ACTIVE_TARGET}>/Assets/SPIRV)
+add_custom_command( TARGET ${SAVANNA_ACTIVE_TARGET} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_CURRENT_LIST_DIR}/Assets/Shaders/SPIRV $<TARGET_FILE_DIR:${SAVANNA_ACTIVE_TARGET}>/Assets/SPIRV)
 
 # Install the executable
 install(TARGETS ${SAVANNA_ACTIVE_TARGET}

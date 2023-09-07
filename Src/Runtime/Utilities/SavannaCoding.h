@@ -43,5 +43,6 @@
 #include "Types/Exceptions/SavannaException.h"
 
 #include "Utilities/Semantics/Move.h"
+#include "Utilities/Semantics/SizeOf.h"
 
 #endif

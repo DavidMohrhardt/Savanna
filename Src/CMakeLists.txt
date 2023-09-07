@@ -12,7 +12,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 # Specify clang as the compiler to ensure supported language standards
-# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.
 set(CMAKE_C_COMPILER "llvm" CACHE STRING "Set the C compiler to use")
 set(CMAKE_CXX_COMPILER "llvm++" CACHE STRING "Set the C++ compiler to use")
 

@@ -20,24 +20,20 @@
 
 #include <vector>
 
-namespace Savanna::Application
+using namespace Savanna::Gfx::Vk;
+
+class VulkanApplication
 {
-    using namespace Savanna::Gfx::Vk;
+public:
+    VulkanApplication(int argc, char** argvs);
+    ~VulkanApplication();
 
-    class VulkanApplication
-    {
-    public:
-        VulkanApplication();
-        ~VulkanApplication();
+    void Run();
 
-        void Run();
+private:
+    void CreateRenderer();
+    void CreateShaderModules();
 
-    private:
-        void CreateRenderer();
-        void CreateShaderModules();
-
-        GLFWWindowWrapper m_Window;
-        Renderer m_Renderer;
-
-    };
-} // namespace SavannaVk
+    GLFWWindowWrapper m_Window;
+    Renderer m_Renderer;
+};

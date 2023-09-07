@@ -258,7 +258,7 @@ function(CONFIG_INPUT_HEADER cur_name)
     file(GLOB input_header "${CMAKE_CURRENT_LIST_DIR}/*.h.in")
 
     # The output header is the input header with the .in removed
-    string(REPLACE ".in" "" output_header "${input_header}")
+    string(REPLACE ".h.in" ".gen.h" output_header "${input_header}")
 
     # Configure the input header
     configure_file(${input_header} ${output_header} @ONLY)

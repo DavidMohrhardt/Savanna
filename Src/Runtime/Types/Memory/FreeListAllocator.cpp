@@ -21,11 +21,12 @@ namespace Savanna
         : m_Head(nullptr)
     {}
 
-    FreeListAllocator::FreeListAllocator(void* root, size_t size)
+    FreeListAllocator::FreeListAllocator(void* root, size_t size, bool ownsMemory)
         : Allocator(root)
         , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
         , m_Size(root != nullptr ? size : 0)
         , m_AllocatedBytes(0)
+        , m_OwnsMemory(ownsMemory)
     {
         if (m_Head != nullptr)
         {
@@ -45,7 +46,13 @@ namespace Savanna
      * @brief FreeListAllocator do not own their memory and therefore have nothing to do
      *       with the destructor.
      */
-    FreeListAllocator::~FreeListAllocator() {}
+    FreeListAllocator::~FreeListAllocator()
+    {
+        if (m_OwnsMemory)
+        {
+            free(m_Root, 0);
+        }
+    }
 
     FreeListAllocator& FreeListAllocator::operator=(FreeListAllocator&& other)
     {
@@ -55,6 +62,7 @@ namespace Savanna
             SAVANNA_MOVE_MEMBER(m_Head, other);
             SAVANNA_MOVE_MEMBER(m_Size, other);
             SAVANNA_MOVE_MEMBER(m_AllocatedBytes, other);
+            SAVANNA_MOVE_MEMBER(m_OwnsMemory, other);
         }
         return *this;
     }
@@ -188,4 +196,6 @@ namespace Savanna
             previousHeader->m_Next = previousHeader->m_Next->m_Next;
         }
     }
+
 } // namespace Savanna
+

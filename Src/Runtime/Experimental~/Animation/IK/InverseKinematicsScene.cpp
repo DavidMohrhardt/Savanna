@@ -3,7 +3,7 @@
 InverseKinematicsScene::InverseKinematicsScene()
 {
     m_jointSystem =
-        new CCDKinematicJointSystem(glm::vec4(0.f, 0.f, 0.f, 1.f), DEFAULTNUMLINKS);
+        SAVANNA_NEW(CCDKinematicJointSystem, glm::vec4(0.f, 0.f, 0.f, 1.f), DEFAULTNUMLINKS);
 }
 
 

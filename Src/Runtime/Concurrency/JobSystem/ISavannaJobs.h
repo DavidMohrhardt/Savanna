@@ -60,22 +60,31 @@ typedef enum se_JobState_t
     k_SavannaJobStateRunning,
 
     /**
-     * @brief The job has been completed. Check the result.
+     * @brief The total number of states.
      */
-    k_SavannaJobStateCompleted,
-
-
     k_SavannaJobStateCount
 } se_JobState_t;
 
 /**
- * @brief
+ * @brief An enumeration defining the priority of jobs.
+ *
+ * Jobs are computed in the order they are received but
+ * higher priority jobs will always be checked for first.
  */
 typedef enum se_JobPriority_t
 {
+
     k_SavannaJobPriorityLow,
+
+
     k_SavannaJobPriorityNormal,
+
+
     k_SavannaJobPriorityHigh,
+
+    /**
+     * @brief The total number of priorities.
+     */
     k_SavannaJobPriorityCount
 } se_JobPriority_t;
 
@@ -133,7 +142,7 @@ namespace Savanna::Concurrency
     using IJobInterface = se_IJobInterface_t;
 
     /**
-     * @brief
+     * @brief TODO
      *
      */
     class IJob
@@ -190,6 +199,10 @@ namespace Savanna::Concurrency
         {
         }
 
+        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, void* pUserData)
+            : m_JobInterface({ executeFunc, nullptr, nullptr, nullptr, pUserData })
+        {}
+
         virtual ~PrimitiveJob() {}
 
     public:
@@ -236,7 +249,7 @@ namespace Savanna::Concurrency
      * @tparam Args
      */
     template <typename T>
-    class AutomaticJob final : public IJob
+    class TemporaryJob final : public IJob
     {
     private:
         static_assert(std::is_base_of_v<IJob, T>, "T must be derived from IJob!");
@@ -244,19 +257,19 @@ namespace Savanna::Concurrency
         T m_Job;
 
     public:
-        AutomaticJob() = delete;
+        TemporaryJob() = delete;
 
         template <typename ...Args>
-        AutomaticJob(Args... args)
+        TemporaryJob(Args... args)
             : m_Job(args...)
         {}
 
-        AutomaticJob(T&& job)
+        TemporaryJob(T&& job)
             : m_Job(std::move(job))
         {}
 
     private:
-        virtual ~AutomaticJob() override {}
+        virtual ~TemporaryJob() override {}
 
         void Dispose()
         {
@@ -264,15 +277,15 @@ namespace Savanna::Concurrency
         }
 
     public:
-        AutomaticJob(const AutomaticJob&) = delete;
-        AutomaticJob(AutomaticJob&& other) noexcept
+        TemporaryJob(const TemporaryJob&) = delete;
+        TemporaryJob(TemporaryJob&& other) noexcept
             : m_Job(std::move(other.m_Job))
         {
             SAVANNA_MOVE_MEMBER(m_Job, other);
         }
 
-        AutomaticJob& operator=(const AutomaticJob&) = delete;
-        AutomaticJob& operator=(AutomaticJob&& other) noexcept
+        TemporaryJob& operator=(const TemporaryJob&) = delete;
+        TemporaryJob& operator=(TemporaryJob&& other) noexcept
         {
             SAVANNA_MOVE_MEMBER(m_Job, other);
             return *this;
@@ -302,108 +315,12 @@ namespace Savanna::Concurrency
         }
     };
 
-    template <typename ...Args>
-    struct JobLambda
-    {
-        using FuncType = JobResult(*)(Args...);
-
-        FuncType func;
-        std::tuple<Args...> args;
-
-        JobLambda(FuncType func, Args... args)
-            : func(func)
-            , args(args...)
-        {
-        }
-
-        JobResult operator()()
-        {
-            return std::apply(func, args);
-        }
-    };
-
-    // Create an IJob from any arbitrary lambda
-    template <typename FuncType, typename ...Args>
-    PrimitiveJob* CreateJob(FuncType func, Args... args)
-    {
-        return new PrimitiveJob({ [](void* pUserData) -> JobResult
-            {
-                return (*static_cast<JobLambda<Args...>*>(pUserData))();
-            },
-            [](void* pUserData)
-            {
-                delete static_cast<JobLambda<Args...>*>(pUserData);
-            },
-            nullptr,
-            nullptr,
-            new JobLambda<Args...>(func, args...)
-            });
-    }
+    /**
+     * @brief
+     *
+     * @tparam Args
+     */
 
 } // namespace Savanna::Concurrency
 
 #endif // end __cplusplus
-
-/**
- * @brief Requests a job handle from the job system. The job handle is used to schedule a job for execution
- * as well as to wait for the job to complete. This function is thread safe and allocates memory from the
- * job system's memory pool. The job handle must be released when it is no longer needed using the
- * SavannaEngine_ReleaseJobHandle function.
- */
-// SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_AcquireJobHandle(const se_IJobInterface_t* pIJobInterface, se_JobPriority_t priority, se_JobHandle_t dependency = k_InvalidJobHandle);
-
-/**
- * @brief Releases a job handle back to the job system. This function is thread safe and frees memory from the
- * job system's memory pool. The job handle must not be used after it has been released.
- */
-// SAVANNA_IMPORT(void) SavannaEngine_ReleaseJobHandle(se_JobHandle_t jobHandle);
-
-/**
- * @brief Schedules a job for execution. This function is thread safe and will return immediately. The job
- * will be executed on a worker thread. The job handle must be released when it is no longer needed using the
- * SavannaEngine_ReleaseJobHandle function. It is recommended to release the job handle via the se_IJobInterface_t
- * callback functions.
- *
- * @param jobHandle The job handle to schedule for execution.
- * @return se_JobResult_t The result of the scheduling operation.
- */
-// SAVANNA_IMPORT(se_JobResult_t) SavannaEngine_ScheduleJob(se_JobHandle_t jobHandle);
-
-/**
- * @brief Waits for a job to complete. This function is thread safe and will block the calling thread until
- * the job has completed.
- *
- */
-// SAVANNA_IMPORT(void) SavannaEngine_AwaitJobCompletion(se_JobHandle_t jobHandle);
-
-/**
- * @brief Combines the dependencies of multiple jobs into a single job handle. This function is thread safe.
- * The original job handles must be released manually still using the SavannaEngine_ReleaseJobHandle function.
- * Releasing jobs prior to the completion of the combined job will result is a no op.
- *
- * @param pJobHandles An array of job handles to combine.
- * @param jobCount The number of job handles in the array.
- *
- * @return se_JobHandle_t The combined job handle.
- */
-// SAVANNA_IMPORT(se_JobHandle_t) SavannaEngine_CombineDependencies(se_JobHandle_t* pJobHandles, se_uint32 jobCount);
-
-/**
- * @brief Polls the state of a job. This function is thread safe and will return immediately.
- *
- * @param jobHandle The job handle to poll.
- * @return se_JobState_t The state of the job.
- */
-// SAVANNA_IMPORT(se_JobState_t) SavannaEngine_PollJobState(se_JobHandle_t jobHandle);
-
-/**
- * @brief Schedules a batch of jobs for execution. This function is thread safe and will return immediately.
- * The job handles must be released when they are no longer needed using the SavannaEngine_ReleaseJobHandle
- * function. It is recommended to release the job handles via the se_IJobInterface_t callback functions.
- *
- * @param pJobHandles An array of job handles to schedule for execution.
- * @param jobCount The number of job handles in the array.
- * @param dependency The job handle to use as a dependency for the batch of jobs. This is optional and can be
- * set to k_InvalidJobHandle if no dependency is needed.
- */
-// SAVANNA_IMPORT(void) SavannaEngine_ScheduleJobBatch(se_JobHandle_t* pJobHandles, se_uint32 jobCount, se_JobHandle_t dependency = k_InvalidJobHandle);

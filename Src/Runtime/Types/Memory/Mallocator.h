@@ -12,24 +12,28 @@
 #include "Utilities/SavannaCoding.h"
 
 #include "Allocator.h"
+#include "Memory/SystemMemoryUtils.h"
+
+#include <cstdlib>
 
 namespace Savanna
 {
     /**
      * @brief Extended from https://docs.microsoft.com/en-us/cpp/standard-library/allocators?view=msvc-170.
-     * Implements a custom allocator for accessing system memory.
-     *
-     * @tparam T
+     * Implements a custom allocator for accessing system heap memory. This is thread safe.
      */
-    template <class T>
-    struct Mallocator : public Allocator
+    struct Mallocator
+        : public Allocator
     {
-        typedef T value_type;
-
         Mallocator() = default;
-        Mallocator(const Mallocator&) = default;
 
-        SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
-        void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
+        SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE { return std::malloc(size); }
+        void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE { std::free(ptr); }
+        SAVANNA_NO_DISCARD virtual size_t GetAllocatedBytes() const SAVANNA_OVERRIDE { return 0; };
+        SAVANNA_NO_DISCARD virtual size_t GetSize() const SAVANNA_OVERRIDE
+        {
+            static size_t s_TotalSystemMemorySize = GetTotalSystemMemory();
+            return s_TotalSystemMemorySize;
+        }
     };
 } // namespace Savanna

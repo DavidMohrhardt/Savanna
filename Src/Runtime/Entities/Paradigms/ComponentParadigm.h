@@ -104,7 +104,7 @@ namespace Savanna::Entities
     public:
         Paradigm(const void* pParadigmMemory, const size_t& paradigmMemorySize);
 
-        Paradigm();
+        // Paradigm() = default;
 
         Paradigm(const Paradigm& other);
 
@@ -166,4 +166,93 @@ namespace Savanna::Entities
             AddComponentToParadigmInternal(dataSize, dataAlignment, key);
         }
     };
+
+#if ENABLE_TEST_ECS_TEMPLATED_PARADIGMS
+    template <typename T, typename... Ts>
+    requires std::is_base_of_v<IComponentData<T>, T> && (std::is_base_of_v<IComponentData<Ts>, Ts> && ...)
+    class GenerativeParadigm
+        : public Movable
+        , public Copyable
+    {
+    private:
+        const void* m_ParadigmMemory = nullptr;
+        size_t m_ParadigmMemorySize = 0;
+        uint32 m_EntityCount = 0;
+
+        consteval size_t k_SizeOfEntity = TotalSizeOfTypes<T, Ts...>::value;
+
+        union {
+            ComponentKey m_ParadigmKeyChain[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
+            CompoundComponentKey m_CompoundParadigmKeyChain[
+                GetRequiredLengthToFillUnion(
+                    sizeof(ComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS,
+                    sizeof(CompoundComponentKey)
+                )
+            ];
+        };
+
+        GenerativeParadigm(const void* pParadigmMemory, const size_t& paradigmMemorySize, bool wipeKeyChain)
+            : m_ParadigmMemory(pParadigmMemory)
+            , m_ParadigmMemorySize(paradigmMemorySize)
+        {
+            SAVANNA_ASSERT(pParadigmMemory != nullptr, "Paradigm memory cannot be nullptr.");
+            SAVANNA_ASSERT(paradigmMemorySize > 0, "Paradigm memory size must be greater than 0.");
+
+            if (wipeKeyChain)
+            {
+                memset(m_ParadigmKeyChain, 0, sizeof(ComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
+            }
+        }
+
+    public:
+        GenerativeParadigm(const void* pParadigmMemory, const size_t& paradigmMemorySize) : this(pParadigmMemory, paradigmMemorySize, true) {}
+
+        GenerativeParadigm() = default;
+
+        GenerativeParadigm(const GenerativeParadigm& other)
+        {
+            m_ParadigmMemory = other.m_ParadigmMemory;
+            memcpy(m_ParadigmKeyChain, other.m_ParadigmKeyChain, sizeof(m_ParadigmKeyChain) * sizeof(ComponentKey));
+        }
+
+        GenerativeParadigm(GenerativeParadigm&& other)
+        {
+            m_ParadigmMemory = other.m_ParadigmMemory;
+            memcpy(m_ParadigmKeyChain, other.m_ParadigmKeyChain, sizeof(m_ParadigmKeyChain) * sizeof(ComponentKey));
+            other.m_ParadigmMemory = nullptr;
+            other.m_ParadigmMemorySize = 0;
+        }
+
+        template <typename U, typename... Us>
+        GenerativeParadigm(GenerativeParadigm<U, Us...>&& other)
+        {
+            m_ParadigmMemory = other.m_ParadigmMemory;
+            other.m_ParadigmMemory = nullptr;
+            other.m_ParadigmMemorySize = 0;
+
+            // m_ParadigmKeyChain[componentKey.GetRingIndex()] |= componentKey;
+
+            for (int i = 0; i < 4; ++i)
+            {
+                m_CompoundParadigmKeyChain
+            }
+
+            if (other.m_EntityCount * TotalSizeOfTypes<U, Us...>::value > other.m_ParadigmMemorySize)
+            {
+                // Acquire a larger pool of memory
+                // m_ParadigmMemory = Savanna::Memory::Realloc(GetNextPowerOfTwo(other.m_EntityCount * TotalSizeOfTypes<U, Us...>::value));
+                m_ParadigmMemory = SAVANNA_REALLOCATE(other.m_EntityCount * TotalSizeOfTypes<U, Us...>::value);//Memory::Realloc(other.m_EntityCount * TotalSizeOfTypes<U, Us...>::value, );
+            }
+        }
+
+        ~GenerativeParadigm() {}
+
+    private:
+        template <typename U, typename... Us>
+        static GenerativeParadigm<U, Us> MutateParadigm(const GenerativeParadigm<T, Ts...>& other)
+        {
+            return GenerativeParadigm<U, Us...>(std::move(other));
+        }
+    };
+#endif // ENABLE_TEST_ECS_TEMPLATED_PARADIGMS
 } // namespace Savanna::Entities

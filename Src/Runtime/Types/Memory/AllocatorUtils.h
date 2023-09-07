@@ -28,6 +28,10 @@ namespace Savanna
     {
         // As per https://en.wikipedia.org/wiki/Modulo_operation
         // For powers of 2 modulo can be implemented as x % 2n == x & (2n - 1)
+        if (alignment == 0)
+        {
+            return 0;
+        }
         size_t moduloResult = (reinterpret_cast<uintptr>(ptr) & (alignment - 1u));
         return alignment - (moduloResult == 0 ? alignment : moduloResult);
     }

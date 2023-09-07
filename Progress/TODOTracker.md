@@ -1,6 +1,6 @@
 # TODO
 
-Total TODOs: 100
+Total TODOs: 99
 ## Src
 
 ### CMakeLists.txt
@@ -32,15 +32,11 @@ Total TODOs: 100
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L101 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L101)
+- [L220 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L220)
 
 ### VulkanApplication.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.h#L3)
-
-### CMakeLists.txt.old
-
-- [L34 :# TODO @DavidMohrhardt - Move profiling to a module](../Src/Runtime/CMakeLists.txt.old#L34)
 
 ### ComponentRegistry.cpp
 

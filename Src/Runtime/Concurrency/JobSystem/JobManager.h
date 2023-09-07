@@ -10,13 +10,13 @@
  */
 #pragma once
 
-#include "SavannaEngine.h"
-#include "Utilities/SavannaCoding.h"
-#include <Types/Singleton/Singleton.h>
+#include <SavannaEngine.h>
+#include <Utilities/SavannaCoding.h>
+
+#include "Types/Manager/GlobalManager.h"
 
 #include "ISavannaJobs.h"
 
-#include "JobRunner.h"
 #include "ConcurrencyCapabilities.h"
 
 #include <atomic>
@@ -26,10 +26,10 @@
 
 namespace Savanna::Concurrency
 {
-    class JobManager final : public Singleton<JobManager>
+    class JobManager final : public GlobalManager<JobManager>
     {
     private:
-        DECLARE_SINGLETON_CLASS(JobManager);
+        DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(JobManager);
         friend class DependencyAwaiterJob;
         friend class JobRunner;
 
@@ -49,14 +49,17 @@ namespace Savanna::Concurrency
 
         std::unordered_map<JobHandle, JobState> m_JobHandles;
 
-        JobManager(uint8 threadPoolSize);
-
     public:
+        JobManager();
         ~JobManager();
 
-        void Start();
-        void Stop(bool synchronized = false);
+    protected:
+        virtual bool InitializeInternal() final override;
+        virtual void StartInternal() final override;
+        virtual void StopInternal() final override;
+        virtual void ShutdownInternal() final override;
 
+    public:
         JobHandle ScheduleJob(
             IJob* job,
             JobPriority priority = JobPriority::k_SavannaJobPriorityNormal,
@@ -66,6 +69,8 @@ namespace Savanna::Concurrency
         void ScheduleJobBatch(JobHandle* handles, size_t jobCount, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
 
         void AwaitCompletion(JobHandle jobHandle);
+        void AwaitCompletion(JobHandle *pJobHandles, size_t jobCount);
+
         bool TryCancelJob(JobHandle jobHandle) SAVANNA_NOEXCEPT;
 
         SAVANNA_NO_DISCARD JobState GetJobState(JobHandle jobHandle);

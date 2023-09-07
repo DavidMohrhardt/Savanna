@@ -10,12 +10,15 @@
  */
 #pragma once
 
-#include "AllocatorType.h"
 #include "AllocatorUtils.h"
 
 #include "Allocator.h"
+
 #include "FreeListAllocator.h"
+#include "ExpandableBlockAllocator.h"
 #include "LinearAllocator.h"
 #include "Mallocator.h"
 
+// The STL adaptor
 #include "StlAllocatorAdapter.h"
+

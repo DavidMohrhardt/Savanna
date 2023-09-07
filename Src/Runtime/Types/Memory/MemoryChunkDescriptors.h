@@ -10,7 +10,6 @@
  */
 #pragma once
 
-#include "SavannaEngine.h"
 #include "Utilities/SavannaCoding.h"
 
 #define DEPRECATE_MEMORY_CHUNK_DESCRIPTOR_POINTER 0

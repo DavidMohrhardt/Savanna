@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "SavannaConfiguration.h"
+#include "SavannaConfiguration.gen.h"
 
 // include va_start, va_end, va_list
 #include <stdarg.h>

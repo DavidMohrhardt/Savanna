@@ -1,10 +1,14 @@
 /**
- * @file SavannaCoreConfiguration.h.in
+ * @file SavannaConfiguration.gen.h
  * @brief Contains the definitions for all Savanna configuration macros. Must match the configuration json file.
  * @version 0.1
  * @date 2022-08-02
  * @author
 */
+// DO NOT MODIFY THE SavannaConfiguration.gen.h FILE BY HAND!
+// MODIFY THE SavannaConfiguration.gen.h.in FILE INSTEAD!
+
+
 #pragma once
 
 #cmakedefine DEBUG_BUILD @DEBUG_BUILD@
@@ -32,6 +36,11 @@
 /// Memory Manager
 #cmakedefine SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION @SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION@
 #cmakedefine SAVANNA_ENABLE_BOOT_CONFIG @SAVANNA_ENABLE_BOOT_CONFIG@
+
+/**
+ * @brief The initial allocation size used by the memory manager to perform subsequent initializations.
+*/
+#cmakedefine SAVANNA_DEFAULT_MEMORY_POOL_SIZE @SAVANNA_DEFAULT_MEMORY_POOL_SIZE@
 
 /// Profiling Definitions
 /**

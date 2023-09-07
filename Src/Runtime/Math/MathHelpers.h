@@ -11,21 +11,32 @@
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
-
-#if defined(__cplusplus)
 #include <assert.h>
-#else
-#include <assert.h>
-#endif
 
 inline bool IsPowerOfTwo(const se_int64 val)
 {
     return val && !(val & (val - 1));
 }
 
-inline se_int64 NextPowerOfTwo(const se_int64 val)
+inline se_int64 NextPowerOfTwo(se_int64 val)
 {
-    return (val & ~(val - 1)) << 1;
+    // As per https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+
+    if (val <= 0)
+    {
+        return 1;
+    }
+
+    val--;
+    val |= val >> 1;
+    val |= val >> 2;
+    val |= val >> 4;
+    val |= val >> 8;
+    val |= val >> 16;
+    val |= val >> 32;
+    val++;
+
+    return val;
 }
 
 /**
@@ -44,6 +55,7 @@ inline se_int64 ModByPowerOfTwo(const se_int64 x, const se_int64 pow2Mod)
     return (x & (pow2Mod - 1));
 }
 
+#if SAVANNA_CPP20
 /**
  * @brief Get the Required Length To Fill Union object
  *
@@ -57,4 +69,5 @@ inline consteval size_t GetRequiredLengthToFillUnion(size_t largestTypeInUnion, 
         ? (largestTypeInUnion / otherTypeInUnion)
         : (otherTypeInUnion / largestTypeInUnion);
 }
+#endif
 #endif

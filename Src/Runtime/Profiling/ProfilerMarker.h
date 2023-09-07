@@ -2,13 +2,13 @@
 
 #include <chrono>
 
-#include "SavannaConfiguration.h"
+#include "SavannaConfiguration.gen.h"
 
 #include "Types/Strings/FixedString.h"
 
 #define SAVANNA_INSERT_SCOPED_PROFILER(functionName)
 
-#if SAVANNA_ENABLE_DEEP_ENGINE_PROFILING
+#if SAVANNA_DEEP_ENGINE_PROFILING
 
 #undef SAVANNA_INSERT_SCOPED_PROFILER
 /**
@@ -16,7 +16,7 @@
  */
 #define SAVANNA_INSERT_SCOPED_PROFILER( functionName ) \
     Savanna::ProfilerMarker __savanna_ProfilerMarker_funcName = Savanna::ProfilerMarker( Savanna::FixedString256( #functionName  ) ); \
-    __savanna_ProfilerMarker_.BeginSample();
+    __savanna_ProfilerMarker_funcName.BeginSample();
 
 #endif
 
@@ -28,13 +28,14 @@ namespace Savanna
     {
     private:
         bool m_Sampling;
-        FixedString256 m_ProfilerMarkerName;
+        const char* m_ProfilerMarkerName;
+        // FixedString256 m_ProfilerMarkerName;
 
         std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTime;
         std::chrono::time_point<std::chrono::high_resolution_clock> m_EndTime;
 
     public:
-        ProfilerMarker(FixedString256&& markerName);
+        ProfilerMarker(const char* markerName);
         ~ProfilerMarker();
 
         void BeginSample();

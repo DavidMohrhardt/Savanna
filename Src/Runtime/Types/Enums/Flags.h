@@ -12,7 +12,8 @@
 
 #include "Enumeration.h"
 
-#define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
+#define DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
+#define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type)
 #define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type)
 
 #define DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, ...) \
@@ -24,9 +25,13 @@
 #include <concepts>
 #include <type_traits>
 
+#undef DECLARE_CPP_FLAG_ENUMERATION
+#define DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type) \
+    using __cppName = Savanna::FlagEnumeration<__cName, __value_type>
+
 #undef DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION
-#define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type) \
-    namespace __nameSpace { using __cppName = Savanna::FlagEnumeration<__cName, __value_type>; }
+#define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type) \
+    namespace __nameSpace { DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type); }
 
 #undef DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION
 #define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type) \
@@ -85,10 +90,13 @@ namespace Savanna
 } // namespace Savanna
 #endif // end __cplusplus
 
+#define DEFINE_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
 
 #define DEFINE_SAVANNA_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
     DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
-    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
+    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(Savanna, __cppName, __cName, __value_type)
 
 #define DEFINE_SAVANNA_EXTERNAL_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type, ...) \
     DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \

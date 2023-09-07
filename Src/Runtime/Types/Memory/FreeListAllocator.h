@@ -9,27 +9,32 @@
 
 #pragma once
 
+#include "Utilities/SavannaCoding.h"
+#include "Types/Memory/CacheLine.h"
+
 #include "Allocator.h"
 #include "MemoryChunkDescriptors.h"
 
-#include "Utilities/SavannaCoding.h"
-#include "Types/Memory/CacheLine.h"
+#include "AtomicAllocatorWrapper.h"
+
+#include "MemoryBuffer.h"
 
 namespace Savanna
 {
     /**
      * @brief
      */
-    class FreeListAllocator : public Allocator, NonCopyable
+    class FreeListAllocator : public Allocator
     {
     private:
         MemoryChunkDescriptor* m_Head;
         size_t m_Size;
         size_t m_AllocatedBytes;
+        bool m_OwnsMemory;
 
     public:
         FreeListAllocator();
-        FreeListAllocator(void* root, size_t size);
+        FreeListAllocator(void* root, size_t size, bool ownsMemory = false);
         FreeListAllocator(FreeListAllocator&& other);
 
         ~FreeListAllocator();
@@ -44,4 +49,11 @@ namespace Savanna
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const SAVANNA_OVERRIDE { return m_AllocatedBytes; }
         SAVANNA_NO_DISCARD size_t GetSize() const SAVANNA_OVERRIDE { return m_Size; }
     };
+
+    /**
+     * @brief Provides a thread safe wrapper around the FreeListAllocator.
+     *
+    */
+    using AtomicFreeListAllocator = AtomicAllocatorWrapper<FreeListAllocator>;
+
 } // namespace Savanna

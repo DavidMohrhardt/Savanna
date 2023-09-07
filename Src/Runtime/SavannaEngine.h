@@ -23,6 +23,9 @@
 #include "Types/Primitive/FloatingPointUnions.h"
 #include "Utilities/PreprocessorDefinitions/EngineWideDefinitions.h"
 
+// Required Managers
+#include "Memory/MemoryManager.h"
+
 #if SE_LEAN_AND_MEAN_DEFINED
 
 // Common Utilities
@@ -51,3 +54,18 @@ DEFINE_SAVANNA_ENUM(Savanna, se_ErrorCode_t, ErrorCode, uint32_t,
     SavannaErrorCodeNotSupported = 5,
     SavannaErrorCodeUnknown = 6,
 );
+
+SAVANNA_EXPORT(void) savanna_initialize_managers();
+SAVANNA_EXPORT(void) savanna_start_managers();
+SAVANNA_EXPORT(void) savanna_stop_managers();
+SAVANNA_EXPORT(void) savanna_shutdown_managers();
+
+#ifdef __cplusplus
+namespace Savanna
+{
+    void InitializeManagers();
+    void StartManagers();
+    void StopManagers();
+    void ShutdownManagers();
+} // namespace Savanna
+#endif // ifdef __cplusplus

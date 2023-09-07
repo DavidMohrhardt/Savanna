@@ -9,7 +9,8 @@
 #pragma once
 
 #include <utility>
-#include <memory>
+
+#include "Memory/SmartPtrUtils.h"
 
 #define DECLARE_SINGLETON_CLASS(__className) \
     friend class Singleton<__className>; \
@@ -21,10 +22,12 @@ namespace Savanna
     class Singleton
     {
     private:
-        inline static std::shared_ptr<T> s_pInstance = nullptr;
+        using TYPE = T;
+        // inline static std::shared_ptr<TYPE> s_pInstance = nullptr;
+        inline static TYPE* s_pInstance = nullptr;
 
     public:
-        static std::shared_ptr<T> Get()
+        static TYPE* Get()
         {
             if (s_pInstance == nullptr)
             {
@@ -34,11 +37,16 @@ namespace Savanna
         }
 
         template <typename... Args>
-        static std::shared_ptr<T> Construct(Args&&... args)
+        static TYPE* Construct(Args&&... args)
         {
             if (s_pInstance == nullptr)
             {
-                s_pInstance = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
+                // Can't use SAVANNA_NEW here due to the possibility of a private friend constructor
+                // So instead use new placement syntax to provide a MemoryManager buffer, and then construct the
+                // object
+                // s_pInstance = CreateManagedSharedPtr(new (MemoryManager::Get().Allocate(sizeof(T), alignof(T))) TYPE(std::forward<Args>(args)...));
+                // s_pInstance = SAVANNA_INPLACE_NEW(TYPE, std::forward<Args>(args)...);
+                s_pInstance = new TYPE(std::forward<Args>(args)...);
             }
             return Get();
         }
@@ -47,7 +55,8 @@ namespace Savanna
         {
             if (s_pInstance != nullptr)
             {
-                s_pInstance = nullptr;
+                // SAVANNA_DELETE(s_pInstance);
+                delete s_pInstance;
             }
         }
     };

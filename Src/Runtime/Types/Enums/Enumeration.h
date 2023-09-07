@@ -10,6 +10,8 @@
  */
 #pragma once
 
+#include "Types/Primitive/PrimitiveTypes.inl"
+
 #if defined(__cplusplus)
 
 #include <concepts>

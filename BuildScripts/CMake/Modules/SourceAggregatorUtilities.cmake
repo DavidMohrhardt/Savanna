@@ -19,66 +19,71 @@ endfunction()
 # Collects all source files in the given directory and potentially subdirectories
 #
 # Args
-# out_src_list: The output source C++ files collected by this function.
-# directory: The input directory to search.
+# OUT_SRC_LIST: The output source C++ files collected by this function.
+# DIRECTORY: The input directory to search.
 # [MODE]: Indicates the MODE in which to collect source files. Can be
 # any of the following values:
-#   - <NONE>: Will only attempt to get the source files at the current directory.
+#   - NONE: Will only attempt to get the source files at the current directory.
 #   this is the default mode.
 #   - RECURSIVE: Will attempt to get all source files in the current directory and subdirectory
 #   only ignoring directories that contain a '~' (IE ./foo/Deprecated~).
 #   - RECURSIVE_LIMITED: Will attempt to get all source files in the current directory and
 #   its subdirectories ignoring any subdirectories that contain a CMakeLists.txt file and
 #   directories that contain a '~' (IE ./foo/Deprecated~).
-function(collect_sources_in_dir out_src_list directory)
-    set(options RECURSIVE RECURSIVE_LIMITED)
+function(collect_sources_in_dir OUT_SRC_LIST DIRECTORY MODE)
+    set(options)
     set(oneValueArgs)
-    set(multiValueArgs)
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    set(multiValueArgs REGEXES)
+    cmake_parse_arguments(COLLECT_SOURCES "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(recursion_requested FALSE)
-    if (ARG_RECURSIVE)
+    set(limited_recursion FALSE)
+    if (${MODE} STREQUAL "RECURSIVE")
         set(recursion_requested TRUE)
-    elseif(ARG_RECURSIVE_LIMITED)
+    elseif(${MODE} STREQUAL "RECURSIVE_LIMITED")
         set(recursion_requested TRUE)
+        set(limited_recursion TRUE)
+    elseif(${MODE} STREQUAL "NONE")
+    else()
+        message(FATAL_ERROR "MODE argument must be either RECURSIVE, RECURSIVE_LIMITED, or NONE but was ${MODE}.")
     endif()
 
     if (recursion_requested)
         # Acquire all source files in this directory, This is evil for the record)
-        file(GLOB_RECURSE src_list
-            ${directory}/*.c*
-            ${directory}/*.h*)
-
-        SUBDIRLIST(subdirs ${directory} ${directory})
-
-        foreach (subdir IN ITEMS ${subdirs})
-            if (${subdir} STREQUAL ${directory})
-                continue()
-            endif()
-
-            # Check if the subdirectory contains a ~ in it's path
-            if (${subdir} MATCHES "~")
-                list(FILTER src_list EXCLUDE REGEX ${subdir})
-                continue()
-            endif()
-
-            if (ARG_RECURSIVE_LIMITED)
-                # # Check if the subdirectory has a CMakeLists.txt file
-                file(GLOB CMakeLists ${subdir}/CMakeLists.txt)
-                if (CMakeLists)
-                    # Filter out the subdirectory from the source list
-                    list(FILTER src_list EXCLUDE REGEX ${subdir})
-                endif() # CMakeLists
-            endif() # ARG_RECURSIVE_LIMITED
-
+        foreach(regex ${COLLECT_SOURCES_REGEXES})
+            file(GLOB_RECURSE regex_src_list ${DIRECTORY}/*${regex})
+            list(APPEND src_list ${regex_src_list})
         endforeach()
+
+        # filter all directories with a '~' as a general rule.
+        list(FILTER src_list EXCLUDE REGEX "(.+)(~)(.+)")
+
+        if (limited_recursion)
+            # Get all subdirectories
+            file(GLOB_RECURSE subdirs RELATIVE ${DIRECTORY} ${DIRECTORY}/*)
+
+            # Filter out non-directories
+            list(FILTER subdirs INCLUDE REGEX "/$")
+
+            # Remove trailing slash from directory names
+            list(TRANSFORM subdirs REPLACE "/$" "")
+
+            # Exclude source files that are in subdirectories with a CMakeLists.txt file
+            foreach(subdir ${subdirs})
+                if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt")
+                    list(FILTER src_list EXCLUDE REGEX "^${subdir}/")
+                endif()
+            endforeach()
+        endif(limited_recursion)
+
     else() # Not recursive,
-        file(GLOB src_list
-            ${directory}/*.c*
-            ${directory}/*.h*)
+        foreach(regex ${COLLECT_SOURCES_REGEXES})
+            file(GLOB regex_src_list ${DIRECTORY}/*${regex})
+            list(APPEND src_list ${regex_src_list})
+        endforeach()
     endif()
 
-    set(${out_src_list} ${src_list} PARENT_SCOPE)
+    set(${OUT_SRC_LIST} ${src_list} PARENT_SCOPE)
 endfunction(collect_sources_in_dir)
 
 # Collects all source files in the current directory and potentially subdirectories.
@@ -86,33 +91,48 @@ endfunction(collect_sources_in_dir)
 # directory argument.
 #
 # Args
-# out_src_list: The output source C++ files collected by this function.
+# OUT_SRC_LIST: The output source C++ files collected by this function.
 # directory: The input directory to search.
 # [MODE]: Indicates the MODE in which to collect source files. Can be
 # any of the following values:
-#   - <NONE>: Will only attempt to get the source files at the current directory.
+#   - NONE: Will only attempt to get the source files at the current directory.
 #   this is the default mode.
 #   - RECURSIVE: Will attempt to get all source files in the current directory and subdirectory
 #   only ignoring directories that contain a '~' (IE ./foo/Deprecated~).
 #   - RECURSIVE_LIMITED: Will attempt to get all source files in the current directory and
 #   its subdirectories ignoring any subdirectories that contain a CMakeLists.txt file and
 #   directories that contain a '~' (IE ./foo/Deprecated~).
-function(collect_sources_in_current_dir out_src_list)
-    set(options RECURSIVE RECURSIVE_LIMITED)
+function(collect_sources_in_current_dir OUT_SRC_LIST MODE)
+    set(options)
     set(oneValueArgs)
-    set(multiValueArgs)
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    set(multiValueArgs REGEXES)
+    cmake_parse_arguments(COLLECT_SOURCES "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if (ARG_RECURSIVE)
-        collect_sources_in_dir(src_list ${CMAKE_CURRENT_LIST_DIR} RECURSIVE)
-    elseif(ARG_RECURSIVE_LIMITED)
-        collect_sources_in_dir(src_list ${CMAKE_CURRENT_LIST_DIR} RECURSIVE_LIMITED)
-    else() # Not recursive
-        collect_sources_in_dir(src_list ${CMAKE_CURRENT_LIST_DIR})
-    endif()
+    collect_sources_in_dir(src_list ${CMAKE_CURRENT_LIST_DIR} ${MODE} REGEXES ${COLLECT_SOURCES_REGEXES})
 
-    set(${out_src_list} ${src_list} PARENT_SCOPE)
+    set(${OUT_SRC_LIST} ${src_list} PARENT_SCOPE)
 endfunction(collect_sources_in_current_dir)
+
+# Collects all CPP/C source files in the current directory and potentially subdirectories.
+# Calls collect_sources_in_dir with the ${CMAKE_CURRENT_LIST_DIR} argument as the
+# directory argument.
+#
+# Args
+# OUT_SRC_LIST: The output source C++ files collected by this function.
+# directory: The input directory to search.
+# [MODE]: Indicates the MODE in which to collect source files. Can be
+# any of the following values:
+#   - NONE: Will only attempt to get the source files at the current directory.
+#   this is the default mode.
+#   - RECURSIVE: Will attempt to get all source files in the current directory and subdirectory
+#   only ignoring directories that contain a '~' (IE ./foo/Deprecated~).
+#   - RECURSIVE_LIMITED: Will attempt to get all source files in the current directory and
+#   its subdirectories ignoring any subdirectories that contain a CMakeLists.txt file and
+#   directories that contain a '~' (IE ./foo/Deprecated~).
+function(collect_native_sources_in_current_dir OUT_SRC_LIST MODE)
+    collect_sources_in_current_dir(src_list ${MODE} REGEXES *.cpp *.h *.c *.cc *.hpp)
+    set(${OUT_SRC_LIST} ${src_list} PARENT_SCOPE)
+endfunction(collect_native_sources_in_current_dir)
 
 # Calls target_include_directory on all directories with a CMakeLists.txt in Src/Runtime folder
 # of the Savanna project. This is a highly specialized function and should not be used for any
@@ -139,7 +159,8 @@ endfunction()
 # Visual Studio instead of all cpp files being in one folder.
 function(SOURCE_GROUP_BY_FOLDER)
     message(STATUS "Setting up source groups")
-    collect_sources_in_current_dir(_source_list RECURSIVE)
+    # TODO: Maybe collect any kind of source instead of just CPP/C files
+    collect_native_sources_in_current_dir(_source_list RECURSIVE)
     # message("Processing Source list: ${_source_list}")
     foreach(_source IN ITEMS ${_source_list})
         get_filename_component(_source_path "${_source}" PATH)

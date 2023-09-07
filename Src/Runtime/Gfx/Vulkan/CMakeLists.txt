@@ -1,6 +1,6 @@
 message(STATUS "[${SAVANNA_ACTIVE_TARGET}::Gfx] Processing Module [Savanna::Gfx::Vk]")
 
-collect_sources_in_current_dir(src RECURSIVE_LIMITED)
+collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
 
 find_package(Vulkan REQUIRED)
 target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${Vulkan_INCLUDE_DIRS})

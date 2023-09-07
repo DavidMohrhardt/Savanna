@@ -4,7 +4,7 @@
 
 #if __cplusplus
 #define SAVANNA_EXECUTE_ONCE(__lambda) \
-    { static auto __unusedSentinel = __lambda(); }
+    { static auto __sentinel = __lambda(); }
 
 #else
 #define SAVANNA_EXECUTE_ONCE(__lambda)

@@ -12,6 +12,8 @@
 
 #include "Utilities/SavannaCoding.h"
 
+#include "Memory/MemoryManager.h"
+
 namespace Savanna
 {
     template <typename T>
@@ -20,14 +22,31 @@ namespace Savanna
     private:
         static constexpr size_t DEFAULT_CAPACITY = 8;
 
-        using iterator = T*;
-        using const_iterator = const T*;
+        using value_type = T;
 
-        T* m_Data;
+        using iterator = value_type*;
+        using const_iterator = const value_type*;
+
+        value_type* m_Data;
         size_t m_Size;
         size_t m_Capacity;
 
     public:
+        DynamicArray(size_t capacity, bool initialize = false)
+            : m_Data(nullptr)
+            , m_Size(0)
+            , m_Capacity(capacity)
+        {
+            if (initialize)
+            {
+                m_Data = SAVANNA_NEW_ARRAY(value_type, capacity);
+            }
+            else
+            {
+                m_Data = malloc(sizeof(value_type) * capacity);
+            }
+        }
+
         DynamicArray() : m_Data(nullptr), m_Size(0), m_Capacity(0) {}
         ~DynamicArray()
         {
@@ -42,9 +61,9 @@ namespace Savanna
             *this = std::move(other);
         }
 
-        DynamicArray& operator=(const DynamicArray&& other) SAVANNA_NOEXCEPT
+        DynamicArray& operator=(DynamicArray&& other) SAVANNA_NOEXCEPT
         {
-            if (*this != other)
+            if (this != &other)
             {
                 SAVANNA_MOVE_MEMBER(m_Data, other);
                 SAVANNA_MOVE_MEMBER(m_Size, other);
@@ -54,7 +73,7 @@ namespace Savanna
             return *this;
         }
 
-        void Append(const T& value)
+        void Append(const value_type& value)
         {
             if (m_Size == m_Capacity)
                 Reserve(m_Capacity * 2);
@@ -62,7 +81,7 @@ namespace Savanna
             m_Data[m_Size++] = value;
         }
 
-        void Append(T&& value)
+        void Append(value_type&& value)
         {
             if (m_Size == m_Capacity)
                 Reserve(m_Capacity * 2);
@@ -75,11 +94,11 @@ namespace Savanna
             if (capacity <= m_Capacity)
                 return;
 
-            T* newData = new T[capacity];
+            value_type* newData = SAVANNA_NEW_ARRAY(value_type, capacity);
             for (size_t i = 0; i < m_Size; i++)
                 newData[i] = std::move(m_Data[i]);
 
-            delete[] m_Data;
+            SAVANNA_DELETE_ARRAY(m_Data);
             m_Data = newData;
             m_Capacity = capacity;
         }
@@ -112,12 +131,12 @@ namespace Savanna
             return m_Size == 0;
         }
 
-#define SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(__Decl, __Def) \
+#define SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(__decl, __def) \
         const __decl const { __def } \
         __decl { __def }
 
         SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(
-            T& At(size_t index),
+            value_type& At(size_t index),
             {
                 if (index >= m_Size)
                     throw std::out_of_range("Index out of range");
@@ -125,7 +144,7 @@ namespace Savanna
             });
 
         SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(
-            T& operator[](size_t index),
+            value_type& operator[](size_t index),
             {
                 return At(index);
             })

@@ -13,12 +13,14 @@
 #include "SavannaEntities.h"
 
 #ifndef SAVANNA_DECLARE_ECS_COMPONENT_STRUCT
+
 /**
  * @brief Helper macro for defining a component type. This macro produces a struct with the name of the
  * component type that inherits from the IComponentData interface.
  */
 #define SAVANNA_DECLARE_ECS_COMPONENT_STRUCT(__componentName) \
     struct __componentName : public IComponentData<__componentName>
+
 #endif
 
 namespace Savanna::Entities

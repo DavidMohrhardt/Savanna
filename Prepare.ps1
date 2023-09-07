@@ -82,6 +82,7 @@ Write-Host "Finished preparing Savanna Development Environment"
 Write-Host ""
 
 # TODO @DavidMohrhardt - Move shader compilation to a runtime step
+# TODO @DavidMohrhardt - Make this its own script
 $vulkanSdkPath = $env:VULKAN_SDK
 if ($null -ne $vulkanSdkPath)
 {

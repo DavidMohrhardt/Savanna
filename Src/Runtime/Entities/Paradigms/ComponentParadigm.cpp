@@ -10,8 +10,7 @@
  */
 #include "ComponentParadigm.h"
 
-// #include <JobManager.h>
-// #include <ISavannaJobs.h>
+#include <JobSystem/JobManager.h>
 
 // C Standard Library Includes
 #include <cstring>
@@ -87,11 +86,13 @@ namespace Savanna::Entities
 
     void Paradigm::UpdateParadigmLayout()
     {
-        // using namespace Savanna::Concurrency;
-        // LambdaJob updateJob = LambdaJob([m_ParadigmUpdateJobHandle]() -> JobResult
+        using namespace Savanna::Concurrency;
+        // Paradigm update jobs need to be defined
+        // auto layoutUpdateJobFunc = [](void* pUserData) -> JobResult
         // {
-        //     JobManager::Get()->AwaitCompletion(m_ParadigmUpdateJobHandle);
-        //     LockGuard lock(m_DataLock);
+        //     Paradigm* pOwnerParadigm = reinterpret_cast<Paradigm*>(pUserData);
+        //     JobManager::Get()->AwaitCompletion(pOwnerParadigm->GetParadigmUpdateJobHandleInternal());
+        //     pOwnerParadigm->
 
         //     // Compute the paradigm layout
         //     size_t numberOfComponents = 0;
@@ -157,6 +158,11 @@ namespace Savanna::Entities
         // TODO @DavidMohrhardt consider making this asynchronous
         // as it's likely to involve a lot of memory movement
         UpdateParadigmLayout();
+    }
+
+    void Paradigm::AllocateParadigm(size_t paradigmSize)
+    {
+
     }
 
     ArraySlice<ComponentKey> Paradigm::GetKeyChain() const {

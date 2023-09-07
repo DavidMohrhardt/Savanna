@@ -13,6 +13,7 @@
 #include "Utilities/PreprocessorDefinitions/CppVersionDefinitions.h"
 #include "Utilities/PreprocessorDefinitions/CompilerDefinitions.h"
 
+#if __cplusplus
 #if SAVANNA_CPP11
     #define SAVANNA_NOEXCEPT noexcept
     #define SAVANNA_OVERRIDE override
@@ -37,7 +38,7 @@
 #else
     #define SAVANNA_NO_DISCARD
     #define SAVANNA_MAYBE_UNUSED
-    #define SAVANNA_CONSTEXPR_MEMBER
+    #define SAVANNA_CONSTEXPR_MEMBER const
 #endif
 
 #if SAVANNA_CPP20
@@ -46,7 +47,19 @@
 #else
     #define SAVANNA_CONSTEVAL SAVANNA_CONSTEXPR
     #define SAVANNA_BRANCH_HINT(__hint)
-#endif
+#endif // SAVANNA_CPP20
+#else
+    #define SAVANNA_NOEXCEPT
+    #define SAVANNA_OVERRIDE
+    #define SAVANNA_FINAL
+    #define SAVANNA_CONSTEXPR const
+    #define SAVANNA_CONSTEXPR_FUNCTION(ret) ret
+    #define SAVANNA_NO_DISCARD
+    #define SAVANNA_MAYBE_UNUSED
+    #define SAVANNA_CONSTEXPR_MEMBER const
+    #define SAVANNA_CONSTEVAL SAVANNA_CONSTEXPR
+    #define SAVANNA_BRANCH_HINT(__hint)
+#endif // __cplusplus
 
 // Definition uses SAVANNA_BRANCH_HINT macro so safe to define outside of #if SAVANNA_CPP20
 #define SAVANNA_BRANCH_LIKELY SAVANNA_BRANCH_HINT(likely)

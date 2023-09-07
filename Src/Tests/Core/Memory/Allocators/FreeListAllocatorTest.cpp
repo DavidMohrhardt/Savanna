@@ -33,7 +33,7 @@ namespace Savanna::Core::Tests
         {
             // Code here will be called immediately after the constructor (right
             // before each test).
-            m_WrappedAllocator = new AllocatorUnitTestAdaptor<FreeListAllocator>(malloc(1024), 1024);
+            m_WrappedAllocator = SAVANNA_NEW(AllocatorUnitTestAdaptor<FreeListAllocator>, malloc(1024), 1024);
         }
 
         void TearDown() override

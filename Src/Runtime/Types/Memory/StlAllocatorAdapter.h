@@ -19,7 +19,7 @@
 namespace Savanna
 {
     template<typename T, typename TAlloc>
-    requires std::is_base_of_v<TAlloc, Allocator>
+    requires std::is_base_of_v<Allocator, TAlloc>
     class StlAllocatorAdapter
     {
     public:
@@ -33,7 +33,7 @@ namespace Savanna
         StlAllocatorAdapter() = delete;
 
         StlAllocatorAdapter(allocator_type& allocator)
-            : m_Allocator(other.m_Allocator)
+            : m_Allocator(allocator)
         {}
 
         StlAllocatorAdapter(StlAllocatorAdapter& other)
@@ -51,7 +51,7 @@ namespace Savanna
 
         constexpr void deallocate(value_type* p, size_t n) SAVANNA_NOEXCEPT
         {
-            m_Allocator.Free(p, alignof(T));
+            m_Allocator.free(p, alignof(T));
         }
 
         size_t MaxAllocationSize() const SAVANNA_NOEXCEPT

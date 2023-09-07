@@ -2,15 +2,31 @@
 
 namespace Savanna::IO
 {
-    VirtualFileSystem::VirtualFileSystem()
+    static std::filesystem::path FixupPath(const std::filesystem::path &path)
     {
-        // Get the current working directory
-        m_RealRootPath = std::filesystem::current_path();
+        std::filesystem::path fixedPath = path;
+        fixedPath.make_preferred();
+        if (fixedPath.is_relative())
+        {
+            fixedPath = std::filesystem::current_path() / fixedPath;
+        }
+        if (fixedPath.has_filename())
+        {
+            fixedPath.remove_filename();
+        }
+        return fixedPath;
+    }
+
+    VirtualFileSystem::VirtualFileSystem()
+        : m_RealRootPath(std::filesystem::current_path())
+    {
+        ParseFileSystem();
     }
 
     VirtualFileSystem::VirtualFileSystem(const std::filesystem::path &realRootPath)
-        : m_RealRootPath(realRootPath)
+        : m_RealRootPath(FixupPath(realRootPath))
     {
+        ParseFileSystem();
     }
 
     VirtualFileSystem::~VirtualFileSystem()
@@ -25,10 +41,10 @@ namespace Savanna::IO
             throw Savanna::RuntimeErrorException("The specified root path does not exist!");
         }
 
-        for (const auto &entry : std::filesystem::recursive_directory_iterator(m_RealRootPath))
-        {
-            // m_FileTypeMap[entry.path().extension()].push_back(entry.path());
-        }
+        // for (const auto &entry : std::filesystem::recursive_directory_iterator(m_RealRootPath))
+        // {
+        //     // m_FileTypeMap[entry.path().extension()].push_back(entry.path());
+        // }
     }
 
     std::filesystem::path VirtualFileSystem::GetFullPath(const std::filesystem::path &relativePath) const
