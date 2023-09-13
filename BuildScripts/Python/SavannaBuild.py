@@ -21,6 +21,8 @@ def ProcessArguments():
     # Only Unpack artifacts.
     parser.add_argument('--u', '--unpack', action="store_true", help="Unpacks artifacts only.", dest='unpackOnly')
 
+    parser.add_argument('--g', '--generator', action="store", help="Specifies the generator to use for CMake. If not specified, the default generator for the platform will be used.", dest='generator')
+
     # TODO Logging
     parser.add_argument('--v', '--verbose', action="store_true", help="Enable Verbose Logging. Implicitly enables Warning, and Error logging", dest="verbose")
     parser.add_argument('--w', '--warning', action="store_true", help="Enable Warning Logging. Implicitly enables Error logging", dest="warning")

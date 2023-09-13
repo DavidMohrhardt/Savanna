@@ -1,3 +1,10 @@
+# Define parameters for determining which files to generate
+param(
+    # Capture any subsequent arguments to pass to the python script
+    [Parameter(Mandatory=$false)]
+    [string[]]$args
+)
+
 # Ensure Prepare has run
 $prepareScript = "./Prepare.ps1" | Resolve-Path;
 & $prepareScript
@@ -11,5 +18,4 @@ git submodule update --init --recursive
 
 # Invoke Python
 Write-Host "Invoking Python with command line arguments: $args"
-$args="--db"
 & $pythonInstallPath $buildScriptPath $args
