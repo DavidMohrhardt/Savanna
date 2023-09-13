@@ -41,7 +41,7 @@ namespace Savanna
         ExpandableBlockAllocator(size_t initialBufferCount, size_t bufferBlockSize, bool contiguous = true);
         ~ExpandableBlockAllocator();
 
-        ExpandableBlockAllocator(ExpandableBlockAllocator&& other) { *this = std::move(other); }
+        ExpandableBlockAllocator(ExpandableBlockAllocator&& other) noexcept { *this = std::move(other); }
 
         ExpandableBlockAllocator& operator=(ExpandableBlockAllocator&& other);
 

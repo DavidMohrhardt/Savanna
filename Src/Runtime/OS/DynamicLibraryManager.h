@@ -22,7 +22,7 @@ namespace Savanna::OS
 
         // std::unordered_map<const FixedString64, LibraryHandle> m_LoadedLibraries {};
         std::unordered_map<const char*, LibraryHandle> m_LoadedLibraries {};
-        std::mutex m_DataLock;
+        std::mutex m_DataMutex;
 
     protected:
         DynamicLibraryManager() = default;
@@ -47,7 +47,8 @@ namespace Savanna::OS
                 }
 
 #if SAVANNA_WINDOWS
-                return Windows::TryGetProcAddressForFunc<T>(handle, funcName.c_str(), &outFuncPtr);
+                return Windows::TryGetProcAddressForFunc<TFuncPtr>(
+                    handle, funcName.c_str(), &outFuncPtr);
 #else
                 #error UNSUPPORTED PLATFORM.
 #endif

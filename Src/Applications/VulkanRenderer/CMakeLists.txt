@@ -27,7 +27,7 @@ message (STATUS "Fetching protobuf")
 FetchContent_Declare(
     protobuf
     GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
-    GIT_TAG "v23.4"
+    GIT_TAG "v24.2"
 )
 
 FetchContent_MakeAvailable(glfw glm protobuf)

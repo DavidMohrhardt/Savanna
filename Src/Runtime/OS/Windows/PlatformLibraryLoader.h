@@ -16,7 +16,7 @@ namespace Savanna::OS
         requires std::is_function_v<TFuncPtr>
         bool TryGetProcAddressForFunc(LibraryHandle& libraryHandle, const char* funcName, TFuncPtr& outFuncPtr)
         {
-            outFuncPtr = (T)GetProcAddress(libraryHandle, funcName);
+      outFuncPtr = (TFuncPtr)GetProcAddress(libraryHandle, funcName);
             return outFuncPtr != nullptr;
         }
 

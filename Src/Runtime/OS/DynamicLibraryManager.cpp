@@ -19,7 +19,7 @@ namespace Savanna::OS
     {
         LibraryHandle handle;
         {
-            std::lock_guard<std::mutex> lock(Get()->m_DataLock);
+            std::lock_guard<std::mutex> lock(Get()->m_DataMutex);
             if (Get()->m_LoadedLibraries.find(name.c_str()) != Get()->m_LoadedLibraries.find(name))
             {
                 return true;
@@ -36,7 +36,7 @@ namespace Savanna::OS
 
         if (result)
         {
-            std::lock_guard<std::mutex> lock(Get()->m_DataLock);
+            std::lock_guard<std::mutex> lock(Get()->m_DataMutex);
             Get()->m_LoadedLibraries[name.c_str()] = handle;
         }
 
