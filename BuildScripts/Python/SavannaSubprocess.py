@@ -29,6 +29,8 @@ def RunSubprocess(processArgs: list):
     if (not shouldRunSubprocesses):
         return
 
+    SavannaLogging.LogDebug("Running Subprocess: " + str(processArgs))
+
     loggingParams = SavannaLogging.GetLoggingParameters()
     if (not loggingParams.error): # Implicitly means silent
         subprocess.run(processArgs, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

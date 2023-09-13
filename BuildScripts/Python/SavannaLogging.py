@@ -46,7 +46,8 @@ def SetOutputLogging(shouldLog: bool, path: str):
 # TODO
 def WriteLog(msg: str):
     global limiters
-    # if (limiters.output):
+    if (limiters.output):
+        print(msg)
 
 def LogDebug(msg: str):
     global limiters

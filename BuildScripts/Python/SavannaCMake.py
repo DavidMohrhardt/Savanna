@@ -41,11 +41,10 @@ def InvokeCMakeForBuildTarget(buildPlatform: SavannaBuildPlatform, execExt: str,
         SavannaLogging.LogUI("Generating Projects...")
 
         projectPath = SelectProjectPath()
-        SavannaLogging.WriteLog(cmakeExecutablePath)
-        SavannaLogging.WriteLog(projectPath)
-        SavannaLogging.WriteLog(cmakeListPath)
+        SavannaLogging.LogDebug("Cmake Executable: " + cmakeExecutablePath)
+        SavannaLogging.LogDebug("Project Path: " + projectPath)
+        SavannaLogging.LogDebug("Cmake List Path: " + cmakeListPath)
 
         os.chdir(projectPath)
-        SavannaLogging.Log([cmakeExecutablePath, cmakeListPath])
         SavannaSubprocess.RunSubprocess([cmakeExecutablePath, cmakeListPath])
         os.chdir(rootPath)

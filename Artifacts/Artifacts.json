@@ -9,17 +9,6 @@
         "OutputDirectory": "cmake"
     },
     {
-        "Name": "Ninja",
-        "Version": "1.11.0",
-        "URL": "https://github.com/ninja-build/ninja/releases/download/v1.11.0",
-        "FileNames": [
-            "ninja-linux.zip",
-            "ninja-mac.zip",
-            "ninja-win.zip"
-        ],
-        "OutputDirectory": "ninja"
-    },
-    {
         "Name": "Python",
         "Version": "3.10.6",
         "URL": "https://www.python.org/ftp/python/3.10.6",

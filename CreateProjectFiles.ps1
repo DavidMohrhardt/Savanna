@@ -10,4 +10,6 @@ $buildScriptPath = "./BuildMain.py" | Resolve-Path
 git submodule update --init --recursive
 
 # Invoke Python
+Write-Host "Invoking Python with command line arguments: $args"
+$args="--db"
 & $pythonInstallPath $buildScriptPath $args
