@@ -31,6 +31,8 @@ namespace Savanna
         void* Allocate(size_t size, const MemoryLabel label = SE_MEMORY_LABEL_GENERAL);
         void* Allocate(size_t size, size_t alignment, const MemoryLabel label = SE_MEMORY_LABEL_GENERAL);
 
+        void Free(void* ptr);
+
         template <typename T, typename ...ARGS>
         inline T* Allocate(const MemoryLabel label, ARGS&&... args)
         {
@@ -43,7 +45,12 @@ namespace Savanna
             return static_cast<T*>(Allocate(sizeof(T) * count, label));
         }
 
-        void Free(void* ptr);
+        template <typename T>
+        inline void Free(T* ptr)
+        {
+            ptr->~T();
+            Free(static_cast<void*>(ptr));
+        }
 
     protected:
         bool InitializeInternal() override;
