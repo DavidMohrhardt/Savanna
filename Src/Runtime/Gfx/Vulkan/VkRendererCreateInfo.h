@@ -11,6 +11,7 @@
 #include "Utilities/SavannaCoding.h"
 #include <Types/Strings/FixedString.h>
 
+#include "VkEngineAllocator.h"
 #include "VkQueueFlags.h"
 #include "VkSurfaceCreateInfos.h"
 
@@ -43,4 +44,5 @@ typedef struct se_VkRendererCreateInfo_t
     VkAllocationCallbacks* m_pAllocationCallbacks;
     const void* m_pUserData;
 } se_VkRendererCreateInfo_t;
+
 DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, se_VkRendererCreateInfo_t, RendererCreateInfo);

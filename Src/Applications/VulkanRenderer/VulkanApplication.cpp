@@ -105,6 +105,7 @@ void VulkanApplication::CreateRenderer()
     rendererCreateInfo.m_InstanceExtensionsCount = static_cast<uint32>(extensions.size());
     rendererCreateInfo.m_ppEnabledLayerNames = layers.data();
     rendererCreateInfo.m_EnabledLayerCount = static_cast<uint32>(layers.size());
+    rendererCreateInfo.m_pAllocationCallbacks = &k_SavannaDefaultVkAllocationCallbacks;
 
 #if SAVANNA_WINDOWS
     Windows::FillOutSurfaceCreateInfo(GetModuleHandle(nullptr), glfwGetWin32Window(m_Window.GetWindowPtr()), &rendererCreateInfo.m_SurfaceCreateInfo);

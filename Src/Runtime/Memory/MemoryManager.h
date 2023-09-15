@@ -102,7 +102,7 @@ void* savanna_memory_manager_allocate(size_t size, size_t alignment = 0, se_Memo
 
 void savanna_memory_manager_free(void* ptr);
 
-void* savanna_memory_manager_realloc(void* ptr, const size_t& originalSize, const size_t& newSize);
+void* savanna_memory_manager_realloc(void* ptr, size_t alignment, const size_t& originalSize, const size_t& newSize);
 
 #if defined(__cplusplus)
 } // extern "C"

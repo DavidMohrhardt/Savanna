@@ -102,10 +102,11 @@ inline void savanna_memory_manager_free(void* ptr)
 
 inline void* savanna_memory_manager_realloc(
     void* ptr,
+    size_t alignment,
     const size_t& originalSize,
     const size_t& newSize)
 {
-    void* newPtr = savanna_memory_manager_allocate(newSize);
+    void* newPtr = savanna_memory_manager_allocate(newSize, alignment);
     memcpy(newPtr, ptr, originalSize);
     savanna_memory_manager_free(ptr);
     return newPtr;
