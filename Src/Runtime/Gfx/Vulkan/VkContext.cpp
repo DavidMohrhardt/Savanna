@@ -76,4 +76,8 @@ namespace Savanna::Gfx::Vk
         DebugMessenger::PopulateDebugCreateInfo(&debugMessengerCreateInfo);
         m_DebugMessenger = std::make_unique<DebugMessenger>(m_Instance, &debugMessengerCreateInfo, pRendererCreateInfo->m_pAllocationCallbacks);
     }
+
+    void Context::PopulateAdditionalInstanceInfo(
+        VkInstanceCreateInfo *pInstanceCreateInfo)
+    {}
 } // namespace Savanna::Gfx::Vk

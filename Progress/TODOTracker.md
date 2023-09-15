@@ -1,12 +1,11 @@
 # TODO
 
-Total TODOs: 99
+Total TODOs: 104
 ## Src
 
 ### CMakeLists.txt
 
 - [L5 :# TODO @DavidMohrhardt - Make multiple scripts for different platforms](../Src/CMakeLists.txt#L5)
-- [L14 :# TODO @DavidMohrhardt - For some reason this triggers a configuration change that causes the project to rebuild every time. Disabling for now.](../Src/CMakeLists.txt#L14)
 
 ### CMakeLists.txt.old
 
@@ -29,14 +28,23 @@ Total TODOs: 99
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/DX12Renderer/Window/WindowsRenderWindow.h#L3)
 
+### CMakeLists.txt
+
+- [L48 :# TODO Make find Vulkan QUIET and enable the runtime loader for vulkan in the case it's not just defined](../Src/Applications/VulkanRenderer/CMakeLists.txt#L48)
+
 ### VulkanApplication.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L3)
-- [L220 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L220)
+- [L114 :// TODO @DavidMohrhardt Allow for additional extensions to be added via queries](../Src/Applications/VulkanRenderer/VulkanApplication.cpp#L114)
 
 ### VulkanApplication.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Applications/VulkanRenderer/VulkanApplication.h#L3)
+
+### ISavannaJobs.h
+
+- [L144 :* @brief TODO](../Src/Runtime/Concurrency/JobSystem/ISavannaJobs.h#L144)
+- [L245 :// TODO @david.mohrhardt: Reimplement the temporary job with appropriate memory management.](../Src/Runtime/Concurrency/JobSystem/ISavannaJobs.h#L245)
 
 ### ComponentRegistry.cpp
 
@@ -69,10 +77,10 @@ Total TODOs: 99
 
 ### ComponentParadigm.cpp
 
-- [L46 :// TODO @DavidMohrhardt Release memory](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L46)
-- [L135 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L135)
-- [L149 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L149)
-- [L156 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L156)
+- [L45 :// TODO @DavidMohrhardt Release memory](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L45)
+- [L136 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L136)
+- [L150 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L150)
+- [L157 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L157)
 
 ### JacobianMatrix.cpp
 
@@ -86,10 +94,6 @@ Total TODOs: 99
 ### PhysicsManager.cpp
 
 - [L176 :// TODO](../Src/Runtime/Experimental~/Physics/PhysicsManager.cpp#L176)
-
-### WindowsPluginLoader.cpp
-
-- [L4 :// TODO: For some reason the compiler just will not load the Kernel32 library. I have no idea why.](../Src/Runtime/Experimental~/Plugins/Loader/WindowsPluginLoader.cpp#L4)
 
 ### Assertions.h
 
@@ -131,6 +135,14 @@ Total TODOs: 99
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Math/MathHelpers.h#L3)
 
+### MemoryManager.cpp
+
+- [L8 :// TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.](../Src/Runtime/Memory/MemoryManager.cpp#L8)
+
+### MemoryPool.h
+
+- [L52 :// TODO @DavidMohrhardt: Practically this is probably fine but a faster to use a bit scan intrinsic. Work for the future.](../Src/Runtime/Memory/MemoryPool.h#L52)
+
 ### DynamicLibraryManager.h
 
 - [L32 :// TODO currently unsupported. Libraries stay loaded for the duration of the program](../Src/Runtime/OS/DynamicLibraryManager.h#L32)
@@ -143,6 +155,11 @@ Total TODOs: 99
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/CacheLine.h#L3)
 
+### ExpandableBlockAllocator.cpp
+
+- [L18 :#if TODO_SPLIT_CONTIGUOUS_BUFFERS](../Src/Runtime/Types/Memory/ExpandableBlockAllocator.cpp#L18)
+- [L95 :#if TODO_SPLIT_CONTIGUOUS_BUFFERS](../Src/Runtime/Types/Memory/ExpandableBlockAllocator.cpp#L95)
+
 ### FreeListAllocator.cpp
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/FreeListAllocator.cpp#L3)
@@ -151,23 +168,19 @@ Total TODOs: 99
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/FreeListAllocator.h#L3)
 
-### Mallocator.cpp
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/Mallocator.cpp#L3)
-
 ### Mallocator.h
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/Mallocator.h#L3)
 
 ### MemoryChunkDescriptors.h
 
-- [L24 :// TODO: Instead of a pointer make this a uint32 offset from the start of the chunk](../Src/Runtime/Types/Memory/MemoryChunkDescriptors.h#L24)
-- [L35 :// TODO: When MemoryChunkDescriptor is changed to a uint32 offset, change this to a uint32](../Src/Runtime/Types/Memory/MemoryChunkDescriptors.h#L35)
+- [L23 :// TODO: Instead of a pointer make this a uint32 offset from the start of the chunk](../Src/Runtime/Types/Memory/MemoryChunkDescriptors.h#L23)
+- [L34 :// TODO: When MemoryChunkDescriptor is changed to a uint32 offset, change this to a uint32](../Src/Runtime/Types/Memory/MemoryChunkDescriptors.h#L34)
 
 ### FloatingPointUnions.h
 
 - [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive/FloatingPointUnions.h#L29)
-- [L56 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive/FloatingPointUnions.h#L56)
+- [L58 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive/FloatingPointUnions.h#L58)
 
 ### Console.h
 
@@ -225,6 +238,10 @@ Total TODOs: 99
 
 ## BuildScripts
 
+### SourceAggregatorUtilities.cmake
+
+- [L161 :# TODO: Maybe collect any kind of source instead of just CPP/C files](../BuildScripts/CMake/Modules/SourceAggregatorUtilities.cmake#L161)
+
 ### SavannaArtifacts.py
 
 - [L11 :#TODO](../BuildScripts/Python/SavannaArtifacts.py#L11)
@@ -239,10 +256,10 @@ Total TODOs: 99
 - [L12 :parser.add_argument('--b', '--batchbuild', action="store_true", help="TODO Replace with build target.", dest='shouldBuild')](../BuildScripts/Python/SavannaBuild.py#L12)
 - [L14 :# TODO](../BuildScripts/Python/SavannaBuild.py#L14)
 - [L17 :# TODO](../BuildScripts/Python/SavannaBuild.py#L17)
-- [L23 :# TODO Logging](../BuildScripts/Python/SavannaBuild.py#L23)
-- [L31 :#TODO @david.mohrhardt: Update this to be in submodules instead of one monster python script](../BuildScripts/Python/SavannaBuild.py#L31)
-- [L41 :# 2) Extract Artifacts if needed (TODO)](../BuildScripts/Python/SavannaBuild.py#L41)
-- [L42 :# 3) Invoke CMake For Project Generation or Build (TODO)](../BuildScripts/Python/SavannaBuild.py#L42)
+- [L25 :# TODO Logging](../BuildScripts/Python/SavannaBuild.py#L25)
+- [L33 :#TODO @david.mohrhardt: Update this to be in submodules instead of one monster python script](../BuildScripts/Python/SavannaBuild.py#L33)
+- [L43 :# 2) Extract Artifacts if needed (TODO)](../BuildScripts/Python/SavannaBuild.py#L43)
+- [L44 :# 3) Invoke CMake For Project Generation or Build (TODO)](../BuildScripts/Python/SavannaBuild.py#L44)
 
 ### SavannaCMake.py
 

@@ -203,6 +203,18 @@ namespace Savanna::Concurrency
             : m_JobInterface({ executeFunc, nullptr, nullptr, nullptr, pUserData })
         {}
 
+        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, const se_JobResultCallbackFunc_t& onCompleteFunc, void* pUserData)
+            : m_JobInterface({ executeFunc, onCompleteFunc, nullptr, nullptr, pUserData })
+        {}
+
+        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, const se_JobResultCallbackFunc_t& onCompleteFunc, const se_JobResultCallbackFunc_t& onCancelFunc, void* pUserData)
+            : m_JobInterface({ executeFunc, onCompleteFunc, onCancelFunc, nullptr, pUserData })
+        {}
+
+        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, const se_JobResultCallbackFunc_t& onCompleteFunc, const se_JobResultCallbackFunc_t& onCancelFunc, const se_JobResultCallbackFunc_t& onErrorFunc, void* pUserData)
+            : m_JobInterface({ executeFunc, onCompleteFunc, onCancelFunc, onErrorFunc, pUserData })
+        {}
+
         virtual ~PrimitiveJob() {}
 
     public:
@@ -243,14 +255,17 @@ namespace Savanna::Concurrency
         }
     };
 
+    // TODO @david.mohrhardt: Reimplement the temporary job with appropriate memory management.
     /**
      * @brief
      *
      * @tparam Args
      */
-    template <typename T>
+    /*template <typename T>
     class TemporaryJob final : public IJob
     {
+    public:
+        using DeleteFunc = void(*)(TemporaryJob*);
     private:
         static_assert(std::is_base_of_v<IJob, T>, "T must be derived from IJob!");
         friend class IJob;
@@ -273,7 +288,8 @@ namespace Savanna::Concurrency
 
         void Dispose()
         {
-            delete this;
+            TDeallocator<T>::Deallocate(std::move(m_Job));
+            // delete this;
         }
 
     public:
@@ -313,13 +329,7 @@ namespace Savanna::Concurrency
             m_Job.OnError();
             Dispose();
         }
-    };
-
-    /**
-     * @brief
-     *
-     * @tparam Args
-     */
+    };*/
 
 } // namespace Savanna::Concurrency
 

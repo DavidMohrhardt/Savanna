@@ -12,14 +12,21 @@
 #include "VulkanApplication.h"
 
 #include <SavannaEngine.h>
+
 #include <Utilities/Console.h>
+#include <VirtualFileSystem.h>
 
 int main(int argc, char** argvs)
 {
     int result = 0;
 
-    Savanna::InitializeManagers();
-    Savanna::StartManagers();
+    using namespace Savanna;
+
+    InitializeManagers();
+    StartManagers();
+
+    // Initialize File System
+    IO::VirtualFileSystem::Construct(argvs[0]);
 
     VulkanApplication* app = SAVANNA_NEW(VulkanApplication, argc, argvs);
     try
@@ -34,8 +41,10 @@ int main(int argc, char** argvs)
 
     SAVANNA_DELETE(app);
 
-    Savanna::StopManagers();
-    Savanna::ShutdownManagers();
+    IO::VirtualFileSystem::Destroy();
+
+    StopManagers();
+    ShutdownManagers();
 
     return result;
 }

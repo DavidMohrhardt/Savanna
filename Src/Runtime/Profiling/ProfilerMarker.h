@@ -15,7 +15,7 @@
  * @brief Inserts a scoped profiler into the code and begins profiling.
  */
 #define SAVANNA_INSERT_SCOPED_PROFILER( functionName ) \
-    Savanna::ProfilerMarker __savanna_ProfilerMarker_funcName = Savanna::ProfilerMarker( Savanna::FixedString256( #functionName  ) ); \
+    Savanna::ProfilerMarker __savanna_ProfilerMarker_funcName = Savanna::ProfilerMarker( Savanna::FixedString256( #functionName ) ); \
     __savanna_ProfilerMarker_funcName.BeginSample();
 
 #endif
@@ -29,7 +29,6 @@ namespace Savanna
     private:
         bool m_Sampling;
         const char* m_ProfilerMarkerName;
-        // FixedString256 m_ProfilerMarkerName;
 
         std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTime;
         std::chrono::time_point<std::chrono::high_resolution_clock> m_EndTime;

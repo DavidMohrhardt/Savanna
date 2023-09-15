@@ -21,9 +21,7 @@
 
 #include <JobSystem/JobManager.h>
 
-#include <VirtualFileSystem.h>
-
-#include <FileStream.h>
+#include "ComputationalGeometry.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <iostream>
@@ -35,22 +33,11 @@
 
 using namespace Savanna;
 using namespace Savanna::Concurrency;
-using namespace Savanna::IO;
 
 using namespace Savanna::Gfx::Vk;
 
 const char* k_ApplicationName = "Savanna";
 const char* k_EngineName = "No Engine";
-
-const char* k_DefaultShaderPaths[] = {
-    "Assets/SPIRV/SimpleTriangle.vert.spv",
-    "Assets/SPIRV/SimpleTriangle.frag.spv"
-};
-
-const char* k_ShaderNames[] = {
-    "SimpleTriangleVertex",
-    "SimpleTriangleFragment"
-};
 
 VulkanApplication::VulkanApplication(int argc, char** argvs)
     : m_Window(1920, 1080)
@@ -58,19 +45,15 @@ VulkanApplication::VulkanApplication(int argc, char** argvs)
 {
     SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::ctor);
 
-    // Initialize File System
-    VirtualFileSystem::Construct(argvs[0]);
-
     // Init Renderer
     CreateRenderer();
-    CreateShaderModules();
+
+    Shapes::CreateDefaultShaderModules(m_Renderer);
 }
 
 VulkanApplication::~VulkanApplication()
 {
     SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::~VulkanApplication());
-
-    IO::VirtualFileSystem::Destroy();
 }
 
 void VulkanApplication::Run()
@@ -139,73 +122,4 @@ void VulkanApplication::CreateRenderer()
     rendererCreateInfo.m_QueueFlags = seVkQueueFlagBitsGraphicsBit | seVkQueueFlagBitsPresentBit;
 
     m_Renderer.Create(&rendererCreateInfo);
-}
-
-void VulkanApplication::CreateShaderModules()
-{
-    SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules);
-
-    struct ShaderCreateJobInput
-    {
-        const char* m_ShaderPath;
-        FixedString64 m_ShaderName;
-        Renderer& m_Renderer;
-    };
-
-    ShaderCreateJobInput inputData[2]
-    {
-        ShaderCreateJobInput{k_DefaultShaderPaths[0], k_ShaderNames[0], m_Renderer},
-        ShaderCreateJobInput{k_DefaultShaderPaths[1], k_ShaderNames[1], m_Renderer}
-    };
-
-    JobExecuteFunc shaderJobFunc = [](void* pUserData) -> JobResult
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules::ShaderCreateJob);
-        if (pUserData == nullptr)
-        {
-            SAVANNA_FATAL_LOG("Shader job data is null!");
-            return JobResult::k_SavannaJobResultError;
-        }
-
-        ShaderCreateJobInput* pShaderCreateJobInput = reinterpret_cast<ShaderCreateJobInput*>(pUserData);
-
-        auto& shaderPath = pShaderCreateJobInput->m_ShaderPath;
-        auto& shaderName = pShaderCreateJobInput->m_ShaderName;
-        auto& renderer = pShaderCreateJobInput->m_Renderer;
-
-        try
-        {
-            // Get full path to shader
-            IO::FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
-            std::vector<uint32_t> shaderBytes = stream.ReadFile<uint32_t>();
-
-            // Create shader module
-            return renderer.GetShaderCache().TryCreateShader(shaderName, renderer.GetGfxDevice(), shaderBytes)
-                ? JobResult::k_SavannaJobResultSuccess
-                : JobResult::k_SavannaJobResultError;
-        }
-        catch(const std::exception& e)
-        {
-            SAVANNA_FATAL_LOG("Failed to create shader module: {}", e.what());
-            return JobResult::k_SavannaJobResultError;
-        }
-    };
-
-    // Read shaders from disk
-    PrimitiveJob shaderCreateJobs[2]
-    {
-        PrimitiveJob{shaderJobFunc, &inputData[0]},
-        PrimitiveJob{shaderJobFunc, &inputData[1]}
-    };
-
-    // Schedule shader creation jobs
-    JobHandle shaderJobHandles[2]
-    {
-        JobManager::Get().ScheduleJob(&shaderCreateJobs[0]),
-        JobManager::Get().ScheduleJob(&shaderCreateJobs[1])
-    };
-
-    // Wait for shader creation jobs to complete
-    JobManager::Get().AwaitCompletion(shaderJobHandles[0]);
-    JobManager::Get().AwaitCompletion(shaderJobHandles[1]);
 }

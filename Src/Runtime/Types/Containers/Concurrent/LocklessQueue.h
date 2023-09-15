@@ -13,6 +13,8 @@
 #include "SavannaEngine.h"
 #include "Utilities/SavannaCoding.h"
 
+#include "Memory/MemoryManager.h"
+
 #include <atomic>
 
 namespace Savanna
@@ -39,10 +41,10 @@ namespace Savanna
         LocklessQueue(LocklessQueue&&) = default;
         LocklessQueue& operator=(LocklessQueue&&) = default;
 
-        void Push(const T& data)
+        void Push(T&& data)
         {
             Node* newNode = SAVANNA_NEW(Node);
-            newNode->m_Data = data;
+            newNode->m_Data = std::move(data);
             newNode->m_Next = nullptr;
 
             Node* oldHead = m_Head.load(std::memory_order_relaxed);
@@ -52,20 +54,37 @@ namespace Savanna
             } while (!m_Head.compare_exchange_weak(oldHead, newNode, std::memory_order_release, std::memory_order_relaxed));
         }
 
-        bool Pop(T& data)
+        bool TryPop(T& data)
         {
-            Node* oldHead = m_Head.load(std::memory_order_relaxed);
+            Node* oldHead = nullptr;
             do
             {
+                oldHead = m_Head.load(std::memory_order_relaxed);
                 if (oldHead == nullptr)
                 {
                     return false;
                 }
             } while (!m_Head.compare_exchange_weak(oldHead, oldHead->m_Next, std::memory_order_release, std::memory_order_relaxed));
 
-            data = oldHead->m_Data;
-            delete oldHead;
+            data = std::move(oldHead->m_Data);
+            SAVANNA_DELETE(oldHead);
             return true;
+        }
+
+        bool IsEmpty() const
+        {
+            return m_Head.load(std::memory_order_relaxed) == nullptr;
+        }
+
+        // STL compatibility
+        bool empty() const
+        {
+            return IsEmpty();
+        }
+
+        T& front()
+        {
+            return m_Head.load(std::memory_order_relaxed)->m_Data;
         }
     };
 } // namespace Savanna

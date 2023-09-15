@@ -32,7 +32,6 @@ public:
 
 private:
     void CreateRenderer();
-    void CreateShaderModules();
 
     GLFWWindowWrapper m_Window;
     Renderer m_Renderer;

@@ -75,11 +75,6 @@ namespace Savanna::Gfx::Vk
             const VkDevice& device,
             std::vector<uint32_t>& shaderBinary);
 
-        JobHandle ScheduleCreateShaderJob(
-            const FixedString64& shaderName,
-            const VkDevice& device,
-            std::vector<uint32_t>& shaderBinary);
-
         bool TryGetShaderModule(const FixedString64& shaderName, VkShaderModule& outShaderModule);
 
     private:

@@ -83,29 +83,6 @@ namespace Savanna::Gfx::Vk
         return true;
     }
 
-    JobHandle ShaderCache::ScheduleCreateShaderJob(
-        const FixedString64& shaderName,
-        const VkDevice& device,
-        std::vector<uint32_t>& shaderBinary)
-    {
-        JobHandle handle = k_InvalidJobHandle;
-        {
-            std::lock_guard<std::mutex> lock(m_DataMutex);
-            if (m_ShaderModuleMap.find(shaderName) != m_ShaderModuleMap.end())
-            {
-                return k_InvalidJobHandle;
-            }
-
-            handle = JobManager::Get().ScheduleJob(
-                SAVANNA_NEW(TemporaryJob<ShaderModuleCreationJob>, this, shaderName, device, shaderBinary),
-                JobPriority::k_SavannaJobPriorityHigh);
-
-            m_ShaderModuleMap[shaderName] = {0};
-        }
-
-        return handle;
-    }
-
     bool ShaderCache::TryGetShaderModule(const FixedString64 &shaderName, VkShaderModule &outShaderModule)
     {
         std::lock_guard<std::mutex> lock(m_DataMutex);

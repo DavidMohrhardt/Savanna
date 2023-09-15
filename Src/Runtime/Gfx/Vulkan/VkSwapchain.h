@@ -53,6 +53,17 @@ namespace Savanna::Gfx::Vk
         VkSurfaceFormatKHR GetSurfaceFormat() const { return m_SurfaceFormat; }
         VkPresentModeKHR GetPresentMode() const { return m_PresentMode; }
         VkExtent2D GetExtent() const { return m_Extent; }
+        VkViewport GetDefaultViewportForSwapchain() const {
+            return VkViewport
+            {
+                0.0f,
+                0.0f,
+                static_cast<float>(m_Extent.width),
+                static_cast<float>(m_Extent.height),
+                0.0f,
+                1.0f
+            };
+        }
 
     private:
         void ConfigureSwapchainImageViews();

@@ -37,21 +37,27 @@ namespace Savanna
             , m_Size(0)
             , m_Capacity(capacity)
         {
+            m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));
             if (initialize)
             {
-                m_Data = SAVANNA_NEW_ARRAY(value_type, capacity);
-            }
-            else
-            {
-                m_Data = malloc(sizeof(value_type) * capacity);
+                for (size_t i = 0; i < m_Capacity; i++)
+                {
+                    new (&m_Data[i]) value_type();
+                }
             }
         }
 
         DynamicArray() : m_Data(nullptr), m_Size(0), m_Capacity(0) {}
+
         ~DynamicArray()
         {
+            Clear();
+
             if (m_Data != nullptr)
-                delete[] m_Data;
+            {
+                SAVANNA_FREE(m_Data);
+                m_Data = nullptr;
+            }
         }
 
         DynamicArray(const DynamicArray& other) = delete;
@@ -89,30 +95,48 @@ namespace Savanna
             m_Data[m_Size++] = std::move(value);
         }
 
+        const value_type* Data()
+        {
+            return m_Data;
+        }
+
         void Reserve(size_t capacity)
         {
             if (capacity <= m_Capacity)
                 return;
 
-            value_type* newData = SAVANNA_NEW_ARRAY(value_type, capacity);
-            for (size_t i = 0; i < m_Size; i++)
-                newData[i] = std::move(m_Data[i]);
-
-            SAVANNA_DELETE_ARRAY(m_Data);
-            m_Data = newData;
-            m_Capacity = capacity;
+            value_type* previousBuffer = m_Data;
+            m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));
+            memcpy(m_Data, previousBuffer, sizeof(value_type) * m_Size);
+            SAVANNA_FREE(previousBuffer);
         }
 
-        void Resize(size_t size)
+        void Resize(size_t size, bool initialize = false)
         {
             if (size > m_Capacity)
                 Reserve(size);
 
+            if (initialize)
+            {
+                for (size_t i = m_Size; i < size; i++)
+                {
+                    new (&m_Data[i]) value_type();
+                }
+            }
             m_Size = size;
         }
 
         void Clear()
         {
+            if (m_Data == nullptr)
+            {
+                return;
+            }
+
+            for (size_t i = 0; i < m_Size; i++)
+            {
+                m_Data[i].~value_type();
+            }
             m_Size = 0;
         }
 
@@ -131,22 +155,29 @@ namespace Savanna
             return m_Size == 0;
         }
 
+        iterator begin()
+        {
+            return m_Data;
+        }
+
+        iterator end()
+        {
+            return m_Data + m_Size;
+        }
+
 #define SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(__decl, __def) \
         const __decl const { __def } \
         __decl { __def }
 
         SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(
-            value_type& At(size_t index),
-            {
-                if (index >= m_Size)
-                    throw std::out_of_range("Index out of range");
-                return m_Data[index];
-            });
-
-        SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC(
             value_type& operator[](size_t index),
             {
-                return At(index);
+                if (index >= m_Capacity)
+                {
+                    throw std::out_of_range("Index out of range.");
+                }
+
+                return m_Data[index];
             })
 
 #undef SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC

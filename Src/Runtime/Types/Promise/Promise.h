@@ -24,6 +24,8 @@ namespace Savanna
     template<typename T>
     class Promise
     {
+    private:
+        std::future<T> m_Future;
     public:
         using result_type = T;
 

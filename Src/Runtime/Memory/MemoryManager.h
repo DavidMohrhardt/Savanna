@@ -2,22 +2,14 @@
 
 #include <Utilities/SavannaCoding.h>
 
+#include "MemoryLabel.h"
+
 #include "Types/Manager/GlobalManager.h"
 #include "Types/Memory/MemoryBlocks.h"
 #include "Types/Memory/ExpandableBlockAllocator.h"
 
 #define ENABLE_GLOBAL_NEW_DELETE_OP_OVERRIDES 0
 #define ENABLE_MEMORY_MANAGEMENT 1
-
-DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, uint32_t,
-    SE_MEMORY_LABEL_GENERAL,
-
-    SE_MEMORY_LABEL_GRAPHICS,
-    SE_MEMORY_LABEL_ENTITIES,
-    SE_MEMORY_LABEL_CONCURRENCY,
-
-    SE_MEMORY_LABEL_COUNT
-);
 
 #if defined(__cplusplus)
 
@@ -83,6 +75,10 @@ void operator delete[](void* ptr, size_t size) noexcept;
 #define SAVANNA_INPLACE_NEW(type, ptr, ...) new (ptr) type(__VA_ARGS__)
 #define SAVANNA_INPLACE_NEW_ARRAY(type, count, ptr) new (ptr) type[count]
 
+#define SAVANNA_MALLOC(size) Savanna::MemoryManager::Get().Allocate(size, SE_MEMORY_LABEL_GENERAL)
+#define SAVANNA_MALLOC_ALIGNED(size, alignment) Savanna::MemoryManager::Get().Allocate(size, alignment, SE_MEMORY_LABEL_GENERAL)
+#define SAVANNA_FREE(ptr) Savanna::MemoryManager::Get().Free(ptr)
+
 #else
 
 #define SAVANNA_NEW(type, ...) new type(__VA_ARGS__)
@@ -92,6 +88,10 @@ void operator delete[](void* ptr, size_t size) noexcept;
 
 #define SAVANNA_INPLACE_NEW(type, ptr, ...) new (ptr) type(__VA_ARGS__)
 #define SAVANNA_INPLACE_NEW_ARRAY(type, count, ptr) new (ptr) type[count]
+
+#define SAVANNA_MALLOC(size) malloc(size)
+#define SAVANNA_MALLOC_ALIGNED(size, alignment) _aligned_malloc(size, alignment)
+#define SAVANNA_FREE(ptr) free(ptr)
 
 #endif
 
