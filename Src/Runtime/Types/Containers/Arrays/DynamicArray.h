@@ -14,6 +14,8 @@
 
 #include "Memory/MemoryManager.h"
 
+#include <initializer_list>
+
 namespace Savanna
 {
     template <typename T>
@@ -44,6 +46,19 @@ namespace Savanna
                 {
                     new (&m_Data[i]) value_type();
                 }
+            }
+        }
+
+        // Accept a std::initializer_list
+        DynamicArray(std::initializer_list<value_type> list)
+            : m_Data(nullptr)
+            , m_Size(0)
+            , m_Capacity(list.size())
+        {
+            m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * m_Capacity, alignof(value_type)));
+            for (auto& item : list)
+            {
+                m_Data[m_Size++] = item;
             }
         }
 
@@ -95,7 +110,7 @@ namespace Savanna
             m_Data[m_Size++] = std::move(value);
         }
 
-        const value_type* Data()
+        value_type* Data()
         {
             return m_Data;
         }
@@ -181,5 +196,81 @@ namespace Savanna
             })
 
 #undef SAVANNA_DEF_CONST_AND_NON_VARIANT_FUNC
+
+        // STL compatibility
+        inline void push_back(const value_type& value)
+        {
+            Append(value);
+        }
+
+        inline void push_back(value_type&& value)
+        {
+            Append(std::move(value));
+        }
+
+        inline void pop_back()
+        {
+            if (m_Size == 0)
+            {
+                throw std::out_of_range("Index out of range.");
+            }
+
+            m_Data[--m_Size].~value_type();
+        }
+
+        inline void erase(iterator position)
+        {
+            if (position < begin() || position >= end())
+            {
+                throw std::out_of_range("Index out of range.");
+            }
+
+            for (iterator it = position; it != end() - 1; it++)
+            {
+                *it = *(it + 1);
+            }
+
+            pop_back();
+        }
+
+        inline T* data()
+        {
+            return m_Data;
+        }
+
+        inline const T* data() const
+        {
+            return m_Data;
+        }
+
+        inline T& front()
+        {
+            if (m_Size == 0)
+            {
+                throw std::out_of_range("Index out of range.");
+            }
+
+            return m_Data[0];
+        }
+
+        inline const T& front() const
+        {
+            if (m_Size == 0)
+            {
+                throw std::out_of_range("Index out of range.");
+            }
+
+            return m_Data[0];
+        }
+
+        inline size_t size() const
+        {
+            return m_Size;
+        }
+
+        inline size_t capacity() const
+        {
+            return m_Capacity;
+        }
     };
 } // namespace Savanna
