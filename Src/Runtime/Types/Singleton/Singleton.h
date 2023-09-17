@@ -21,7 +21,7 @@
 namespace Savanna
 {
     template <typename T>
-    class SAVANNA_INTERFACE Singleton
+    class Singleton
     {
     private:
         using TYPE = T;
