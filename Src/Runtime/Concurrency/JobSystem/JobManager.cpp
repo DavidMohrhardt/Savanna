@@ -20,7 +20,6 @@ namespace Savanna::Concurrency
         }
 
         JobResult result = pJob->Execute();
-        pJob->m_JobState.store(k_SavannaJobStateFinished, std::memory_order_release);
         switch (result)
         {
             case k_SavannaJobResultSuccess:
@@ -34,12 +33,14 @@ namespace Savanna::Concurrency
                 pJob->OnError();
                 break;
         }
+        pJob->m_JobState.store(k_SavannaJobStateFinished, std::memory_order_release);
         return result;
     }
 
     void JobManager::ProcessJobsInternal()
     {
-        while (Get().m_ProcessingJobs.load())
+        JobManager &manager = Get();
+        while (manager.m_ProcessingJobs.load())
         {
             JobHandle jobHandle = k_InvalidJobHandle;
 
@@ -47,21 +48,14 @@ namespace Savanna::Concurrency
             uint32 desiredState = k_SavannaJobStateRunning;
 
                 // In the current implementation of the lockless queue you can simply pop from the queue
-            if (Get().m_HighPriorityJobs.TryDequeue(jobHandle) ||
-                Get().m_NormalPriorityJobs.TryDequeue(jobHandle) ||
-                Get().m_LowPriorityJobs.TryDequeue(jobHandle))
+            if (manager.m_HighPriorityJobs.TryDequeue(jobHandle) ||
+                manager.m_NormalPriorityJobs.TryDequeue(jobHandle) ||
+                manager.m_LowPriorityJobs.TryDequeue(jobHandle))
             {
-                if (!reinterpret_cast<IJob*>(jobHandle)->m_JobState.compare_exchange_weak(expectedState, desiredState, std::memory_order_release, std::memory_order_relaxed))
+                if (reinterpret_cast<IJob*>(jobHandle)->m_JobState.compare_exchange_weak(expectedState, desiredState, std::memory_order_release, std::memory_order_relaxed))
                 {
-                    // Job was cancelled before it could be executed.
-                    jobHandle = k_InvalidJobHandle;
-                    continue;
+                    ExecuteJobInternal(jobHandle);
                 }
-            }
-
-            if (jobHandle != k_InvalidJobHandle)
-            {
-                ExecuteJobInternal(jobHandle);
             }
 
             std::this_thread::yield();
@@ -197,8 +191,14 @@ namespace Savanna::Concurrency
 
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::AwaitCompletion(JobHandle jobHandle));
 
-        while (reinterpret_cast<IJob*>(jobHandle)->m_JobState.load(std::memory_order_relaxed) == k_SavannaJobStateRunning)
+        while (true)
         {
+            auto state = reinterpret_cast<IJob*>(jobHandle)->m_JobState.load(std::memory_order_relaxed);
+            if (state == k_SavannaJobStateFinished || state == k_SavannaJobStateInvalid)
+            {
+                return;
+            }
+
             std::this_thread::yield();
         }
     }

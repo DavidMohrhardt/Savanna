@@ -65,13 +65,34 @@ namespace Savanna
 
         DynamicArray(const DynamicArray& other)
             : m_Data(reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * other.m_Capacity, alignof(value_type))))
+            , m_Size(other.m_Size)
+            , m_Capacity(other.m_Capacity)
         {
             *this = other;
         }
 
-        DynamicArray& operator=(DynamicArray& other) SAVANNA_NOEXCEPT
+        DynamicArray& operator=(const DynamicArray& other)
         {
-            std::memcpy(m_Data, other.m_Data, sizeof(value_type) * other.m_Size);
+            if (this != &other)
+            {
+                Clear();
+                Reserve(other.m_Capacity);
+                if (std::is_trivially_copyable_v<value_type>)
+                {
+                    std::memcpy(m_Data, other.m_Data, sizeof(value_type) * other.m_Size);
+                }
+                else
+                {
+                    for (size_t i = 0; i < other.m_Size; i++)
+                    {
+                        m_Data[i] = other.m_Data[i];
+                    }
+                }
+
+                m_Size = other.m_Size;
+                m_Capacity = other.m_Capacity;
+            }
+
             return *this;
         }
 
