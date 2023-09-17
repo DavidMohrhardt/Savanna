@@ -34,19 +34,19 @@ namespace Savanna
         void Free(void* ptr);
 
         template <typename T, typename ...ARGS>
-        inline T* Allocate(const MemoryLabel label, ARGS&&... args)
+        inline T* New(const MemoryLabel label, ARGS&&... args)
         {
             return new (static_cast<T*>(Allocate(sizeof(T), label))) T(std::forward<ARGS>(args)...);
         }
 
         template <typename T>
-        inline T* AllocateArray(const size_t& count, const MemoryLabel label)
+        inline T* NewArray(const size_t& count, const MemoryLabel label)
         {
             return static_cast<T*>(Allocate(sizeof(T) * count, label));
         }
 
         template <typename T>
-        inline void Free(T* ptr)
+        inline void Delete(T* ptr)
         {
             ptr->~T();
             Free(static_cast<void*>(ptr));
@@ -74,10 +74,10 @@ void operator delete[](void* ptr, size_t size) noexcept;
 
 #if ENABLE_MEMORY_MANAGEMENT
 
-#define SAVANNA_NEW(type, ...) Savanna::MemoryManager::Get().Allocate<type>(SE_MEMORY_LABEL_GENERAL, __VA_ARGS__)
-#define SAVANNA_NEW_ARRAY(type, count) Savanna::MemoryManager::Get().AllocateArray<type>(SE_MEMORY_LABEL_GENERAL, count)
-#define SAVANNA_DELETE(ptr) Savanna::MemoryManager::Get().Free(ptr)
-#define SAVANNA_DELETE_ARRAY(ptr) Savanna::MemoryManager::Get().Free(ptr)
+#define SAVANNA_NEW(type, ...) Savanna::MemoryManager::Get().New<type>(SE_MEMORY_LABEL_GENERAL, __VA_ARGS__)
+#define SAVANNA_NEW_ARRAY(type, count) Savanna::MemoryManager::Get().NewArray<type>(SE_MEMORY_LABEL_GENERAL, count)
+#define SAVANNA_DELETE(ptr) Savanna::MemoryManager::Get().Delete(ptr)
+#define SAVANNA_DELETE_ARRAY(ptr) Savanna::MemoryManager::Get().Delete(ptr)
 
 #define SAVANNA_INPLACE_NEW(type, ptr, ...) new (ptr) type(__VA_ARGS__)
 #define SAVANNA_INPLACE_NEW_ARRAY(type, count, ptr) new (ptr) type[count]

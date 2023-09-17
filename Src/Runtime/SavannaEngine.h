@@ -21,7 +21,10 @@
 // Common Types
 #include "Types/Primitive/PrimitiveTypes.inl"
 #include "Types/Primitive/FloatingPointUnions.h"
-#include "Utilities/PreprocessorDefinitions/EngineWideDefinitions.h"
+#include "Utilities/PreprocessorDefinitions/Definitions.h"
+
+// Include generated export header
+// #include "SavannaExport.gen.h"
 
 // Required Managers
 #include "Memory/MemoryManager.h"

@@ -59,21 +59,18 @@ function(collect_sources_in_dir OUT_SRC_LIST DIRECTORY MODE)
         list(FILTER src_list EXCLUDE REGEX "(.+)(~)(.+)")
 
         if (limited_recursion)
-            # Get all subdirectories
-            file(GLOB_RECURSE subdirs RELATIVE ${DIRECTORY} ${DIRECTORY}/*)
+            # When running limited recursion we end up only including items in directories that do not also
+            # contain a CMakeLists.txt file. This is useful for when we want to include all source files
+            # in a directory but not include any source files in subdirectories that have their own CMakeLists.txt
 
-            # Filter out non-directories
-            list(FILTER subdirs INCLUDE REGEX "/$")
-
-            # Remove trailing slash from directory names
-            list(TRANSFORM subdirs REPLACE "/$" "")
-
-            # Exclude source files that are in subdirectories with a CMakeLists.txt file
-            foreach(subdir ${subdirs})
-                if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt")
-                    list(FILTER src_list EXCLUDE REGEX "^${subdir}/")
-                endif()
-            endforeach()
+            # Get all directories in the current directory
+            file(GLOB_RECURSE cmake_files RELATIVE ${DIRECTORY} ${DIRECTORY}/*/CMakeLists.txt)
+            if (cmake_files)
+                foreach (cmake_file ${cmake_files})
+                    get_filename_component(cmake_file_path ${cmake_file} DIRECTORY)
+                    list(FILTER src_list EXCLUDE REGEX "(.+)(${cmake_file_path})(.+)")
+                endforeach()
+            endif(cmake_files)
         endif(limited_recursion)
 
     else() # Not recursive,

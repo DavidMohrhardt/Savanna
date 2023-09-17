@@ -39,7 +39,7 @@ namespace Savanna::Gfx::Vk
             , m_ShaderBinary(std::move(shaderBinary))
         {}
 
-        ShaderModuleCreationJob(ShaderModuleCreationJob &&) = default;
+        // ShaderModuleCreationJob(ShaderModuleCreationJob &&) = delete;
         // TODO determine why this operator doesn't work as expected.
         // ShaderModuleCreationJob& operator=(ShaderModuleCreationJob&&) noexcept = default;
 

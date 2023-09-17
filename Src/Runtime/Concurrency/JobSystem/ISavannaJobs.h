@@ -30,9 +30,10 @@ typedef se_int64 se_JobHandle_t;
  */
 const se_JobHandle_t k_InvalidJobHandle = 0LL;
 
-typedef enum se_JobResult_t
+typedef enum se_JobResult_t : se_uint32
 {
-    k_SavannaJobResultInvalid,
+    k_SavannaJobResultInvalid = 0,
+
     k_SavannaJobResultSuccess,
     k_SavannaJobResultError,
     k_SavannaJobResultCancelled,
@@ -58,6 +59,11 @@ typedef enum se_JobState_t
      * @brief The job is currently running.
      */
     k_SavannaJobStateRunning,
+
+    /**
+     * @brief The job is finished but may not have completed successfully.
+     */
+    k_SavannaJobStateFinished,
 
     /**
      * @brief The total number of states.
@@ -142,22 +148,32 @@ namespace Savanna::Concurrency
     using IJobInterface = se_IJobInterface_t;
 
     /**
-     * @brief TODO
+     * @brief An interface for a job. Jobs are the basic unit of work in the job system.
      *
      */
     class IJob
     {
-    protected:
+    private:
         friend class JobManager;
+        friend class JobRunner;
+
+        std::atomic<uint32> m_JobState = static_cast<uint32>(k_SavannaJobStateInvalid);
+        JobHandle m_Dependency = k_InvalidJobHandle;
+
+        void SetDependency(JobHandle dependency) { m_Dependency = dependency; }
+        JobHandle GetDependency() const { return m_Dependency; }
 
     public:
         IJob() = default;
+
+        IJob(const IJob&) = delete;
+        IJob& operator=(const IJob&) = delete;
+
+        IJob(IJob&&) = delete;
+        IJob& operator=(IJob&&) = delete;
+
         virtual ~IJob() = default;
 
-    protected:
-        virtual bool TryCancel() { return false; }
-
-    public:
         /**
          * @brief Provides the implementation for the job. This function will be called on a worker thread.
          * It is up to the implementation to handle any synchronization and thread safety. The job system will
@@ -167,6 +183,20 @@ namespace Savanna::Concurrency
          * @return false if the job failed to execute.
          */
         virtual JobResult Execute() = 0;
+
+        JobState GetState() const
+        {
+            return static_cast<JobState>(m_JobState.load(std::memory_order_relaxed));
+        }
+
+    protected:
+        /**
+         * @brief Attempts to cancel the job. It is up to the implementation to handle cancellation.
+         *
+         * @return true if the job was cancelled.
+         * @return false if the job could not be cancelled.
+         */
+        virtual bool TryCancel() { return false; }
 
         /**
          * @brief Called when the job has completed successfully.
@@ -187,7 +217,12 @@ namespace Savanna::Concurrency
         virtual void OnError() {};
     };
 
-    class PrimitiveJob : public IJob
+    /**
+     * @brief A primitive job is a job that is created from a set of function pointers.
+     * This is useful for creating jobs from C functions and lambdas.
+     *
+     */
+    class PrimitiveJob final : public IJob
     {
     private:
         IJobInterface m_JobInterface = { nullptr, nullptr, nullptr, nullptr, nullptr };
@@ -254,82 +289,6 @@ namespace Savanna::Concurrency
             m_JobInterface = jobInterface;
         }
     };
-
-    // TODO @david.mohrhardt: Reimplement the temporary job with appropriate memory management.
-    /**
-     * @brief
-     *
-     * @tparam Args
-     */
-    /*template <typename T>
-    class TemporaryJob final : public IJob
-    {
-    public:
-        using DeleteFunc = void(*)(TemporaryJob*);
-    private:
-        static_assert(std::is_base_of_v<IJob, T>, "T must be derived from IJob!");
-        friend class IJob;
-        T m_Job;
-
-    public:
-        TemporaryJob() = delete;
-
-        template <typename ...Args>
-        TemporaryJob(Args... args)
-            : m_Job(args...)
-        {}
-
-        TemporaryJob(T&& job)
-            : m_Job(std::move(job))
-        {}
-
-    private:
-        virtual ~TemporaryJob() override {}
-
-        void Dispose()
-        {
-            TDeallocator<T>::Deallocate(std::move(m_Job));
-            // delete this;
-        }
-
-    public:
-        TemporaryJob(const TemporaryJob&) = delete;
-        TemporaryJob(TemporaryJob&& other) noexcept
-            : m_Job(std::move(other.m_Job))
-        {
-            SAVANNA_MOVE_MEMBER(m_Job, other);
-        }
-
-        TemporaryJob& operator=(const TemporaryJob&) = delete;
-        TemporaryJob& operator=(TemporaryJob&& other) noexcept
-        {
-            SAVANNA_MOVE_MEMBER(m_Job, other);
-            return *this;
-        }
-
-        virtual JobResult Execute() override
-        {
-            return m_Job.Execute();
-        }
-
-        virtual void OnComplete() override
-        {
-            m_Job.OnComplete();
-            Dispose();
-        }
-
-        virtual void OnCancel() override
-        {
-            m_Job.OnCancel();
-            Dispose();
-        }
-
-        virtual void OnError() override
-        {
-            m_Job.OnError();
-            Dispose();
-        }
-    };*/
 
 } // namespace Savanna::Concurrency
 

@@ -88,40 +88,51 @@ namespace Savanna
 
 #endif // !SAVANNA_CORE_PRIMITIVES
 
-#if __cplusplus
-    // Savanna Interface API
-    #if defined(__CYGWIN__) || defined(Win32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-        #define SAVANNA_INTERFACE_API __stdcall
-        #define SAVANNA_INTERFACE_EXPORT __declspec(dllexport)
-        #define SAVANNA_EXPORT(__type) extern "C" __type SAVANNA_INTERFACE_EXPORT SAVANNA_INTERFACE_API
+// #ifndef SAVANNA_INTERFACE_DEFINITIONS_H
+// #define SAVANNA_INTERFACE_DEFINITIONS_H
 
-        #define SAVANNA_INTERFACE_IMPORT __declspec(dllimport)
-        #define SAVANNA_IMPORT(__type) extern "C" __type SAVANNA_INTERFACE_IMPORT SAVANNA_INTERFACE_API
-    #else
-        #define SAVANNA_INTERFACE_API
-        #define SAVANNA_INTERFACE_EXPORT
-        #define SAVANNA_EXPORT(__type) extern "C" SAVANNA_INTERFACE_EXPORT __type SAVANNA_INTERFACE_API
+// #ifdef __cplusplus
+// #   define SAVANNA_EXTERN extern "C"
+// #else // !__cplusplus
+// #   define SAVANNA_EXTERN
+// #endif // __cplusplus
 
-        #define SAVANNA_INTERFACE_IMPORT
-        #define SAVANNA_IMPORT(__type) extern "C" SAVANNA_INTERFACE_IMPORT __type SAVANNA_INTERFACE_API
-    #endif
-#else // !__cplusplus
-    #if defined(__CYGWIN__) || defined(Win32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-        #define SAVANNA_INTERFACE_API __stdcall
-        #define SAVANNA_INTERFACE_EXPORT __declspec(dllexport)
-        #define SAVANNA_EXPORT(__type) __type SAVANNA_INTERFACE_EXPORT SAVANNA_INTERFACE_API
+// #ifdef SAVANNA_EXPORTS
+// #   undef SAVANNA_EXPORTS
+// #   define SAVANNA_EXPORTS 1
+// #   define SAVANNA_DECL_SPEC_OPTION dllexport
+// #else // !SAVANNA_EXPORTS
+// #   define SAVANNA_EXPORTS 0
+// #   define SAVANNA_DECL_SPEC_OPTION dllimport
+// #endif // SAVANNA_EXPORTS
 
-        #define SAVANNA_INTERFACE_IMPORT __declspec(dllimport)
-        #define SAVANNA_IMPORT(__type) __type SAVANNA_INTERFACE_IMPORT SAVANNA_INTERFACE_API
-    #else
-        #define SAVANNA_INTERFACE_API
-        #define SAVANNA_INTERFACE_EXPORT
-        #define SAVANNA_EXPORT(__type) __type SAVANNA_INTERFACE_EXPORT SAVANNA_INTERFACE_API
+// // Savanna Interface API
+// #if SAVANNA_WINDOWS
+// #   define SAVANNA_INTERFACE_API __stdcall
+// #   define SAVANNA_INTERFACE __declspec(SAVANNA_DECL_SPEC_OPTION)
+// #elif SAVANNA_MACOS // !SAVANNA_WINDOWS
+// #   define SAVANNA_INTERFACE_API
+// #   define SAVANNA_INTERFACE
+// #elif SAVANNA_LINUX // !SAVANNA_WINDOWS && !SAVANNA_MACOS
+// #   define SAVANNA_INTERFACE_API
+// #   define SAVANNA_INTERFACE
+// #else // !SAVANNA_WINDOWS && !SAVANNA_MACOS && !SAVANNA_LINUX
+// #   error "Unsupported platform."
+// #endif // SAVANNA_WINDOWS
 
-        #define SAVANNA_INTERFACE_IMPORT
-        #define SAVANNA_IMPORT(__type) __type SAVANNA_INTERFACE_IMPORT SAVANNA_INTERFACE_API
-    #endif
-#endif
+// #if SAVANNA_EXPORTS
+// #   if SAVANNA_WINDOWS
+// #       define SAVANNA_EXPORT(ret) SAVANNA_EXTERN __declspec(dllexport) ret SAVANNA_INTERFACE_API
+// #   else // !SAVANNA_WINDOWS
+// #       define SAVANNA_EXPORT(ret) SAVANNA_EXTERN ret SAVANNA_INTERFACE_API
+// #   endif // SAVANNA_WINDOWS
+// #else // SAVANNA_EXPORTS
+// #   define SAVANNA_EXPORT(ret) SAVANNA_EXTERN ret SAVANNA_INTERFACE_API
+// #endif // SAVANNA_EXPORTS
+
+// #endif // !SAVANNA_INTERFACE_DEFINITIONS_H
+
+// #endif // !SAVANNA_INTERFACE_DEFINITIONS_H
 
 typedef se_int64 se_InterfaceHandle_t;
 
@@ -140,6 +151,6 @@ typedef struct ISavannaPluginLifecycle
  * @brief Registers a plugin interface with the Savanna engine. This function is called by the plugin
  *       during it's own initialization.
 */
-SAVANNA_EXPORT(se_InterfaceHandle_t) Savanna_RegisterPluginInterface(const ISavannaPluginLifecycle* pInterface);
+// SAVANNA_EXPORT(se_InterfaceHandle_t) Savanna_RegisterPluginInterface(const ISavannaPluginLifecycle* pInterface);
 
 // SAVANNA_EXPORT(const void*) Savanna_GetPluginInterface(const se_InterfaceHandle_t handle);

@@ -34,28 +34,16 @@ namespace Savanna
         size_t m_Capacity;
 
     public:
-        DynamicArray(size_t capacity, bool initialize = false)
-            : m_Data(nullptr)
+        DynamicArray(size_t capacity)
+            : m_Data(reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type))))
             , m_Size(0)
             , m_Capacity(capacity)
-        {
-            m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));
-            if (initialize)
-            {
-                for (size_t i = 0; i < m_Capacity; i++)
-                {
-                    new (&m_Data[i]) value_type();
-                }
-            }
-        }
+        {}
 
         // Accept a std::initializer_list
         DynamicArray(std::initializer_list<value_type> list)
-            : m_Data(nullptr)
-            , m_Size(0)
-            , m_Capacity(list.size())
+            : DynamicArray(list.size())
         {
-            m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * m_Capacity, alignof(value_type)));
             for (auto& item : list)
             {
                 m_Data[m_Size++] = item;
@@ -119,6 +107,13 @@ namespace Savanna
         {
             if (capacity <= m_Capacity)
                 return;
+
+            if (m_Data == nullptr)
+            {
+                m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));
+                m_Capacity = capacity;
+                return;
+            }
 
             value_type* previousBuffer = m_Data;
             m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));

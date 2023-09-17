@@ -11,6 +11,7 @@
 #pragma once
 
 #define USE_LOCKLESS_CONCURRENCY_STRUCTURES 1
+#define MAX_CONCURRENT_JOBS 1024
 
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
@@ -21,12 +22,11 @@
 
 #include "ConcurrencyCapabilities.h"
 
+#include "Types/Containers/Arrays/DynamicArray.h"
 #include "Types/Containers/Concurrent/LocklessQueue.h"
 #include "Types/Locks/SpinLock.h"
 
 #include <atomic>
-#include <unordered_map>
-#include <vector>
 
 namespace Savanna::Concurrency
 {
@@ -42,18 +42,16 @@ namespace Savanna::Concurrency
         static uint8 k_MaxThreadPoolSize;
 
     private:
-        static void ProcessJobs();
+      static JobResult ExecuteJobInternal(JobHandle handle);
+      static void ProcessJobsInternal();
 
-        uint8 m_ThreadPoolSize;
-        std::atomic_bool m_ProcessingJobs;
-        std::vector<std::thread> m_JobThreads;
+      uint8 m_ThreadPoolSize;
+      std::atomic_bool m_ProcessingJobs;
+      DynamicArray<std::thread> m_JobThreads;
 
-        LocklessQueue<JobHandle> m_LowPriorityJobs;
-        LocklessQueue<JobHandle> m_NormalPriorityJobs;
-        LocklessQueue<JobHandle> m_HighPriorityJobs;
-
-        SpinLock m_JobHandlesLock;
-        std::unordered_map<JobHandle, JobState> m_JobHandles;
+      LocklessQueue<JobHandle> m_LowPriorityJobs;
+      LocklessQueue<JobHandle> m_NormalPriorityJobs;
+      LocklessQueue<JobHandle> m_HighPriorityJobs;
 
     public:
         JobManager();
@@ -72,7 +70,9 @@ namespace Savanna::Concurrency
             JobHandle dependency = k_InvalidJobHandle);
 
         void ScheduleJob(JobHandle& handle, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
-        JobHandle ScheduleJobBatch(IJob** pJobs, const size& jobCount, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal, JobHandle dependency = k_InvalidJobHandle);
+        // TODO @david.mohrhardt: Fix this. Currently it can cause issues because there is no user client contract
+        // for who owns the memory of a batch job.
+        // JobHandle ScheduleJobBatch(IJob** pJobs, const size& jobCount, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal, JobHandle dependency = k_InvalidJobHandle);
 
         void AwaitCompletion(JobHandle jobHandle);
         void AwaitCompletion(JobHandle *pJobHandles, size_t jobCount);
@@ -85,9 +85,5 @@ namespace Savanna::Concurrency
 
     private:
         JobResult AwaitJobOrExecuteImmediateInternal(JobHandle dependency);
-
-        void SetJobState(JobHandle handle, JobState state);
-
-        void OnJobCompletedInternal(JobHandle handle);
     };
 } // namespace Savanna::Concurrency

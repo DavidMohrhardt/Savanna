@@ -67,25 +67,24 @@ namespace Savanna::Gfx::Vk
             }
         };
 
-        JobResultCallbackFunc shaderJobOnCompleteFunc = [](void*)
-        {
-            SAVANNA_LOG("Shader job completed!");
-        };
-
         // Read shaders from disk
         PrimitiveJob shaderCreateJobs[2]
         {
-            PrimitiveJob{shaderJobFunc, shaderJobOnCompleteFunc, &inputData[0]},
-            PrimitiveJob{shaderJobFunc, shaderJobOnCompleteFunc, &inputData[1]}
+            PrimitiveJob{shaderJobFunc, &inputData[0]},
+            PrimitiveJob{shaderJobFunc, &inputData[1]}
         };
 
-        IJob* shaderCreateJobPtrs[2]
+        JobHandle shaderCreateJobHandles[2]
         {
-            &shaderCreateJobs[0],
-            &shaderCreateJobs[1]
+            JobManager::Get().ScheduleJob(&shaderCreateJobs[0]),
+            JobManager::Get().ScheduleJob(&shaderCreateJobs[1])
         };
+        for (auto& handle : shaderCreateJobHandles)
+        {
+            JobManager::Get().AwaitCompletion(handle);
+        }
 
-        JobManager::Get().AwaitCompletion(JobManager::Get().ScheduleJobBatch(shaderCreateJobPtrs, 2, JobPriority::k_SavannaJobPriorityHigh));
+        // JobManager::Get().AwaitCompletion(JobManager::Get().ScheduleJobBatch(shaderCreateJobPtrs, 2));
     }
 
 } // namespace Savanna::Gfx::Vk

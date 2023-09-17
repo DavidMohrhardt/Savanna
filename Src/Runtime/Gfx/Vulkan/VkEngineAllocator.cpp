@@ -11,11 +11,13 @@ void* savanna_gfx_vk_engine_allocator_alloc(void *pUserData, size_t size, size_t
 
 void* savanna_gfx_vk_engine_allocator_realloc(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
 {
-    MemoryManager::Get().Free(pOriginal);
+    if (pOriginal != nullptr)
+        MemoryManager::Get().Free(pOriginal);
     return MemoryManager::Get().Allocate(size, alignment, SE_MEMORY_LABEL_GRAPHICS);
 }
 
 void savanna_gfx_vk_engine_allocator_free(void *pUserData, void *pMemory)
 {
-    MemoryManager::Get().Free(pMemory);
+    if (pMemory != nullptr)
+        MemoryManager::Get().Free(pMemory);
 }

@@ -6,3 +6,5 @@
 #include "EnvironmentDefinitions.h"
 #include "CompilerDefinitions.h"
 #include "ArchitectureDefinitions.h"
+
+#include "CppVersionDefinitions.h"

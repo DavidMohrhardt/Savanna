@@ -230,24 +230,6 @@ namespace Savanna::Gfx::Vk
         }
     }
 
-    // bool GfxDevice::TryLoadShaderFromDisk(const char *const shaderPath)
-    // {
-    //     IO::FileStream shaderStream = IO::FileStream(shaderPath);
-    //     IO::FileStream shaderMetadataStream = IO::FileStream(shaderPath);
-    //     if (shaderStream.IsOpen())
-    //     {
-    //         auto shaderCode = shaderStream.ReadFile();
-    //         auto shaderMetadata = shaderMetadataStream.ReadFile();
-    //         if (shaderCode.size() > 0 && shaderMetadata.size() > 0)
-    //         {
-    //             m_ShaderCode = shaderCode;
-    //             m_ShaderMetadata = shaderMetadata;
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-
     GfxDevice &GfxDevice::operator=(GfxDevice &&other)
     {
         if (this != &other)

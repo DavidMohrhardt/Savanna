@@ -4,12 +4,16 @@ include(GenerateExportHeader)
 set(SAVANNA_ACTIVE_TARGET "Savanna")
 message(STATUS "Building [${SAVANNA_ACTIVE_TARGET}] ${SAVANNA_CORE_LIBRARY_TYPE} Library")
 
+add_library(${SAVANNA_ACTIVE_TARGET} ${SAVANNA_CORE_LIBRARY_TYPE})
+
 # Ensure the input header is produced
 CONFIG_INPUT_HEADER(${SAVANNA_ACTIVE_TARGET})
 
-collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
+# Setup the export definition
+target_compile_definitions(${SAVANNA_ACTIVE_TARGET} PRIVATE SAVANNA_EXPORTS)
 
-add_library(${SAVANNA_ACTIVE_TARGET} ${SAVANNA_CORE_LIBRARY_TYPE})
+# Get the native source files
+collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
 
 target_sources(${SAVANNA_ACTIVE_TARGET} PUBLIC ${src})
 target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${CMAKE_CURRENT_LIST_DIR})
@@ -24,8 +28,6 @@ set(subdir_list
 foreach(subdir IN ITEMS ${subdir_list})
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/${subdir})
 endforeach()
-
-generate_export_header(${SAVANNA_ACTIVE_TARGET})
 
 # Sort the files into Filters based on Folder Hierarchy
 SOURCE_GROUP_BY_FOLDER()

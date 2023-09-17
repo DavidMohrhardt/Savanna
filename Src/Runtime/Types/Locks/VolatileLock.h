@@ -4,7 +4,6 @@
 
 #include <assert.h>
 
-// #include <Utilities/PreprocessorDefinitions/InterfaceDefinitions.h>
 #include "Utilities/SavannaCoding.h"
 
 namespace Savanna

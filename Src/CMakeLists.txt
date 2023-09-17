@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
 # Defines project settings
-project(Savanna VERSION 0.1)
+project(SavannaEngine VERSION 0.1)
 
 # TODO @DavidMohrhardt - Make multiple scripts for different platforms
 # If on windows then run Prepare.ps1 which exists in the root directory
@@ -53,6 +53,7 @@ add_subdirectory(Runtime)
 
 # Outside Application Testing Projects
 add_subdirectory(Applications/VulkanRenderer)
+add_subdirectory(Applications/RendererVulkan)
 
 # Tests
 # add_subdirectory(Tests)
