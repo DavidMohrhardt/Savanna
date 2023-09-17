@@ -41,8 +41,8 @@ find_package(Vulkan REQUIRED)
 #                     Savanna)
 
 target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
-                        Savanna
-                        SavannaVk1)
+                        Savanna)
+                        # SavannaVk1)
 
 target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
                         glfw
