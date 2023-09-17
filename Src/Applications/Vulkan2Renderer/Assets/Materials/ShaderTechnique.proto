@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package Savanna.Gfx;
+
+// option cc_enable_arenas = "Savanna::Gfx";
+option optimize_for = LITE_RUNTIME;
+
+message HashString
+{
+    optional string m_String = 2;
+    // Must be at least 64 to fit most size_t implementations
+    optional int64 m_Hash64 = 1;
+};
+
+message ShaderMetaData
+{
+    HashString m_Name = 1;
+    int32 m_PipelineStage = 2;
+    string m_Path = 3;
+};
+
+message Material
+{
+    HashString m_Name = 1;
+    int32 m_PipelineStages = 2;
+
+    repeated ShaderMetaData m_ShaderMetaData = 3;
+    repeated bytes m_ShaderCache = 4;
+};

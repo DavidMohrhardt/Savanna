@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
-set(SAVANNA_ACTIVE_TARGET SavannaVkRenderer)
+set(SAVANNA_ACTIVE_TARGET SavannaRendererVulkan)
 
 message(STATUS "Building [${SAVANNA_ACTIVE_TARGET}] Application")
 
@@ -17,18 +17,6 @@ FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm
 )
-
-if (${CMAKE_VERSION} VERSION_GREATER "3.8.0")
-    # Ensure C++ standard is propogated from the project to ABSL
-    set(ABSL_PROPAGATE_CXX_STD ON)
-endif()
-
-# message (STATUS "Fetching protobuf")
-# FetchContent_Declare(
-#     protobuf
-#     GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
-#     GIT_TAG "v24.2"
-# )
 
 FetchContent_MakeAvailable(glfw glm)
     #protobuf)
@@ -54,8 +42,7 @@ find_package(Vulkan REQUIRED)
 #                     Savanna)
 
 target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
-                        Savanna
-                        SavannaVk1)
+                        Savanna)
 
 target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
                         glfw
