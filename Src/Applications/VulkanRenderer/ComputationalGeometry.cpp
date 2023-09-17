@@ -26,12 +26,14 @@ namespace Savanna::Gfx::Vk
             const char* m_ShaderPath;
             FixedString64 m_ShaderName;
             Renderer& m_Renderer;
+            VkShaderStageFlagBits m_ShaderStageType;
         };
 
         ShaderCreateJobInput inputData[2]
         {
-            ShaderCreateJobInput{k_DefaultShaderPaths[0], k_ShaderNames[0], renderer},
-            ShaderCreateJobInput{k_DefaultShaderPaths[1], k_ShaderNames[1], renderer}
+            ShaderCreateJobInput{k_DefaultShaderPaths[0], k_ShaderNames[0],
+                                 renderer, VK_SHADER_STAGE_VERTEX_BIT},
+            ShaderCreateJobInput{k_DefaultShaderPaths[1], k_ShaderNames[1], renderer, VK_SHADER_STAGE_FRAGMENT_BIT}
         };
 
         JobExecuteFunc shaderJobFunc = [](void* pUserData) -> JobResult
@@ -48,6 +50,7 @@ namespace Savanna::Gfx::Vk
             auto& shaderPath = pShaderCreateJobInput->m_ShaderPath;
             auto& shaderName = pShaderCreateJobInput->m_ShaderName;
             auto& renderer = pShaderCreateJobInput->m_Renderer;
+            auto& shaderStageType = pShaderCreateJobInput->m_ShaderStageType;
 
             try
             {
@@ -56,7 +59,8 @@ namespace Savanna::Gfx::Vk
                 std::vector<uint32_t> shaderBytes = stream.ReadFile<uint32_t>();
 
                 // Create shader module
-                return renderer.GetShaderCache().TryCreateShader(shaderName, renderer.GetGfxDevice(), shaderBytes)
+                return renderer.GetShaderCache().TryCreateShader(
+                           shaderName, renderer.GetGfxDevice(), shaderBytes, shaderStageType)
                     ? JobResult::k_SavannaJobResultSuccess
                     : JobResult::k_SavannaJobResultError;
             }

@@ -27,7 +27,7 @@ namespace Savanna
         using value_type = T;
 
         using iterator = value_type*;
-        using const_iterator = const value_type*;
+         using const_iterator = const value_type*;
 
         value_type* m_Data;
         size_t m_Size;
@@ -64,11 +64,22 @@ namespace Savanna
         }
 
         DynamicArray(const DynamicArray& other) = delete;
+        // DynamicArray(const DynamicArray& other)
+        //     : m_Data(reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * other.m_Capacity, alignof(value_type))))
+        // {
+        //     *this = other;
+        // }
 
         DynamicArray(DynamicArray&& other) noexcept
         {
             *this = std::move(other);
         }
+
+        // DynamicArray& operator=(DynamicArray& other) SAVANNA_NOEXCEPT
+        // {
+        //     std::memcpy(m_Data, other.m_Data, sizeof(value_type) * other.m_Size);
+        //     return *this;
+        // }
 
         DynamicArray& operator=(DynamicArray&& other) SAVANNA_NOEXCEPT
         {

@@ -17,44 +17,6 @@ using namespace Savanna::Concurrency;
 
 namespace Savanna::Gfx::Vk
 {
-    struct ShaderModuleCreationJob : public IJob
-    {
-        friend class ShaderProgram;
-
-    public:
-        ShaderCache* m_pShaderCache;
-        const FixedString64 m_ShaderName;
-        VkDevice m_Device;
-        std::vector<uint32_t> m_ShaderBinary;
-
-    public:
-        ShaderModuleCreationJob(
-            ShaderCache* pShaderCache,
-            const FixedString64 &shaderName,
-            const VkDevice& device,
-            std::vector<uint32_t>& shaderBinary) SAVANNA_NOEXCEPT
-            : m_pShaderCache(pShaderCache)
-            , m_ShaderName(shaderName)
-            , m_Device(device)
-            , m_ShaderBinary(std::move(shaderBinary))
-        {}
-
-        // ShaderModuleCreationJob(ShaderModuleCreationJob &&) = delete;
-        // TODO determine why this operator doesn't work as expected.
-        // ShaderModuleCreationJob& operator=(ShaderModuleCreationJob&&) noexcept = default;
-
-    public:
-        virtual JobResult Execute() SAVANNA_OVERRIDE
-        {
-            SAVANNA_ASSERT(m_pShaderCache != nullptr, "Shader cache is null!");
-            SAVANNA_ASSERT(m_Device != VK_NULL_HANDLE, "Device is null!");
-
-            return m_pShaderCache->TryCreateShader(m_ShaderName, m_Device, m_ShaderBinary)
-                ? k_SavannaJobResultSuccess
-                : k_SavannaJobResultError;
-        }
-    };
-
     ShaderCache::~ShaderCache()
     {
         Clear();
@@ -63,7 +25,8 @@ namespace Savanna::Gfx::Vk
     bool ShaderCache::TryCreateShader(
         const FixedString64 &shaderName,
         const VkDevice &device,
-        std::vector<uint32_t>& shaderBinary)
+        std::vector<uint32_t>& shaderBinary,
+        VkShaderStageFlagBits shaderStageType)
     {
         VkShaderModuleCreateInfo shaderModuleCreateInfo{};
         shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -79,11 +42,17 @@ namespace Savanna::Gfx::Vk
             return false;
         }
 
-        RegisterShaderModule(shaderName, shaderModule);
+        //TODO @JWB Doesn't need allocation..?
+        SE_VkShaderModule se_shaderModule{};
+        se_shaderModule.m_Module = shaderModule;
+        se_shaderModule.m_type = shaderStageType;
+
+        RegisterShaderModule(shaderName, se_shaderModule);
         return true;
     }
 
-    bool ShaderCache::TryGetShaderModule(const FixedString64 &shaderName, VkShaderModule &outShaderModule)
+    bool ShaderCache::TryGetShaderModule(const FixedString64 &shaderName, 
+                                        SE_VkShaderModule &outShaderModule)
     {
         std::lock_guard<std::mutex> lock(m_DataMutex);
         if (m_ShaderModuleMap.find(shaderName) != m_ShaderModuleMap.end())
@@ -94,18 +63,32 @@ namespace Savanna::Gfx::Vk
         return false;
     }
 
+    DynamicArray<SE_VkShaderModule> ShaderCache::GetShaderModules() 
+    { 
+        std::lock_guard<std::mutex> lock(m_DataMutex);
+        DynamicArray<SE_VkShaderModule> values(m_ShaderModuleMap.size());
+        
+        for (auto kv : m_ShaderModuleMap) 
+        {
+            values.push_back(kv.second);
+        } 
+
+        return values;
+    }
+
     void ShaderCache::Clear()
     {
         std::lock_guard<std::mutex> lock(m_DataMutex);
         for (auto& shaderModule : m_ShaderModuleMap)
         {
-            vkDestroyShaderModule(m_Device, shaderModule.second, nullptr);
+            vkDestroyShaderModule(m_Device, shaderModule.second.m_Module, nullptr); 
         }
 
         m_ShaderModuleMap.clear();
     }
 
-    void ShaderCache::RegisterShaderModule(const FixedString64& shaderName, VkShaderModule shaderModule)
+    void ShaderCache::RegisterShaderModule(const FixedString64 &shaderName,
+                                           SE_VkShaderModule shaderModule)
     {
         std::lock_guard<std::mutex> lock(m_DataMutex);
         m_ShaderModuleMap[shaderName] = shaderModule;

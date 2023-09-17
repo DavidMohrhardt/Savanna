@@ -15,6 +15,7 @@
 #include <Utilities/VkLayerUtils.h>
 #include <Utilities/VkExtensionUtils.h>
 #include <Windows/WindowsVkDisplaySurface.h>
+#include <Utilities/VkPiplineUtils.h>
 
 // Savanna Includes
 #include <Profiling/Profiler.h>
@@ -49,6 +50,13 @@ VulkanApplication::VulkanApplication(int argc, char** argvs)
     CreateRenderer();
 
     Shapes::CreateDefaultShaderModules(m_Renderer);
+
+    //TODO @JWB - My shit. 
+    if(false)
+    {
+        auto b = m_Renderer.GetShaderCache().GetShaderModules();
+        auto a = Savanna::Gfx::Vk::Utils::CreateShaderStages(b);
+    }
 }
 
 VulkanApplication::~VulkanApplication()

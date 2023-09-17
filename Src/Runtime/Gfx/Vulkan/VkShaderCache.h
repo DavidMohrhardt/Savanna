@@ -21,6 +21,7 @@
 #include <Utilities/Console.h>
 
 #include "VkGfxDevice.h"
+#include "Types/Containers/Arrays/DynamicArray.h"
 
 #include <mutex>
 #include <unordered_map>
@@ -28,10 +29,16 @@
 namespace Savanna::Gfx::Vk
 {
     using namespace Savanna::Concurrency;
+
+    struct SE_VkShaderModule {
+      VkShaderModule m_Module;
+      VkShaderStageFlagBits m_type; 
+    };
+
     class ShaderCache
     {
     private:
-        using ShaderModuleMap = std::unordered_map<FixedString64, VkShaderModule>;
+        using ShaderModuleMap = std::unordered_map<FixedString64, SE_VkShaderModule>;
 
         VkDevice m_Device;
         ShaderModuleMap m_ShaderModuleMap;
@@ -39,7 +46,7 @@ namespace Savanna::Gfx::Vk
         std::mutex m_DataMutex;
 
         friend class Renderer;
-        friend class ShaderModuleCreationJob;
+        //friend class ShaderModuleCreationJob;
 
     public:
         ShaderCache() = default;
@@ -73,13 +80,18 @@ namespace Savanna::Gfx::Vk
         bool TryCreateShader(
             const FixedString64& shaderName,
             const VkDevice& device,
-            std::vector<uint32_t>& shaderBinary);
+            std::vector<uint32_t>& shaderBinary,
+            VkShaderStageFlagBits shaderStageType);
 
-        bool TryGetShaderModule(const FixedString64& shaderName, VkShaderModule& outShaderModule);
+        bool TryGetShaderModule(const FixedString64 &shaderName,
+                                SE_VkShaderModule &outShaderModule);
+
+        DynamicArray<SE_VkShaderModule> GetShaderModules();
 
     private:
         void Clear();
 
-        void RegisterShaderModule(const FixedString64& shaderName, VkShaderModule shaderModule);
+        void RegisterShaderModule(const FixedString64 &shaderName,
+                                  SE_VkShaderModule shaderModule);
     };
 } // namespace Savanna::Gfx::Vk
