@@ -18,19 +18,12 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/g-truc/glm
 )
 
-if (${CMAKE_VERSION} VERSION_GREATER "3.8.0")
-    # Ensure C++ standard is propogated from the project to ABSL
-    set(ABSL_PROPAGATE_CXX_STD ON)
-endif()
+# if (${CMAKE_VERSION} VERSION_GREATER "3.8.0")
+#     # Ensure C++ standard is propogated from the project to ABSL
+#     set(ABSL_PROPAGATE_CXX_STD ON)
+# endif()
 
-message (STATUS "Fetching protobuf")
-FetchContent_Declare(
-    protobuf
-    GIT_REPOSITORY https://github.com/protocolbuffers/protobuf
-    GIT_TAG "v24.2"
-)
-
-FetchContent_MakeAvailable(glfw glm protobuf)
+FetchContent_MakeAvailable(glfw glm)
 
 collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
 
