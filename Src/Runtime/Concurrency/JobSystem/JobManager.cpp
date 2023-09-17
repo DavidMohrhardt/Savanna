@@ -52,7 +52,7 @@ namespace Savanna::Concurrency
                 manager.m_NormalPriorityJobs.TryDequeue(jobHandle) ||
                 manager.m_LowPriorityJobs.TryDequeue(jobHandle))
             {
-                if (reinterpret_cast<IJob*>(jobHandle)->m_JobState.compare_exchange_weak(expectedState, desiredState, std::memory_order_release, std::memory_order_relaxed)) 
+                if (reinterpret_cast<IJob*>(jobHandle)->m_JobState.compare_exchange_weak(expectedState, desiredState, std::memory_order_release, std::memory_order_relaxed))
                 {
                     ExecuteJobInternal(jobHandle);
                 }
@@ -191,8 +191,14 @@ namespace Savanna::Concurrency
 
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::AwaitCompletion(JobHandle jobHandle));
 
-        while (reinterpret_cast<IJob*>(jobHandle)->m_JobState.load(std::memory_order_relaxed) != k_SavannaJobStateFinished)
+        while (true)
         {
+            auto state = reinterpret_cast<IJob*>(jobHandle)->m_JobState.load(std::memory_order_relaxed);
+            if (state == k_SavannaJobStateFinished || state == k_SavannaJobStateInvalid)
+            {
+                return;
+            }
+
             std::this_thread::yield();
         }
     }
