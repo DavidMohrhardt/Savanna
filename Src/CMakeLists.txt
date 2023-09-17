@@ -53,7 +53,6 @@ add_subdirectory(Runtime)
 
 # Outside Application Testing Projects
 add_subdirectory(Applications/VulkanRenderer)
-add_subdirectory(Applications/RendererVulkan)
 
 # Tests
 # add_subdirectory(Tests)
