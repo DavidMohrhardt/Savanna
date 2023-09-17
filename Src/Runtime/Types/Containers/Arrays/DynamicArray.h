@@ -63,7 +63,17 @@ namespace Savanna
             }
         }
 
-        DynamicArray(const DynamicArray& other) = delete;
+        DynamicArray(const DynamicArray& other)
+            : m_Data(reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * other.m_Capacity, alignof(value_type))))
+        {
+            *this = other;
+        }
+
+        DynamicArray& operator=(DynamicArray& other) SAVANNA_NOEXCEPT
+        {
+            std::memcpy(m_Data, other.m_Data, sizeof(value_type) * other.m_Size);
+            return *this;
+        }
 
         DynamicArray(DynamicArray&& other) noexcept
         {
