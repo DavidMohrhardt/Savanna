@@ -8,10 +8,13 @@
  * @copyright Copyright (c) 2023
  *
  */
-#pragma once
+#ifndef SAVANNA_GFX_CONTEXT_H
+#define SAVANNA_GFX_CONTEXT_H
 
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
+
+#include "SavannaGfx.h"
 
 #include "GfxDriver.h"
 
@@ -26,18 +29,15 @@ namespace Savanna::Gfx
 
         IGfxDriver* m_pDriver;
 
-        GfxContext(IGfxDriver* pDriver)
-            : m_pDriver(pDriver)
-        {
-            m_pDriver->Create();
-        }
-
-        ~GfxContext()
-        {
-            m_pDriver->Destroy();
-        }
+        GfxContext();
+        ~GfxContext();
 
     public:
+        se_GfxErrorCode_t CreateDriver(const se_GfxDriverCreateInfo_t* const pCreateInfo);
         inline IGfxDriver* GetDriver() const { return m_pDriver; }
+
+        se_GfxSupportedGfxBackend_t GetSupportedGfxBackends() const;
     };
 } // namespace Savanna::Gfx
+
+#endif // !SAVANNA_GFX_CONTEXT_H

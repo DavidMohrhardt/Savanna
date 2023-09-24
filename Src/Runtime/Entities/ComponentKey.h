@@ -35,12 +35,12 @@ typedef se_uint32 se_ComponentKey_t;
 typedef se_uint8 se_ComponentKeyMask_T;
 
 // Mask the most significant 8 bits of the component ID to represent additional sets of components.
-// (2^8) * (64 - 8) - 1 possible unique component IDs as 0x0ul is reserved for invalid IDs.
-// Additionally, making the mask 16 bits will result in (2^16) * (64 - 16) possible unique component IDs.
+// (2^8) * (32 - 8) - 1 possible unique component IDs as 0x0ul is reserved for invalid IDs.
+// Additionally, making the mask 16 bits will result in (2^16) * (32 - 16) possible unique component IDs.
 // To store the sets in a ComponentParadigm you need to store sizeof(ComponentKey) * (2^n).
 // So for n = 8 it'd be 8 bytes * 256 = 2048 bytes which is really bad. If it's 32 bits then it'd be
 // 4 bytes * 256 = 1024 bytes which is better but still not ideal. On a cacheline size of 64 bytes,
-// that's still 1024 / 64 = 16 cache lines to read
+// that's still 1024 / 64 = 16 cache lines to read.
 
 /**
  * @brief Defines a unique key/identifier for a component type. Components of like types are assigned the same

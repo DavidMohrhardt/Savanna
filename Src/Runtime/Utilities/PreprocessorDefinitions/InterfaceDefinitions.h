@@ -5,8 +5,10 @@
 
 #ifdef __cplusplus
 #   define SAVANNA_EXTERN extern "C"
+#   define SAVANNA_EXTERN_C_BLOCK(__BlockDefinition__) SAVANNA_EXTERN { __BlockDefinition__ }
 #else // !__cplusplus
 #   define SAVANNA_EXTERN
+#   define SAVANNA_EXTERN_C_BLOCK(__BlockDefinition__) __BlockDefinition__
 #endif // __cplusplus
 
 #ifdef SAVANNA_EXPORTS

@@ -47,4 +47,16 @@ namespace Savanna::Entities
             ComponentRegistry::RegisterComponentWithTypeIndex(typeid(IComponentData<T>));
         return id;
     }
-}
+
+    template <typename T>
+    inline bool IComponentData<T>::operator==(const IComponentData &other) const
+    {
+        return this == &other;
+    }
+
+    template <typename T>
+    inline bool IComponentData<T>::operator!=(const IComponentData &other) const
+    {
+        return this != &other;
+    }
+} // namespace Savanna::Entities

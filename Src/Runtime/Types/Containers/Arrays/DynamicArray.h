@@ -12,7 +12,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-#include "Memory/MemoryManager.h"
+#include "Types/Memory/InterfaceAllocator.h"
 
 #include <initializer_list>
 
@@ -32,17 +32,27 @@ namespace Savanna
         value_type* m_Data;
         size_t m_Size;
         size_t m_Capacity;
+        InterfaceAllocator m_Allocator;
 
     public:
-        DynamicArray(size_t capacity)
-            : m_Data(reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type))))
+        DynamicArray(const size_t capacity = 0,
+            const se_AllocatorInterface_t allocatorInterface = SavannaMemoryManagerGetDefaultAllocatorInterface())
+            : m_Data(nullptr)
             , m_Size(0)
-            , m_Capacity(capacity)
-        {}
+            , m_Capacity(capacity > DEFAULT_CAPACITY ? capacity : DEFAULT_CAPACITY)
+            , m_Allocator(allocatorInterface)
+        {
+            if (m_Capacity > 0)
+            {
+                m_Data = m_Allocator.AllocateAs<value_type>(m_Capacity);
+            }
+        }
 
         // Accept a std::initializer_list
-        DynamicArray(std::initializer_list<value_type> list)
-            : DynamicArray(list.size())
+        DynamicArray(
+            std::initializer_list<value_type> list,
+            const se_AllocatorInterface_t allocatorInterface = SavannaMemoryManagerGetDefaultAllocatorInterface())
+            : DynamicArray(list.size(), allocatorInterface)
         {
             for (auto& item : list)
             {
@@ -50,27 +60,44 @@ namespace Savanna
             }
         }
 
-        DynamicArray() : m_Data(nullptr), m_Size(0), m_Capacity(0) {}
-
         ~DynamicArray()
         {
             Clear();
 
             if (m_Data != nullptr)
             {
-                SAVANNA_FREE(m_Data);
+                m_Allocator.Free(m_Data);
                 m_Data = nullptr;
             }
         }
 
-        DynamicArray(const DynamicArray& other)
-            : m_Data(reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * other.m_Capacity, alignof(value_type))))
-            , m_Size(other.m_Size)
-            , m_Capacity(other.m_Capacity)
+        /**
+         * @brief Copy the contents of another DynamicArray into this one using a different
+         * allocator interface.
+         *
+         * @param other The other DynamicArray to copy from.
+         * @param allocatorInterface The allocator interface to use for this DynamicArray.
+         */
+        DynamicArray(const DynamicArray& other, const se_AllocatorInterface_t allocatorInterface)
+            : DynamicArray(0, allocatorInterface)
         {
             *this = other;
         }
 
+        /**
+         * @brief Copy the contents of another DynamicArray into this one.
+         *
+         * @param other The other DynamicArray to copy from.
+         */
+        DynamicArray(const DynamicArray& other)
+            : DynamicArray(other, other.m_Allocator)
+        {}
+
+        /**
+         * @brief Copy the contents of another DynamicArray into this one.
+         *
+         * @param other The other DynamicArray to copy from.
+         */
         DynamicArray& operator=(const DynamicArray& other)
         {
             if (this != &other)
@@ -90,7 +117,6 @@ namespace Savanna
                 }
 
                 m_Size = other.m_Size;
-                m_Capacity = other.m_Capacity;
             }
 
             return *this;
@@ -108,6 +134,7 @@ namespace Savanna
                 SAVANNA_MOVE_MEMBER(m_Data, other);
                 SAVANNA_MOVE_MEMBER(m_Size, other);
                 SAVANNA_MOVE_MEMBER(m_Capacity, other);
+                SAVANNA_MOVE_MEMBER(m_Allocator, other);
             }
 
             return *this;
@@ -141,15 +168,16 @@ namespace Savanna
 
             if (m_Data == nullptr)
             {
-                m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));
+                m_Data = m_Allocator.AllocateAs<value_type>(capacity);
                 m_Capacity = capacity;
-                return;
             }
-
-            value_type* previousBuffer = m_Data;
-            m_Data = reinterpret_cast<value_type*>(SAVANNA_MALLOC_ALIGNED(sizeof(value_type) * capacity, alignof(value_type)));
-            memcpy(m_Data, previousBuffer, sizeof(value_type) * m_Size);
-            SAVANNA_FREE(previousBuffer);
+            else
+            {
+                value_type* previousBuffer = m_Data;
+                m_Data = m_Allocator.AllocateAs<value_type>(capacity);
+                memcpy(m_Data, previousBuffer, sizeof(value_type) * m_Size);
+                m_Allocator.Free(previousBuffer);
+            }
         }
 
         void Resize(size_t size, bool initialize = false)
@@ -174,9 +202,12 @@ namespace Savanna
                 return;
             }
 
-            for (size_t i = 0; i < m_Size; i++)
+            if constexpr (!std::is_trivially_destructible_v<value_type>)
             {
-                m_Data[i].~value_type();
+                for (size_t i = 0; i < m_Size; i++)
+                {
+                    m_Data[i].~value_type();
+                }
             }
             m_Size = 0;
         }

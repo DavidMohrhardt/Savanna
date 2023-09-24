@@ -12,19 +12,19 @@
 #include "Types/Primitive/PrimitiveTypes.inl"
 #include "Utilities/SavannaCoding.h"
 
-inline size_t savanna_get_pointer_difference(const void* lhs, const void* rhs)
+inline size_t SavannaGetPointerDifference(const void* lhs, const void* rhs)
 {
     return ((se_uintptr)lhs) > ((se_uintptr)rhs)
         ? (size_t)((se_uintptr)lhs - (se_uintptr)rhs)
         : (size_t)((se_uintptr)rhs - (se_uintptr)lhs);
 }
 
-inline size_t savanna_ptr_add(const void* const ptr, const size_t byteOffset)
+inline size_t SavannaPtrAdd(const void* const ptr, const size_t byteOffset)
 {
     return (size_t)((se_uintptr)ptr + byteOffset);
 }
 
-inline size_t savanna_ptr_sub(const void* const ptr, const size_t byteOffset)
+inline size_t SavannaPtrSub(const void* const ptr, const size_t byteOffset)
 {
     return (size_t)((se_uintptr)ptr - byteOffset);
 }

@@ -1,5 +1,5 @@
 /**
- * @file GfxDriver.h
+ * @file GfxBuffer.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
@@ -15,14 +15,22 @@
 
 #include "Types/Memory/MemoryBuffer.h"
 
-#include "GfxBuffer.h"
-
 namespace Savanna::Gfx
 {
-    class IGfxDriver
+    class Buffer
     {
     public:
-        virtual void Create() = 0;
-        virtual void Destroy() = 0;
+        Buffer();
+        ~Buffer();
+
+        void Create();
+        void Destroy();
+
+        void FlushData(bool invalidateCpuBuffer = false);
+
+    private:
+        uint32 m_BufferId;
+        MemoryBuffer m_CpuBuffer;
+        void* m_GpuBufferHandle;
     };
 } // namespace Savanna::Gfx

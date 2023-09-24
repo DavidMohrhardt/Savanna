@@ -50,17 +50,5 @@ namespace Savanna
             auto sentinel = m_Lock.Auto();
             m_Allocator.free(ptr, alignment);
         }
-
-        SAVANNA_NO_DISCARD virtual size_t GetAllocatedBytes() const SAVANNA_OVERRIDE
-        {
-            auto sentinel = m_Lock.Auto();
-            return m_Allocator.GetAllocatedBytes();
-        }
-
-        SAVANNA_NO_DISCARD virtual size_t GetSize() const SAVANNA_OVERRIDE
-        {
-            auto sentinel = m_Lock.Auto();
-            return m_Allocator.GetSize();
-        }
     };
 } // namespace Savanna

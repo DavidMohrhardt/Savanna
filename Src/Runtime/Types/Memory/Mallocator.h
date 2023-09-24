@@ -29,8 +29,8 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE { return std::malloc(size); }
         void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE { std::free(ptr); }
-        SAVANNA_NO_DISCARD virtual size_t GetAllocatedBytes() const SAVANNA_OVERRIDE { return 0; };
-        SAVANNA_NO_DISCARD virtual size_t GetSize() const SAVANNA_OVERRIDE
+        SAVANNA_NO_DISCARD virtual size_t GetAllocatedBytes() const { return 0; };
+        SAVANNA_NO_DISCARD virtual size_t GetSize() const
         {
             static size_t s_TotalSystemMemorySize = GetTotalSystemMemory();
             return s_TotalSystemMemorySize;

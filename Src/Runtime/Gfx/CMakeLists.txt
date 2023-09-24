@@ -9,3 +9,4 @@ message(STATUS "[${SAVANNA_ACTIVE_TARGET}::Gfx] Processing GFX API subdirectorie
 
 # add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Materials)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Vulkan)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Vk)

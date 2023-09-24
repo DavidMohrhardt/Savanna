@@ -14,7 +14,9 @@
 
 #include "Types/Containers/Arrays/DynamicArray.h"
 
-#include "GfxShader.h"
+// #include "GfxShader.h"
+
+struct se_GfxShader_t;
 
 DECLARE_NAMESPACED_ENUMERATION(Savanna::Gfx, GfxProgramType, GfxProgramType, uint8_t,
     k_SavannaGfxProgramTypeUnknown = 0,
@@ -39,13 +41,37 @@ DECLARE_NAMESPACED_ENUMERATION(Savanna::Gfx, GfxProgramType, GfxProgramType, uin
 typedef struct se_GfxProgramCreateInfo_t
 {
     GfxProgramType type;
-    const GfxShader* pShader;
+    const se_GfxShader_t* pShader;
 } se_GfxProgramCreateInfo_t;
 
 typedef struct se_GfxProgram_t
 {
     GfxProgramType type;
-    const GfxShader* pShader;
+    const se_GfxShader_t* pShader;
 } se_GfxProgram_t;
 
 typedef se_uint64_t se_GfxProgramHandle_t;
+
+#if defined(__cplusplus)
+
+namespace Savanna::Gfx
+{
+    class GpuProgram
+    {
+    private:
+        friend class IGfxDriver;
+
+        GfxProgramType m_Type;
+        const GfxShader* m_pShader;
+
+    public:
+        GpuProgram(const GfxProgramType& type, const GfxShader* pShader);
+        ~GpuProgram() = default;
+
+        GfxProgramType GetType() const { return m_Type; }
+        const GfxShader* GetShader() const { return m_pShader; }
+    };
+} // namespace Savanna::Gfx
+
+
+#endif // defined(__cplusplus)

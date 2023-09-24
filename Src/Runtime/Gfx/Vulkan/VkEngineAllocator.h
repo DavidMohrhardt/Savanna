@@ -25,7 +25,7 @@ extern "C"
 }
 #endif // defined(__cplusplus)
 
-static VkAllocationCallbacks k_SavannaDefaultVkAllocationCallbacks =
+static VkAllocationCallbacks k_SE_VkAllocationCallbacks =
 {
     nullptr, // void* pUserData;
     savanna_gfx_vk_engine_allocator_alloc, // PFN_vkAllocationFunction pfnAllocation;

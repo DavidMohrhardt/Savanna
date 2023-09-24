@@ -8,7 +8,6 @@
 #pragma once
 
 #include "SavannaEntities.h"
-
 #include "Utilities/SavannaCoding.h"
 
 // While realistically extern "C" does not respect namespace, it's just easier if C++ functions

@@ -3,53 +3,61 @@
 #include "Memory/MemoryManager.h"
 #include "Concurrency/JobSystem/JobManager.h"
 
-namespace Savanna
+using namespace Savanna;
+
+struct GlobalManagerFunctionTable
 {
-    void InitializeManagers()
-    {
-        MemoryManager::Initialize();
+    bool (*Initialize)();
+    void (*Start)();
+    void (*Stop)();
+    void (*Shutdown)();
+};
 
-        Concurrency::JobManager::Initialize();
+#define SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(__managerName) \
+    GlobalManagerFunctionTable { \
+        __managerName::Initialize, \
+        __managerName::Start, \
+        __managerName::Stop, \
+        __managerName::Shutdown \
     }
 
-    void ShutdownManagers()
-    {
-        Concurrency::JobManager::Shutdown();
+static constexpr GlobalManagerFunctionTable k_DefaultManagerOrder[] = {
+    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(MemoryManager),
+    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(Concurrency::JobManager)
+};
 
-        MemoryManager::Shutdown();
-    }
+static constexpr size_t k_ManagerCount = sizeof(k_DefaultManagerOrder) / sizeof(GlobalManagerFunctionTable);
 
-    void StartManagers()
-    {
-        MemoryManager::Start();
-
-        Concurrency::JobManager::Start();
-    }
-
-    void StopManagers()
-    {
-        Concurrency::JobManager::Stop();
-
-        MemoryManager::Stop();
-    }
-} // namespace Savanna
-
-SAVANNA_EXPORT(void) savanna_initialize_managers()
+SAVANNA_EXPORT(void) SavannaInitializeManagers()
 {
-    Savanna::InitializeManagers();
+    for (size_t i = 0; i < k_ManagerCount; ++i)
+    {
+        k_DefaultManagerOrder[i].Initialize();
+    }
 }
 
-SAVANNA_EXPORT(void) savanna_start_managers()
+SAVANNA_EXPORT(void) SavannaStartManagers()
 {
-    Savanna::StartManagers();
+    for (size_t i = 0; i < k_ManagerCount; ++i)
+    {
+        k_DefaultManagerOrder[i].Start();
+    }
 }
 
-SAVANNA_EXPORT(void) savanna_stop_managers()
+SAVANNA_EXPORT(void) SavannaStopManagers()
 {
-    Savanna::StopManagers();
+    // Stop in reverse order
+    for (size_t i = k_ManagerCount; i > 0; --i)
+    {
+        k_DefaultManagerOrder[i - 1].Stop();
+    }
 }
 
-SAVANNA_EXPORT(void) savanna_shutdown_managers()
+SAVANNA_EXPORT(void) SavannaShutdownManagers()
 {
-    Savanna::ShutdownManagers();
+    // Shutdown in reverse order
+    for (size_t i = k_ManagerCount; i > 0; --i)
+    {
+        k_DefaultManagerOrder[i - 1].Shutdown();
+    }
 }
