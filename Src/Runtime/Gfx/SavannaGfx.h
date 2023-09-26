@@ -5,7 +5,7 @@
 #include <Utilities/SavannaCoding.h>
 
 // Implements the Savanna Graphics API
-#include "Public/ISavannaGfx.h"
+#include "Public/ISavannaGfx.hpp"
 
 #include "GfxContext.h"
 #include "GfxDriver.h"

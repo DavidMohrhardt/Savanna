@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
-set(SAVANNA_ACTIVE_TARGET SavannaRendererVulkan)
+set(SAVANNA_ACTIVE_TARGET SavannaVulkan2)
 
 message(STATUS "Building [${SAVANNA_ACTIVE_TARGET}] Application")
 

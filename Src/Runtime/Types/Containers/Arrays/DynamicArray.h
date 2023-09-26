@@ -39,12 +39,13 @@ namespace Savanna
             const se_AllocatorInterface_t allocatorInterface = SavannaMemoryManagerGetDefaultAllocatorInterface())
             : m_Data(nullptr)
             , m_Size(0)
-            , m_Capacity(capacity > DEFAULT_CAPACITY ? capacity : DEFAULT_CAPACITY)
+            , m_Capacity(capacity)
             , m_Allocator(allocatorInterface)
         {
             if (m_Capacity > 0)
             {
-                m_Data = m_Allocator.AllocateAs<value_type>(m_Capacity);
+                m_Capacity = m_Capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : m_Capacity;
+                m_Data = m_Allocator.NewArray<value_type>(m_Capacity);
             }
         }
 
@@ -170,12 +171,24 @@ namespace Savanna
             {
                 m_Data = m_Allocator.AllocateAs<value_type>(capacity);
                 m_Capacity = capacity;
+                return;
+            }
+
+            if constexpr (std::is_trivially_copyable_v<value_type>)
+            {
+                value_type* previousBuffer = m_Data;
+                m_Data = m_Allocator.AllocateAs<value_type>(capacity);
+                memcpy(m_Data, previousBuffer, sizeof(value_type) * m_Size);
+                m_Allocator.Free(previousBuffer);
             }
             else
             {
                 value_type* previousBuffer = m_Data;
                 m_Data = m_Allocator.AllocateAs<value_type>(capacity);
-                memcpy(m_Data, previousBuffer, sizeof(value_type) * m_Size);
+                for (size_t i = 0; i < m_Size; i++)
+                {
+                    m_Data[i] = std::move(previousBuffer[i]);
+                }
                 m_Allocator.Free(previousBuffer);
             }
         }

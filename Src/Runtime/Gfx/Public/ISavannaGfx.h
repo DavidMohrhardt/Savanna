@@ -99,7 +99,7 @@ typedef enum se_GfxBackend_t : se_uint32
     kSavannaGfxApiCount,
 } se_GfxBackend_t;
 
-typedef enum se_GfxSupportedGfxBackend_t : se_uint8
+typedef enum se_GfxSupportedBackend_t : se_uint8
 {
     kSavannaSupportedGfxApiNone = kSavannaGfxApiNone,
     kSavannaSupportedGfxApiAll = static_cast<se_uint8>(~0),
@@ -110,7 +110,7 @@ typedef enum se_GfxSupportedGfxBackend_t : se_uint8
     // kSavannaSupportedGfxApiOpenGL = 1 << kSavannaGfxApiOpenGL,
     // kSavannaSupportedGfxApiOpenGLES = 1 << kSavannaGfxApiOpenGLES,
     // kSavannaSupportedGfxApiMetal = 1 << kSavannaGfxApiMetal,
-} se_GfxSupportedGfxBackend_t;
+} se_GfxSupportedBackend_t;
 
 /// Graphics Context Section
 typedef struct se_GfxContextCreateInfo_t
@@ -163,21 +163,49 @@ typedef struct se_GfxDriverInterface_t
 
 /// API Section
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif // defined(__cplusplus)
+/**
+ * @brief Initializes the graphics context. This must be called before any other
+ *       graphics functions are called.
+ * @param pCreateInfo The create info for the graphics context.
+ * @return se_GfxErrorCode_t The error code for the operation.
+ * @note This function is not thread safe.
+ */
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxInit(const se_GfxContextCreateInfo_t* const pCreateInfo);
 
-    SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxInit(const se_GfxContextCreateInfo_t* const pCreateInfo);
-    SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxShutdown();
+/**
+ * @brief Shuts the graphics context down. This must be called to ensure disposal
+ *       of all graphics resources.
+ *
+ * @return se_GfxErrorCode_t The error code for the operation.
+ * @note This function is not thread safe and must be called on the same thread that
+ *      called SavannaGfxInit.
+ */
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxShutdown();
 
-    SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxContextCreateDriver(
-        const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
+/**
+ * @brief Creates a graphics driver for the specified backend.
+ * @param pCreateInfo The list of create infos for the graphics drivers.
+ * The list will be iterated over until a driver is successfully created.
+ * @return se_GfxErrorCode_t The error code for the operation.
+ *
+ * @note This function is not thread safe and must be called on
+ *      the same thread that called SavannaGfxInit.
+ */
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxContextCreateDriver(
+    const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
 
-    SAVANNA_EXPORT(se_GfxSupportedGfxBackend_t) SavannaGfxGetSupportedGraphicsBackends();
-    SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsApi();
+/**
+ * @brief Acquires the supported graphics backends for the current platform.
+ * @return se_GfxSupportedBackend_t The supported graphics backends.
+ *
+ * @note This function can be called prior to SavannaGfxInit.
+ */
+SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends();
 
-#if defined(__cplusplus)
-}
-#endif // defined(__cplusplus)
+/**
+ * @brief Gets the active graphics backend.
+ * @return se_GfxBackend_t The active graphics backend.
+ */
+SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend();
+
 #endif // !I_SAVANNA_GFX_H

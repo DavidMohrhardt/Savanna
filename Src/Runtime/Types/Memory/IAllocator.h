@@ -25,10 +25,53 @@ namespace Savanna
             return reinterpret_cast<T*>(alloc(sizeof(T) * count, alignof(T)));
         }
 
-        template <typename T>
-        SAVANNA_NO_DISCARD T* New()
+        template <typename T, typename... Args>
+        SAVANNA_NO_DISCARD T* New(Args&&... args)
         {
-            return new (AllocateAs<T>()) T();
+            T* pObject = AllocateAs<T>();
+            new (pObject) T(std::forward<Args>(args)...);
+            return pObject;
+        }
+
+        template <typename T, typename... Args>
+        SAVANNA_NO_DISCARD T* NewArray(const size_t& count, Args&&... args)
+        {
+            if constexpr (std::is_trivially_constructible_v<T>)
+            {
+                auto pBuffer = AllocateAs<T>(count);
+                memset(pBuffer, 0, sizeof(T) * count);
+                return pBuffer;
+            }
+
+            T* pArray = AllocateAs<T>(count);
+            for (size_t i = 0; i < count; i++)
+            {
+                new (&pArray[i]) T(std::forward<Args>(args)...);
+            }
+            return pArray;
+        }
+
+        template <typename T>
+        void Delete(T* pObject)
+        {
+            if (pObject)
+            {
+                pObject->~T();
+                free(pObject, alignof(T));
+            }
+        }
+
+        template <typename T>
+        void DeleteArray(T* pArray)
+        {
+            if (pArray)
+            {
+                for (size_t i = 0; i < sizeof(pArray); i++)
+                {
+                    pArray[i].~T();
+                }
+                free(pArray, alignof(T));
+            }
         }
     };
 }

@@ -17,7 +17,7 @@
 
 typedef struct GfxCapabilities
 {
-    se_GfxSupportedGfxBackend_t m_SupportedGfxApi;
+    se_GfxSupportedBackend_t m_SupportedGfxApi;
     se_GfxBackend_t m_ActiveGfxApi;
 
     void* pPlatformSpecificCapabilities;

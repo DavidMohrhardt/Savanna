@@ -1,22 +1,18 @@
 #pragma once
 
 #include <SavannaEngine.h>
+#include <Gfx/Public/ISavannaGfx.hpp>
+#include <IO/VirtualFileSystem.h>
 
 class Application
 {
 public:
-    Application()
-    {
-        SAVANNA_LOG("Application created.");
-    }
+    Application() = delete;
 
-    ~Application()
-    {
-        SAVANNA_LOG("Application destroyed.");
-    }
+    Application(const char* rootPath);
+    ~Application();
 
-    void Run()
-    {
-        SAVANNA_LOG("Application running.");
-    }
+    void Run();
+
+    private:
 };

@@ -1,9 +1,52 @@
 #include "MemoryManager.h"
+#include "Public/ISavannaMemory.hpp"
 
 #include <cstring>
 
 namespace Savanna
 {
+    template <se_uint32 LABEL>
+    consteval se_AllocatorInterface_t GetInterfaceForLabel()
+    {
+        return se_AllocatorInterface_t
+        {
+            .m_AllocFunc = [](size_t size, void* pUserData) -> void*
+            {
+                return MemoryManager::Get().Allocate(size, LABEL);
+            },
+            .m_AllocAlignedFunc = [](size_t size, size_t alignment, void* pUserData) -> void*
+            {
+                return MemoryManager::Get().Allocate(size, alignment, LABEL);
+            },
+            .m_ReallocFunc = [](void* ptr, const size_t& newSize, void* pUserData) -> void*
+            {
+                return MemoryManager::Get().Reallocate(ptr, newSize, LABEL);
+            },
+            .m_ReallocAlignedFunc = [](void* ptr, size_t alignment, const size_t& newSize, void* pUserData) -> void*
+            {
+                return MemoryManager::Get().Reallocate(ptr, newSize, alignment, LABEL);
+            },
+            .m_FreeFunc = [](void* ptr, void* pUserData) -> void
+            {
+                MemoryManager::Get().Free(ptr, LABEL);
+            }
+        };
+    }
+
+    static constexpr se_AllocatorInterface_t k_LabelAllocatorInterfaces[] =
+    {
+        k_HeapAllocatorInterface,
+        GetInterfaceForLabel<SE_MEMORY_LABEL_GENERAL>(),
+        GetInterfaceForLabel<SE_MEMORY_LABEL_GRAPHICS>(),
+        GetInterfaceForLabel<SE_MEMORY_LABEL_ENTITIES>(),
+    };
+
+    const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForLabel(
+        const se_uint32 &label)
+    {
+        return k_LabelAllocatorInterfaces[label];
+    }
+
     // TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.
     MemoryManager::MemoryManager() {}
 
@@ -14,7 +57,7 @@ namespace Savanna
         return Allocate(size, 1, label);
     }
 
-    inline void* MemoryManager::Allocate(size_t size, size_t alignment, const se_uint32 label)
+    void* MemoryManager::Allocate(size_t size, size_t alignment, const se_uint32 label)
     {
         if (label >= m_MemoryArenas.Size())
         {
@@ -57,13 +100,12 @@ namespace Savanna
         m_MemoryArenas[label].free(ptr, 1);
     }
 
-    bool MemoryManager::InitializeInternal()
-    {
-        m_InitializationAllocator = std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true));
-        m_MemoryArenas = std::move(DynamicArray<AtomicExpandableBlockAllocator>(SE_MEMORY_LABEL_COUNT));
+    bool MemoryManager::InitializeInternal() {
+        m_MemoryArenas = std::move(DynamicArray<AtomicExpandableBlockAllocator>(
+            SE_MEMORY_LABEL_COUNT, k_HeapAllocatorInterface));
         for (size_t i = 0; i < SE_MEMORY_LABEL_COUNT; ++i)
         {
-            m_MemoryArenas[i] = std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true));
+            m_MemoryArenas.Append(std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true)));
         }
         return true;
     }
@@ -74,8 +116,7 @@ namespace Savanna
 
     void MemoryManager::ShutdownInternal()
     {
-        m_InitializationAllocator.~AtomicAllocatorWrapper();
-        m_MemoryArenas.Clear();
+        m_MemoryArenas.~DynamicArray();
     }
 } // namespace Savanna
 
@@ -121,55 +162,7 @@ void operator delete[](void *ptr, size_t size) noexcept
 
 
 // C-Api
-
-inline void* SavannaMemoryManagerAllocateAligned(
-    size_t size,
-    size_t alignment,
-    void* pUserData)
-{
-    return Savanna::MemoryManager::Get().Allocate(size, alignment, SE_MEMORY_LABEL_GENERAL);
-}
-
-inline void* SavannaMemoryManagerAllocate(
-    size_t size,
-    void* pUserData)
-{
-    return Savanna::MemoryManager::Get().Allocate(size, 1, SE_MEMORY_LABEL_GENERAL);
-}
-
-inline void* SavannaMemoryManagerReallocAligned(
-    void* ptr,
-    size_t alignment,
-    const size_t& newSize,
-    void* pUserData)
-{
-    return Savanna::MemoryManager::Get().Reallocate(ptr, newSize, alignment, SE_MEMORY_LABEL_GENERAL);
-}
-
-inline void* SavannaMemoryManagerRealloc(
-    void* ptr,
-    const size_t& newSize,
-    void* pUserData)
-{
-    return Savanna::MemoryManager::Get().Reallocate(ptr, newSize, 1, SE_MEMORY_LABEL_GENERAL);
-}
-
-inline void SavannaMemoryManagerFree(void* ptr, void* pUserData)
-{
-    if (ptr)
-    {
-        Savanna::MemoryManager::Get().Free(ptr, SE_MEMORY_LABEL_GENERAL);
-    }
-}
-
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
-    return se_AllocatorInterface_t
-    {
-        .m_AllocFunc = SavannaMemoryManagerAllocate,
-        .m_AllocAlignedFunc = SavannaMemoryManagerAllocateAligned,
-        .m_ReallocFunc = SavannaMemoryManagerRealloc,
-        .m_ReallocAlignedFunc = SavannaMemoryManagerReallocAligned,
-        .m_FreeFunc = SavannaMemoryManagerFree
-    };
+    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GENERAL);
 }

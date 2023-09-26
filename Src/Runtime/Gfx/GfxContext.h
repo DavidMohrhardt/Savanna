@@ -27,16 +27,18 @@ namespace Savanna::Gfx
     private:
         DECLARE_FRIENDS_FOR_SINGLETON(GfxContext);
 
+        se_AllocatorInterface_t m_AllocatorInterface;
         IGfxDriver* m_pDriver;
 
-        GfxContext();
+        GfxContext() = default;
+        GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo);
         ~GfxContext();
 
     public:
-        se_GfxErrorCode_t CreateDriver(const se_GfxDriverCreateInfo_t* const pCreateInfo);
+        se_GfxErrorCode_t CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
         inline IGfxDriver* GetDriver() const { return m_pDriver; }
 
-        se_GfxSupportedGfxBackend_t GetSupportedGfxBackends() const;
+        se_GfxSupportedBackend_t GetSupportedGfxBackends() const;
     };
 } // namespace Savanna::Gfx
 

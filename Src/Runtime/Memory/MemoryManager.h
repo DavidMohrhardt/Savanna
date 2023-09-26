@@ -4,7 +4,7 @@
 
 #include "MemoryLabel.h"
 
-#include "Public/ISavannaMemory.h"
+#include "SavannaMemory.h"
 
 #include "Types/Containers/Arrays/DynamicArray.h"
 #include "Types/Manager/GlobalManager.h"
@@ -26,7 +26,10 @@ namespace Savanna
     private:
         DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(MemoryManager);
 
-        AtomicExpandableBlockAllocator m_InitializationAllocator;
+    public:
+        static const se_AllocatorInterface_t GetAllocatorInterfaceForLabel(const se_uint32& label);
+
+    private:
         DynamicArray<AtomicExpandableBlockAllocator> m_MemoryArenas;
 
         MemoryManager();

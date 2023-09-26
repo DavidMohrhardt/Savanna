@@ -23,7 +23,7 @@ namespace Savanna
     };
 
     template <typename T>
-    class GlobalManager : public EmbeddedSingleton<T>, public IGlobalManager
+    class GlobalManager : public IGlobalManager, public EmbeddedSingleton<T>
     {
     public:
         static bool Initialize()

@@ -19,5 +19,5 @@ void* savanna_gfx_vk_engine_allocator_realloc(void *pUserData, void *pOriginal, 
 void savanna_gfx_vk_engine_allocator_free(void *pUserData, void *pMemory)
 {
     if (pMemory != nullptr)
-        MemoryManager::Get().Free(pMemory);
+        MemoryManager::Get().Free(pMemory, SE_MEMORY_LABEL_GRAPHICS);
 }

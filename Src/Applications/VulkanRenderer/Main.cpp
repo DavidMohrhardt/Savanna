@@ -22,8 +22,8 @@ int main(int argc, char** argvs)
 
     using namespace Savanna;
 
-    SavannaInitializeManagers();
-    SavannaStartManagers();
+    SavannaInitialize();
+    SavannaStart();
 
     // Initialize File System
     IO::VirtualFileSystem::Construct(argvs[0]);
@@ -43,8 +43,8 @@ int main(int argc, char** argvs)
 
     IO::VirtualFileSystem::Destroy();
 
-    SavannaStopManagers();
-    SavannaShutdownManagers();
+    SavannaStop();
+    SavannaShutdown();
 
     return result;
 }

@@ -8,9 +8,16 @@
 
 namespace Savanna::Gfx
 {
-    GfxContext::GfxContext()
-        : m_pDriver(nullptr)
+    GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
     {
+        if (pCreateInfo)
+        {
+            m_AllocatorInterface = pCreateInfo->m_Allocator;
+        }
+        else
+        {
+            m_AllocatorInterface = GetDefaultAllocatorInterface();
+        }
     }
 
     GfxContext::~GfxContext()
@@ -24,14 +31,15 @@ namespace Savanna::Gfx
         }
     }
 
-    se_GfxErrorCode_t GfxContext::CreateDriver(const se_GfxDriverCreateInfo_t* const pCreateInfo)
+    se_GfxErrorCode_t GfxContext::CreateDriver(
+        const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
     {
         if (m_pDriver)
         {
             return kSavannaGfxErrorCodeGfxDriverAlreadyCreated;
         }
 
-        if (!pCreateInfo)
+        if (!pCreateInfoList)
         {
             return kSavannaGfxErrorCodeInvalidArgument;
         }
@@ -63,7 +71,7 @@ namespace Savanna::Gfx
         return outResult;
     }
 
-    se_GfxSupportedGfxBackend_t GfxContext::GetSupportedGfxBackends() const
+    se_GfxSupportedBackend_t GfxContext::GetSupportedGfxBackends() const
     {
         return kSavannaSupportedGfxApiVulkan;
     }

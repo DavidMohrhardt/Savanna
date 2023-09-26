@@ -28,7 +28,7 @@ static constexpr GlobalManagerFunctionTable k_DefaultManagerOrder[] = {
 
 static constexpr size_t k_ManagerCount = sizeof(k_DefaultManagerOrder) / sizeof(GlobalManagerFunctionTable);
 
-SAVANNA_EXPORT(void) SavannaInitializeManagers()
+SAVANNA_EXPORT(void) SavannaInitialize()
 {
     for (size_t i = 0; i < k_ManagerCount; ++i)
     {
@@ -36,7 +36,7 @@ SAVANNA_EXPORT(void) SavannaInitializeManagers()
     }
 }
 
-SAVANNA_EXPORT(void) SavannaStartManagers()
+SAVANNA_EXPORT(void) SavannaStart()
 {
     for (size_t i = 0; i < k_ManagerCount; ++i)
     {
@@ -44,7 +44,7 @@ SAVANNA_EXPORT(void) SavannaStartManagers()
     }
 }
 
-SAVANNA_EXPORT(void) SavannaStopManagers()
+SAVANNA_EXPORT(void) SavannaStop()
 {
     // Stop in reverse order
     for (size_t i = k_ManagerCount; i > 0; --i)
@@ -53,7 +53,7 @@ SAVANNA_EXPORT(void) SavannaStopManagers()
     }
 }
 
-SAVANNA_EXPORT(void) SavannaShutdownManagers()
+SAVANNA_EXPORT(void) SavannaShutdown()
 {
     // Shutdown in reverse order
     for (size_t i = k_ManagerCount; i > 0; --i)

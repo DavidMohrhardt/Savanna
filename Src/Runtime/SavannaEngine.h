@@ -28,7 +28,7 @@
     #include "Types/Primitive/FloatingPointUnions.h"
     #include "Utilities/PreprocessorDefinitions/Definitions.h"
 
-    // Required Managers
+    // Required
     #include "Memory/MemoryManager.h"
 
 #endif // ifndef __SAVANNA_ENGINE_H_MINIMAL__
@@ -70,19 +70,9 @@ DEFINE_SAVANNA_ENUM(Savanna, se_ErrorCode_t, ErrorCode, uint32_t,
     SavannaErrorCodeUnknown = 6,
 );
 
-SAVANNA_EXPORT(void) SavannaInitializeManagers();
-SAVANNA_EXPORT(void) SavannaStartManagers();
-SAVANNA_EXPORT(void) SavannaStopManagers();
-SAVANNA_EXPORT(void) SavannaShutdownManagers();
-
-#ifdef __cplusplus
-namespace Savanna
-{
-    void InitializeManagers();
-    void StartManagers();
-    void StopManagers();
-    void ShutdownManagers();
-} // namespace Savanna
-#endif // ifdef __cplusplus
+SAVANNA_EXPORT(void) SavannaInitialize();
+SAVANNA_EXPORT(void) SavannaStart();
+SAVANNA_EXPORT(void) SavannaStop();
+SAVANNA_EXPORT(void) SavannaShutdown();
 
 #endif // ifndef __SAVANNA_ENGINE_H__

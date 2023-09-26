@@ -15,34 +15,22 @@
 
 #include "Application.h"
 
-void ConstructSavanna(const char* rootPath)
-{
-    Savanna::InitializeManagers();
-    Savanna::StartManagers();
-    Savanna::IO::VirtualFileSystem::Construct(rootPath);
-}
-
-void TeardownSavanna()
-{
-    Savanna::IO::VirtualFileSystem::Destroy();
-    Savanna::StopManagers();
-    Savanna::ShutdownManagers();
-}
+#include <memory>
 
 int main(int argc, char** argv)
 {
-    ConstructSavanna(argv[0]);
-
-    Application app {};
-    try
     {
-        app.Run();
-    }
-    catch (const std::exception& e)
-    {
-        SAVANNA_FATAL_LOG("{}", e.what());
+        std::unique_ptr<Application> pApp = std::make_unique<Application>(argv[0]);
+        try
+        {
+            pApp->Run();
+        }
+        catch (const std::exception& e)
+        {
+            SAVANNA_FATAL_LOG("{}", e.what());
+            return 1;
+        }
     }
 
-    TeardownSavanna();
     return 0;
 }
