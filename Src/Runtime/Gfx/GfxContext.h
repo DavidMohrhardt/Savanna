@@ -31,6 +31,7 @@ namespace Savanna::Gfx
         IGfxDriver* m_pDriver;
 
         GfxContext() = delete;
+
         GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo);
         ~GfxContext();
 

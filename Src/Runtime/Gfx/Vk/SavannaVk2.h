@@ -26,7 +26,11 @@ DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk2, se_VkGraphicsCapabili
 
 namespace Savanna::Gfx::Vk2
 {
-    se_GfxErrorCode_t CreateDriver(const se_GfxDriverCreateInfo_t* const pCreateInfo, IGfxDriver** ppDriver, void* pUserData);
+    se_GfxErrorCode_t AcquireDriver(
+        const se_GfxDriverCreateInfo_t* const pCreateInfo,
+        IGfxDriver** ppDriver,
+        void* pUserData,
+        const se_AllocatorInterface_t allocatorInterface = Savanna::MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GRAPHICS));
 }
 
 #endif // !SAVANNA_GFX_VK2_H

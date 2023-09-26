@@ -21,8 +21,11 @@ namespace Savanna::Gfx
     class IGfxDriver
     {
     public:
-        virtual void Create(const se_GfxDriverCreateInfo_t& createInfo) = 0;
-        virtual void Destroy() = 0;
+        IGfxDriver() = default;
+        virtual ~IGfxDriver() = default;
+
+        virtual se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo) = 0;
+        virtual se_GfxErrorCode_t Destroy() = 0;
         virtual se_GfxBackend_t GetBackendType() const = 0;
     };
 
@@ -36,6 +39,9 @@ namespace Savanna::Gfx
     class GfxDriverBase : public IGfxDriver
     {
     public:
+        GfxDriverBase() = default;
+        virtual ~GfxDriverBase() = default;
+
         se_GfxBackend_t GetBackendType() const final { return BACKEND; }
     };
 
@@ -58,12 +64,15 @@ namespace Savanna::Gfx
 
         ~GenericGfxDriver() = default;
 
-        void Create(const se_GfxDriverCreateInfo_t& createInfo) override
+        se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo) override
         {
-            m_Interface.m_pfnCreate(createInfo);
+            return m_Interface.m_pfnCreate(createInfo);
         }
 
-        void Destroy() override { m_Interface.m_pfnDestroy(); }
+        se_GfxErrorCode_t Destroy() override
+        {
+            return m_Interface.m_pfnDestroy();
+        }
     };
 } // namespace Savanna::Gfx
 

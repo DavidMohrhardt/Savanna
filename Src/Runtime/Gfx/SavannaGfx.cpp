@@ -69,13 +69,6 @@ namespace Savanna::Gfx
     }
 } // namespace Savanna::Gfx
 
-/**
- * @brief Initializes the graphics context. This must be called before any other
- *       graphics functions are called.
- * @param pCreateInfo The create info for the graphics context.
- * @return se_GfxErrorCode_t The error code for the operation.
- * @note This function is not thread safe.
- */
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxInit(const se_GfxContextCreateInfo_t* const pCreateInfo)
 {
     return Savanna::Gfx::Initialize(pCreateInfo);
@@ -92,21 +85,11 @@ SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxContextCreateDriver(
     return Savanna::Gfx::CreateDriver(pCreateInfoList);
 }
 
-/**
- * @brief Acquires the supported graphics backends for the current platform.
- * @return se_GfxSupportedBackend_t The supported graphics backends.
- *
- * @note This function can be called prior to SavannaGfxInit.
- */
 SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends()
 {
     return Savanna::Gfx::GetSupportedGfxBackends();
 }
 
-/**
- * @brief Gets the active graphics backend.
- * @return se_GfxBackend_t The active graphics backend.
- */
 SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend()
 {
     return Savanna::Gfx::GetActiveGfxBackend();

@@ -20,7 +20,7 @@ namespace Savanna::Gfx
         if (m_pDriver)
         {
             m_pDriver->Destroy();
-            m_Allocator.Free(m_pDriver);
+            m_Allocator.Delete(m_pDriver);
         }
     }
 
@@ -41,13 +41,15 @@ namespace Savanna::Gfx
         outResult = kSavannaGfxErrorCodeUnknownError;
         for (int i = 0; i < pCreateInfoList->m_CreateInfoCount; ++i)
         {
-            switch (pCreateInfoList->m_pDriverCreateInfos[i].m_RequestedBackendType)
+            const se_GfxDriverCreateInfo_t& driverCreateInfo = pCreateInfoList->m_pDriverCreateInfos[i];
+            switch (driverCreateInfo.m_RequestedBackendType)
             {
             case kSavannaGfxApiVulkan:
-                outResult = Vk2::CreateDriver(
-                    &pCreateInfoList->m_pDriverCreateInfos[i],
+                outResult = Vk2::AcquireDriver(
+                    &driverCreateInfo,
                     &m_pDriver,
-                    pCreateInfoList->m_pUserData);
+                    pCreateInfoList->m_pUserData,
+                    m_Allocator.GetInterface());
                 break;
 
             // case kSavannaGfxExternalBackend:
@@ -57,11 +59,17 @@ namespace Savanna::Gfx
             //         pCreateInfo->m_pUserData);
 
             default:
-                return kSavannaGfxErrorCodeUnsupportedGfxBackend;
+                SAVANNA_WARNING_LOG("Unknown backend type requested.");
+                break;
+            }
+
+            if (outResult == kSavannaGfxErrorCodeSuccess)
+            {
+                return outResult;
             }
         }
 
-        return outResult;
+        return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
     }
 
     se_GfxSupportedBackend_t GfxContext::GetSupportedGfxBackends() const

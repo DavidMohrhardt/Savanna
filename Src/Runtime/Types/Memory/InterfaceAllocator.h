@@ -36,6 +36,8 @@ namespace Savanna
         void* ReallocateAligned(void* pMemory, size_t newSize, size_t alignment);
         void Free(void* pMemory);
 
+        const se_AllocatorInterface_t& GetInterface() const { return m_AllocatorInterface; }
+
     private:
         se_AllocatorInterface_t m_AllocatorInterface;
     };

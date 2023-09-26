@@ -2,24 +2,26 @@
 
 namespace Savanna::Gfx::Vk2
 {
-    se_GfxErrorCode_t CreateDriver(
+    se_GfxErrorCode_t AcquireDriver(
         const se_GfxDriverCreateInfo_t *const pCreateInfo,
         IGfxDriver **ppDriver,
-        void *pUserData)
+        void *pUserData,
+        const se_AllocatorInterface_t allocatorInterface)
     {
         if (!ppDriver)
         {
             return kSavannaGfxErrorCodeInvalidArgument;
         }
 
-        InterfaceAllocator allocator(pCreateInfo->m_Allocator);
+        // Use the given allocator interface to create the driver as it's
+        // owned by the caller.
+        InterfaceAllocator allocator(allocatorInterface);
         *ppDriver = allocator.New<VkDriver>();
         if (!*ppDriver)
         {
             return kSavannaGfxErrorCodeOutOfMemory;
         }
 
-        (*ppDriver)->Create(*pCreateInfo);
-        return kSavannaGfxErrorCodeSuccess;
+        return (*ppDriver)->Create(*pCreateInfo);
     }
 } // namespace Savanna::Gfx::Vk2

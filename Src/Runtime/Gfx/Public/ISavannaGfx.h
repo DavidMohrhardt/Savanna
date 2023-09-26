@@ -147,7 +147,7 @@ typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreate_t)(const se_GfxDriverCreateInf
  * @brief
  *
  */
-typedef void (*se_pfnGfxDriverDestroy_t)();
+typedef se_GfxErrorCode_t (*se_pfnGfxDriverDestroy_t)();
 
 /**
  * @brief

@@ -38,8 +38,8 @@ namespace Savanna::Gfx::Vk2
         VkDriver() = default;
         ~VkDriver() = default;
 
-        void Create(const se_GfxDriverCreateInfo_t& createInfo) override;
-        void Destroy() override;
+        se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo) override;
+        se_GfxErrorCode_t Destroy() override;
 
         // GfxRenderSurface* CreateRenderSurface(const GfxRenderSurfaceCreateInfo& createInfo) override;
     };
