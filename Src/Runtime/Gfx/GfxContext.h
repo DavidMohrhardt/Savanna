@@ -27,10 +27,10 @@ namespace Savanna::Gfx
     private:
         DECLARE_FRIENDS_FOR_SINGLETON(GfxContext);
 
-        se_AllocatorInterface_t m_AllocatorInterface;
+        InterfaceAllocator m_Allocator;
         IGfxDriver* m_pDriver;
 
-        GfxContext() = default;
+        GfxContext() = delete;
         GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo);
         ~GfxContext();
 

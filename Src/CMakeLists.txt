@@ -48,7 +48,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../build/bin")
 # Editor Project
 
 # Runtime Library
-set(SAVANNA_CORE_LIBRARY_TYPE SHARED)
+set(SAVANNA_CORE_LIBRARY_TYPE STATIC)
 add_subdirectory(Runtime)
 
 # Outside Application Testing Projects

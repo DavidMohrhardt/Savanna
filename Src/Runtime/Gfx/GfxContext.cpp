@@ -9,25 +9,18 @@
 namespace Savanna::Gfx
 {
     GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
+        : m_Allocator(pCreateInfo != nullptr
+            ? pCreateInfo->m_Allocator
+            : MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GRAPHICS))
     {
-        if (pCreateInfo)
-        {
-            m_AllocatorInterface = pCreateInfo->m_Allocator;
-        }
-        else
-        {
-            m_AllocatorInterface = GetDefaultAllocatorInterface();
-        }
     }
 
     GfxContext::~GfxContext()
     {
         if (m_pDriver)
         {
-            // m_pDriver->Destroy();
-            // m_pDriver->~IGfxDriver();
-            // m_AllocatorCallback.Free(m_pDriver);
-            // m_pDriver = nullptr;
+            m_pDriver->Destroy();
+            m_Allocator.Free(m_pDriver);
         }
     }
 
@@ -46,27 +39,27 @@ namespace Savanna::Gfx
 
         auto outResult = kSavannaGfxErrorCodeSuccess;
         outResult = kSavannaGfxErrorCodeUnknownError;
-        // for (int i = 0; i < pCreateInfo->m_CreateInfoCount; ++i)
-        // {
-        //     switch (pCreateInfo->m_pDriverCreateInfos[i].m_RequestedBackendType)
-        //     {
-        //     case kSavannaGfxApiVulkan:
-        //         outResult = Vk2::CreateDriver(
-        //             pCreateInfo->m_pDriverCreateInfos[i],
-        //             m_pDriver,
-        //             pCreateInfo->m_pUserData);
-        //         break;
+        for (int i = 0; i < pCreateInfoList->m_CreateInfoCount; ++i)
+        {
+            switch (pCreateInfoList->m_pDriverCreateInfos[i].m_RequestedBackendType)
+            {
+            case kSavannaGfxApiVulkan:
+                outResult = Vk2::CreateDriver(
+                    &pCreateInfoList->m_pDriverCreateInfos[i],
+                    &m_pDriver,
+                    pCreateInfoList->m_pUserData);
+                break;
 
-        //     case kSavannaGfxExternalBackend:
-        //         outResult = GenericGfxDriver::Create(
-        //             pCreateInfo->m_pDriverCreateInfos[i],
-        //             m_pDriver,
-        //             pCreateInfo->m_pUserData);
+            // case kSavannaGfxExternalBackend:
+            //     outResult = GenericGfxDriver::Create(
+            //         pCreateInfo->m_pDriverCreateInfos[i],
+            //         m_pDriver,
+            //         pCreateInfo->m_pUserData);
 
-        //     default:
-        //         return kSavannaGfxErrorCodeUnsupportedGfxBackend;
-        //     }
-        // }
+            default:
+                return kSavannaGfxErrorCodeUnsupportedGfxBackend;
+            }
+        }
 
         return outResult;
     }

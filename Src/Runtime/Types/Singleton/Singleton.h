@@ -62,10 +62,6 @@ namespace Savanna
             {
                 s_pInstance = new TYPE(std::forward<Args>(args)...);
             }
-            else
-            {
-                s_pInstance = new TYPE();
-            }
         }
         return Get();
     }
