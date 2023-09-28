@@ -7,7 +7,6 @@ namespace Savanna
     struct MemoryPool
     {
     public:
-
         void* m_Buffer;
         size_t m_PoolSize;
         size_t m_PoolCount;

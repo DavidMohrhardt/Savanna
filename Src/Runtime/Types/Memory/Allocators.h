@@ -14,6 +14,7 @@
 
 #include "Allocator.h"
 
+#include "InterfaceAllocator.h"
 #include "FreeListAllocator.h"
 #include "ExpandableBlockAllocator.h"
 #include "LinearAllocator.h"

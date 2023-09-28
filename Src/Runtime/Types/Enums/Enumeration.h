@@ -303,6 +303,8 @@ namespace Savanna
             enum_type m_Value;
             value_type m_BackingValue;
         };
+
+        static_assert(sizeof(enum_type) == sizeof(value_type), "FlagEnumeration size mismatch");
     };
 } // namespace Savanna
 #endif // defined(__cplusplus)

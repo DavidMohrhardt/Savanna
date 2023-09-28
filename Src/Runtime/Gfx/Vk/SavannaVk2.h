@@ -19,6 +19,7 @@
 #include <vulkan/vulkan.h>
 
 // Savanna Vulkan Includes
+#include "Public/ISavannaGfx.h"
 #include "Public/ISavannaGfxVk2.h"
 #include "VkDriver.h"
 

@@ -11,21 +11,27 @@
 #ifndef I_SAVANNA_GFX_VK2_H
 #define I_SAVANNA_GFX_VK2_H
 
-// TODO @DavidMohrhardt: This is a public header, find a better include mechanism.
-#include <SavannaEngine.h>
-#include <Utilities/SavannaCoding.h>
-
-typedef enum se_VkQueueFlags_t : uint32_t
+typedef enum se_VkQueueKind_t : uint8_t
 {
-    se_VkQueueFlags_Graphics = 0x00000001,
-    se_VkQueueFlags_Compute = 0x00000002,
-    se_VkQueueFlags_Transfer = 0x00000004,
-    se_VkQueueFlags_SparseBinding = 0x00000008,
-    se_VkQueueFlags_Protected = 0x00000010,
-    se_VkQueueFlags_Present = 0x00000020,
-    se_VkQueueFlags_All = 0x7FFFFFFF,
-    se_VkQueueFlags_None = 0x00000000,
-} se_VkQueueFlags_t;
+    se_VkQueueKindNone,
+    se_VkQueueKindGraphics,
+    se_VkQueueKindCompute,
+    se_VkQueueKindTransfer,
+    se_VkQueueKindSparseBinding,
+    se_VkQueueKindPresent,
+} se_VkQueueKind_t;
+
+typedef enum se_VkQueueFlags_t : uint8_t
+{
+    se_VkRequestedQueueFlagsNone = 0x0,
+    se_VkRequestedQueueFlagsAll = 0xFF,
+
+    se_VkRequestedQueueFlagsGraphics = 0x1 << se_VkQueueKindGraphics,
+    se_VkRequestedQueueFlagsCompute = 0x1 << se_VkQueueKindCompute,
+    se_VkRequestedQueueFlagsTransfer = 0x1 << se_VkQueueKindTransfer,
+    se_VkRequestedQueueFlagsSparseBinding = 0x1 << se_VkQueueKindSparseBinding,
+    se_VkRequestedQueueFlagsPresent = 0x1 << se_VkQueueKindPresent,
+} se_VkRequestedQueueFlags_t;
 
 /**
  * @brief Defines the current Vulkan specific capabilities of the graphics system.
@@ -38,5 +44,20 @@ typedef struct se_VkGraphicsCapabilities_t
     se_VkQueueFlags_t m_SupportedQueueFlags;
     uint32_t m_MaxQueueCount;
 } se_VkGraphicsCapabilities_t;
+
+typedef struct se_VkDriverCreateInfo_t
+{
+    const char** m_ppEnabledInstanceExtensions;
+    uint32_t m_EnabledInstanceExtensionCount;
+
+    const char** m_ppEnabledDeviceExtensions;
+    uint32_t m_EnabledDeviceExtensionCount;
+
+    const char** m_ppEnabledLayers;
+    uint32_t m_EnabledLayerCount;
+
+    const char** m_ppEnabledDeviceLayers;
+    uint32_t m_EnabledDeviceLayerCount;
+} se_VkDriverCreateInfo_t;
 
 #endif // !I_SAVANNA_GFX_VK2_H

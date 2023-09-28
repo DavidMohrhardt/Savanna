@@ -38,14 +38,14 @@ namespace Savanna
      * @param b The source data.
      */
     template <class T>
-    requires std::is_class_v<T> && std::is_move_assignable_v<T>
+    requires std::is_class_v<T> && std::is_move_assignable_v<T> && (!std::is_pod_v<T>)
     inline constexpr void Move(T& a, T& b)
     {
         a = std::move(b);
     }
 
     template <class T>
-    requires std::is_class_v<T> && std::is_move_assignable_v<T>
+    requires std::is_class_v<T> && std::is_move_assignable_v<T> && (!std::is_pod_v<T>)
     inline constexpr void MoveAndAssign(T& a, T& b)
     {
         a = std::move(b);

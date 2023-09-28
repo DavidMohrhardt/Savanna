@@ -2,6 +2,8 @@
 
 namespace Savanna::Gfx::Vk2
 {
+    se_VkGraphicsCapabilities_t g_GraphicsCapabilities {};
+
     se_GfxErrorCode_t AcquireDriver(
         const se_GfxDriverCreateInfo_t *const pCreateInfo,
         IGfxDriver **ppDriver,
@@ -23,5 +25,13 @@ namespace Savanna::Gfx::Vk2
         }
 
         return (*ppDriver)->Create(*pCreateInfo);
+    }
+
+    void InitializeGraphicsCapabilities(VkInstance instance, VkPhysicalDevice physicalDevice)
+    {
+        g_GraphicsCapabilities.m_IsSupported = true;
+        g_GraphicsCapabilities.m_MaxQueueCount = 0;
+        g_GraphicsCapabilities.m_SupportedQueueFlags = se_VkRequestedQueueFlagsNone;
+        // g_GraphicsCapabilities.m_SupportedDeviceExtensions = 0;
     }
 } // namespace Savanna::Gfx::Vk2
