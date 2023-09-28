@@ -4,8 +4,14 @@
 #include <Gfx/Public/ISavannaGfx.hpp>
 #include <IO/VirtualFileSystem.h>
 
+#include "Window/GLFWWindowWrapper.h"
+
 class Application
 {
+private:
+    bool m_FailedInitialization = false;
+    GLFWWindowWrapper m_Window;
+
 public:
     Application() = delete;
 
@@ -16,6 +22,4 @@ public:
 
 private:
     bool TryInitGfx();
-
-    bool m_FailedInitialization = false;
 };

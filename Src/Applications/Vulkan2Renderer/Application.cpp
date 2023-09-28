@@ -3,14 +3,16 @@
 using namespace Savanna;
 
 Application::Application(const char *rootPath)
+    : m_Window(1920, 1080)
 {
     SavannaInitialize();
     SavannaStart();
     Savanna::IO::VirtualFileSystem::Construct(rootPath);
 
-    if (!TryInitGfx())
+    m_FailedInitialization = !TryInitGfx();
+    if (m_FailedInitialization)
     {
-        m_FailedInitialization = true;
+        SAVANNA_LOG("Failed to initialize application.");
         return;
     }
 
@@ -32,6 +34,10 @@ void Application::Run()
         return;
 
     SAVANNA_LOG("Application running.");
+    while (!m_Window.ShouldClose())
+    {
+        glfwPollEvents();
+    }
 }
 
 bool Application::TryInitGfx()
@@ -53,6 +59,7 @@ bool Application::TryInitGfx()
     {
         .m_RequestedBackendType = kSavannaGfxApiVulkan,
         .m_Allocator = defaultGfxAllocator,
+        .m_pRealDriverCreateInfo = nullptr,
         .m_pUserData = nullptr,
     };
 
