@@ -40,11 +40,12 @@ typedef enum se_VkQueueFlags_t : uint8_t
 typedef struct se_VkGraphicsCapabilities_t
 {
     bool m_IsSupported;
-
-    se_VkQueueFlags_t m_SupportedQueueFlags;
-    uint32_t m_MaxQueueCount;
 } se_VkGraphicsCapabilities_t;
 
+/**
+ * @brief Provides the creation parameters for the Vulkan driver.
+ *
+ */
 typedef struct se_VkDriverCreateInfo_t
 {
     const char** m_ppEnabledInstanceExtensions;

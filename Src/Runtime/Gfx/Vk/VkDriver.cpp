@@ -37,33 +37,51 @@ namespace Savanna::Gfx::Vk2
             instanceCreateInfo.ppEnabledLayerNames = nullptr;
         }
 
-        VkAllocationCallbacks allocationCallbacks = GetVkAllocationCallbacks(&m_Allocator);
-        VkResult result = vkCreateInstance(&instanceCreateInfo, &allocationCallbacks, &m_Instance);
+        VkResult result = vkCreateInstance(
+            &instanceCreateInfo, &m_Allocator.GetAllocationCallbacks(), &m_Instance);
         if (result != VK_SUCCESS)
         {
             return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
         }
 
-        // Create the device
-        uint32_t physicalDeviceCount = 0;
-        result = vkEnumeratePhysicalDevices(m_Instance, &physicalDeviceCount, nullptr);
-        DynamicArray<VkPhysicalDevice> physicalDevices(physicalDeviceCount, m_Allocator.m_Allocator.GetInterface());
-        physicalDevices.Resize(physicalDeviceCount);
-        result = vkEnumeratePhysicalDevices(m_Instance, &physicalDeviceCount, physicalDevices.Data());
-        if (result != VK_SUCCESS)
-        {
-            return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
-        }
+        // Process the device characteristics
+
+        // Enumerate the physical devices
+        // uint32_t physicalDeviceCount = 0;
+        // result = vkEnumeratePhysicalDevices(m_Instance, &physicalDeviceCount, nullptr);
+        // DynamicArray<VkPhysicalDevice> physicalDevices(physicalDeviceCount, m_Allocator.m_Allocator.GetInterface());
+        // physicalDevices.Resize(physicalDeviceCount);
+        // result = vkEnumeratePhysicalDevices(m_Instance, &physicalDeviceCount, physicalDevices.Data());
+        // if (result != VK_SUCCESS)
+        // {
+        //     return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
+        // }
+
+        // // TODO @DavidMohrhardt: Handle multiple physical devices.
+        // // For now just grab the first physical device.
+        // m_PhysicalDevice = physicalDevices[0];
+
+        // // Get the devices capabilities
+        // VkPhysicalDeviceProperties physicalDeviceProperties;
+        // vkGetPhysicalDeviceProperties(m_PhysicalDevice, &physicalDeviceProperties);
+
+        // VkPhysicalDeviceFeatures physicalDeviceFeatures;
+        // vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &physicalDeviceFeatures);
 
         return kSavannaGfxErrorCodeSuccess;
     }
 
     se_GfxErrorCode_t VkDriver::Destroy()
     {
-        VkAllocationCallbacks allocationCallbacks = GetVkAllocationCallbacks(&m_Allocator);
+        if (m_LogicalDevice != VK_NULL_HANDLE)
+        {
+            vkDestroyDevice(m_LogicalDevice, &m_Allocator.GetAllocationCallbacks());
+            m_LogicalDevice = VK_NULL_HANDLE;
+        }
+
         if (m_Instance != VK_NULL_HANDLE)
         {
-            vkDestroyInstance(m_Instance, &allocationCallbacks);
+            vkDestroyInstance(m_Instance, &m_Allocator.GetAllocationCallbacks());
             m_Instance = VK_NULL_HANDLE;
         }
 

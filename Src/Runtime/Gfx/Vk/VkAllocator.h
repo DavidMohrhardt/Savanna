@@ -16,11 +16,29 @@
 
 namespace Savanna::Gfx::Vk2
 {
+    struct VkAllocator;
+    VkAllocationCallbacks GetVkAllocationCallbacks(VkAllocator* pRealAllocator);
+
     struct VkAllocator
     {
-        InterfaceAllocator m_Allocator;
-        void* m_pUserData;
-    };
+    public:
+        InterfaceAllocator m_Allocator {};
+        void* m_pUserData { nullptr };
+        VkAllocationCallbacks m_AllocationCallbacks { GetVkAllocationCallbacks(this) };
 
-    VkAllocationCallbacks GetVkAllocationCallbacks(VkAllocator* pRealAllocator);
+    public:
+        VkAllocator() = default;
+        ~VkAllocator() = default;
+
+        VkAllocator(se_AllocatorInterface_t allocatorInterface, void* pUserData)
+            : m_Allocator(allocatorInterface)
+            , m_pUserData(pUserData)
+        {
+        }
+
+        VkAllocationCallbacks& GetAllocationCallbacks()
+        {
+            return m_AllocationCallbacks;
+        }
+    };
 }
