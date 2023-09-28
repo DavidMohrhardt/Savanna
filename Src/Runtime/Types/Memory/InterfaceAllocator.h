@@ -19,6 +19,8 @@ namespace Savanna
     public:
         InterfaceAllocator(se_AllocatorInterface_t allocatorInterface);
 
+        InterfaceAllocator() = default;
+
         // These allocators are allowed to move and copy
         InterfaceAllocator(const InterfaceAllocator& other);
         InterfaceAllocator(InterfaceAllocator&& other) noexcept;

@@ -2,13 +2,17 @@
 
 #include "SavannaVk2.h"
 
+#include "VkAllocator.h"
 #include "Utilities/VkInfoCreateUtils.h"
 
 namespace Savanna::Gfx::Vk2
 {
     se_GfxErrorCode_t VkDriver::Create(const se_GfxDriverCreateInfo_t& createInfo)
     {
-        m_AllocatorInterface = createInfo.m_Allocator;
+        m_Allocator = VkAllocator{
+            createInfo.m_Allocator,
+            createInfo.m_pUserData
+        };
 
         // Create the instance
         VkApplicationInfo appInfo = Utils::k_SavannaDefaultVulkanAppInfo;
@@ -33,7 +37,8 @@ namespace Savanna::Gfx::Vk2
             instanceCreateInfo.ppEnabledLayerNames = nullptr;
         }
 
-        VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_Instance);
+        VkAllocationCallbacks allocationCallbacks = GetVkAllocationCallbacks(&m_Allocator);
+        VkResult result = vkCreateInstance(&instanceCreateInfo, &allocationCallbacks, &m_Instance);
         if (result != VK_SUCCESS)
         {
             return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
@@ -42,19 +47,26 @@ namespace Savanna::Gfx::Vk2
         // Create the device
         uint32_t physicalDeviceCount = 0;
         result = vkEnumeratePhysicalDevices(m_Instance, &physicalDeviceCount, nullptr);
+        DynamicArray<VkPhysicalDevice> physicalDevices(physicalDeviceCount, m_Allocator.m_Allocator.GetInterface());
+        physicalDevices.Resize(physicalDeviceCount);
+        result = vkEnumeratePhysicalDevices(m_Instance, &physicalDeviceCount, physicalDevices.Data());
         if (result != VK_SUCCESS)
         {
             return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
         }
-
-        // DynamicArray<VkPhysicalDevice> physicalDevices(physicalDeviceCount, );
-
 
         return kSavannaGfxErrorCodeSuccess;
     }
 
     se_GfxErrorCode_t VkDriver::Destroy()
     {
+        VkAllocationCallbacks allocationCallbacks = GetVkAllocationCallbacks(&m_Allocator);
+        if (m_Instance != VK_NULL_HANDLE)
+        {
+            vkDestroyInstance(m_Instance, &allocationCallbacks);
+            m_Instance = VK_NULL_HANDLE;
+        }
+
         return kSavannaGfxErrorCodeSuccess;
     }
 

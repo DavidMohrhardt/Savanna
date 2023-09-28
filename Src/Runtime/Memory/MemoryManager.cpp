@@ -59,12 +59,19 @@ namespace Savanna
 
     void* MemoryManager::Allocate(size_t size, size_t alignment, const se_uint32 label)
     {
-        if (label >= m_MemoryArenas.Size())
+        // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
+        //      Remove this once MemoryArena's are implemented.
+        if (label == 0)
+        {
+            return k_HeapAllocatorInterface.m_AllocFunc(size, nullptr);
+        }
+
+        if (label - 1 >= m_MemoryArenas.Size())
         {
             throw BadAllocationException();
         }
 
-        return m_MemoryArenas[label].alloc(size, alignment);
+        return m_MemoryArenas[label - 1].alloc(size, alignment);
     }
 
     void* MemoryManager::Reallocate(
@@ -92,12 +99,19 @@ namespace Savanna
 
     void MemoryManager::Free(void* ptr, const se_uint32 label)
     {
-        if (label >= m_MemoryArenas.Size())
+        // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
+        //      Remove this once MemoryArena's are implemented.
+        if (label == 0)
+        {
+            return k_HeapAllocatorInterface.m_FreeFunc(ptr, nullptr);
+        }
+
+        if (label - 1 >= m_MemoryArenas.Size())
         {
             throw BadAllocationException();
         }
 
-        m_MemoryArenas[label].free(ptr, 1);
+        m_MemoryArenas[label - 1].free(ptr, 1);
     }
 
     bool MemoryManager::InitializeInternal() {

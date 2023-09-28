@@ -14,5 +14,8 @@ public:
 
     void Run();
 
-    private:
+private:
+    bool TryInitGfx();
+
+    bool m_FailedInitialization = false;
 };

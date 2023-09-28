@@ -11,9 +11,6 @@
 #ifndef I_SAVANNA_GFX_H
 #define I_SAVANNA_GFX_H
 
-#include "SavannaEngine.h"
-#include "Utilities/SavannaCoding.h"
-
 #undef SAVANNA_GFX_SUCCESS
 #define SAVANNA_GFX_SUCCESS(__operationOrValue) \
     ((__operationOrValue) == kSavannaGfxErrorCodeSuccess)

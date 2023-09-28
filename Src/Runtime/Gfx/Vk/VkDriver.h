@@ -16,6 +16,8 @@
 
 #include "Gfx/GfxDriver.h"
 
+#include "VkAllocator.h"
+
 #include <vulkan/vulkan.h>
 
 namespace Savanna::Gfx::Vk2
@@ -32,7 +34,7 @@ namespace Savanna::Gfx::Vk2
         VkPhysicalDevice m_PhysicalDevice;
         VkDevice m_LogicalDevice;
 
-        se_AllocatorInterface_t m_AllocatorInterface;
+        VkAllocator m_Allocator;
 
     public:
         VkDriver() = default;

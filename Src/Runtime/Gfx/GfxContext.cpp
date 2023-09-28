@@ -12,12 +12,13 @@ namespace Savanna::Gfx
         : m_Allocator(pCreateInfo != nullptr
             ? pCreateInfo->m_Allocator
             : MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GRAPHICS))
+        , m_pDriver(nullptr)
     {
     }
 
     GfxContext::~GfxContext()
     {
-        if (m_pDriver)
+        if (m_pDriver != nullptr)
         {
             m_pDriver->Destroy();
             m_Allocator.Delete(m_pDriver);
@@ -27,7 +28,7 @@ namespace Savanna::Gfx
     se_GfxErrorCode_t GfxContext::CreateDriver(
         const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
     {
-        if (m_pDriver)
+        if (m_pDriver != nullptr)
         {
             return kSavannaGfxErrorCodeGfxDriverAlreadyCreated;
         }
