@@ -11,11 +11,9 @@
 #pragma once
 
 #include <SavannaEngine.h>
+#include "JobManager.h"
 
 #include <Types/Containers/Arrays/DynamicArray.h>
-
-#include "ISavannaJobs.h"
-#include "JobManager.h"
 
 namespace Savanna::Concurrency
 {

@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "ISavannaJobs.h"
+#include "Public/ISavannaEngine.h"
 
 SAVANNA_EXPORT(se_threadId_t) SavannaEngine_Concurrency_GetMainThreadId();
 

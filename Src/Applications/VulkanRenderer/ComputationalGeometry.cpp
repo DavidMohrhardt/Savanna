@@ -1,6 +1,6 @@
 #include "ComputationalGeometry.h"
 
-#include <Concurrency/JobSystem/JobManager.h>
+#include <Concurrency/JobManager.h>
 
 #include <IO/FileStream.h>
 #include <IO/VirtualFileSystem.h>

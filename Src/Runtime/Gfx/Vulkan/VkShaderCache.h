@@ -13,7 +13,7 @@
 #include "SavannaEngine.h"
 #include "Utilities/SavannaCoding.h"
 
-#include <JobSystem/ISavannaJobs.h>
+#include <Concurrency/JobManager.h>
 
 #include <vulkan/vulkan.h>
 

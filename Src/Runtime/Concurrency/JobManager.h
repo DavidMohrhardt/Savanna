@@ -16,15 +16,15 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include "Types/Manager/GlobalManager.h"
+#include "Public/ISavannaJobs.hpp"
 
-#include "ISavannaJobs.h"
+#include <Types/Manager/GlobalManager.h>
 
 #include "ConcurrencyCapabilities.h"
 
-#include "Types/Containers/Arrays/DynamicArray.h"
-#include "Types/Containers/Concurrent/LocklessQueue.h"
-#include "Types/Locks/SpinLock.h"
+#include <Types/Containers/Arrays/DynamicArray.h>
+#include <Types/Containers/Concurrent/LocklessQueue.h>
+#include <Types/Locks/SpinLock.h>
 
 #include <atomic>
 
@@ -70,6 +70,7 @@ namespace Savanna::Concurrency
             JobHandle dependency = k_InvalidJobHandle);
 
         void ScheduleJob(JobHandle& handle, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
+
         // TODO @david.mohrhardt: Fix this. Currently it can cause issues because there is no user client contract
         // for who owns the memory of a batch job.
         // JobHandle ScheduleJobBatch(IJob** pJobs, const size& jobCount, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal, JobHandle dependency = k_InvalidJobHandle);

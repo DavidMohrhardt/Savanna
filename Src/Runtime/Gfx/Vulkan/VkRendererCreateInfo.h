@@ -17,6 +17,14 @@
 
 #include <vulkan/vulkan.h>
 
+struct se_Version_t
+{
+    se_uint32 m_Variant;
+    se_uint32 m_Major;
+    se_uint32 m_Minor;
+    se_uint32 m_Patch;
+};
+
 // TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers
 typedef struct se_VkRendererCreateInfo_t
 {
@@ -26,8 +34,8 @@ typedef struct se_VkRendererCreateInfo_t
     se_uint32 m_Width;
     se_uint32 m_Height;
 
-    se_Version m_ApplicationVersion;
-    se_Version m_EngineVersion;
+    se_Version_t m_ApplicationVersion;
+    se_Version_t m_EngineVersion;
 
     const char** m_ppEnabledLayerNames;
     se_uint32 m_EnabledLayerCount;
@@ -45,4 +53,7 @@ typedef struct se_VkRendererCreateInfo_t
     const void* m_pUserData;
 } se_VkRendererCreateInfo_t;
 
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, se_VkRendererCreateInfo_t, RendererCreateInfo);
+namespace Savanna::Gfx::Vk
+{
+    using RendererCreateInfo = se_VkRendererCreateInfo_t;
+} // namespace Savanna::Gfx::Vk

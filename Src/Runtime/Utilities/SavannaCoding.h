@@ -15,15 +15,12 @@
 #include "Types/Enums/Enumeration.h"
 #include "Types/Enums/Flags.h"
 
-#include "Types/Version/Version.h"
-
 // Assertions
 #include "Assertions/SavannaAssertions.h"
 
 // These macro headers are guarded in case compiling with C rather than C++ so it's safe to include
 #include "Macros/CppCommonDefs.h"
 #include "Macros/CppFunctionality.h"
-#include "Macros/CppTypeDefs.h"
 #include "Macros/Enums.h"
 #include "Macros/PlatformSpecific.h"
 

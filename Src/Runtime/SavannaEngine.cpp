@@ -1,7 +1,7 @@
-#include "SavannaEngine.h"
+#include <SavannaEngine.h>
 
-#include "Memory/MemoryManager.h"
-#include "Concurrency/JobSystem/JobManager.h"
+#include <Memory/MemoryManager.h>
+#include <Concurrency/JobManager.h>
 
 using namespace Savanna;
 
@@ -21,9 +21,37 @@ struct GlobalManagerFunctionTable
         __managerName::Shutdown \
     }
 
+/**
+ * @brief The default order of global managers. This is the order in which they will be initialized, started and the reverse order in which they will be stopped and shutdown.
+ *
+ * For example:
+ * // Initialize is called, initialize in order of declaration
+ * MemoryManager::Initialize()
+ * JobManager::Initialize()
+ * // ...
+ *
+ * // Start is called, start in order of initialization
+ * MemoryManager::Start()
+ * JobManager::Start()
+ * // ...
+ *
+ * // Stop is called, stop in reverse order of start
+ * JobManager::Stop()
+ * MemoryManager::Stop()
+ * // ...
+ *
+ * // Shutdown is called, shutdown in reverse order of initialization
+ * JobManager::Shutdown()
+ * MemoryManager::Shutdown()
+ * // ...
+ *
+ */
 static constexpr GlobalManagerFunctionTable k_DefaultManagerOrder[] = {
+    // MEMORY MANAGER MUST BE FIRST THIS IS A DEPENDENCY FOR ALL OTHER MANAGERS
     SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(MemoryManager),
-    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(Concurrency::JobManager)
+
+    // Put other managers here
+    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(Concurrency::JobManager),
 };
 
 static constexpr size_t k_ManagerCount = sizeof(k_DefaultManagerOrder) / sizeof(GlobalManagerFunctionTable);

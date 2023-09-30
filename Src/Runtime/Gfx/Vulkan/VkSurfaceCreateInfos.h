@@ -53,4 +53,8 @@ typedef struct se_VkSurfaceCreateInfo_t
     };
     seVkSurfaceKind_t m_SurfaceKind;
 } se_VkSurfaceCreateInfo_t;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, se_VkSurfaceCreateInfo_t, SurfaceCreateInfo);
+
+namespace Savanna::Gfx::Vk
+{
+    using SurfaceCreateInfo = se_VkSurfaceCreateInfo_t;
+} // namespace Savanna::Gfx::Vk

@@ -51,17 +51,17 @@ namespace Savanna::Gfx::Vk::Utils
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         applicationInfo.pApplicationName = rendererCreateInfo.m_ApplicationName;
         applicationInfo.applicationVersion = VK_MAKE_API_VERSION(
-            rendererCreateInfo.m_ApplicationVersion.variant,
-            rendererCreateInfo.m_ApplicationVersion.major,
-            rendererCreateInfo.m_ApplicationVersion.minor,
-            rendererCreateInfo.m_ApplicationVersion.patch);
+            rendererCreateInfo.m_ApplicationVersion.m_Variant,
+            rendererCreateInfo.m_ApplicationVersion.m_Major,
+            rendererCreateInfo.m_ApplicationVersion.m_Minor,
+            rendererCreateInfo.m_ApplicationVersion.m_Patch);
 
         applicationInfo.pEngineName = rendererCreateInfo.m_EngineName;
         applicationInfo.applicationVersion = VK_MAKE_API_VERSION(
-            rendererCreateInfo.m_EngineVersion.variant,
-            rendererCreateInfo.m_EngineVersion.major,
-            rendererCreateInfo.m_EngineVersion.minor,
-            rendererCreateInfo.m_EngineVersion.patch);
+            rendererCreateInfo.m_EngineVersion.m_Variant,
+            rendererCreateInfo.m_EngineVersion.m_Major,
+            rendererCreateInfo.m_EngineVersion.m_Minor,
+            rendererCreateInfo.m_EngineVersion.m_Patch);
 
         applicationInfo.apiVersion = VK_API_VERSION_1_3;
         applicationInfo.pNext = nullptr;

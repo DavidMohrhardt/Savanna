@@ -10,7 +10,7 @@
  */
 #include "ComponentParadigm.h"
 
-#include <JobSystem/JobManager.h>
+#include <Concurrency/JobManager.h>
 
 // C Standard Library Includes
 #include <cstring>

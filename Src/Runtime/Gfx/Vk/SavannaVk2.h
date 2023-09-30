@@ -1,7 +1,7 @@
 /**
  * @file SavannaVk2.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief The internal Vulkan Gfx header for Savanna.
  * @version 0.1
  * @date 2023-09-16
  *
@@ -23,10 +23,23 @@
 #include "Public/ISavannaGfxVk2.h"
 #include "VkDriver.h"
 
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk2, se_VkGraphicsCapabilities_t, VkGraphicsCapabilities);
-
 namespace Savanna::Gfx::Vk2
 {
+    // Using Declarations for ISavannaGfxVk2.h types
+    using VkGraphicsCapabilities = se_VkGraphicsCapabilities_t;
+
+    using VkQueueKind = Enumeration<se_VkQueueKind_t, uint8_t>;
+    using VkQueueFlags = FlagEnumeration<se_VkQueueFlags_t, uint8_t>;
+
+    /**
+     * @brief
+     *
+     * @param pCreateInfo
+     * @param ppDriver
+     * @param pUserData
+     * @param allocatorInterface
+     * @return se_GfxErrorCode_t
+     */
     se_GfxErrorCode_t AcquireDriver(
         const se_GfxDriverCreateInfo_t* const pCreateInfo,
         IGfxDriver** ppDriver,

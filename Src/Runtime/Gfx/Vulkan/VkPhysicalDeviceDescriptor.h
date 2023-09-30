@@ -9,4 +9,8 @@ typedef struct se_VkPhysicalDeviceDescriptor_t
     VkPhysicalDeviceFeatures features;
     VkPhysicalDeviceMemoryProperties memoryProperties;
 } se_VkPhysicalDeviceDescriptor_t;
-DECLARE_SAVANNA_EXTENDED_NAMESPACED_CPP_TYPE_DEF(Gfx::Vk, se_VkPhysicalDeviceDescriptor_t, PhysicalDeviceDescriptor);
+
+namespace Savanna::Gfx::Vk
+{
+    using PhysicalDeviceDescriptor = se_VkPhysicalDeviceDescriptor_t;
+}

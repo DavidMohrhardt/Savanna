@@ -11,8 +11,6 @@
 #include "VkShaderCache.h"
 #include "Utilities/Semantics/Move.h"
 
-#include <JobSystem/JobManager.h>
-
 using namespace Savanna::Concurrency;
 
 namespace Savanna::Gfx::Vk
