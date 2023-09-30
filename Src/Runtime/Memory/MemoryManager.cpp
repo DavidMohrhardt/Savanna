@@ -36,9 +36,9 @@ namespace Savanna
     static constexpr se_AllocatorInterface_t k_LabelAllocatorInterfaces[] =
     {
         k_HeapAllocatorInterface,
-        GetInterfaceForLabel<SE_MEMORY_LABEL_GENERAL>(),
-        GetInterfaceForLabel<SE_MEMORY_LABEL_GRAPHICS>(),
-        GetInterfaceForLabel<SE_MEMORY_LABEL_ENTITIES>(),
+        GetInterfaceForLabel<k_SavannaMemoryLabelGeneral>(),
+        GetInterfaceForLabel<k_SavannaMemoryLabelGfx>(),
+        GetInterfaceForLabel<k_SavannaMemoryLabelEcs>(),
     };
 
     const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForLabel(
@@ -116,8 +116,8 @@ namespace Savanna
 
     bool MemoryManager::InitializeInternal() {
         m_MemoryArenas = std::move(DynamicArray<AtomicExpandableBlockAllocator>(
-            SE_MEMORY_LABEL_COUNT, k_HeapAllocatorInterface));
-        for (size_t i = 0; i < SE_MEMORY_LABEL_COUNT; ++i)
+            k_SavannaMemoryLabelCount, k_HeapAllocatorInterface));
+        for (size_t i = 0; i < k_SavannaMemoryLabelCount; ++i)
         {
             m_MemoryArenas.Append(std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true)));
         }
@@ -178,5 +178,5 @@ void operator delete[](void *ptr, size_t size) noexcept
 // C-Api
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
-    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GENERAL);
+    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGeneral);
 }

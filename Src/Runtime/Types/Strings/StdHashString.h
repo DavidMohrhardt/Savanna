@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.inl"
+#include "Public/ISavannaEngine.h"
 #include "Types/Hashables/IHashable.h"
 #include "Types/Strings/IHashString.h"
 #include "Types/Strings/CompileTimeHashString.h"

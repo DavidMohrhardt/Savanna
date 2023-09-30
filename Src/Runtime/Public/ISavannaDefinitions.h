@@ -11,10 +11,10 @@
 #pragma once
 
 // Preprocessor definitions
-#include "ArchitectureDefinitions.h"
-#include "CompilerDefinitions.h"
-#include "CppVersionDefinitions.h"
-#include "EngineVersionDefinitions.h"
-#include "EngineWideDefinitions.h"
-#include "InterfaceDefinitions.h"
-#include "PlatformDefinitions.h"
+#include "Definitions/ArchitectureDefinitions.h"
+#include "Definitions/CompilerDefinitions.h"
+#include "Definitions/PlatformDefinitions.h"
+#include "Definitions/ExtensionDefinitions.h"
+
+// C++ definitions
+#include "Definitions/CppVersionDefinitions.h"

@@ -10,12 +10,15 @@
  */
 #pragma once
 
-#include "Public/ISavannaExtension.h"
-
 #if defined(__cplusplus)
 
+#include "Public/ISavannaEngine.hpp"
 #include <atomic>
 #include <tuple>
+
+#else
+
+#include "Public/ISavannaEngine.h"
 
 #endif // defined(__cplusplus)
 

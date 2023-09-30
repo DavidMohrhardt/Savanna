@@ -66,14 +66,14 @@ bool Application::TryInitGfx()
             0,
             nullptr,
             0,
-            nullptr,
-            0,
         };
 
+        const uint32_t k_IndexOfExtensions = 0;
         DynamicArray<const char*> enabledFeatures(
         {
             VK_KHR_SURFACE_EXTENSION_NAME,
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+            VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
             "VK_LAYER_KHRONOS_validation",
         }, defaultGfxAllocator);
 
@@ -90,7 +90,7 @@ bool Application::TryInitGfx()
         {
             .m_RequestedBackendType = kSavannaGfxApiVulkan,
             .m_Allocator = defaultGfxAllocator,
-            .m_pRealDriverCreateInfo = &vkDriverCreateInfo,
+            .m_pNext = &vkDriverCreateInfo,
             .m_pUserData = nullptr,
         };
 

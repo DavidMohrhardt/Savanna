@@ -43,6 +43,13 @@ namespace Savanna::Gfx::Vk2
         se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo) override;
         se_GfxErrorCode_t Destroy() override;
 
-        // GfxRenderSurface* CreateRenderSurface(const GfxRenderSurfaceCreateInfo& createInfo) override;
+        // se_GfxErrorCode_t CreateRenderSurface(const GfxRenderSurfaceCreateInfo& createInfo, GfxRenderSurface** ppOutSurface) override;
+        // se_GfxErrorCode_t DestroyRenderSurface(GfxRenderSurface* pRenderSurface) override;
+
+        // se_GfxErrorCode_t CreateBuffer(const GfxBufferCreateInfo& createInfo, GfxBuffer** ppOutBuffer) override;
+        // se_GfxErrorCode_t DestroyBuffer(GfxBuffer* pBuffer) override;
+
+        VkAllocator& GetAllocator() { return m_Allocator; }
+        VkAllocationCallbacks& GetAllocationCallbacks() { return m_Allocator.GetAllocationCallbacks(); }
     };
 } // namespace Savanna::Gfx

@@ -9,13 +9,9 @@
  */
 #pragma once
 
-// Preprocessor definitions
-#include "PreprocessorDefinitions/Definitions.h"
+#include "Public/ISavannaEngine.h"
 
 // Common types
-#include "Types/Primitive/PrimitiveTypes.inl"
-#include "Types/Primitive/FloatingPointUnions.h"
-
 #include "Types/Enums/Enumeration.h"
 #include "Types/Enums/Flags.h"
 
@@ -36,6 +32,7 @@
 #include "Math/PointerMath.h"
 
 #ifdef __cplusplus
+#include "Public/ISavannaEngine.hpp"
 
 // For headers that explicitly only work in C++
 #include "Types/Classes/Immovable.h"

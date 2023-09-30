@@ -16,7 +16,7 @@ namespace Savanna::Gfx
 {
     const se_AllocatorInterface_t GetDefaultAllocatorInterface()
     {
-        static se_AllocatorInterface_t k_DefaultGraphicsAllocatorInterface = MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GRAPHICS);
+        static se_AllocatorInterface_t k_DefaultGraphicsAllocatorInterface = MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx);
         return k_DefaultGraphicsAllocatorInterface;
     }
 

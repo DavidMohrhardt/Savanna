@@ -21,12 +21,15 @@ namespace Savanna::Gfx::Vk2
         instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         instanceCreateInfo.pApplicationInfo = &appInfo;
 
-        se_VkDriverCreateInfo_t* driverCreateInfo = reinterpret_cast<se_VkDriverCreateInfo_t*>(createInfo.m_pRealDriverCreateInfo);
+        se_VkDriverCreateInfo_t* driverCreateInfo = reinterpret_cast<se_VkDriverCreateInfo_t*>(createInfo.m_pNext);
         if (driverCreateInfo != nullptr)
         {
-            instanceCreateInfo.enabledExtensionCount = driverCreateInfo->m_EnabledInstanceExtensionCount;
-            instanceCreateInfo.ppEnabledExtensionNames = driverCreateInfo->m_ppEnabledInstanceExtensions;
-            instanceCreateInfo.enabledLayerCount = driverCreateInfo->m_EnabledLayerCount;
+            instanceCreateInfo.enabledExtensionCount =
+                driverCreateInfo->m_EnabledInstanceExtensionCount;
+            instanceCreateInfo.ppEnabledExtensionNames =
+                driverCreateInfo->m_ppEnabledInstanceExtensions;
+            instanceCreateInfo.enabledLayerCount =
+                driverCreateInfo->m_EnabledLayerCount;
             instanceCreateInfo.ppEnabledLayerNames = driverCreateInfo->m_ppEnabledLayers;
         }
         else

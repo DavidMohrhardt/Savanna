@@ -31,7 +31,7 @@ namespace Savanna::Gfx::Vk2
         const se_GfxDriverCreateInfo_t* const pCreateInfo,
         IGfxDriver** ppDriver,
         void* pUserData,
-        const se_AllocatorInterface_t allocatorInterface = Savanna::MemoryManager::GetAllocatorInterfaceForLabel(SE_MEMORY_LABEL_GRAPHICS));
+        const se_AllocatorInterface_t allocatorInterface = Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx));
 }
 
 #endif // !SAVANNA_GFX_VK2_H

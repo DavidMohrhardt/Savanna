@@ -1,6 +1,0 @@
-message(STATUS "${PROJECT_NAME}: Including Public")
-
-collect_sources_in_current_dir(src RECURSIVE_LIMITED)
-
-target_sources(${PROJECT_NAME} PUBLIC ${src})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR})

@@ -10,8 +10,7 @@
  */
 #pragma once
 
-#include "Utilities/PreprocessorDefinitions/CppVersionDefinitions.h"
-#include "Utilities/PreprocessorDefinitions/CompilerDefinitions.h"
+#include "Public/ISavannaDefinitions.h"
 
 #if __cplusplus
 #if SAVANNA_CPP11

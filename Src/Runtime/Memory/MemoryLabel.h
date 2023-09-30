@@ -13,13 +13,14 @@
 #include "Utilities/SavannaCoding.h"
 
 DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, uint32_t,
-    SE_MEMORY_LABEL_GENERAL,
-    SE_MEMORY_LABEL_GRAPHICS,
-    SE_MEMORY_LABEL_ENTITIES,
-    // SE_MEMORY_LABEL_CONCURRENCY,
+    k_SavannaMemoryLabelGeneral,
+    k_SavannaMemoryLabelGfx,
+    k_SavannaMemoryLabelEcs,
 
-    SE_MEMORY_LABEL_COUNT,
+    k_SavannaMemoryLabelCount,
 
-    // The heap label is used for allocations that are explicitly to be allocated from the heap.
-    SE_MEMORY_LABEL_HEAP,
+    // This label is used for memory that is allocated from the OS
+    // It's not included in the count above because it's not an engine
+    // specific label.
+    k_SavannaMemoryLabelHeap,
 );

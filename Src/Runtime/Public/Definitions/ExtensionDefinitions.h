@@ -1,14 +1,20 @@
-#ifndef SAVANNA_INTERFACE_DEFINITIONS_H
-#define SAVANNA_INTERFACE_DEFINITIONS_H
-
-#include "PlatformDefinitions.h"
+/**
+ * @file ISavannaExtension.h
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
+ * @brief
+ * @version 0.1
+ * @date 2023-09-30
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+#ifndef I_SAVANNA_EXTENSION_H
+#define I_SAVANNA_EXTENSION_H
 
 #ifdef __cplusplus
 #   define SAVANNA_EXTERN extern "C"
-#   define SAVANNA_EXTERN_C_BLOCK(__BlockDefinition__) SAVANNA_EXTERN { __BlockDefinition__ }
 #else // !__cplusplus
 #   define SAVANNA_EXTERN
-#   define SAVANNA_EXTERN_C_BLOCK(__BlockDefinition__) __BlockDefinition__
 #endif // __cplusplus
 
 #ifdef SAVANNA_EXPORTS
@@ -44,4 +50,4 @@
 #   define SAVANNA_EXPORT(ret) SAVANNA_EXTERN ret SAVANNA_INTERFACE_API
 #endif // SAVANNA_EXPORTS
 
-#endif // !SAVANNA_INTERFACE_DEFINITIONS_H
+#endif // !I_SAVANNA_EXTENSION_H

@@ -14,10 +14,9 @@
 
 #include "CacheLine.h"
 #include "Math/MathHelpers.h"
-#include "Types/Primitive/PrimitiveTypes.inl"
+#include "Public/ISavannaEngine.h"
 
-#include "Utilities/PreprocessorDefinitions/PlatformDefinitions.h"
-#include "Utilities/Macros/CppTypeDefs.h"
+#include "Utilities/SavannaCoding.h"
 
 /**
  * @brief

@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "Utilities/PreprocessorDefinitions/InterfaceDefinitions.h"
+#include "Public/ISavannaEngine.hpp"
 
 #include "Types/Classes/Immovable.h"
 #include "Types/Classes/NonCopyable.h"

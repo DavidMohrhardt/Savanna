@@ -62,6 +62,9 @@ add_custom_command( TARGET ${SAVANNA_ACTIVE_TARGET} POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
                     ${CMAKE_CURRENT_LIST_DIR}/Assets/Shaders/SPIRV $<TARGET_FILE_DIR:${SAVANNA_ACTIVE_TARGET}>/Assets/SPIRV)
 
+# TODO: Find all source headers in Public folders and copy them to the install directory
+
+
 # Install the executable
 install(TARGETS ${SAVANNA_ACTIVE_TARGET}
             EXPORT ${SAVANNA_ACTIVE_TARGET}Targets

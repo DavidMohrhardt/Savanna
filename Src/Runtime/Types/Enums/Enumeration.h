@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.inl"
+#include "Public/ISavannaEngine.hpp"
 
 #if defined(__cplusplus)
 

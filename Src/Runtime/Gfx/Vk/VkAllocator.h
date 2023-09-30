@@ -19,10 +19,15 @@ namespace Savanna::Gfx::Vk2
     struct VkAllocator;
     VkAllocationCallbacks GetVkAllocationCallbacks(VkAllocator* pRealAllocator);
 
+    /**
+     * @brief This struct provides a wrapper for the Vulkan allocation callbacks.
+     * It uses a provided se_AllocatorInterface_t to perform the actual allocations.
+     *
+     */
     struct VkAllocator
     {
     public:
-        InterfaceAllocator m_Allocator {};
+        InterfaceAllocator m_Allocator {  };
         void* m_pUserData { nullptr };
         VkAllocationCallbacks m_AllocationCallbacks { GetVkAllocationCallbacks(this) };
 

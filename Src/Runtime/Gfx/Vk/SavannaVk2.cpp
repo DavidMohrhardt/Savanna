@@ -29,6 +29,6 @@ namespace Savanna::Gfx::Vk2
 
     void InitializeGraphicsCapabilities(VkInstance instance, VkPhysicalDevice physicalDevice)
     {
-        g_GraphicsCapabilities.m_IsSupported = true;
+        // g_GraphicsCapabilities.m_IsSupported = true;
     }
 } // namespace Savanna::Gfx::Vk2

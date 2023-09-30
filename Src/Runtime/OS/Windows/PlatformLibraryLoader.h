@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utilities/PreprocessorDefinitions/PlatformDefinitions.h"
+#include "Public/ISavannaEngine.hpp"
 
 #if SAVANNA_WINDOWS
 

@@ -36,12 +36,12 @@ namespace Savanna
         ~MemoryManager();
 
     public:
-        void* Allocate(size_t size, const se_uint32 label = SE_MEMORY_LABEL_GENERAL);
-        void* Allocate(size_t size, size_t alignment, const se_uint32 label = SE_MEMORY_LABEL_GENERAL);
-        void* Reallocate(void* ptr, size_t newSize, const se_uint32 label = SE_MEMORY_LABEL_GENERAL);
-        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const se_uint32 label = SE_MEMORY_LABEL_GENERAL);
+        void* Allocate(size_t size, const se_uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Allocate(size_t size, size_t alignment, const se_uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Reallocate(void* ptr, size_t newSize, const se_uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const se_uint32 label = k_SavannaMemoryLabelGeneral);
 
-        void Free(void* ptr, const se_uint32 label = SE_MEMORY_LABEL_GENERAL);
+        void Free(void* ptr, const se_uint32 label = k_SavannaMemoryLabelGeneral);
 
         template <typename T, typename ...ARGS>
         inline T* New(const se_uint32 label, ARGS&&... args)
@@ -95,16 +95,16 @@ void operator delete[](void* ptr, size_t size) noexcept;
 #if ENABLE_MEMORY_MANAGEMENT
 
 #define SAVANNA_NEW(type, ...) \
-    Savanna::MemoryManager::Get().New<type>(SE_MEMORY_LABEL_GENERAL, __VA_ARGS__)
+    Savanna::MemoryManager::Get().New<type>(k_SavannaMemoryLabelGeneral, __VA_ARGS__)
 
 #define SAVANNA_NEW_ARRAY(type, count) \
-    Savanna::MemoryManager::Get().NewArray<type>(count, SE_MEMORY_LABEL_GENERAL)
+    Savanna::MemoryManager::Get().NewArray<type>(count, k_SavannaMemoryLabelGeneral)
 
 #define SAVANNA_DELETE(ptr) \
     Savanna::MemoryManager::Get().Delete(ptr)
 
 #define SAVANNA_DELETE_ARRAY(ptr, count) \
-    Savanna::MemoryManager::Get().DeleteArray(ptr, count, SE_MEMORY_LABEL_GENERAL)
+    Savanna::MemoryManager::Get().DeleteArray(ptr, count, k_SavannaMemoryLabelGeneral)
 
 #define SAVANNA_INPLACE_NEW(type, ptr, ...) \
     new (ptr) type(__VA_ARGS__)
@@ -113,10 +113,10 @@ void operator delete[](void* ptr, size_t size) noexcept;
     new (ptr) type[count]
 
 #define SAVANNA_MALLOC(size) \
-    Savanna::MemoryManager::Get().Allocate(size, SE_MEMORY_LABEL_GENERAL)
+    Savanna::MemoryManager::Get().Allocate(size, k_SavannaMemoryLabelGeneral)
 
 #define SAVANNA_MALLOC_ALIGNED(size, alignment) \
-    Savanna::MemoryManager::Get().Allocate(size, alignment, SE_MEMORY_LABEL_GENERAL)
+    Savanna::MemoryManager::Get().Allocate(size, alignment, k_SavannaMemoryLabelGeneral)
 
 #define SAVANNA_FREE(ptr) \
     Savanna::MemoryManager::Get().Free(ptr)

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.inl"
+#include "Public/ISavannaEngine.h"
 #include "Utilities/SavannaCoding.h"
 
 inline size_t SavannaGetPointerDifference(const void* lhs, const void* rhs)

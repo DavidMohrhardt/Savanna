@@ -1,7 +1,8 @@
 /**
  * @file ISavannaGfxVk2.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief Defines the Vulkan specific interface structures for
+ * the Savanna graphics system.
  * @version 0.1
  * @date 2023-09-23
  *
@@ -10,6 +11,8 @@
  */
 #ifndef I_SAVANNA_GFX_VK2_H
 #define I_SAVANNA_GFX_VK2_H
+
+#include <stdint.h>
 
 typedef enum se_VkQueueKind_t : uint8_t
 {
@@ -39,7 +42,8 @@ typedef enum se_VkQueueFlags_t : uint8_t
  */
 typedef struct se_VkGraphicsCapabilities_t
 {
-    bool m_IsSupported;
+    se_VkQueueFlags_t m_SupportedQueueTypes;
+    uint32_t m_MaxQueueCount;
 } se_VkGraphicsCapabilities_t;
 
 /**
@@ -56,9 +60,6 @@ typedef struct se_VkDriverCreateInfo_t
 
     const char** m_ppEnabledLayers;
     uint32_t m_EnabledLayerCount;
-
-    const char** m_ppEnabledDeviceLayers;
-    uint32_t m_EnabledDeviceLayerCount;
 } se_VkDriverCreateInfo_t;
 
 #endif // !I_SAVANNA_GFX_VK2_H

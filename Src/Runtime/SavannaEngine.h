@@ -1,7 +1,7 @@
 /**
  * @file SavannaEngine.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief The main header for the Savanna Engine. This header should be included in all other Savanna headers.
+ * @brief The primary internal header for the engine.
  * @version 0.1
  * @date 2023-01-08
  *
@@ -23,10 +23,7 @@
 #ifndef __SAVANNA_ENGINE_H_MINIMAL__
 #define __SAVANNA_ENGINE_H_MINIMAL__
 
-    // Common Types
-    #include "Types/Primitive/PrimitiveTypes.inl"
-    #include "Types/Primitive/FloatingPointUnions.h"
-    #include "Utilities/PreprocessorDefinitions/Definitions.h"
+    #include "Public/ISavannaEngine.hpp"
 
     // Required
     #include "Memory/MemoryManager.h"
@@ -56,23 +53,5 @@
 
 #ifndef __SAVANNA_ENGINE_H__
 #define __SAVANNA_ENGINE_H__
-
-/**
- * @brief General error codes for the engine. Modules may define their own additional error codes.
- */
-DEFINE_SAVANNA_ENUM(Savanna, se_ErrorCode_t, ErrorCode, uint32_t,
-    SavannaErrorCodeFailure = 0,
-    SavannaErrorCodeSuccess = 1,
-    SavannaErrorCodeInvalidArgument = 2,
-    SavannaErrorCodeOutOfMemory = 3,
-    SavannaErrorCodeNotImplemented = 4,
-    SavannaErrorCodeNotSupported = 5,
-    SavannaErrorCodeUnknown = 6,
-);
-
-SAVANNA_EXPORT(void) SavannaInitialize();
-SAVANNA_EXPORT(void) SavannaStart();
-SAVANNA_EXPORT(void) SavannaStop();
-SAVANNA_EXPORT(void) SavannaShutdown();
 
 #endif // ifndef __SAVANNA_ENGINE_H__

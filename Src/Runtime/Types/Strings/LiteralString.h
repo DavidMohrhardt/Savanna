@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "Types/Primitive/PrimitiveTypes.inl"
+#include "Public/ISavannaEngine.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 namespace Savanna

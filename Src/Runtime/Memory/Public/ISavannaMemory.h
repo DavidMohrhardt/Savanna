@@ -11,7 +11,7 @@
 #ifndef I_SAVANNA_MEMORY_H
 #define I_SAVANNA_MEMORY_H
 
-#include "Utilities/PreprocessorDefinitions/InterfaceDefinitions.h"
+#include "Public/ISavannaEngine.h"
 
 typedef void* (*se_pfnAlloc_t)(
     size_t size,

@@ -9,7 +9,6 @@
 #pragma once
 
 #include "PrimitiveTypes.inl"
-#include "Utilities/Macros/CppTypeDefs.h"
 
 typedef union se_float16
 {

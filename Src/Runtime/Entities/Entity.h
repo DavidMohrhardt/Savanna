@@ -9,13 +9,13 @@
 
 #pragma once
 
-#include <Types/Primitive/PrimitiveTypes.inl>
+#include <Public/ISavannaEngine.hpp>
 
 namespace Savanna
 {
-    typedef uint64 EntityHandle;
-    typedef struct Entity
+    using EntityHandle = uint64;
+    struct Entity
     {
         EntityHandle Id;
-    } Entity;
+    };
 } // namespace Savanna

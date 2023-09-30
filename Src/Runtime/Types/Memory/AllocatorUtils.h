@@ -10,7 +10,7 @@
 
 #include "Math/MathHelpers.h"
 #include "Math/PointerMath.h"
-#include "Types/Primitive/PrimitiveTypes.inl"
+#include "Public/ISavannaEngine.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
 #if __cplusplus
