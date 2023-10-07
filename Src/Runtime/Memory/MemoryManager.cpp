@@ -7,7 +7,7 @@
 
 namespace Savanna
 {
-    template <se_uint32 LABEL>
+    template <uint32 LABEL>
     consteval se_AllocatorInterface_t GetInterfaceForLabel()
     {
         return se_AllocatorInterface_t
@@ -67,12 +67,12 @@ namespace Savanna
 
     MemoryManager::~MemoryManager() {}
 
-    void* MemoryManager::Allocate(size_t size, const se_uint32 label)
+    void* MemoryManager::Allocate(size_t size, const uint32 label)
     {
         return Allocate(size, 1, label);
     }
 
-    void* MemoryManager::Allocate(size_t size, size_t alignment, const se_uint32 label)
+    void* MemoryManager::Allocate(size_t size, size_t alignment, const uint32 label)
     {
         // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
         //      Remove this once MemoryArena's are implemented.
@@ -92,7 +92,7 @@ namespace Savanna
     void* MemoryManager::Reallocate(
         void *ptr,
         size_t newSize,
-        const se_uint32 label)
+        const uint32 label)
     {
         return Reallocate(ptr, newSize, 1, label);
     }
@@ -101,7 +101,7 @@ namespace Savanna
         void* ptr,
         size_t newSize,
         size_t alignment,
-        const se_uint32 label)
+        const uint32 label)
     {
         void* newPtr = Allocate(newSize, alignment, label);
         if (ptr)
@@ -112,7 +112,7 @@ namespace Savanna
         return newPtr;
     }
 
-    void MemoryManager::Free(void* ptr, const se_uint32 label)
+    void MemoryManager::Free(void* ptr, const uint32 label)
     {
         // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
         //      Remove this once MemoryArena's are implemented.
