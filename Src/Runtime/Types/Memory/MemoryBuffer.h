@@ -11,6 +11,7 @@
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
+#include "Memory/MemoryLabel.h"
 
 namespace Savanna
 {
@@ -19,10 +20,11 @@ namespace Savanna
     protected:
         void* m_Buffer;
         size_t m_Size;
+        MemoryLabel m_MemoryLabel;
 
     public:
-        MemoryBuffer();
-        MemoryBuffer(size_t size);
+        MemoryBuffer(MemoryLabel label = k_SavannaMemoryLabelHeap);
+        MemoryBuffer(size_t size, MemoryLabel label = k_SavannaMemoryLabelHeap);
         MemoryBuffer(MemoryBuffer&& other);
         ~MemoryBuffer();
 

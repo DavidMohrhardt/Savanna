@@ -23,6 +23,9 @@ DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, uint32_t,
     // It's not included in the count above because it's not an engine
     // specific label.
     k_SavannaMemoryLabelHeap,
+
+    // Mask the none label using the count to reuse the count value
+    k_SavannaMemoryLabelNone = k_SavannaMemoryLabelCount,
 );
 
 inline const char* SavannaEngineGetMemoryLabelName(se_uint32 label)

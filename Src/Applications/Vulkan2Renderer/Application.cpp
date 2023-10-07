@@ -7,6 +7,7 @@ using namespace Savanna;
 Application::Application(const char *rootPath)
     : m_Window(1920, 1080)
 {
+    SAVANNA_INSERT_SCOPED_PROFILER(Application::Application);
     SavannaInitialize();
     SavannaStart();
     Savanna::IO::VirtualFileSystem::Construct(rootPath);
@@ -23,11 +24,11 @@ Application::Application(const char *rootPath)
 
 Application::~Application()
 {
+    SAVANNA_INSERT_SCOPED_PROFILER(Application::~Application);
     Savanna::Gfx::Shutdown();
     Savanna::IO::VirtualFileSystem::Destroy();
     SavannaStop();
     SavannaShutdown();
-    SAVANNA_LOG("Application destroyed.");
 }
 
 void Application::Run()
@@ -44,24 +45,12 @@ void Application::Run()
 
 bool Application::TryInitGfx()
 {
-    const char* defaultLayers[]
-    {
-        "VK_LAYER_KHRONOS_validation"
-    };
-    const char* defaultInstanceExtensions[]
-    {
-        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-    };
-    const char* defaultDeviceExtensions[]
-    {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    };
-
-    auto defaultGfxAllocator = Savanna::Gfx::GetDefaultAllocatorInterface();
+    SAVANNA_INSERT_SCOPED_PROFILER(Application::TryInitGfx);
+    auto defaultAllocatorInterface = Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx);
     se_GfxContextCreateInfo_t gfxContextCreateInfo
     {
         .m_pApplicationName = "SavannaVk2",
-        .m_Allocator = defaultGfxAllocator,
+        .m_Allocator = defaultAllocatorInterface,
         .m_pUserData = nullptr,
     };
 
@@ -71,14 +60,34 @@ bool Application::TryInitGfx()
         return false;
     }
 
+    const char* defaultLayers[]
+    {
+        "VK_LAYER_KHRONOS_validation"
+    };
+
+    const char* defaultDeviceExtensions[]
+    {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    };
+
+    uint32 instanceExtensionCount = 0;
+    const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&instanceExtensionCount);
+
     se_VkDriverCreateInfo_t vkDriverCreateInfo {};
     vkDriverCreateInfo.m_pNext = nullptr;
     vkDriverCreateInfo.m_pUserData = nullptr;
 
+    // TODO @david.mohrhardt: Setup input arguments for application to enable/disable validation layers.
     vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers = defaultLayers;
     vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount = 1;
-    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions = defaultInstanceExtensions;
-    vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount = 1;
+
+    instanceExtensionCount += 1; // For debug utils extension.
+    DynamicArray<const char*> instanceExtensions(instanceExtensionCount, defaultAllocatorInterface);
+    instanceExtensions.Append(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    instanceExtensions.AppendRange(glfwExtensions, instanceExtensionCount - 1);
+
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions = instanceExtensions.Data();
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount = instanceExtensionCount;
 
     vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_ppEnabledDeviceExtensions = defaultDeviceExtensions;
     vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_EnabledDeviceExtensionCount = 1;
@@ -86,7 +95,7 @@ bool Application::TryInitGfx()
     se_GfxDriverCreateInfo_t gfxDriverCreateInfo
     {
         .m_RequestedBackendType = kSavannaGfxApiVulkan,
-        .m_Allocator = defaultGfxAllocator,
+        .m_Allocator = defaultAllocatorInterface,
         .m_pNext = &vkDriverCreateInfo,
         .m_pUserData = nullptr,
     };

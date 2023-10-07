@@ -23,6 +23,20 @@
 #include "Public/ISavannaGfxVk2.h"
 #include "VkDriver.h"
 
+#define VK_MUST_SUCCEED(__result, __message) \
+    if (__result != VK_SUCCESS) \
+    { \
+        SAVANNA_LOG(__message); \
+        return; \
+    }
+
+#define VK_MUST_SUCCEED_RETURN(__result, __message, __returnValue) \
+    if (__result != VK_SUCCESS) \
+    { \
+        SAVANNA_LOG(__message); \
+        return __returnValue; \
+    }
+
 namespace Savanna::Gfx::Vk2
 {
     // Using Declarations for ISavannaGfxVk2.h types

@@ -10,6 +10,8 @@
  */
 #include "ExpandableBlockAllocator.h"
 
+#include "Memory/MemoryManager.h"
+
 #include "Types/Exceptions/SavannaException.h"
 
 #include "Profiling/Profiler.h"
@@ -53,19 +55,25 @@ namespace Savanna
         }
     }
 #endif
-    ExpandableBlockAllocator::ExpandableBlockAllocator()
-        : ExpandableBlockAllocator(0, SAVANNA_DEFAULT_MEMORY_POOL_SIZE)
+    ExpandableBlockAllocator::ExpandableBlockAllocator(
+        bool contiguous /*= true*/,
+        const MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
+        : ExpandableBlockAllocator(0, SAVANNA_DEFAULT_MEMORY_POOL_SIZE, contiguous, label)
     {}
 
     ExpandableBlockAllocator::ExpandableBlockAllocator(
         size_t initialBufferCount,
         size_t bufferBlockSize,
-        bool contiguous /*= true*/)
+        bool contiguous /*= true*/,
+        const MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
         : Allocator(nullptr)
-        , m_BufferBlockSize(bufferBlockSize)
-        , m_MemoryPoolContainer(initialBufferCount > 0 ? initialBufferCount : 1)
-        , m_Head(nullptr)
-        , m_Tail(nullptr)
+        , m_MemoryLabel {label}
+        , m_Head {nullptr}
+        , m_Tail {nullptr}
+        , m_BufferBlockSize{bufferBlockSize}
+        , m_AllocatedBytes{initialBufferCount > 0 ? initialBufferCount : 1}
+        , m_Size{0}
+        , m_MemoryPoolContainer(initialBufferCount > 0 ? initialBufferCount : 1, MemoryManager::GetAllocatorInterfaceForLabel(label))
     {
         SAVANNA_INSERT_SCOPED_PROFILER(ExpandableBlockAllocator::ctor);
         // If the buffers are initially contiguous, we need to allocate a single buffer that is large enough to hold all the buffers
@@ -78,7 +86,7 @@ namespace Savanna
         MemoryChunkDescriptor *pBufferHead, *pBufferTail;
         for (int i = 0; i < initialBufferCount; ++i)
         {
-            CreateBufferWithMemoryChunkDescs(bufferBlockSize, m_MemoryPoolContainer[i], &pBufferHead, &pBufferTail);
+            CreateBufferWithMemoryChunkDescs(bufferBlockSize, &pBufferHead, &pBufferTail);
 
             if (i == 0)
             {
@@ -291,14 +299,15 @@ namespace Savanna
 
     MemoryChunkDescriptor* ExpandableBlockAllocator::AllocateAdditionalBuffers(size_t minimumSize)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(ExpandableBlockAllocator::AllocateAdditionalBuffers);
         if (m_BufferBlockSize < minimumSize)
         {
             m_BufferBlockSize = NextPowerOfTwo(minimumSize);
         }
 
         MemoryChunkDescriptor* pBufferHead, *pBufferTail;
-        m_MemoryPoolContainer.push_back(MemoryBuffer());
-        CreateBufferWithMemoryChunkDescs(m_BufferBlockSize, m_MemoryPoolContainer[m_MemoryPoolContainer.size() - 1], &pBufferHead, &pBufferTail);
+        // m_MemoryPoolContainer.push_back(MemoryBuffer());
+        CreateBufferWithMemoryChunkDescs(m_BufferBlockSize, &pBufferHead, &pBufferTail);
 
         if (m_Head == nullptr) SAVANNA_BRANCH_HINT(unlikely)
         {
@@ -315,29 +324,30 @@ namespace Savanna
 
     inline void ExpandableBlockAllocator::CreateBufferWithMemoryChunkDescs(
         const size_t bufferSize,
-        MemoryBuffer& outBuffer,
         MemoryChunkDescriptor** ppOutHead,
         MemoryChunkDescriptor** ppOutTail)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(ExpandableBlockAllocator::CreateBufferWithMemoryChunkDescs);
         SAVANNA_ASSERT(ppOutHead != nullptr, "Head is null!");
         SAVANNA_ASSERT(ppOutTail != nullptr, "Tail is null!");
 
         size_t newBufferSize = bufferSize + sizeof(MemoryChunkDescriptor) * 2;
 
-        outBuffer = std::move(MemoryBuffer(newBufferSize));
-        if (!outBuffer.IsValid())
+        m_MemoryPoolContainer.Append(MemoryBuffer(newBufferSize, m_MemoryLabel));
+        MemoryBuffer& buffer = m_MemoryPoolContainer[m_MemoryPoolContainer.Size() - 1];
+        if (!buffer.IsValid())
         {
             throw BadAllocationException();
         }
 
-        m_Size += outBuffer.GetSize();
+        m_Size += buffer.GetSize();
 
-        size_t bufferBlockSize = outBuffer.GetSize();
+        size_t bufferBlockSize = buffer.GetSize();
 
-        MemoryChunkDescriptor* pBufferHead = reinterpret_cast<MemoryChunkDescriptor*>(outBuffer.GetBuffer());
+        MemoryChunkDescriptor* pBufferHead = reinterpret_cast<MemoryChunkDescriptor*>(buffer.GetBuffer());
         MemoryChunkDescriptor* pBufferTail = GetBackwardAlignedPtr<MemoryChunkDescriptor, MemoryChunkDescriptor>(
             reinterpret_cast<MemoryChunkDescriptor*>(
-                (reinterpret_cast<uint8_t*>(outBuffer.GetBuffer()) + bufferBlockSize) - sizeof(MemoryChunkDescriptor)
+                (reinterpret_cast<uint8_t*>(buffer.GetBuffer()) + bufferBlockSize) - sizeof(MemoryChunkDescriptor)
             ),
             alignof(MemoryChunkDescriptor));
 

@@ -9,9 +9,11 @@
 
 namespace Savanna::Gfx::Vk2::Utils
 {
-    VkInstanceCreateInfo PopulateInstanceCreateInfo(const se_VkDriverCreateInfo_t* pInDriverCreateInfo)
+    void PopulateInstanceCreateInfo(
+        const se_VkDriverCreateInfo_t* pInDriverCreateInfo,
+        VkInstanceCreateInfo& outCreateInfo)
     {
-        VkInstanceCreateInfo outCreateInfo {};
+        outCreateInfo = {};
         outCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         outCreateInfo.pNext = nullptr;
         outCreateInfo.flags = 0;
@@ -24,8 +26,6 @@ namespace Savanna::Gfx::Vk2::Utils
             outCreateInfo.enabledLayerCount = instanceCreateArgs.m_EnabledLayerCount;
             outCreateInfo.ppEnabledLayerNames = instanceCreateArgs.m_ppEnabledLayers;
         }
-
-        return outCreateInfo;
     }
 
     // void GetUniqueVkQueueFamilies(
@@ -83,22 +83,20 @@ namespace Savanna::Gfx::Vk2::Utils
     //     instanceCreateInfo.ppEnabledExtensionNames = rendererCreateInfo.m_ppInstanceExtensions;
     // }
 
-    // void PopulateVkDeviceCreateInfo(
-    //     const RendererCreateInfo& rendererCreateInfo,
-    //     const VkDeviceQueueCreateInfo* pQueueCreateInfo,
-    //     const uint32& queueCreateInfoCount,
-    //     VkDeviceCreateInfo& deviceCreateInfo)
-    // {
-    //     deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    //     deviceCreateInfo.pNext = nullptr;
-    //     deviceCreateInfo.flags = 0;
-    //     deviceCreateInfo.queueCreateInfoCount = queueCreateInfoCount;
-    //     deviceCreateInfo.pQueueCreateInfos = pQueueCreateInfo;
-    //     deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(rendererCreateInfo.m_DeviceExtensionsCount);
-    //     deviceCreateInfo.ppEnabledExtensionNames = rendererCreateInfo.m_ppDeviceExtensions;
-    //     // Device level layers are no longer relevant in Vulkan 1.1 and above.
-    //     deviceCreateInfo.enabledLayerCount = 0;
-    //     deviceCreateInfo.ppEnabledLayerNames = nullptr;
-    //     deviceCreateInfo.pEnabledFeatures = nullptr;
-    // }
+    void PopulateVkDeviceCreateInfo(
+        const se_VkDriverCreateInfo_t& createInfo,
+        VkDeviceCreateInfo& deviceCreateInfo)
+    {
+        deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        deviceCreateInfo.pNext = nullptr;
+        deviceCreateInfo.flags = 0;
+        deviceCreateInfo.queueCreateInfoCount = 0;
+        deviceCreateInfo.pQueueCreateInfos = nullptr;
+        deviceCreateInfo.enabledExtensionCount = 0;//static_cast<uint32>(createInfo.m_LogicalDeviceCreateArgs.m_DeviceExtensionsCount);
+        deviceCreateInfo.ppEnabledExtensionNames = nullptr;//rendererCreateInfo.m_ppDeviceExtensions;
+        // Device level layers are no longer relevant in Vulkan 1.1 and above.
+        deviceCreateInfo.enabledLayerCount = 0;
+        deviceCreateInfo.ppEnabledLayerNames = nullptr;
+        deviceCreateInfo.pEnabledFeatures = nullptr;
+    }
 } // namespace Savanna::Gfx::Vk::Utils

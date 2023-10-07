@@ -58,6 +58,7 @@ static constexpr size_t k_ManagerCount = sizeof(k_DefaultManagerOrder) / sizeof(
 
 SAVANNA_EXPORT(void) SavannaInitialize()
 {
+    SAVANNA_INSERT_SCOPED_PROFILER(SavannaInitialize);
     for (size_t i = 0; i < k_ManagerCount; ++i)
     {
         k_DefaultManagerOrder[i].Initialize();
@@ -66,6 +67,7 @@ SAVANNA_EXPORT(void) SavannaInitialize()
 
 SAVANNA_EXPORT(void) SavannaStart()
 {
+    SAVANNA_INSERT_SCOPED_PROFILER(SavannaStart);
     for (size_t i = 0; i < k_ManagerCount; ++i)
     {
         k_DefaultManagerOrder[i].Start();
@@ -74,6 +76,7 @@ SAVANNA_EXPORT(void) SavannaStart()
 
 SAVANNA_EXPORT(void) SavannaStop()
 {
+    SAVANNA_INSERT_SCOPED_PROFILER(SavannaStop);
     // Stop in reverse order
     for (size_t i = k_ManagerCount; i > 0; --i)
     {
@@ -83,6 +86,7 @@ SAVANNA_EXPORT(void) SavannaStop()
 
 SAVANNA_EXPORT(void) SavannaShutdown()
 {
+    SAVANNA_INSERT_SCOPED_PROFILER(SavannaShutdown);
     // Shutdown in reverse order
     for (size_t i = k_ManagerCount; i > 0; --i)
     {

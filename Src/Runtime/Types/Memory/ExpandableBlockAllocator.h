@@ -17,7 +17,9 @@
 #include "MemoryChunkDescriptors.h"
 #include "MemoryBuffer.h"
 
-// #include "Types/Containers/Arrays/DynamicArray.h"
+#include "Memory/MemoryLabel.h"
+
+#include "Types/Containers/Arrays/DynamicArray.h"
 #include <vector>
 
 namespace Savanna
@@ -25,20 +27,19 @@ namespace Savanna
     class ExpandableBlockAllocator : public Allocator
     {
     private:
-        size_t m_BufferBlockSize = 0;
+        MemoryLabel m_MemoryLabel;
 
         MemoryChunkDescriptor* m_Head = nullptr;
         MemoryChunkDescriptor* m_Tail = nullptr;
-
-        // DynamicArray<MemoryBuffer> m_MemoryPoolContainer;
-        std::vector<MemoryBuffer> m_MemoryPoolContainer;
-
+        size_t m_BufferBlockSize = 0;
         size_t m_AllocatedBytes = 0;
         size_t m_Size = 0;
 
+        DynamicArray<MemoryBuffer> m_MemoryPoolContainer;
+
     public:
-        ExpandableBlockAllocator();
-        ExpandableBlockAllocator(size_t initialBufferCount, size_t bufferBlockSize, bool contiguous = true);
+        ExpandableBlockAllocator(bool contiguous = true, const MemoryLabel label = k_SavannaMemoryLabelHeap);
+        ExpandableBlockAllocator(size_t initialBufferCount, size_t bufferBlockSize, bool contiguous = true, const MemoryLabel label = k_SavannaMemoryLabelHeap);
         ~ExpandableBlockAllocator();
 
         ExpandableBlockAllocator(ExpandableBlockAllocator&& other) noexcept { *this = std::move(other); }
@@ -57,7 +58,6 @@ namespace Savanna
 
         void CreateBufferWithMemoryChunkDescs(
             const size_t bufferSize,
-            MemoryBuffer& outBuffer,
             MemoryChunkDescriptor** ppOutHead,
             MemoryChunkDescriptor** ppOutTail);
     };

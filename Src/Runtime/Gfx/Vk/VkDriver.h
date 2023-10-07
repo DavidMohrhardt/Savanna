@@ -39,6 +39,8 @@ namespace Savanna::Gfx::Vk2
         InterfaceAllocator m_Allocator;
         VkAllocationCallbacks m_AllocationCallbacks;
 
+        VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
+
         VkDriver(const se_GfxDriverCreateInfo_t& createInfo);
         ~VkDriver();
 

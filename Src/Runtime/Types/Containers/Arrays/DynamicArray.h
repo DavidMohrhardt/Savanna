@@ -157,6 +157,22 @@ namespace Savanna
             m_Data[m_Size++] = std::move(value);
         }
 
+        void AppendRange(const value_type* const pValues, const size_t count)
+        {
+            if (m_Size + count > m_Capacity)
+                Reserve(m_Capacity + count);
+
+            for (size_t i = 0; i < count; i++)
+            {
+                m_Data[m_Size++] = pValues[i];
+            }
+        }
+
+        void AppendRange(std::initializer_list<value_type> list)
+        {
+            AppendRange(list.begin(), list.size());
+        }
+
         value_type* Data()
         {
             return m_Data;

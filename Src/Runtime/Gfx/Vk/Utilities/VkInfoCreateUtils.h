@@ -22,21 +22,11 @@ namespace Savanna::Gfx::Vk2::Utils
         .apiVersion = SAVANNA_VK_API_VERSION
     };
 
-    VkInstanceCreateInfo PopulateInstanceCreateInfo(
-        const se_VkDriverCreateInfo_t* pInDriverCreateInfo);
+    void PopulateInstanceCreateInfo(
+        const se_VkDriverCreateInfo_t* pInDriverCreateInfo,
+        VkInstanceCreateInfo& outCreateInfo);
 
-    // void PopulateVkApplicationInfo(
-    //     const RendererCreateInfo& rendererCreateInfo,
-    //     VkApplicationInfo &applicationInfo);
-
-    // void PopulateVkInstanceCreateInfo(
-    //     const RendererCreateInfo& rendererCreateInfo,
-    //     const VkApplicationInfo* pApplicationCreateInfo,
-    //     VkInstanceCreateInfo& instanceCreateInfo);
-
-    // void PopulateVkDeviceCreateInfo(
-    //     const RendererCreateInfo& rendererCreateInfo,
-    //     const VkDeviceQueueCreateInfo* queueCreateInfo,
-    //     const uint32& queueCreateInfoCount,
-    //     VkDeviceCreateInfo& deviceCreateInfo);
+    void PopulateVkDeviceCreateInfo(
+        const se_VkDriverCreateInfo_t& createInfo,
+        VkDeviceCreateInfo& deviceCreateInfo);
 } // namespace Savanna::Gfx::Vk

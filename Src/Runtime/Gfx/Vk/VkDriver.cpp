@@ -4,6 +4,7 @@
 
 #include "VkAllocator.h"
 #include "Utilities/VkInfoCreateUtils.h"
+#include "Utilities/VkPhysicalDeviceSelectionUtils.h"
 
 namespace Savanna::Gfx::Vk2
 {
@@ -26,15 +27,30 @@ namespace Savanna::Gfx::Vk2
             ? se_VkDriverCreateInfo_t{}
             : *reinterpret_cast<se_VkDriverCreateInfo_t*>(createInfo.m_pNext);
 
-        VkInstanceCreateInfo instanceCreateInfo = Utils::PopulateInstanceCreateInfo(&driverCreateInfo);
+        VkInstanceCreateInfo instanceCreateInfo {};
+        Utils::PopulateInstanceCreateInfo(&driverCreateInfo, instanceCreateInfo);
         instanceCreateInfo.pApplicationInfo = &appInfo;
 
-        VkResult result = vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance);
-        if (result != VK_SUCCESS)
+        VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance), "Failed to create Vulkan instance.");
+
+        // Get the physical device
+        if (!Utils::TrySelectPhysicalDevice(m_Instance, m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_Allocator))
         {
-            m_Instance = VK_NULL_HANDLE;
+            SAVANNA_LOG("Failed to select a physical device.");
             return;
         }
+
+        // Print the physical device properties
+        vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_PhysicalDeviceProperties);
+        SAVANNA_LOG("Selected physical device:\n\t{}", m_PhysicalDeviceProperties.deviceName);
+
+        // Create the logical device
+        // VkDeviceCreateInfo logicalDeviceCreateInfo = Utils::PopulateLogicalDeviceCreateInfo(&driverCreateInfo);
+        // VkPhysicalDeviceFeatures physicalDeviceFeatures;
+        // vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &physicalDeviceFeatures);
+        // logicalDeviceCreateInfo.pEnabledFeatures = &physicalDeviceFeatures;
+
+        // VK_MUST_SUCCEED(vkCreateDevice(m_PhysicalDevice, &logicalDeviceCreateInfo, &m_AllocationCallbacks, &m_LogicalDevice), "Failed to create logical device.");
     }
 
     VkDriver::~VkDriver()
@@ -90,10 +106,14 @@ namespace Savanna::Gfx::Vk2
 
     void VkDriver::PopulateDriverInterface(se_GfxDriverInterface_t &outDriverInterface)
     {
-        outDriverInterface.m_pfnInitialize = VkDriver::Initialize;
-        outDriverInterface.m_pfnDestroy = VkDriver::Destroy;
-        outDriverInterface.m_pfnGetDriverHandle = VkDriver::GetDriverHandle;
-        outDriverInterface.m_pfnGetBackend = []() { return kSavannaGfxApiVulkan; };
+        constexpr se_GfxDriverInterface_t k_VulkanDriverInterface
+        {
+            .m_pfnInitialize = VkDriver::Initialize,
+            .m_pfnDestroy = VkDriver::Destroy,
+            .m_pfnGetDriverHandle = VkDriver::GetDriverHandle,
+            .m_pfnGetBackend = []() { return kSavannaGfxApiVulkan; },
+        };
+        outDriverInterface = k_VulkanDriverInterface;
     }
 
 } // namespace Savanna::Gfx::Vk2
