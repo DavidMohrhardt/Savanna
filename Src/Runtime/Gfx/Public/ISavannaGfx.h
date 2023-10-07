@@ -281,6 +281,18 @@ typedef struct se_GfxDriverInterface_t
     void* m_pUserData;
 } se_GfxDriverInterface_t;
 
+/**
+ * @brief Provides the set of capabilities for the graphics system.
+ *
+ */
+typedef struct se_GfxCapabilities_t
+{
+    se_GfxSupportedBackend_t m_SupportedGfxApi;
+    se_GfxBackend_t m_ActiveGfxApi;
+
+    void* m_pPlatformCapabilities;
+} se_GfxCapabilities_t;
+
 /// API Section
 
 /**
@@ -327,5 +339,13 @@ SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends(
  * @return se_GfxBackend_t The active graphics backend.
  */
 SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend();
+
+/**
+ * @brief Gets the capabilities of the graphics system. Is valid even before
+ *      SavannaGfxInit has been called though the returned capabilities may
+ *      not be completely filled out until after SavannaGfxContextCreateDriver
+ *      has been called.
+ */
+SAVANNA_EXPORT(const se_GfxCapabilities_t) SavannaGfxGetCapabilities();
 
 #endif // !I_SAVANNA_GFX_H
