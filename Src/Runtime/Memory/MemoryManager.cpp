@@ -1,5 +1,7 @@
+#include "SavannaMemory.h"
 #include "MemoryManager.h"
-#include "Public/ISavannaMemory.hpp"
+
+#include "Profiling/Profiler.h"
 
 #include <cstring>
 
@@ -42,9 +44,22 @@ namespace Savanna
     };
 
     const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForLabel(
-        const se_uint32 &label)
+        const MemoryLabel& label)
     {
-        return k_LabelAllocatorInterfaces[label];
+        return k_LabelAllocatorInterfaces[(uint32)label];
+    }
+
+    bool MemoryManager::TryGetAllocatorInterfaceForLabel(
+        const uint32& label,
+        se_AllocatorInterface_t& outLabelInterface)
+    {
+        if (label >= k_SavannaMemoryLabelCount)
+        {
+            return false;
+        }
+
+        outLabelInterface = k_LabelAllocatorInterfaces[label];
+        return true;
     }
 
     // TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.
@@ -179,4 +194,9 @@ void operator delete[](void *ptr, size_t size) noexcept
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
     return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGeneral);
+}
+
+SAVANNA_EXPORT(bool) SavannaMemoryManagerTryGetAllocatorInterfaceForLabel(const se_uint32& label, se_AllocatorInterface_t& outLabelInterface)
+{
+    return Savanna::MemoryManager::TryGetAllocatorInterfaceForLabel(label, outLabelInterface);
 }

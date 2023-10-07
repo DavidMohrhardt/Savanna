@@ -44,9 +44,23 @@ void Application::Run()
 
 bool Application::TryInitGfx()
 {
+    const char* defaultLayers[]
+    {
+        "VK_LAYER_KHRONOS_validation"
+    };
+    const char* defaultInstanceExtensions[]
+    {
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+    };
+    const char* defaultDeviceExtensions[]
+    {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    };
+
     auto defaultGfxAllocator = Savanna::Gfx::GetDefaultAllocatorInterface();
     se_GfxContextCreateInfo_t gfxContextCreateInfo
     {
+        .m_pApplicationName = "SavannaVk2",
         .m_Allocator = defaultGfxAllocator,
         .m_pUserData = nullptr,
     };
@@ -57,55 +71,37 @@ bool Application::TryInitGfx()
         return false;
     }
 
+    se_VkDriverCreateInfo_t vkDriverCreateInfo {};
+    vkDriverCreateInfo.m_pNext = nullptr;
+    vkDriverCreateInfo.m_pUserData = nullptr;
+
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers = defaultLayers;
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount = 1;
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions = defaultInstanceExtensions;
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount = 1;
+
+    vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_ppEnabledDeviceExtensions = defaultDeviceExtensions;
+    vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_EnabledDeviceExtensionCount = 1;
+
+    se_GfxDriverCreateInfo_t gfxDriverCreateInfo
     {
-        se_VkDriverCreateInfo_t vkDriverCreateInfo
-        {
-            nullptr,
-            0,
-            nullptr,
-            0,
-            nullptr,
-            0,
-        };
+        .m_RequestedBackendType = kSavannaGfxApiVulkan,
+        .m_Allocator = defaultGfxAllocator,
+        .m_pNext = &vkDriverCreateInfo,
+        .m_pUserData = nullptr,
+    };
 
-        const uint32_t k_IndexOfExtensions = 0;
-        DynamicArray<const char*> enabledFeatures(
-        {
-            VK_KHR_SURFACE_EXTENSION_NAME,
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-            VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-            "VK_LAYER_KHRONOS_validation",
-        }, defaultGfxAllocator);
+    se_GfxDriverCreateInfoList_t gfxDriverCreateInfoList
+    {
+        .m_pDriverCreateInfos = &gfxDriverCreateInfo,
+        .m_CreateInfoCount = 1,
+        .m_pUserData = nullptr,
+    };
 
-        vkDriverCreateInfo.m_ppEnabledInstanceExtensions = enabledFeatures.Data();
-        vkDriverCreateInfo.m_EnabledInstanceExtensionCount = 1;
-
-        vkDriverCreateInfo.m_ppEnabledDeviceExtensions = &enabledFeatures.Data()[1];
-        vkDriverCreateInfo.m_EnabledDeviceExtensionCount = 1;
-
-        vkDriverCreateInfo.m_ppEnabledLayers = &enabledFeatures.Data()[2];
-        vkDriverCreateInfo.m_EnabledLayerCount = 1;
-
-        se_GfxDriverCreateInfo_t gfxDriverCreateInfo
-        {
-            .m_RequestedBackendType = kSavannaGfxApiVulkan,
-            .m_Allocator = defaultGfxAllocator,
-            .m_pNext = &vkDriverCreateInfo,
-            .m_pUserData = nullptr,
-        };
-
-        se_GfxDriverCreateInfoList_t gfxDriverCreateInfoList
-        {
-            .m_pDriverCreateInfos = &gfxDriverCreateInfo,
-            .m_CreateInfoCount = 1,
-            .m_pUserData = nullptr,
-        };
-
-        if (SAVANNA_GFX_FAILURE(Gfx::CreateDriver(&gfxDriverCreateInfoList)))
-        {
-            SAVANNA_LOG("Failed to create graphics driver.");
-            return false;
-        }
+    if (SAVANNA_GFX_FAILURE(Gfx::CreateDriver(&gfxDriverCreateInfoList)))
+    {
+        SAVANNA_LOG("Failed to create graphics driver.");
+        return false;
     }
 
     return true;

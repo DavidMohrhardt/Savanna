@@ -1,7 +1,8 @@
 #pragma once
 
 #include <SavannaEngine.h>
-#include <Gfx/Public/ISavannaGfx.hpp>
+
+#include <Gfx/SavannaGfx.h>
 #include <IO/VirtualFileSystem.h>
 
 #include "Window/GLFWWindowWrapper.h"

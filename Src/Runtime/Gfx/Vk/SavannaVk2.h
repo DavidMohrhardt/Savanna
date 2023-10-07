@@ -40,11 +40,7 @@ namespace Savanna::Gfx::Vk2
      * @param allocatorInterface
      * @return se_GfxErrorCode_t
      */
-    se_GfxErrorCode_t AcquireDriver(
-        const se_GfxDriverCreateInfo_t* const pCreateInfo,
-        IGfxDriver** ppDriver,
-        void* pUserData,
-        const se_AllocatorInterface_t allocatorInterface = Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx));
+    se_GfxErrorCode_t GetDriverInterface(se_GfxDriverInterface_t& outDriverInterface);
 }
 
 #endif // !SAVANNA_GFX_VK2_H

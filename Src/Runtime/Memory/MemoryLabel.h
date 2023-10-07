@@ -24,3 +24,20 @@ DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, uint32_t,
     // specific label.
     k_SavannaMemoryLabelHeap,
 );
+
+inline const char* SavannaEngineGetMemoryLabelName(se_uint32 label)
+{
+    switch (label)
+    {
+    case k_SavannaMemoryLabelGeneral:
+        return "General";
+    case k_SavannaMemoryLabelGfx:
+        return "Gfx";
+    case k_SavannaMemoryLabelEcs:
+        return "Ecs";
+    case k_SavannaMemoryLabelHeap:
+        return "Heap";
+    default:
+        return "Unknown";
+    }
+}

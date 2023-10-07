@@ -12,6 +12,7 @@
 #include "MemoryManager.h"
 
 #include <cstdlib>
+#include "SavannaMemory.h"
 
 extern "C"
 {
@@ -64,4 +65,11 @@ SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryGetHeapAllocatorInter
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryGetDefaultAllocatorInterfaceForLabel(const se_uint32& label)
 {
     return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(label);
+}
+
+bool Savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t &allocatorInterface)
+{
+    return allocatorInterface.m_AllocAlignedFunc != nullptr
+        && allocatorInterface.m_FreeFunc != nullptr
+        && allocatorInterface.m_ReallocAlignedFunc != nullptr;
 }

@@ -27,7 +27,8 @@ namespace Savanna
         DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(MemoryManager);
 
     public:
-        static const se_AllocatorInterface_t GetAllocatorInterfaceForLabel(const se_uint32& label);
+        static const se_AllocatorInterface_t GetAllocatorInterfaceForLabel(const MemoryLabel& label);
+        static bool TryGetAllocatorInterfaceForLabel(const uint32& label, se_AllocatorInterface_t& outLabelInterface);
 
     private:
         DynamicArray<AtomicExpandableBlockAllocator> m_MemoryArenas;
@@ -36,21 +37,21 @@ namespace Savanna
         ~MemoryManager();
 
     public:
-        void* Allocate(size_t size, const se_uint32 label = k_SavannaMemoryLabelGeneral);
-        void* Allocate(size_t size, size_t alignment, const se_uint32 label = k_SavannaMemoryLabelGeneral);
-        void* Reallocate(void* ptr, size_t newSize, const se_uint32 label = k_SavannaMemoryLabelGeneral);
-        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const se_uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Allocate(size_t size, const uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Allocate(size_t size, size_t alignment, const uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Reallocate(void* ptr, size_t newSize, const uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const uint32 label = k_SavannaMemoryLabelGeneral);
 
-        void Free(void* ptr, const se_uint32 label = k_SavannaMemoryLabelGeneral);
+        void Free(void* ptr, const uint32 label = k_SavannaMemoryLabelGeneral);
 
         template <typename T, typename ...ARGS>
-        inline T* New(const se_uint32 label, ARGS&&... args)
+        inline T* New(const uint32 label, ARGS&&... args)
         {
             return new (static_cast<T*>(Allocate(sizeof(T), label))) T(std::forward<ARGS>(args)...);
         }
 
         template <typename T>
-        inline T* NewArray(const size_t& count, const se_uint32 label)
+        inline T* NewArray(const size_t& count, const uint32 label)
         {
             return new (static_cast<T*>(Allocate(sizeof(T) * count, label))) T[count];
         }
@@ -63,7 +64,7 @@ namespace Savanna
         }
 
         template <typename T>
-        inline void DeleteArray(T* ptr, const size_t& count, const se_uint32 label)
+        inline void DeleteArray(T* ptr, const size_t& count, const uint32 label)
         {
             for (size_t i = 0; i < count; ++i)
             {

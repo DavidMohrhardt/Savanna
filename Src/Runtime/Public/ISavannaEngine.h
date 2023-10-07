@@ -130,16 +130,6 @@ typedef union se_float64
 typedef se_float64 se_double64;
 
 /**
- * @brief
- *
- */
-typedef struct se_PreAndPostCallbacks_t
-{
-    void (*m_pfnBefore)(void* pUserData);
-    void (*m_pfnAfter)(void* pUserData);
-} se_BeforeAfterCallbacks_t;
-
-/**
  * @brief Initializes the Savanna engine. Initializes all subsystems.
  *
  */

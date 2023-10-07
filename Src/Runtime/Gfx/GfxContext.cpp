@@ -12,23 +12,23 @@ namespace Savanna::Gfx
         : m_Allocator(pCreateInfo != nullptr
             ? pCreateInfo->m_Allocator
             : MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx))
-        , m_pDriver(nullptr)
+        , m_Driver{}
     {
     }
 
     GfxContext::~GfxContext()
     {
-        if (m_pDriver != nullptr)
+        if (m_Driver.IsValid())
         {
-            m_pDriver->Destroy();
-            m_Allocator.Delete(m_pDriver);
+            m_Driver.Destroy();
+            m_Driver.ClearInterface();
         }
     }
 
     se_GfxErrorCode_t GfxContext::CreateDriver(
         const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
     {
-        if (m_pDriver != nullptr)
+        if (m_Driver.IsValid())
         {
             return kSavannaGfxErrorCodeGfxDriverAlreadyCreated;
         }
@@ -43,29 +43,21 @@ namespace Savanna::Gfx
         for (int i = 0; i < pCreateInfoList->m_CreateInfoCount; ++i)
         {
             const se_GfxDriverCreateInfo_t& driverCreateInfo = pCreateInfoList->m_pDriverCreateInfos[i];
+            se_GfxDriverInterface_t driverInterface{};
             switch (driverCreateInfo.m_RequestedBackendType)
             {
             case kSavannaGfxApiVulkan:
-                outResult = Vk2::AcquireDriver(
-                    &driverCreateInfo,
-                    &m_pDriver,
-                    pCreateInfoList->m_pUserData,
-                    m_Allocator.GetInterface());
+                outResult = Vk2::GetDriverInterface(driverInterface);
                 break;
-
-            // case kSavannaGfxExternalBackend:
-            //     outResult = GenericGfxDriver::Create(
-            //         pCreateInfo->m_pDriverCreateInfos[i],
-            //         m_pDriver,
-            //         pCreateInfo->m_pUserData);
 
             default:
                 SAVANNA_WARNING_LOG("Unknown backend type requested.");
                 break;
             }
 
-            if (outResult == kSavannaGfxErrorCodeSuccess)
+            if (outResult == kSavannaGfxErrorCodeSuccess && driverInterface.m_pfnInitialize(driverCreateInfo) == kSavannaGfxErrorCodeSuccess)
             {
+                m_Driver.SetInterface(driverInterface);
                 return outResult;
             }
         }

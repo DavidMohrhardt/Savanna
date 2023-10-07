@@ -18,60 +18,43 @@
 
 namespace Savanna::Gfx
 {
-    class IGfxDriver
-    {
-    public:
-        IGfxDriver() = default;
-        virtual ~IGfxDriver() = default;
-
-        virtual se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo) = 0;
-        virtual se_GfxErrorCode_t Destroy() = 0;
-        virtual se_GfxBackend_t GetBackendType() const = 0;
-    };
-
-    /**
-     * @brief Provides a simplified base class for any given GfxDriver.
-     *
-     * @tparam BACKEND The GfxBackend this driver is implemented against.
-     * @note This class is not intended to be used directly, but rather to be inherited from.
-     */
-    template <se_GfxBackend_t BACKEND>
-    class GfxDriverBase : public IGfxDriver
-    {
-    public:
-        GfxDriverBase() = default;
-        virtual ~GfxDriverBase() = default;
-
-        se_GfxBackend_t GetBackendType() const final { return BACKEND; }
-    };
-
-    class GenericGfxDriver final : public GfxDriverBase<kSavannaGfxExternalBackend>
+    class GfxDriver
     {
     private:
         friend class GfxContext;
 
-        static se_GfxErrorCode_t CreateDriver(
-            const se_GfxDriverCreateInfo_t& createInfo,
-            IGfxDriver** ppDriver,
-            void* pUserData);
-
-        se_GfxDriverInterface_t m_Interface;
+        se_GfxDriverInterface_t m_Interface {};
+        void SetInterface(se_GfxDriverInterface_t& interface) { m_Interface = interface; }
+        void ClearInterface() { m_Interface = {}; }
 
     public:
-        GenericGfxDriver(se_GfxDriverInterface_t interface)
+        GfxDriver(se_GfxDriverInterface_t interface)
             : m_Interface(interface)
         {}
 
-        ~GenericGfxDriver() = default;
+        GfxDriver() = default;
+        GfxDriver(const GfxDriver&) = delete;
+        GfxDriver(GfxDriver&&) = delete;
+        GfxDriver& operator=(const GfxDriver&) = delete;
+        GfxDriver& operator=(GfxDriver&&) = delete;
 
-        se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo) override
+        ~GfxDriver() = default;
+
+        bool IsValid();
+
+        se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo)
         {
-            return m_Interface.m_pfnCreate(createInfo);
+            return m_Interface.m_pfnInitialize(createInfo);
         }
 
-        se_GfxErrorCode_t Destroy() override
+        se_GfxErrorCode_t Destroy()
         {
             return m_Interface.m_pfnDestroy();
+        }
+
+        const se_GfxBackend_t GetBackendType() const
+        {
+            return m_Interface.m_pfnGetBackend();
         }
     };
 } // namespace Savanna::Gfx

@@ -16,34 +16,44 @@
 
 namespace Savanna::Gfx::Vk2
 {
-    struct VkAllocator;
-    VkAllocationCallbacks GetVkAllocationCallbacks(VkAllocator* pRealAllocator);
-
-    /**
-     * @brief This struct provides a wrapper for the Vulkan allocation callbacks.
-     * It uses a provided se_AllocatorInterface_t to perform the actual allocations.
-     *
-     */
-    struct VkAllocator
+    class VkAllocator
     {
-    public:
-        InterfaceAllocator m_Allocator {  };
-        void* m_pUserData { nullptr };
-        VkAllocationCallbacks m_AllocationCallbacks { GetVkAllocationCallbacks(this) };
-
-    public:
-        VkAllocator() = default;
-        ~VkAllocator() = default;
-
-        VkAllocator(se_AllocatorInterface_t allocatorInterface, void* pUserData)
-            : m_Allocator(allocatorInterface)
-            , m_pUserData(pUserData)
+    private:
+        inline static InterfaceAllocator* EnsureValidInterface(void* pUserData)
         {
+            if (pUserData == nullptr)
+            {
+                throw std::runtime_error("pUserData is nullptr!");
+            }
+            return reinterpret_cast<InterfaceAllocator*>(pUserData);
         }
 
-        VkAllocationCallbacks& GetAllocationCallbacks()
+    public:
+        static void* Alloc(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
         {
-            return m_AllocationCallbacks;
+            return EnsureValidInterface(pUserData)->AllocateAligned(size, alignment);
+        }
+
+        static void* Realloc(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
+        {
+            return EnsureValidInterface(pUserData)->ReallocateAligned(pOriginal, alignment, size);
+        }
+
+        static void Free(void *pUserData, void *pMemory)
+        {
+            EnsureValidInterface(pUserData)->Free(pMemory);
+        }
+
+        static VkAllocationCallbacks CreateAllocationCallbacksForInterface(InterfaceAllocator* pAllocator)
+        {
+            return {
+                .pUserData = pAllocator,
+                .pfnAllocation = Alloc,
+                .pfnReallocation = Realloc,
+                .pfnFree = Free,
+                .pfnInternalAllocation = nullptr,
+                .pfnInternalFree = nullptr
+            };
         }
     };
 }

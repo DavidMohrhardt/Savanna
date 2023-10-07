@@ -1,15 +1,8 @@
 #pragma once
 
-#include "SavannaVk.h"
-
-#include "VkRendererCreateInfo.h"
-#include "VkQueueFamilyIndices.h"
+#include "Public/ISavannaGfxVk2.h"
 
 #include <vulkan/vulkan.h>
-
-#include <string>
-#include <unordered_set>
-#include <vector>
 
 #define SAVANNA_VK_APPLICATION_NAME "Savanna"
 #define SAVANNA_VK_ENGINE_NAME "Savanna Engine"
@@ -29,11 +22,8 @@ namespace Savanna::Gfx::Vk2::Utils
         .apiVersion = SAVANNA_VK_API_VERSION
     };
 
-    // void GetUniqueVkQueueFamilies(
-    //     VkDeviceQueueCreateInfo *pQueueCreateInfos,
-    //     uint32& queueCreateInfoCount,
-    //     const QueueFamilyIndices& queueFamilyIndices,
-    //     float* pQueuePriority = nullptr);
+    VkInstanceCreateInfo PopulateInstanceCreateInfo(
+        const se_VkDriverCreateInfo_t* pInDriverCreateInfo);
 
     // void PopulateVkApplicationInfo(
     //     const RendererCreateInfo& rendererCreateInfo,

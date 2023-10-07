@@ -10,7 +10,6 @@
  */
 #include "SavannaGfx.h"
 #include "GfxContext.h"
-#include "Public/ISavannaGfx.hpp"
 
 namespace Savanna::Gfx
 {
@@ -22,45 +21,44 @@ namespace Savanna::Gfx
 
     GfxErrorCode Initialize(const se_GfxContextCreateInfo_t *const pCreateInfo)
     {
-        auto pContext = GfxContext::Construct(pCreateInfo);
-        return pContext != nullptr
+        return GfxContext::Construct(pCreateInfo) != nullptr
             ? kSavannaGfxErrorCodeSuccess
-            : kSavannaGfxErrorCodeGfxNotInitialized;
+            : kSavannaGfxErrorCodeNotInitialized;
     }
 
     GfxErrorCode Shutdown()
     {
-        if (auto pContext = GfxContext::Get())
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
             GfxContext::Destroy();
             return kSavannaGfxErrorCodeSuccess;
         }
-        return kSavannaGfxErrorCodeGfxNotInitialized;
+        return kSavannaGfxErrorCodeNotInitialized;
     }
 
     GfxErrorCode CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
     {
-        if (auto pContext = GfxContext::Get())
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
             return pContext->CreateDriver(pCreateInfoList);
         }
-        return kSavannaGfxErrorCodeGfxNotInitialized;
+        return kSavannaGfxErrorCodeNotInitialized;
     }
 
     GfxSupportedBackend GetSupportedGfxBackends()
     {
-        if (auto pContext = GfxContext::Get())
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
             return pContext->GetSupportedGfxBackends();
         }
         return kSavannaSupportedGfxApiNone;
     }
 
-    GfxBackend GetActiveGfxBackend()
+    const GfxBackend GetActiveGfxBackend()
     {
-        if (auto pContext = GfxContext::Get())
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
-            if (auto pDriver = pContext->GetDriver())
+            if (auto pDriver = pContext->GetDriver()) SAVANNA_BRANCH_LIKELY
             {
                 return pDriver->GetBackendType();
             }

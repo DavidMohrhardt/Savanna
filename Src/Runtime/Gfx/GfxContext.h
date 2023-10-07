@@ -28,7 +28,7 @@ namespace Savanna::Gfx
         DECLARE_FRIENDS_FOR_SINGLETON(GfxContext);
 
         InterfaceAllocator m_Allocator;
-        IGfxDriver* m_pDriver;
+        GfxDriver m_Driver;
 
         GfxContext() = delete;
 
@@ -37,7 +37,7 @@ namespace Savanna::Gfx
 
     public:
         se_GfxErrorCode_t CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
-        inline IGfxDriver* GetDriver() const { return m_pDriver; }
+        GfxDriver* GetDriver() { return &m_Driver; }
 
         se_GfxSupportedBackend_t GetSupportedGfxBackends() const;
     };

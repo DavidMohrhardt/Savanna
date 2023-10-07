@@ -38,5 +38,4 @@
 
 #include "Utilities/Semantics/Move.h"
 #include "Utilities/Semantics/SizeOf.h"
-
 #endif

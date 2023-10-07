@@ -8,12 +8,12 @@
  * @copyright Copyright (c) 2023
  *
  */
+#ifdef false
 #pragma once
 
 #include "Public/ISavannaEngine.h"
 
-SAVANNA_EXPORT(se_threadId_t) SavannaEngine_Concurrency_GetMainThreadId();
-
-SAVANNA_EXPORT(se_threadId_t) SavannaEngine_Concurrency_GetCurrentThreadId();
-
-SAVANNA_EXPORT(se_bool_t) SavannaEngine_Concurrency_IsMainThread();
+SAVANNA_EXPORT(se_threadId_t) SavannaConcurrencyGetMainThreadID();
+SAVANNA_EXPORT(se_threadId_t) SavannaConcurrencyGetCurrentThreadId();
+SAVANNA_EXPORT(se_bool_t) SavannaConcurrencyIsMainThread();
+#endif
