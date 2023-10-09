@@ -21,7 +21,6 @@
 // Savanna Vulkan Includes
 #include "Public/ISavannaGfx.h"
 #include "Public/ISavannaGfxVk2.h"
-#include "VkDriver.h"
 
 #define VK_MUST_SUCCEED(__result, __message) \
     if (__result != VK_SUCCESS) \

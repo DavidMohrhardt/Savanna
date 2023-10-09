@@ -60,37 +60,23 @@ bool Application::TryInitGfx()
         return false;
     }
 
-    const char* defaultLayers[]
-    {
-        "VK_LAYER_KHRONOS_validation"
-    };
-
-    const char* defaultDeviceExtensions[]
-    {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    };
-
     uint32 instanceExtensionCount = 0;
     const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&instanceExtensionCount);
 
     se_VkDriverCreateInfo_t vkDriverCreateInfo {};
     vkDriverCreateInfo.m_pNext = nullptr;
     vkDriverCreateInfo.m_pUserData = nullptr;
+    vkDriverCreateInfo.m_EnableValidationLayers = true;
+    vkDriverCreateInfo.m_EnableSurfaceExtension = true;
 
     // TODO @david.mohrhardt: Setup input arguments for application to enable/disable validation layers.
-    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers = defaultLayers;
-    vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount = 1;
-
-    instanceExtensionCount += 1; // For debug utils extension.
-    DynamicArray<const char*> instanceExtensions(instanceExtensionCount, defaultAllocatorInterface);
-    instanceExtensions.Append(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    instanceExtensions.AppendRange(glfwExtensions, instanceExtensionCount - 1);
-
-    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions = instanceExtensions.Data();
+    vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions = glfwExtensions;
     vkDriverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount = instanceExtensionCount;
 
-    vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_ppEnabledDeviceExtensions = defaultDeviceExtensions;
-    vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_EnabledDeviceExtensionCount = 1;
+    vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex = -1;
+
+    vkDriverCreateInfo.m_LogicalDeviceCreateArgs.m_ppEnabledDeviceExtensions = nullptr;
+    vkDriverCreateInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount = 0;
 
     se_GfxDriverCreateInfo_t gfxDriverCreateInfo
     {

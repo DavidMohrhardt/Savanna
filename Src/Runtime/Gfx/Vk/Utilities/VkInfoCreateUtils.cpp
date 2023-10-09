@@ -10,22 +10,21 @@
 namespace Savanna::Gfx::Vk2::Utils
 {
     void PopulateInstanceCreateInfo(
-        const se_VkDriverCreateInfo_t* pInDriverCreateInfo,
-        VkInstanceCreateInfo& outCreateInfo)
+        VkInstanceCreateInfo& outCreateInfo,
+        const char** ppEnabledInstanceExtensions,
+        uint32 enabledInstanceExtensionCount,
+        const char** ppEnabledLayers,
+        uint32 enabledLayerCount)
     {
         outCreateInfo = {};
         outCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         outCreateInfo.pNext = nullptr;
         outCreateInfo.flags = 0;
-
-        if (pInDriverCreateInfo != nullptr)
-        {
-            const se_VkInstanceCreateArgs_t& instanceCreateArgs = (*pInDriverCreateInfo).m_InstanceCreateArgs;
-            outCreateInfo.enabledExtensionCount = instanceCreateArgs.m_EnabledInstanceExtensionCount;
-            outCreateInfo.ppEnabledExtensionNames = instanceCreateArgs.m_ppEnabledInstanceExtensions;
-            outCreateInfo.enabledLayerCount = instanceCreateArgs.m_EnabledLayerCount;
-            outCreateInfo.ppEnabledLayerNames = instanceCreateArgs.m_ppEnabledLayers;
-        }
+        outCreateInfo.pApplicationInfo = nullptr;
+        outCreateInfo.enabledExtensionCount = enabledInstanceExtensionCount;
+        outCreateInfo.ppEnabledExtensionNames = ppEnabledInstanceExtensions;
+        outCreateInfo.enabledLayerCount = enabledLayerCount;
+        outCreateInfo.ppEnabledLayerNames = ppEnabledLayers;
     }
 
     // void GetUniqueVkQueueFamilies(

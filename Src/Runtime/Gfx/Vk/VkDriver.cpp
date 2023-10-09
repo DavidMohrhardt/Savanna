@@ -12,8 +12,7 @@ namespace Savanna::Gfx::Vk2
 
     VkDriver::VkDriver(const se_GfxDriverCreateInfo_t& createInfo)
         : m_Instance(VK_NULL_HANDLE)
-        , m_PhysicalDevice(VK_NULL_HANDLE)
-        , m_LogicalDevice(VK_NULL_HANDLE)
+        , m_Gpu()
         , m_Allocator(createInfo.m_Allocator)
         , m_AllocationCallbacks(VkAllocator::CreateAllocationCallbacksForInterface(&m_Allocator))
     {
@@ -27,22 +26,50 @@ namespace Savanna::Gfx::Vk2
             ? se_VkDriverCreateInfo_t{}
             : *reinterpret_cast<se_VkDriverCreateInfo_t*>(createInfo.m_pNext);
 
-        VkInstanceCreateInfo instanceCreateInfo {};
-        Utils::PopulateInstanceCreateInfo(&driverCreateInfo, instanceCreateInfo);
-        instanceCreateInfo.pApplicationInfo = &appInfo;
+        {
+            // TODO make this use a temporary allocator as it's not needed after this function
+            DynamicArray<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, createInfo.m_Allocator };
+            DynamicArray<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, createInfo.m_Allocator };
+            if (driverCreateInfo.m_EnableValidationLayers)
+            {
+                enabledInstanceExtensions.Append(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+                enabledInstanceLayers.Append("VK_LAYER_KHRONOS_validation");
+            }
 
-        VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance), "Failed to create Vulkan instance.");
+            if (driverCreateInfo.m_EnableSurfaceExtension)
+            {
+                enabledInstanceExtensions.Append(VK_KHR_SURFACE_EXTENSION_NAME);
+            }
+
+            for (uint32 i = 0; i < driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount; ++i)
+            {
+                enabledInstanceExtensions.Append(driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions[i]);
+            }
+
+            for (uint32 i = 0; i < driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount; ++i)
+            {
+                enabledInstanceLayers.Append(driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers[i]);
+            }
+
+            VkInstanceCreateInfo instanceCreateInfo {};
+            Utils::PopulateInstanceCreateInfo(instanceCreateInfo,
+                enabledInstanceExtensions.data(), enabledInstanceExtensions.size(),
+                enabledInstanceLayers.data(), enabledInstanceLayers.size());
+            instanceCreateInfo.pApplicationInfo = &appInfo;
+
+            VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance), "Failed to create Vulkan instance.");
+        }
 
         // Get the physical device
-        if (!Utils::TrySelectPhysicalDevice(m_Instance, m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_Allocator))
+        if (!Utils::TrySelectPhysicalDevice(m_Instance, m_Gpu.m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_Allocator))
         {
             SAVANNA_LOG("Failed to select a physical device.");
             return;
         }
 
         // Print the physical device properties
-        vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_PhysicalDeviceProperties);
-        SAVANNA_LOG("Selected physical device:\n\t{}", m_PhysicalDeviceProperties.deviceName);
+        vkGetPhysicalDeviceProperties(m_Gpu.m_PhysicalDevice, &m_Gpu.m_PhysicalDeviceProperties);
+        SAVANNA_LOG("Selected physical device:\n\t{}", m_Gpu.m_PhysicalDeviceProperties.deviceName);
 
         // Create the logical device
         // VkDeviceCreateInfo logicalDeviceCreateInfo = Utils::PopulateLogicalDeviceCreateInfo(&driverCreateInfo);
@@ -55,11 +82,7 @@ namespace Savanna::Gfx::Vk2
 
     VkDriver::~VkDriver()
     {
-        if (m_LogicalDevice != VK_NULL_HANDLE)
-        {
-            vkDestroyDevice(m_LogicalDevice, &m_AllocationCallbacks);
-            m_LogicalDevice = VK_NULL_HANDLE;
-        }
+        m_Gpu.Reset(m_Instance);
 
         if (m_Instance != VK_NULL_HANDLE)
         {

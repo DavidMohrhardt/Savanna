@@ -1,5 +1,7 @@
 #include "SavannaVk2.h"
 
+#include "VkDriver.h"
+
 namespace Savanna::Gfx::Vk2
 {
     se_VkGraphicsCapabilities_t g_GraphicsCapabilities {};

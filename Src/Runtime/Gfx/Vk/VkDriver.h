@@ -17,6 +17,8 @@
 
 #include "Gfx/GfxDriver.h"
 
+#include "VkGpu.h"
+
 #include <vulkan/vulkan.h>
 
 namespace Savanna::Gfx::Vk2
@@ -33,13 +35,10 @@ namespace Savanna::Gfx::Vk2
         friend class Savanna::IAllocator;
 
         VkInstance m_Instance;
-        VkPhysicalDevice m_PhysicalDevice;
-        VkDevice m_LogicalDevice;
+        VkGpu m_Gpu;
 
         InterfaceAllocator m_Allocator;
         VkAllocationCallbacks m_AllocationCallbacks;
-
-        VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
 
         VkDriver(const se_GfxDriverCreateInfo_t& createInfo);
         ~VkDriver();

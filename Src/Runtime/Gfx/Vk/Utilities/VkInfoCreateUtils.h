@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Utilities/SavannaCoding.h>
+
 #include "Public/ISavannaGfxVk2.h"
 
 #include <vulkan/vulkan.h>
@@ -23,8 +25,11 @@ namespace Savanna::Gfx::Vk2::Utils
     };
 
     void PopulateInstanceCreateInfo(
-        const se_VkDriverCreateInfo_t* pInDriverCreateInfo,
-        VkInstanceCreateInfo& outCreateInfo);
+        VkInstanceCreateInfo& outCreateInfo,
+        const char** ppEnabledInstanceExtensions = nullptr,
+        uint32 enabledInstanceExtensionCount = 0,
+        const char** ppEnabledLayers = nullptr,
+        uint32 enabledLayerCount = 0);
 
     void PopulateVkDeviceCreateInfo(
         const se_VkDriverCreateInfo_t& createInfo,

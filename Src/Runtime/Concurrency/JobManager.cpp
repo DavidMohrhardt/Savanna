@@ -76,8 +76,7 @@ namespace Savanna::Concurrency
     bool JobManager::InitializeInternal()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::InitializeInternal());
-        m_ThreadPoolSize = (uint8)std::thread::hardware_concurrency() - 1;
-        m_JobThreads.Reserve(m_ThreadPoolSize);
+        m_ThreadPoolSize = std::thread::hardware_concurrency() - 1;
         return true;
     }
 
@@ -88,11 +87,7 @@ namespace Savanna::Concurrency
         bool expected = false;
         if (m_ProcessingJobs.compare_exchange_weak(expected, true, std::memory_order_release))
         {
-            m_JobThreads.Resize(m_ThreadPoolSize, true);
-            for (int i = 0; i < m_JobThreads.size(); ++i)
-            {
-                m_JobThreads[i] = std::thread(ProcessJobsInternal);
-            }
+            m_JobThreads.ResizeInitialized(m_ThreadPoolSize, ProcessJobsInternal);
         }
     }
 

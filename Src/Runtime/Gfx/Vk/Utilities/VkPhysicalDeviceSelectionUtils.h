@@ -12,7 +12,7 @@
 
 #include "SavannaVk2.h"
 
-#include <vulkan/vulkan.h>
+#include "VkPhysicalDeviceScoringUtils.h"
 
 namespace Savanna::Gfx::Vk2::Utils
 {
@@ -22,29 +22,56 @@ namespace Savanna::Gfx::Vk2::Utils
         const se_VkPhysicalDeviceCreateArgs_t& physicalDeviceCreateArgs,
         const se_AllocatorInterface_t& allocatorInterface)
     {
+        SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk2::Utils::TrySelectPhysicalDevice);
         uint32 physicalDeviceCount = 0;
         VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr),
             "Failed to enumerate physical devices.",
             false);
+
         if (physicalDeviceCount == 0)
         {
             SAVANNA_LOG("No physical devices found.");
             return false;
         }
-        DynamicArray<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, allocatorInterface };
+        // just return the first device if there's only one
+        else if (physicalDeviceCount == 1)
+        {
+            VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, &outPhysicalDevice),
+                "Failed to enumerate physical devices.",
+                false);
+        }
+        else
+        {
+            DynamicArray<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, allocatorInterface };
+            physicalDevices.Resize(physicalDeviceCount);
 
-        // TODO @DavidMohrhardt: Use a scratch allocator to allocate this array since it's short lived
-        // Savanna::MemoryManager::GetScratchAllocator().Allocate(physicalDeviceCount * sizeof(VkPhysicalDevice), 1, 1);
-        VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.Data()),
-            "Failed to enumerate physical devices.",
-            false);
+            // TODO @DavidMohrhardt: Use a scratch allocator to allocate this array since it's short lived
+            // Savanna::MemoryManager::GetScratchAllocator().Allocate(physicalDeviceCount * sizeof(VkPhysicalDevice), 1, 1);
+            VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.Data()),
+                "Failed to enumerate physical devices.",
+                false);
 
-        // TODO @David.Mohrhardt: Select a physical device based on some criteria.
-        int preferredGraphicsDeviceIndex = physicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex < physicalDeviceCount
-            ? physicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex
-            : 0;
+            int preferredGraphicsDeviceIndex = ((physicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex - physicalDeviceCount) < 0)
+                ? physicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex
+                : physicalDeviceCount;
+            if (preferredGraphicsDeviceIndex < physicalDeviceCount)
+            {
+                outPhysicalDevice = physicalDevices[preferredGraphicsDeviceIndex];
+                return true;
+            }
 
-        outPhysicalDevice = physicalDevices[preferredGraphicsDeviceIndex];
-        return true;
+            uint32 highScore = 0;
+            for (auto& physicalDevice : physicalDevices)
+            {
+                uint32 score = ScoreDevice(physicalDevice);
+                if (highScore < score)
+                {
+                    highScore = score;
+                    outPhysicalDevice = physicalDevice;
+                }
+            }
+        }
+
+        return outPhysicalDevice != VK_NULL_HANDLE;
     }
 } // namespace Savanna::Gfx::Vk2::Utils

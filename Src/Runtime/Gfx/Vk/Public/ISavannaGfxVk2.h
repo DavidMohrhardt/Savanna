@@ -67,9 +67,20 @@ typedef struct se_VkPhysicalDeviceCreateArgs_t
     /**
      * @brief The index of the preferred graphics device. This is can be
      * used to select a specific device if multiple devices are available
-     * or reuse a device if the application is restarted.
+     * or reuse a device if the application is restarted. If the index
+     * is out of range, the engine will run a heuristic to select the
+     * best device.
+     *
      */
-    se_uint8 m_PreferredGraphicsDeviceIndex;
+    se_int8 m_PreferredGraphicsDeviceIndex;
+} se_VkPhysicalDeviceCreateArgs_t;
+
+/**
+ * @brief TODO @david.mohrhardt
+ *
+ */
+typedef struct se_VkLogicalDeviceCreateArgs_t
+{
 
     /**
      * @brief The names of the device extensions that should be enabled.
@@ -80,14 +91,7 @@ typedef struct se_VkPhysicalDeviceCreateArgs_t
      * @brief The number of device extensions in the m_ppEnabledDeviceExtensions array.
      */
     se_uint32 m_EnabledDeviceExtensionCount;
-} se_VkPhysicalDeviceCreateArgs_t;
 
-/**
- * @brief TODO @david.mohrhardt
- *
- */
-typedef struct se_VkLogicalDeviceCreateArgs_t
-{
     se_VkQueueFlags_t m_RequestedQueueTypes;
     se_uint32 m_RequestedQueueCount;
     float* m_pQueuePriorities;
@@ -102,6 +106,9 @@ typedef struct se_VkDriverCreateInfo_t
     se_VkInstanceCreateArgs_t m_InstanceCreateArgs;
     se_VkPhysicalDeviceCreateArgs_t m_PhysicalDeviceCreateArgs;
     se_VkLogicalDeviceCreateArgs_t m_LogicalDeviceCreateArgs;
+
+    bool m_EnableValidationLayers;
+    bool m_EnableSurfaceExtension;
 
     void* m_pNext;
     void* m_pUserData;
