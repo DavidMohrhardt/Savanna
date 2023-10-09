@@ -224,6 +224,19 @@ namespace Savanna
             m_Size = size;
         }
 
+        template <typename... Args>
+        void ResizeInitialized(size_t size, Args&&... args)
+        {
+            if (size > m_Capacity)
+                Reserve(size);
+
+            for (size_t i = m_Size; i < size; i++)
+            {
+                new (&m_Data[i]) value_type(std::forward<Args>(args)...);
+            }
+            m_Size = size;
+        }
+
         void Clear()
         {
             if (m_Data == nullptr)
