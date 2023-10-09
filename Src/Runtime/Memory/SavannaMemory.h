@@ -23,7 +23,7 @@ extern "C"
 
 namespace Savanna
 {
-    static constexpr se_AllocatorInterface_t k_HeapAllocatorInterface
+    constexpr se_AllocatorInterface_t k_HeapAllocatorInterface
     {
         .m_AllocFunc            = SavannaHeapAllocatorAllocate,
         .m_AllocAlignedFunc     = SavannaHeapAllocatorAllocateAligned,

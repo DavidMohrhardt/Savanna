@@ -70,6 +70,12 @@ namespace Savanna
     void* FreeListAllocator::alloc(const size_t& size, const size_t& alignment)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::alloc);
+
+        if (size > m_Size - m_AllocatedBytes)
+        {
+            return nullptr;
+        }
+
         MemoryChunkDescriptor* current = m_Head;
         MemoryChunkDescriptor* previous = nullptr;
 

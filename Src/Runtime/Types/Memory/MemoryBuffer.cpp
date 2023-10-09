@@ -19,7 +19,8 @@ namespace Savanna
         , m_MemoryLabel(label)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(MemoryBuffer::ctor);
-        m_Buffer = MemoryManager::GetAllocatorInterfaceForLabel(label).m_AllocFunc(size, nullptr);
+        if (m_Size > 0)
+            m_Buffer = MemoryManager::Get().Allocate(m_Size, (uint32)m_MemoryLabel);
     }
 
     MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
@@ -37,7 +38,7 @@ namespace Savanna
         SAVANNA_INSERT_SCOPED_PROFILER(MemoryBuffer::dtor);
         if (m_Buffer != nullptr)
         {
-            Savanna::MemoryManager::GetAllocatorInterfaceForLabel(m_MemoryLabel).m_FreeFunc(m_Buffer, nullptr);
+            MemoryManager::Get().Free(m_Buffer, m_MemoryLabel);
         }
 
         m_Buffer = nullptr;

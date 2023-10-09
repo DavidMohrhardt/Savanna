@@ -3,6 +3,7 @@
 
 #include "Profiling/Profiler.h"
 
+#include <array>
 #include <cstring>
 
 namespace Savanna
@@ -35,17 +36,30 @@ namespace Savanna
         };
     }
 
-    static constexpr se_AllocatorInterface_t k_LabelAllocatorInterfaces[] =
+    template<>
+    consteval se_AllocatorInterface_t GetInterfaceForLabel<k_SavannaMemoryLabelHeap>()
     {
-        k_HeapAllocatorInterface,
-        GetInterfaceForLabel<k_SavannaMemoryLabelGeneral>(),
-        GetInterfaceForLabel<k_SavannaMemoryLabelGfx>(),
-        GetInterfaceForLabel<k_SavannaMemoryLabelEcs>(),
-    };
+        return k_HeapAllocatorInterface;
+    }
+
+    template <std::size_t... I>
+    consteval auto GenerateInterfaceArray(std::index_sequence<I...>)
+    {
+        return std::array
+        {
+            GetInterfaceForLabel<I>()...
+        };
+    }
+
+    static constexpr auto k_LabelAllocatorInterfaces = GenerateInterfaceArray(std::make_index_sequence<static_cast<size_t>(k_SavannaMemoryLabelCount)>());
 
     const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForLabel(
         const MemoryLabel& label)
     {
+        if (label >= k_SavannaMemoryLabelCount)
+        {
+            throw BadAllocationException();
+        }
         return k_LabelAllocatorInterfaces[(uint32)label];
     }
 
@@ -74,19 +88,18 @@ namespace Savanna
 
     void* MemoryManager::Allocate(size_t size, size_t alignment, const uint32 label)
     {
-        // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
-        //      Remove this once MemoryArena's are implemented.
-        if (label == 0)
+        if (label == k_SavannaMemoryLabelHeap)
         {
-            return k_HeapAllocatorInterface.m_AllocFunc(size, nullptr);
+            return k_HeapAllocatorInterface.m_AllocAlignedFunc(size, alignment, nullptr);
         }
 
-        if (label - 1 >= m_MemoryArenas.Size())
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
         {
             throw BadAllocationException();
         }
 
-        return m_MemoryArenas[label - 1].alloc(size, alignment);
+        return m_MemoryArenas[label].alloc(size, alignment);
     }
 
     void* MemoryManager::Reallocate(
@@ -116,23 +129,25 @@ namespace Savanna
     {
         // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
         //      Remove this once MemoryArena's are implemented.
-        if (label == 0)
+        if (label == k_SavannaMemoryLabelHeap)
         {
             return k_HeapAllocatorInterface.m_FreeFunc(ptr, nullptr);
         }
 
-        if (label - 1 >= m_MemoryArenas.Size())
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
         {
             throw BadAllocationException();
         }
 
-        m_MemoryArenas[label - 1].free(ptr, 1);
+        m_MemoryArenas[arenaId].free(ptr, 1);
     }
 
-    bool MemoryManager::InitializeInternal() {
-        m_MemoryArenas = std::move(DynamicArray<AtomicExpandableBlockAllocator>(
-            k_SavannaMemoryLabelCount, k_HeapAllocatorInterface));
-        for (size_t i = 0; i < k_SavannaMemoryLabelCount; ++i)
+    bool MemoryManager::InitializeInternal()
+    {
+        m_MemoryArenas = DynamicArray<AtomicExpandableBlockAllocator>(k_SavannaMemoryArenaIdCount, k_HeapAllocatorInterface);
+        m_MemoryArenas.Reserve(k_SavannaMemoryArenaIdCount);
+        for (uint32 i = 0; i < k_SavannaMemoryArenaIdCount; ++i)
         {
             m_MemoryArenas.Append(std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true)));
         }
