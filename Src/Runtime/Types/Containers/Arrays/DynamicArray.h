@@ -143,16 +143,16 @@ namespace Savanna
 
         void Append(const value_type& value)
         {
-            if (m_Size == m_Capacity)
-                Reserve(m_Capacity * 2);
+            if (m_Size + 1 > m_Capacity)
+                Reserve(m_Size + 1);
 
             m_Data[m_Size++] = value;
         }
 
         void Append(value_type&& value)
         {
-            if (m_Size == m_Capacity)
-                Reserve(m_Capacity * 2);
+            if (m_Size + 1 > m_Capacity)
+                Reserve(m_Size + 1);
 
             m_Data[m_Size++] = std::move(value);
         }
@@ -160,7 +160,7 @@ namespace Savanna
         void AppendRange(const value_type* const pValues, const size_t count)
         {
             if (m_Size + count > m_Capacity)
-                Reserve(m_Capacity + count);
+                Reserve(m_Size + count);
 
             for (size_t i = 0; i < count; i++)
             {
@@ -185,22 +185,28 @@ namespace Savanna
 
             if (m_Data == nullptr)
             {
+                capacity = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
                 m_Data = m_Allocator.AllocateAs<value_type>(capacity);
                 m_Capacity = capacity;
                 return;
             }
 
+            while (m_Capacity < capacity)
+            {
+                m_Capacity *= 2;
+            }
+
             if constexpr (std::is_trivially_copyable_v<value_type>)
             {
                 value_type* previousBuffer = m_Data;
-                m_Data = m_Allocator.AllocateAs<value_type>(capacity);
+                m_Data = m_Allocator.AllocateAs<value_type>(m_Capacity);
                 memcpy(m_Data, previousBuffer, sizeof(value_type) * m_Size);
                 m_Allocator.Free(previousBuffer);
             }
             else
             {
                 value_type* previousBuffer = m_Data;
-                m_Data = m_Allocator.AllocateAs<value_type>(capacity);
+                m_Data = m_Allocator.AllocateAs<value_type>(m_Capacity);
                 for (size_t i = 0; i < m_Size; i++)
                 {
                     m_Data[i] = std::move(previousBuffer[i]);

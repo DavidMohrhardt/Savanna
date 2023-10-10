@@ -20,7 +20,6 @@
 #include "Memory/MemoryLabel.h"
 
 #include "Types/Containers/Arrays/DynamicArray.h"
-#include <vector>
 
 namespace Savanna
 {

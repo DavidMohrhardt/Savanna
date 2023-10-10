@@ -77,7 +77,9 @@ namespace Savanna
     }
 
     // TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.
-    MemoryManager::MemoryManager() {}
+    MemoryManager::MemoryManager()
+        : m_MemoryArenas(0, k_HeapAllocatorInterface)
+    {}
 
     MemoryManager::~MemoryManager() {}
 
@@ -99,7 +101,7 @@ namespace Savanna
             throw BadAllocationException();
         }
 
-        return m_MemoryArenas[label].alloc(size, alignment);
+        return m_MemoryArenas[arenaId].alloc(size, alignment);
     }
 
     void* MemoryManager::Reallocate(
@@ -145,12 +147,7 @@ namespace Savanna
 
     bool MemoryManager::InitializeInternal()
     {
-        m_MemoryArenas = DynamicArray<AtomicExpandableBlockAllocator>(k_SavannaMemoryArenaIdCount, k_HeapAllocatorInterface);
-        m_MemoryArenas.Reserve(k_SavannaMemoryArenaIdCount);
-        for (uint32 i = 0; i < k_SavannaMemoryArenaIdCount; ++i)
-        {
-            m_MemoryArenas.Append(std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true)));
-        }
+        m_MemoryArenas.ResizeInitialized(k_SavannaMemoryArenaIdCount, 1, sizeof(UnifiedPage4096KiB), true);
         return true;
     }
 
@@ -160,7 +157,7 @@ namespace Savanna
 
     void MemoryManager::ShutdownInternal()
     {
-        m_MemoryArenas.~DynamicArray();
+        m_MemoryArenas.Clear();
     }
 } // namespace Savanna
 

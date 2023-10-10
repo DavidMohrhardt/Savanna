@@ -234,20 +234,19 @@ namespace Savanna
         SAVANNA_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkDescriptor), "Attempting to deallocate pointer from an empty allocator");
 
 #if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION
-        // Check if the pointer is within the bounds of the allocator
-        bool found = false;
-        for (const auto& buffer : m_MemoryPoolContainer)
         {
-            if (ptr >= buffer.GetBuffer() && reinterpret_cast<intptr_t>(ptr) < reinterpret_cast<intptr_t>(buffer.GetBuffer()) + buffer.GetSize())
+            // Check if the pointer is within the bounds of the allocator
+            bool found = false;
+            uintptr_t ptrInt = reinterpret_cast<uintptr_t>(ptr);
+            for (const auto& buffer : m_MemoryPoolContainer)
             {
-                found = true;
-                break;
+                if (ptrInt - reinterpret_cast<uintptr_t>(buffer.GetBuffer()) < buffer.GetSize())
+                {
+                    found = true;
+                    break;
+                }
             }
-        }
-
-        if (!found) SAVANNA_BRANCH_HINT(unlikely)
-        {
-            SAVANNA_ASSERT(false, "Attempting to deallocate pointer that was not allocated by this allocator");
+            SAVANNA_ASSERT(found, "Attempting to deallocate pointer that was not allocated by this allocator");
         }
 #endif
 
