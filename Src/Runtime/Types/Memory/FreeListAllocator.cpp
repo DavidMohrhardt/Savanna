@@ -8,6 +8,8 @@
  */
 #include "FreeListAllocator.h"
 
+#include "Memory/MemoryManager.h"
+
 #include "Math/MathHelpers.h"
 #include "Math/PointerMath.h"
 #include "Profiling/Profiler.h"
@@ -17,16 +19,31 @@
 
 namespace Savanna
 {
-    FreeListAllocator::FreeListAllocator()
-        : m_Head(nullptr)
-    {}
+    FreeListAllocator::FreeListAllocator(size_t size, MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
+        : m_MemoryLabel { label }
+        , m_Head { nullptr }
+        , m_Size { size }
+        , m_AllocatedBytes { 0 }
+    {
+        SAVANNA_ASSERT(label != k_SavannaMemoryLabelNone, "Invalid memory label for memory owning allocator");
+        SAVANNA_ASSERT(size > 0, "Invalid size for memory owning allocator");
 
-    FreeListAllocator::FreeListAllocator(void* root, size_t size, bool ownsMemory)
+        m_Head = reinterpret_cast<MemoryChunkDescriptor*>(
+            MemoryManager::Get().Allocate(
+                size + sizeof(MemoryChunkDescriptor),
+                alignof(MemoryChunkDescriptor),
+                label)
+            );
+        m_Head->m_Size = size;
+        m_Head->m_Next = nullptr;
+    }
+
+    FreeListAllocator::FreeListAllocator(void* root, size_t size)
         : Allocator(root)
+        , m_MemoryLabel { k_SavannaMemoryLabelNone }
         , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
         , m_Size(root != nullptr ? size : 0)
         , m_AllocatedBytes(0)
-        , m_OwnsMemory(ownsMemory)
     {
         if (m_Head != nullptr)
         {
@@ -48,9 +65,12 @@ namespace Savanna
      */
     FreeListAllocator::~FreeListAllocator()
     {
-        if (m_OwnsMemory)
+        if (m_MemoryLabel != k_SavannaMemoryLabelNone)
         {
-            free(m_Root, 0);
+            MemoryManager::Get().Free(m_Head, m_MemoryLabel);
+            m_Head = nullptr;
+            m_Size = 0;
+            m_AllocatedBytes = 0;
         }
     }
 
@@ -59,10 +79,10 @@ namespace Savanna
         if (this != &other)
         {
             Allocator::operator=(static_cast<Allocator&&>(other));
+            SAVANNA_MOVE_MEMBER(m_MemoryLabel, other);
             SAVANNA_MOVE_MEMBER(m_Head, other);
             SAVANNA_MOVE_MEMBER(m_Size, other);
             SAVANNA_MOVE_MEMBER(m_AllocatedBytes, other);
-            SAVANNA_MOVE_MEMBER(m_OwnsMemory, other);
         }
         return *this;
     }

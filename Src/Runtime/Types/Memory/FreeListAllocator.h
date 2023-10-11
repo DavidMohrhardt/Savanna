@@ -27,14 +27,14 @@ namespace Savanna
     class FreeListAllocator : public Allocator
     {
     private:
+        MemoryLabel m_MemoryLabel;
         MemoryChunkDescriptor* m_Head;
         size_t m_Size;
         size_t m_AllocatedBytes;
-        bool m_OwnsMemory;
 
     public:
-        FreeListAllocator();
-        FreeListAllocator(void* root, size_t size, bool ownsMemory = false);
+        FreeListAllocator(size_t size, MemoryLabel label = k_SavannaMemoryLabelHeap);
+        FreeListAllocator(void* root, size_t size);
         FreeListAllocator(FreeListAllocator&& other);
 
         ~FreeListAllocator();

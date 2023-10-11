@@ -28,13 +28,12 @@ namespace Savanna
         MemoryBuffer(MemoryBuffer&& other);
         ~MemoryBuffer();
 
-    public:
         MemoryBuffer& operator=(MemoryBuffer&& other);
 
-    public:
         SAVANNA_NO_DISCARD void* GetBuffer() const { return m_Buffer; }
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; }
 
         SAVANNA_NO_DISCARD bool IsValid() const { return m_Buffer != nullptr; }
+        SAVANNA_NO_DISCARD bool PointerIsInBuffer(void* const ptr) const { return ptr >= m_Buffer && ptr < Add(m_Buffer, m_Size); }
     };
 } // namespace Savanna::Memory
