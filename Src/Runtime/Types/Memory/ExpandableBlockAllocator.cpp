@@ -119,6 +119,10 @@ namespace Savanna
         SAVANNA_INSERT_SCOPED_PROFILER(ExpandableBlockAllocator::dtor);
         // Memory is in the form of a MemoryBuffer class which will automatically free the memory
         // Since it's in a vector, it will be freed when the vector goes out of scope
+
+#if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION
+        SAVANNA_ASSERT(m_AllocationCount == m_FreeCount, "Memory leak detected!");
+#endif
     }
 
     ExpandableBlockAllocator& ExpandableBlockAllocator::operator=(ExpandableBlockAllocator &&other)
@@ -223,6 +227,9 @@ namespace Savanna
         m_AllocatedBytes += descPtr->m_Size;
 
         descPtr->m_Offset = forwardAdjustment;
+#if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION || true
+        m_AllocationCount++;
+#endif
 
         return outPtr;
     }
@@ -294,6 +301,10 @@ namespace Savanna
             previousHeader->m_Size += currentHeader->m_Size;
             previousHeader->m_Next = previousHeader->m_Next->m_Next;
         }
+
+#if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION || true
+        m_FreeCount++;
+#endif
     }
 
     MemoryChunkDescriptor* ExpandableBlockAllocator::AllocateAdditionalBuffers(size_t minimumSize)

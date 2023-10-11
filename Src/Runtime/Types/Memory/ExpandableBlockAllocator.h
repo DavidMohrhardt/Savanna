@@ -36,6 +36,12 @@ namespace Savanna
 
         DynamicArray<MemoryBuffer> m_MemoryPoolContainer;
 
+
+#if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION || true
+        size_t m_AllocationCount = 0;
+        size_t m_FreeCount = 0;
+#endif
+
     public:
         ExpandableBlockAllocator(bool contiguous = true, const MemoryLabel label = k_SavannaMemoryLabelHeap);
         ExpandableBlockAllocator(size_t initialBufferCount, size_t bufferBlockSize, bool contiguous = true, const MemoryLabel label = k_SavannaMemoryLabelHeap);
@@ -54,7 +60,6 @@ namespace Savanna
 
     private:
         MemoryChunkDescriptor* AllocateAdditionalBuffers(size_t minimumSize);
-
         void CreateBufferWithMemoryChunkDescs(
             const size_t bufferSize,
             MemoryChunkDescriptor** ppOutHead,
