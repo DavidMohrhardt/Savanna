@@ -19,14 +19,14 @@ extern "C"
     void* SavannaHeapAllocatorAllocateAligned(
         size_t size,
         size_t alignment,
-        void* pUserData)
+        void* /*pUserData*/)
     {
         return malloc(size);
     }
 
     void* SavannaHeapAllocatorAllocate(
         size_t size,
-        void* pUserData)
+        void* /*pUserData*/)
     {
         return malloc(size);
     }
@@ -35,7 +35,7 @@ extern "C"
         void* ptr,
         size_t alignment,
         const size_t& newSize,
-        void* pUserData)
+        void* /*pUserData*/)
     {
         return realloc(ptr, newSize);
     }
@@ -43,12 +43,12 @@ extern "C"
     void* SavannaHeapAllocatorRealloc(
         void* ptr,
         const size_t& newSize,
-        void* pUserData)
+        void* /*pUserData*/)
     {
         return realloc(ptr, newSize);
     }
 
-    void SavannaHeapAllocatorFree(void* ptr, void* pUserData)
+    void SavannaHeapAllocatorFree(void* ptr, void* /*pUserData*/)
     {
         if (ptr)
         {

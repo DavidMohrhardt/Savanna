@@ -46,6 +46,36 @@ typedef struct se_AllocatorInterface_t
     se_pfnFree_t m_FreeFunc;
 } se_AllocatorInterface_t;
 
+/**
+ * @brief Provides a helper macro for allocating memory using an allocator interface pointer
+ * to allocate using m_AllocFunc.
+ * @param __allocatorPtr The allocator interface pointer to use for allocation.
+ * @param __size The size of the allocation.
+ * @param __userDataPtr The user data pointer to pass to the allocator interface.
+ */
+#define SAVANNA_INTERFACE_ALLOCATE(__allocatorPtr, __size, __userDataPtr) \
+    (*(se_AllocatorInterface_t*)(__allocatorPtr)).m_AllocFunc(__size, __userDataPtr)
+
+/**
+ * @brief Provides a helper macro for allocating memory using an allocator interface pointer
+ * to allocate using m_AllocAlignedFunc.
+ * @param __allocatorPtr The allocator interface pointer to use for allocation.
+ * @param __size The size of the allocation.
+ * @param __alignment The alignment of the allocation.
+ * @param __userDataPtr The user data pointer to pass to the allocator interface.
+ */
+#define SAVANNA_INTERFACE_ALLOCATE_ALIGNED(__allocatorPtr, __size, __alignment, __userDataPtr) \
+    (*(se_AllocatorInterface_t*)(__allocatorPtr)).m_AllocAlignedFunc(__size, __alignment, __userDataPtr)
+
+#define SAVANNA_INTERFACE_FREE(__allocatorPtr, __ptr, __userDataPtr) \
+    (*(se_AllocatorInterface_t*)(__allocatorPtr)).m_FreeFunc(__ptr, __userDataPtr)
+
+#define SAVANNA_INTERFACE_REALLOCATE(__allocatorPtr, __ptr, __newSize, __userDataPtr) \
+    (*(se_AllocatorInterface_t*)(__allocatorPtr)).m_ReallocFunc(__ptr, __newSize, __userDataPtr)
+
+#define SAVANNA_INTERFACE_REALLOCATE_ALIGNED(__allocatorPtr, __ptr, __alignment, __newSize, __userDataPtr) \
+    (*(se_AllocatorInterface_t*)(__allocatorPtr)).m_ReallocAlignedFunc(__ptr, __alignment, __newSize, __userDataPtr)
+
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryGetHeapAllocatorInterface();
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface();
 SAVANNA_EXPORT(bool) SavannaMemoryManagerTryGetAllocatorInterfaceForLabel(const se_uint32& label, se_AllocatorInterface_t& outLabelInterface);

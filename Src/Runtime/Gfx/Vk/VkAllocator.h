@@ -16,36 +16,30 @@
 
 namespace Savanna::Gfx::Vk2
 {
-    class VkAllocator
+    struct VkAllocator
     {
-    private:
-        inline static InterfaceAllocator* EnsureValidInterface(void* pUserData)
-        {
-            if (pUserData == nullptr)
-            {
-                throw std::runtime_error("pUserData is nullptr!");
-            }
-            return reinterpret_cast<InterfaceAllocator*>(pUserData);
-        }
-
-    public:
         static void* Alloc(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
         {
-            return EnsureValidInterface(pUserData)->AllocateAligned(size, alignment);
+            return (*static_cast<se_AllocatorInterface_t*>(pUserData)).m_AllocAlignedFunc(size, alignment, nullptr);
         }
 
         static void* Realloc(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
         {
-            return EnsureValidInterface(pUserData)->ReallocateAligned(pOriginal, alignment, size);
+            return SAVANNA_INTERFACE_REALLOCATE_ALIGNED(pUserData, pOriginal, alignment, size, nullptr);
         }
 
         static void Free(void *pUserData, void *pMemory)
         {
-            EnsureValidInterface(pUserData)->Free(pMemory);
+            return SAVANNA_INTERFACE_FREE(pUserData, pMemory, nullptr);
         }
 
-        static VkAllocationCallbacks CreateAllocationCallbacksForInterface(InterfaceAllocator* pAllocator)
+        static VkAllocationCallbacks CreateAllocationCallbacksForInterface(se_AllocatorInterface_t* pAllocator)
         {
+            if (pAllocator == nullptr)
+            {
+                throw std::runtime_error("pAllocator is nullptr!");
+            }
+
             return {
                 .pUserData = pAllocator,
                 .pfnAllocation = Alloc,

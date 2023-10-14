@@ -15,8 +15,6 @@
 
 #include <utility>
 
-#include "Memory/SmartPtrUtils.h"
-
 #define DECLARE_FRIENDS_FOR_SINGLETON(__className) \
     friend class Singleton<__className>; \
     /*friend class std::shared_ptr<__className>;*/

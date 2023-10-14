@@ -4,7 +4,9 @@
 
 #include "VkAllocator.h"
 #include "Utilities/VkInfoCreateUtils.h"
+#include "Utilities/VkExtensionUtils.h"
 #include "Utilities/VkPhysicalDeviceSelectionUtils.h"
+#include "Utilities/VkResultUtils.h"
 
 namespace Savanna::Gfx::Vk2
 {
@@ -13,8 +15,8 @@ namespace Savanna::Gfx::Vk2
     VkDriver::VkDriver(const se_GfxDriverCreateInfo_t& createInfo)
         : m_Instance(VK_NULL_HANDLE)
         , m_Gpu()
-        , m_Allocator(createInfo.m_Allocator)
-        , m_AllocationCallbacks(VkAllocator::CreateAllocationCallbacksForInterface(&m_Allocator))
+        , m_AllocatorInterface(createInfo.m_AllocatorInterface)
+        , m_AllocationCallbacks(VkAllocator::CreateAllocationCallbacksForInterface(&m_AllocatorInterface))
     {
         // Create the Vulkan Instance
         VkApplicationInfo appInfo = Utils::k_SavannaDefaultVulkanAppInfo;
@@ -28,8 +30,8 @@ namespace Savanna::Gfx::Vk2
 
         {
             // TODO make this use a temporary allocator as it's not needed after this function
-            DynamicArray<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, createInfo.m_Allocator };
-            DynamicArray<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, createInfo.m_Allocator };
+            DynamicArray<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, createInfo.m_AllocatorInterface };
+            DynamicArray<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, createInfo.m_AllocatorInterface };
             if (driverCreateInfo.m_EnableValidationLayers)
             {
                 enabledInstanceExtensions.Append(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -51,17 +53,24 @@ namespace Savanna::Gfx::Vk2
                 enabledInstanceLayers.Append(driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers[i]);
             }
 
+            Utils::ValidateInstanceExtensions(enabledInstanceExtensions.Data(), enabledInstanceExtensions.Size());
+
             VkInstanceCreateInfo instanceCreateInfo {};
             Utils::PopulateInstanceCreateInfo(instanceCreateInfo,
                 enabledInstanceExtensions.data(), enabledInstanceExtensions.size(),
                 enabledInstanceLayers.data(), enabledInstanceLayers.size());
             instanceCreateInfo.pApplicationInfo = &appInfo;
 
-            VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance), "Failed to create Vulkan instance.");
+            auto result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_Instance);
+            if (result != VK_SUCCESS)
+            {
+                SAVANNA_LOG("Failed to create Vulkan instance: {}", ResultToString(result));
+                return;
+            }
         }
 
         // Get the physical device
-        if (!Utils::TrySelectPhysicalDevice(m_Instance, m_Gpu.m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_Allocator))
+        if (!Utils::TrySelectPhysicalDevice(m_Instance, m_Gpu.m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_AllocatorInterface))
         {
             SAVANNA_LOG("Failed to select a physical device.");
             return;
@@ -86,19 +95,19 @@ namespace Savanna::Gfx::Vk2
 
         if (m_Instance != VK_NULL_HANDLE)
         {
-            vkDestroyInstance(m_Instance, &m_AllocationCallbacks);
+            vkDestroyInstance(m_Instance, nullptr);
             m_Instance = VK_NULL_HANDLE;
         }
     }
 
     se_GfxErrorCode_t VkDriver::Initialize(const se_GfxDriverCreateInfo_t &createInfo)
     {
-        if (!IsAllocatorInterfaceValid(createInfo.m_Allocator))
+        if (!IsAllocatorInterfaceValid(createInfo.m_AllocatorInterface))
         {
             return kSavannaGfxErrorCodeInvalidAllocatorInterface;
         }
 
-        InterfaceAllocator allocator{createInfo.m_Allocator};
+        InterfaceAllocator allocator{createInfo.m_AllocatorInterface};
         VkDriver* pDriver = allocator.New<VkDriver>(createInfo);
         if (pDriver->m_Instance == VK_NULL_HANDLE)
         {
@@ -112,9 +121,10 @@ namespace Savanna::Gfx::Vk2
 
     se_GfxErrorCode_t VkDriver::Destroy()
     {
+        InterfaceAllocator allocator{g_pVulkanDriver->m_AllocatorInterface};
         if (g_pVulkanDriver != nullptr)
         {
-            g_pVulkanDriver->m_Allocator.Delete(g_pVulkanDriver);
+            allocator.Delete(g_pVulkanDriver);
             g_pVulkanDriver = nullptr;
             return kSavannaGfxErrorCodeSuccess;
         }

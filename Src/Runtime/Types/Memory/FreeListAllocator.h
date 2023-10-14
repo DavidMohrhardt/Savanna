@@ -13,14 +13,19 @@
 #include "Types/Memory/CacheLine.h"
 
 #include "Allocator.h"
-#include "MemoryChunkDescriptors.h"
 
 #include "AtomicAllocatorWrapper.h"
 
 #include "MemoryBuffer.h"
 
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+#include <unordered_map>
+#endif // SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+
 namespace Savanna
 {
+    struct MemoryChunkDescriptor;
+
     /**
      * @brief
      */
@@ -31,6 +36,11 @@ namespace Savanna
         MemoryChunkDescriptor* m_Head;
         size_t m_Size;
         size_t m_AllocatedBytes;
+
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+        size_t m_AllocationCount = 0;
+        std::unordered_map<void*, size_t> m_Allocations;
+#endif // SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
 
     public:
         FreeListAllocator(size_t size, MemoryLabel label = k_SavannaMemoryLabelHeap);

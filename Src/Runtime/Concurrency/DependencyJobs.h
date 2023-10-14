@@ -35,7 +35,7 @@ namespace Savanna::Concurrency
         {
             for (const auto& dependency : m_Dependencies)
             {
-                JobManager::Get().AwaitJobOrExecuteImmediateInternal(dependency);
+                JobManager::Get()->AwaitJobOrExecuteImmediateInternal(dependency);
             }
 
             return k_SavannaJobResultSuccess;
@@ -59,7 +59,7 @@ namespace Savanna::Concurrency
     private:
         void Dispose()
         {
-            SAVANNA_DELETE(this);
+            SAVANNA_DELETE(k_SavannaMemoryLabelGeneral, this);
         }
     };
 
@@ -82,7 +82,7 @@ namespace Savanna::Concurrency
 
         JobResult Execute() override
         {
-            JobManager::Get().AwaitJobOrExecuteImmediateInternal(m_Dependency);
+            JobManager::Get()->AwaitJobOrExecuteImmediateInternal(m_Dependency);
             return m_Job->Execute();
         }
 
@@ -104,7 +104,7 @@ namespace Savanna::Concurrency
     private:
         void Dispose()
         {
-            SAVANNA_DELETE(this);
+            SAVANNA_DELETE(k_SavannaMemoryLabelGeneral, this);
         }
     };
 } // namespace Savanna

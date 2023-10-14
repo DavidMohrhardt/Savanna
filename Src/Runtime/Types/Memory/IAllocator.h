@@ -22,15 +22,15 @@ namespace Savanna
         template<typename T>
         SAVANNA_NO_DISCARD T* AllocateAs(const size_t& count = 1)
         {
-            return reinterpret_cast<T*>(alloc(sizeof(T) * count, alignof(T)));
+            constexpr size_t alignment = alignof(T);
+            constexpr size_t size = sizeof(T);
+            return reinterpret_cast<T*>(alloc(size * count, alignment));
         }
 
         template <typename T, typename... Args>
         SAVANNA_NO_DISCARD T* New(Args&&... args)
         {
-            T* pObject = AllocateAs<T>();
-            new (pObject) T(std::forward<Args>(args)...);
-            return pObject;
+            return new (AllocateAs<T>()) T(std::forward<Args>(args)...);
         }
 
         template <typename T, typename... Args>
@@ -39,11 +39,21 @@ namespace Savanna
             if constexpr (std::is_trivially_constructible_v<T>)
             {
                 auto pBuffer = AllocateAs<T>(count);
+                if (!pBuffer)
+                {
+                    throw std::bad_alloc();
+                }
+
                 memset(pBuffer, 0, sizeof(T) * count);
                 return pBuffer;
             }
 
             T* pArray = AllocateAs<T>(count);
+            if (!pArray)
+            {
+                throw std::bad_alloc();
+            }
+
             for (size_t i = 0; i < count; i++)
             {
                 new (&pArray[i]) T(std::forward<Args>(args)...);

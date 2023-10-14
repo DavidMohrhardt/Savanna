@@ -52,7 +52,7 @@ namespace Savanna
 
         DynamicArray<MemoryPool> m_Pools;
 
-#if SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
         size_t m_Allocations = 0;
         size_t m_Frees = 0;
 #endif

@@ -8,9 +8,8 @@
  */
 #pragma once
 
-#include "Core/Memory/MemoryTestUtils.h"
+#include "Memory/MemoryTestUtils.h"
 
-#include <Types/Memory/AllocatorType.h>
 #include <Types/Memory/AllocatorUtils.h>
 
 #define DECLARE_ALLOCATOR_TEST(__subFixture, __name) \

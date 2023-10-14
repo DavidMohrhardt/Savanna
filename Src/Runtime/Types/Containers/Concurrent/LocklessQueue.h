@@ -23,6 +23,8 @@ namespace Savanna
     class LocklessQueue
     {
     private:
+        MemoryLabel m_MemoryLabel;
+
         struct Node
         {
             Node* m_Next;
@@ -35,7 +37,7 @@ namespace Savanna
         void EnqueueNode(Node* node);
 
     public:
-        LocklessQueue() : m_Head(nullptr), m_Tail(nullptr) {}
+        LocklessQueue(MemoryLabel label = k_SavannaMemoryLabelHeap) : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr) {}
         ~LocklessQueue() = default;
 
         LocklessQueue(const LocklessQueue&) = delete;
@@ -78,7 +80,7 @@ namespace Savanna
     template <typename T> inline void LocklessQueue<T>::Enqueue(const T& data)
     {
         static_assert(std::is_copy_constructible<T>::value, "Type must be copy constructible!");
-        Node* node = SAVANNA_NEW(Node);
+        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
         *node = { nullptr, data };
 
         EnqueueNode(node);
@@ -87,13 +89,14 @@ namespace Savanna
     template <typename T> inline void LocklessQueue<T>::Enqueue(T&& data)
     {
         static_assert(std::is_move_constructible<T>::value, "Type must be move constructible!");
-        Node* node = SAVANNA_NEW(Node);
+        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
         *node = { nullptr, std::move(data) };
 
         EnqueueNode(node);
     }
 
-    template <typename T> inline bool LocklessQueue<T>::TryDequeue(T &data) {
+    template <typename T> inline bool LocklessQueue<T>::TryDequeue(T &data)
+    {
         // Note: even if the head becomes null, we don't need to modify the tail as it will be overwritten
         // during the next enqueue operation.
         Node* oldHead { nullptr };
@@ -107,7 +110,7 @@ namespace Savanna
         } while (!m_Head.compare_exchange_weak(oldHead, oldHead->m_Next, std::memory_order_release, std::memory_order_relaxed));
 
         data = std::move(oldHead->m_Data);
-        SAVANNA_DELETE(oldHead);
+        SAVANNA_DELETE(m_MemoryLabel, oldHead);
         return true;
     }
 } // namespace Savanna

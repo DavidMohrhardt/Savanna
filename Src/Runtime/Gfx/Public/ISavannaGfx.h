@@ -184,7 +184,7 @@ typedef struct se_GfxDriverCreateInfo_t
     /**
      * @brief The allocator the driver should use.
      */
-    se_AllocatorInterface_t m_Allocator;
+    se_AllocatorInterface_t m_AllocatorInterface;
 
     /**
      * @brief A pointer to potential extension structs to modify

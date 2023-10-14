@@ -16,7 +16,7 @@ namespace Savanna::Concurrency
         JobHandle dependency = pJob->GetDependency();
         if (dependency != k_InvalidJobHandle)
         {
-            Get().AwaitJobOrExecuteImmediateInternal(dependency);
+            Get()->AwaitJobOrExecuteImmediateInternal(dependency);
         }
 
         JobResult result = pJob->Execute();
@@ -39,8 +39,8 @@ namespace Savanna::Concurrency
 
     void JobManager::ProcessJobsInternal()
     {
-        JobManager &manager = Get();
-        while (manager.m_ProcessingJobs.load())
+        JobManager* pManager = Get();
+        while (pManager->m_ProcessingJobs.load())
         {
             JobHandle jobHandle = k_InvalidJobHandle;
 
@@ -48,9 +48,9 @@ namespace Savanna::Concurrency
             uint32 desiredState = k_SavannaJobStateRunning;
 
                 // In the current implementation of the lockless queue you can simply pop from the queue
-            if (manager.m_HighPriorityJobs.TryDequeue(jobHandle) ||
-                manager.m_NormalPriorityJobs.TryDequeue(jobHandle) ||
-                manager.m_LowPriorityJobs.TryDequeue(jobHandle))
+            if (pManager->m_HighPriorityJobs.TryDequeue(jobHandle) ||
+                pManager->m_NormalPriorityJobs.TryDequeue(jobHandle) ||
+                pManager->m_LowPriorityJobs.TryDequeue(jobHandle))
             {
                 if (reinterpret_cast<IJob*>(jobHandle)->m_JobState.compare_exchange_weak(expectedState, desiredState, std::memory_order_release, std::memory_order_relaxed))
                 {
@@ -65,7 +65,7 @@ namespace Savanna::Concurrency
     JobManager::JobManager()
         : m_ThreadPoolSize()
         , m_ProcessingJobs(false)
-        , m_JobThreads()
+        , m_JobThreads(k_SavannaMemoryArenaIdGeneral)
         , m_HighPriorityJobs()
         , m_NormalPriorityJobs()
         , m_LowPriorityJobs()
@@ -110,8 +110,7 @@ namespace Savanna::Concurrency
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ShutdownInternal());
         StopInternal();
-
-        m_JobThreads = DynamicArray<std::thread>();
+        m_JobThreads = {};
     }
 
     /**
@@ -233,7 +232,7 @@ namespace Savanna::Concurrency
             return k_InvalidJobHandle;
         }
 
-        return ScheduleJob(SAVANNA_NEW(DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
+        return ScheduleJob(SAVANNA_NEW(k_SavannaMemoryLabelGeneral, DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
     }
 
     JobResult JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency)

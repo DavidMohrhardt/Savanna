@@ -1,7 +1,7 @@
 {
     "Name": "SavannaCore",
     "Options": [
-        "SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION",
+        "SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION",
         "SAVANNA_ENABLE_BOOT_CONFIG",
         "SAVANNA_DEEP_ENGINE_PROFILING",
         "SAVANNA_LOG_LEVEL",
@@ -20,7 +20,7 @@
                     "Value": "0"
                 },
                 {
-                    "Name": "SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION",
+                    "Name": "SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION",
                     "Value": "1"
                 },
                 {
@@ -57,7 +57,7 @@
                     "Value": "1"
                 },
                 {
-                    "Name": "SAVANNA_ENABLE_RIGOROUS_MEMORY_VALIDATION",
+                    "Name": "SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION",
                     "Value": "0"
                 },
                 {

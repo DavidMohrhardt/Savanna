@@ -132,9 +132,15 @@ namespace Savanna
         {
             if (this != &other)
             {
-                SAVANNA_MOVE_MEMBER(m_Data, other);
-                SAVANNA_MOVE_MEMBER(m_Size, other);
-                SAVANNA_MOVE_MEMBER(m_Capacity, other);
+                if (m_Data != nullptr)
+                {
+                    m_Allocator.Free(m_Data);
+                    m_Data = nullptr;
+                }
+
+                SAVANNA_MOVE_MEMBER_ASSIGN(m_Data, other);
+                SAVANNA_MOVE_MEMBER_ASSIGN(m_Size, other);
+                SAVANNA_MOVE_MEMBER_ASSIGN(m_Capacity, other);
                 SAVANNA_MOVE_MEMBER(m_Allocator, other);
             }
 

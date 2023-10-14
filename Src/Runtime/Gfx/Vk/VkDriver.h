@@ -34,10 +34,12 @@ namespace Savanna::Gfx::Vk2
         // For access to IAllocator::New<VkDriver> and IAllocator::Delete<VkDriver>
         friend class Savanna::IAllocator;
 
+        uint64 m_POISON = 0xFAFAFAFAFAFAFAFF;
+
         VkInstance m_Instance;
         VkGpu m_Gpu;
 
-        InterfaceAllocator m_Allocator;
+        se_AllocatorInterface_t m_AllocatorInterface;
         VkAllocationCallbacks m_AllocationCallbacks;
 
         VkDriver(const se_GfxDriverCreateInfo_t& createInfo);

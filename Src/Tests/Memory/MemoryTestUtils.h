@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#include "Core/CoreTestUtils.h"
+#include "SavannaTestRunner.h"
 
 #define DECLARE_MEMORY_TEST(__subFixture, __name) \
     DECLARE_CORE_TEST(Memory_##__subFixture, __name)

@@ -81,7 +81,7 @@ bool Application::TryInitGfx()
     se_GfxDriverCreateInfo_t gfxDriverCreateInfo
     {
         .m_RequestedBackendType = kSavannaGfxApiVulkan,
-        .m_Allocator = defaultAllocatorInterface,
+        .m_AllocatorInterface = defaultAllocatorInterface,
         .m_pNext = &vkDriverCreateInfo,
         .m_pUserData = nullptr,
     };

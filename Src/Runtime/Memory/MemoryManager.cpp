@@ -6,34 +6,40 @@
 #include <array>
 #include <cstring>
 
+#define ENABLE_MEMORY_MANAGEMENT 1
+
 namespace Savanna
 {
     template <uint32 LABEL>
     consteval se_AllocatorInterface_t GetInterfaceForLabel()
     {
+#if !ENABLE_MEMORY_MANAGEMENT
+        return k_HeapAllocatorInterface;
+#else // ENABLE_MEMORY_MANAGEMENT
         return se_AllocatorInterface_t
         {
             .m_AllocFunc = [](size_t size, void* pUserData) -> void*
             {
-                return MemoryManager::Get().Allocate(size, LABEL);
+                return MemoryManager::Get()->Allocate(size, LABEL);
             },
             .m_AllocAlignedFunc = [](size_t size, size_t alignment, void* pUserData) -> void*
             {
-                return MemoryManager::Get().Allocate(size, alignment, LABEL);
+                return MemoryManager::Get()->Allocate(size, alignment, LABEL);
             },
             .m_ReallocFunc = [](void* ptr, const size_t& newSize, void* pUserData) -> void*
             {
-                return MemoryManager::Get().Reallocate(ptr, newSize, LABEL);
+                return MemoryManager::Get()->Reallocate(ptr, newSize, LABEL);
             },
             .m_ReallocAlignedFunc = [](void* ptr, size_t alignment, const size_t& newSize, void* pUserData) -> void*
             {
-                return MemoryManager::Get().Reallocate(ptr, newSize, alignment, LABEL);
+                return MemoryManager::Get()->Reallocate(ptr, newSize, alignment, LABEL);
             },
             .m_FreeFunc = [](void* ptr, void* pUserData) -> void
             {
-                MemoryManager::Get().Free(ptr, LABEL);
+                MemoryManager::Get()->Free(ptr, LABEL);
             }
         };
+#endif // !ENABLE_MEMORY_MANAGEMENT
     }
 
     template<>
@@ -147,7 +153,8 @@ namespace Savanna
 
     bool MemoryManager::InitializeInternal()
     {
-        m_MemoryArenas.ResizeInitialized(k_SavannaMemoryArenaIdCount, 1, sizeof(UnifiedPage4096KiB), true);
+        // m_MemoryArenas.ResizeInitialized(k_SavannaMemoryArenaIdCount, 1, GetPageSize() * 4);
+        m_MemoryArenas.ResizeInitialized(k_SavannaMemoryArenaIdCount, 1, sizeof(UnifiedPage4096KiB));
         return true;
     }
 
@@ -166,37 +173,37 @@ namespace Savanna
 // Operator new and delete overrides
 void *operator new(size_t sz)
 {
-    return Savanna::MemoryManager::Get().Allocate(sz);
+    return Savanna::MemoryManager::Get()->Allocate(sz);
 }
 
 void* operator new(size_t sz, const uint32_t& label)
 {
-    return Savanna::MemoryManager::Get().Allocate(sz, label);
+    return Savanna::MemoryManager::Get()->Allocate(sz, label);
 }
 
 void *operator new[](size_t sz)
 {
-    return Savanna::MemoryManager::Get().Allocate(sz);
+    return Savanna::MemoryManager::Get()->Allocate(sz);
 }
 
 void operator delete(void *ptr) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 void operator delete(void *ptr, size_t size) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 void operator delete[](void *ptr) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 void operator delete[](void *ptr, size_t size) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 #endif // ENABLE_OPERATOR_NEW_DELETE_OVERRIDES

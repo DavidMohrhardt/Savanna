@@ -10,7 +10,7 @@ namespace Savanna
     {
         void operator()(void* ptr)
         {
-            MemoryManager::Get().Free(ptr);
+            MemoryManager::Free(ptr);
         }
     };
 

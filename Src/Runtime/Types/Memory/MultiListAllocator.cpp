@@ -1,4 +1,5 @@
 #include "MultiListAllocator.h"
+#include "MemoryChunkDescriptors.h"
 
 #include "Memory/MemoryManager.h"
 #include "Profiling/Profiler.h"
@@ -27,10 +28,8 @@ namespace Savanna
     {
         SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::ctor);
         SAVANNA_ASSERT(m_BufferBlockSize != 0, "Buffer block size must be greater than 0.");
-        for (int i = 0; i < initialBufferCount; ++i)
-        {
-            AllocateAdditionalMemoryBuffer(bufferBlockSize);
-        }
+        size_t bufferSize = m_BufferBlockSize;
+        AllocateAdditionalMemoryBuffer(bufferSize * initialBufferCount);
     }
 
     MultiListAllocator& MultiListAllocator::operator=(MultiListAllocator &&other)
@@ -60,6 +59,13 @@ namespace Savanna
                 outPtr = freeListAllocator.alloc(size, alignment);
             }
         }
+
+        if (outPtr == nullptr)
+        {
+            AllocateAdditionalMemoryBuffer(size);
+            outPtr = m_Pools[m_Pools.size() - 1].m_FreeListAllocator.alloc(size, alignment);
+        }
+
         return outPtr;
     }
 
@@ -84,7 +90,7 @@ namespace Savanna
     {
         SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::AcquireNewBuffer);
 
-        size_t bufferSize = m_BufferBlockSize;
+        size_t bufferSize = m_BufferBlockSize + sizeof(MemoryChunkDescriptor);
         while (bufferSize < size)
         {
             bufferSize *= 2;
