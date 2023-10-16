@@ -67,7 +67,8 @@ bool Application::TryInitGfx()
     vkDriverCreateInfo.m_pNext = nullptr;
     vkDriverCreateInfo.m_pUserData = nullptr;
     vkDriverCreateInfo.m_EnableValidationLayers = true;
-    vkDriverCreateInfo.m_EnableSurfaceExtension = true;
+    vkDriverCreateInfo.m_RequestSurface = true;
+    vkDriverCreateInfo.m_pWindowHandle = m_Window.GetWindowPtr();
 
     // TODO @david.mohrhardt: Setup input arguments for application to enable/disable validation layers.
     vkDriverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions = glfwExtensions;

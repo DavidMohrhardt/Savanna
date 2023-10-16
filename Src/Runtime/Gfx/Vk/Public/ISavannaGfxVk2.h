@@ -108,7 +108,9 @@ typedef struct se_VkDriverCreateInfo_t
     se_VkLogicalDeviceCreateArgs_t m_LogicalDeviceCreateArgs;
 
     bool m_EnableValidationLayers;
-    bool m_EnableSurfaceExtension;
+
+    bool m_RequestSurface;
+    void* m_pWindowHandle;
 
     void* m_pNext;
     void* m_pUserData;

@@ -33,10 +33,9 @@ namespace Savanna::Gfx::Vk2
     private:
         // For access to IAllocator::New<VkDriver> and IAllocator::Delete<VkDriver>
         friend class Savanna::IAllocator;
+        VkInstance m_Instance = VK_NULL_HANDLE;
+        VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 
-        uint64 m_POISON = 0xFAFAFAFAFAFAFAFF;
-
-        VkInstance m_Instance;
         VkGpu m_Gpu;
 
         se_AllocatorInterface_t m_AllocatorInterface;
@@ -57,6 +56,8 @@ namespace Savanna::Gfx::Vk2
 
     public:
         static void PopulateDriverInterface(se_GfxDriverInterface_t& outDriverInterface);
+
+        void Teardown();
 
         VkAllocationCallbacks& GetAllocationCallbacks() { return m_AllocationCallbacks; }
     };

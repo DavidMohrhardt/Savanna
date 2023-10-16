@@ -17,9 +17,5 @@
 #include "InterfaceAllocator.h"
 #include "FreeListAllocator.h"
 #include "LinearAllocator.h"
-#include "Mallocator.h"
 #include "MultiListAllocator.h"
-
-// The STL adaptor
-#include "StlAllocatorAdapter.h"
 

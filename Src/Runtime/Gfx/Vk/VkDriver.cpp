@@ -3,10 +3,12 @@
 #include "SavannaVk2.h"
 
 #include "VkAllocator.h"
+#include "Utilities/VkDebugMessenger.h"
 #include "Utilities/VkInfoCreateUtils.h"
 #include "Utilities/VkExtensionUtils.h"
 #include "Utilities/VkPhysicalDeviceSelectionUtils.h"
 #include "Utilities/VkResultUtils.h"
+#include "Utilities/VkSurfaceCreateUtils.h"
 
 namespace Savanna::Gfx::Vk2
 {
@@ -38,7 +40,7 @@ namespace Savanna::Gfx::Vk2
                 enabledInstanceLayers.Append("VK_LAYER_KHRONOS_validation");
             }
 
-            if (driverCreateInfo.m_EnableSurfaceExtension)
+            if (driverCreateInfo.m_RequestSurface)
             {
                 enabledInstanceExtensions.Append(VK_KHR_SURFACE_EXTENSION_NAME);
             }
@@ -61,7 +63,8 @@ namespace Savanna::Gfx::Vk2
                 enabledInstanceLayers.data(), enabledInstanceLayers.size());
             instanceCreateInfo.pApplicationInfo = &appInfo;
 
-            auto result = vkCreateInstance(&instanceCreateInfo, nullptr, &m_Instance);
+            SAVANNA_INSERT_SCOPED_PROFILER(InitializedVulkanInstance);
+            auto result = vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance);
             if (result != VK_SUCCESS)
             {
                 SAVANNA_LOG("Failed to create Vulkan instance: {}", ResultToString(result));
@@ -69,10 +72,27 @@ namespace Savanna::Gfx::Vk2
             }
         }
 
+        if (driverCreateInfo.m_EnableValidationLayers)
+        {
+            // Utils::DebugMessenger::Initialize(m_Instance, &m_AllocationCallbacks);
+        }
+
+        // if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
+        // {
+        //     m_Surface = Utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, &m_AllocationCallbacks);
+        //     if (m_Surface == VK_NULL_HANDLE)
+        //     {
+        //         SAVANNA_LOG("Failed to create surface.");
+        //         Teardown();
+        //         return;
+        //     }
+        // }
+
         // Get the physical device
         if (!Utils::TrySelectPhysicalDevice(m_Instance, m_Gpu.m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_AllocatorInterface))
         {
             SAVANNA_LOG("Failed to select a physical device.");
+            Teardown();
             return;
         }
 
@@ -91,13 +111,7 @@ namespace Savanna::Gfx::Vk2
 
     VkDriver::~VkDriver()
     {
-        m_Gpu.Reset(m_Instance);
-
-        if (m_Instance != VK_NULL_HANDLE)
-        {
-            vkDestroyInstance(m_Instance, nullptr);
-            m_Instance = VK_NULL_HANDLE;
-        }
+        Teardown();
     }
 
     se_GfxErrorCode_t VkDriver::Initialize(const se_GfxDriverCreateInfo_t &createInfo)
@@ -147,6 +161,26 @@ namespace Savanna::Gfx::Vk2
             .m_pfnGetBackend = []() { return kSavannaGfxApiVulkan; },
         };
         outDriverInterface = k_VulkanDriverInterface;
+    }
+
+    void VkDriver::Teardown()
+    {
+        m_Gpu.Reset(m_Instance);
+
+        if (m_Surface != VK_NULL_HANDLE)
+        {
+            vkDestroySurfaceKHR(m_Instance, m_Surface, &m_AllocationCallbacks);
+            m_Surface = VK_NULL_HANDLE;
+        }
+
+        // Okay to call even if the debug utils messenger was never created
+        Utils::DebugMessenger::Destroy();
+
+        if (m_Instance != VK_NULL_HANDLE)
+        {
+            vkDestroyInstance(m_Instance, &m_AllocationCallbacks);
+            m_Instance = VK_NULL_HANDLE;
+        }
     }
 
 } // namespace Savanna::Gfx::Vk2

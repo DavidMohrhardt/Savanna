@@ -83,7 +83,14 @@ namespace Savanna
     FreeListAllocator::~FreeListAllocator()
     {
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-        SAVANNA_ASSERT(m_Allocations.size() == 0, "Memory leak detected");
+        if (m_Allocations.size() > 0)
+        {
+            SAVANNA_LOG("Memory leak detected");
+            for (auto& [ptr, size] : m_Allocations)
+            {
+                SAVANNA_LOG("Leaked {} bytes at {}", size, ptr);
+            }
+        }
 #endif // SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
 
         if (m_MemoryLabel != k_SavannaMemoryLabelNone)
@@ -111,7 +118,7 @@ namespace Savanna
 
     void* FreeListAllocator::alloc(const size_t& size, const size_t& alignment)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::alloc);
+        // SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::alloc);
         SAVANNA_ASSERT(size > 0, "Invalid size for allocation");
         SAVANNA_ASSERT(alignment > 0, "Invalid alignment for allocation");
         SAVANNA_ASSERT(m_Head != nullptr, "Allocator is not initialized");
@@ -144,6 +151,11 @@ namespace Savanna
                 pBestFit = pCurrent;
             }
 
+            if (pCurrent->m_Next == nullptr)
+            {
+                break;
+            }
+
             pPrevious = pCurrent;
             pCurrent = pCurrent->m_Next;
         }
@@ -173,14 +185,35 @@ namespace Savanna
         }
 
         // Fixup the list
-        volatile auto* pOldHead = m_Head;
         if (pBestFit == m_Head)
         {
             m_Head = pBestFit->m_Next;
+
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+            pCurrent = m_Head;
+            while (pCurrent != nullptr)
+            {
+                SAVANNA_ASSERT(pCurrent != pBestFit, "Pointer was still in the header list!");
+                pCurrent = pCurrent->m_Next;
+            }
+#endif
+        }
+        else if (pPrevious != pBestFit)
+        {
+            pPrevious->m_Next = pBestFit->m_Next;
+
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+            pCurrent = m_Head;
+            while (pCurrent != nullptr)
+            {
+                SAVANNA_ASSERT(pCurrent != pBestFit, "Pointer was still in the header list!");
+                pCurrent = pCurrent->m_Next;
+            }
+#endif
         }
         else
         {
-            pPrevious->m_Next = pBestFit->m_Next;
+            SAVANNA_ASSERT(false, "This should never happen");
         }
 
         m_AllocatedBytes += allocationDescriptor.m_Size;
@@ -189,7 +222,11 @@ namespace Savanna
         reinterpret_cast<AllocationDescriptor*>(pAllocation)[-1] = allocationDescriptor;
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+        SAVANNA_ASSERT(m_Allocations.find(pAllocation) == m_Allocations.end(), "Pointer was already in the allocation list!");
         m_Allocations[pAllocation] = allocationDescriptor.m_Size;
+        m_AllocationCount++;
+        SAVANNA_ASSERT(m_AllocationCount == m_Allocations.size(), "Allocation count does not match allocation list size");
+
         SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
 #endif
 
@@ -203,10 +240,14 @@ namespace Savanna
 
     void FreeListAllocator::free(void* const ptr, const size_t& alignment)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::free);
+        // SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::free);
         SAVANNA_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
         SAVANNA_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkDescriptor), "Attempting to deallocate pointer from an empty allocator");
         SAVANNA_ASSERT(IsAddressInBounds(ptr, m_Root, Add(m_Root, m_Size)), "Attempting to deallocate pointer from an allocator that does not own it");
+
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+        SAVANNA_ASSERT(m_Allocations.find(ptr) != m_Allocations.end(), "Pointer is not known to the allocator");
+#endif
 
         AllocationDescriptor allocationDescriptor = reinterpret_cast<AllocationDescriptor*>(ptr)[-1];
 
@@ -225,31 +266,43 @@ namespace Savanna
         // Is used later
         MemoryChunkDescriptor* pChunk = reinterpret_cast<MemoryChunkDescriptor*>(
             Subtract(ptr, sizeof(AllocationDescriptor) + allocationDescriptor.m_Offset));
-        if (pPrevious != nullptr && pPrevious->IsAdjacent(pChunk))
+
+        if (pPrevious != nullptr)
         {
-            // Merge with previous chunk
-            pPrevious->m_Size += allocationDescriptor.m_Size + sizeof(MemoryChunkDescriptor);
-            m_AllocatedBytes -= sizeof(MemoryChunkDescriptor);
+            SAVANNA_ASSERT(pPrevious != pChunk, "Pointer was still in the header list!");
+            if (pPrevious->IsAdjacent(pChunk))
+            {
+                // Merge with previous chunk
+                pPrevious->m_Size += allocationDescriptor.m_Size + sizeof(MemoryChunkDescriptor);
+                m_AllocatedBytes -= sizeof(MemoryChunkDescriptor);
+            }
+            else
+            {
+                // Insert chunk before current
+                pChunk[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size, pCurrent);
+                pPrevious->m_Next = pChunk;
+            }
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+            SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
+#endif
         }
         else
         {
             // Insert chunk before current
             pChunk[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size, pCurrent);
-            if (pPrevious != nullptr)
-            {
-                pPrevious->m_Next = pChunk;
-            }
-            else
-            {
-                m_Head = pChunk;
-            }
+            m_Head = pChunk;
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+            SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
+#endif
         }
 
         m_AllocatedBytes -= allocationDescriptor.m_Size;
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
         m_Allocations.erase(ptr);
-        SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
+        m_AllocationCount--;
+        SAVANNA_ASSERT(m_Allocations.find(ptr) == m_Allocations.end(), "Pointer was still in the allocation list!");
+        SAVANNA_ASSERT(m_AllocationCount == m_Allocations.size(), "Allocation count does not match allocation list size");
 #endif
     }
 

@@ -26,7 +26,7 @@ namespace Savanna
         , m_Size { 0 }
         , m_Pools(initialBufferCount > 0 ? initialBufferCount : 1, MemoryManager::GetAllocatorInterfaceForLabel(label))
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::ctor);
+        // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::ctor);
         SAVANNA_ASSERT(m_BufferBlockSize != 0, "Buffer block size must be greater than 0.");
         size_t bufferSize = m_BufferBlockSize;
         AllocateAdditionalMemoryBuffer(bufferSize * initialBufferCount);
@@ -49,7 +49,7 @@ namespace Savanna
     SAVANNA_NO_DISCARD void* MultiListAllocator::alloc(
         const size_t& size, const size_t& alignment)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::alloc);
+        // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::alloc);
         void* outPtr = nullptr;
         for (auto& pool : m_Pools)
         {
@@ -72,7 +72,7 @@ namespace Savanna
     void MultiListAllocator::free(
         void* const ptr, const size_t& alignment)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::free);
+        // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::free);
         for (auto& pool : m_Pools)
         {
             FreeListAllocator& freeListAllocator = pool.m_FreeListAllocator;
@@ -88,7 +88,7 @@ namespace Savanna
 
     void MultiListAllocator::AllocateAdditionalMemoryBuffer(size_t size)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::AcquireNewBuffer);
+        // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::AcquireNewBuffer);
 
         size_t bufferSize = m_BufferBlockSize + sizeof(MemoryChunkDescriptor);
         while (bufferSize < size)

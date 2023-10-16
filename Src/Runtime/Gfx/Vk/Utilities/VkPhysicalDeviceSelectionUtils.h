@@ -22,6 +22,10 @@ namespace Savanna::Gfx::Vk2::Utils
         const se_VkPhysicalDeviceCreateArgs_t& physicalDeviceCreateArgs,
         const se_AllocatorInterface_t& allocatorInterface)
     {
+        // TODO @DavidMohrhardt: It appears that VkEnumeratePhysicalDevices
+        // has a memory leak in the implementation. It seemingly allocates
+        // memory for something but never ends up freeing them. Using
+        // a custom allocator bypasses the problem but it'll still be reported.
         SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk2::Utils::TrySelectPhysicalDevice);
         uint32 physicalDeviceCount = 0;
         VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr),
