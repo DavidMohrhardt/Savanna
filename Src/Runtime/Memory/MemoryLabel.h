@@ -12,7 +12,18 @@
 
 #include "Utilities/SavannaCoding.h"
 
-DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, uint32_t,
+// TODO @DavidMohrhardt (2023/10/21): Extend the memory label/arena system to support selection of allocation types (IE. Temp, Persistent, etc.)
+/**
+typedef struct se_AllocatorSelection_t
+{
+    se_MemoryArenaId_t m_ArenaId;
+    se_AllocatorKind_t m_AllocatorKind;
+} se_AllocatorSelection_t;
+ */
+
+typedef uint16_t se_MemoryLabelBackingInt_t;
+
+DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, se_MemoryLabelBackingInt_t,
     // This label is used for memory that is allocated from the OS
     // It's not included in the count above because it's not an engine
     // specific label.
@@ -27,7 +38,7 @@ DEFINE_SAVANNA_ENUM(Savanna, se_MemoryLabel_t, MemoryLabel, uint32_t,
     k_SavannaMemoryLabelNone = k_SavannaMemoryLabelCount,
 );
 
-DEFINE_SAVANNA_ENUM(Savanna, se_MemoryArenaId_t, ArenaId, uint32_t,
+DEFINE_SAVANNA_ENUM(Savanna, se_MemoryArenaId_t, ArenaId, se_MemoryLabelBackingInt_t,
     k_SavannaMemoryArenaIdGeneral,
     k_SavannaMemoryArenaIdGfx,
     k_SavannaMemoryArenaIdECS,
@@ -35,7 +46,12 @@ DEFINE_SAVANNA_ENUM(Savanna, se_MemoryArenaId_t, ArenaId, uint32_t,
     k_SavannaMemoryArenaIdInvalid = k_SavannaMemoryArenaIdCount,
 );
 
-inline se_MemoryArenaId_t SavannaMemoryGetArenaIdFromLabel(uint32_t label)
+DEFINE_SAVANNA_ENUM(Savanna, se_AllocatorKind_t, AllocatorKind, se_MemoryLabelBackingInt_t,
+    k_SavannaAllocatorKindPersistent,
+    k_SavannaAllocatorKindTemp,
+);
+
+inline se_MemoryArenaId_t SavannaMemoryGetArenaIdFromLabel(se_MemoryLabelBackingInt_t label)
 {
     switch (label)
     {
@@ -50,7 +66,7 @@ inline se_MemoryArenaId_t SavannaMemoryGetArenaIdFromLabel(uint32_t label)
     }
 }
 
-inline se_MemoryLabel_t SavannaMemoryGetLabelFromArenaId(uint32_t id)
+inline se_MemoryLabel_t SavannaMemoryGetLabelFromArenaId(se_MemoryLabelBackingInt_t id)
 {
     switch (id)
     {
@@ -65,7 +81,7 @@ inline se_MemoryLabel_t SavannaMemoryGetLabelFromArenaId(uint32_t id)
     }
 }
 
-inline const char* SavannaEngineGetMemoryArenaName(se_uint32 arenaId)
+inline const char* SavannaEngineGetMemoryArenaName(se_MemoryLabelBackingInt_t arenaId)
 {
     switch (arenaId)
     {
@@ -80,7 +96,7 @@ inline const char* SavannaEngineGetMemoryArenaName(se_uint32 arenaId)
     }
 }
 
-inline const char* SavannaEngineGetMemoryLabelName(se_uint32 label)
+inline const char* SavannaEngineGetMemoryLabelName(se_MemoryLabelBackingInt_t label)
 {
     switch (label)
     {

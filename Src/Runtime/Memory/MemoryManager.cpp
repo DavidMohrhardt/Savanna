@@ -11,7 +11,7 @@
 
 namespace Savanna
 {
-    template <uint32 LABEL>
+    template <se_MemoryLabelBackingInt_t LABEL>
     consteval se_AllocatorInterface_t GetInterfaceForLabel()
     {
 #if !ENABLE_MEMORY_MANAGEMENT
@@ -67,7 +67,7 @@ namespace Savanna
         {
             throw BadAllocationException();
         }
-        return k_LabelAllocatorInterfaces[(uint32)label];
+        return k_LabelAllocatorInterfaces[label.m_BackingValue];
     }
 
     bool MemoryManager::TryGetAllocatorInterfaceForLabel(
@@ -90,12 +90,12 @@ namespace Savanna
 
     MemoryManager::~MemoryManager() {}
 
-    void* MemoryManager::Allocate(size_t size, const uint32 label)
+    void* MemoryManager::Allocate(size_t size, const se_MemoryLabelBackingInt_t label)
     {
         return Allocate(size, 1, label);
     }
 
-    void* MemoryManager::Allocate(size_t size, size_t alignment, const uint32 label)
+    void* MemoryManager::Allocate(size_t size, size_t alignment, const se_MemoryLabelBackingInt_t label)
     {
         if (label == k_SavannaMemoryLabelHeap)
         {
@@ -114,7 +114,7 @@ namespace Savanna
     void* MemoryManager::Reallocate(
         void *ptr,
         size_t newSize,
-        const uint32 label)
+        const se_MemoryLabelBackingInt_t label)
     {
         return Reallocate(ptr, newSize, 1, label);
     }
@@ -123,7 +123,7 @@ namespace Savanna
         void* ptr,
         size_t newSize,
         size_t alignment,
-        const uint32 label)
+        const se_MemoryLabelBackingInt_t label)
     {
         if (label == k_SavannaMemoryLabelHeap)
         {
@@ -139,7 +139,7 @@ namespace Savanna
         return m_MemoryArenas[arenaId].realloc(ptr, newSize, alignment);
     }
 
-    void MemoryManager::Free(void* ptr, const uint32 label)
+    void MemoryManager::Free(void* ptr, const se_MemoryLabelBackingInt_t label)
     {
         // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
         //      Remove this once MemoryArena's are implemented.

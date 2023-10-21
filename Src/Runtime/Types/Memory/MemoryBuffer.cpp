@@ -20,7 +20,7 @@ namespace Savanna
     {
         SAVANNA_INSERT_SCOPED_PROFILER(MemoryBuffer::ctor);
         if (m_Size > 0)
-            m_Buffer = MemoryManager::Get()->Allocate(m_Size, (uint32)m_MemoryLabel);
+            m_Buffer = MemoryManager::Get()->Allocate(m_Size, m_MemoryLabel.m_BackingValue);
     }
 
     MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)

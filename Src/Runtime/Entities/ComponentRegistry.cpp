@@ -16,22 +16,13 @@
 #include <assert.h>
 #include <mutex>
 
-//  Savanna includes
-#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-#include <Types/Locks/VolatileLock.h>
-#endif
-
 #include <Utilities/Console.h>
 
 namespace Savanna::Entities::ComponentRegistry
 {
     using namespace Savanna::Entities;
 
-    // TODO @DavidMohrhardt Consider moving to an atomic approach instead of a mutex.
-#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-    VolatileLock g_ComponentKeyAccessLock;
-#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-
+    // TODO @DavidMohrhardt Create a SingleWriterMultipleReader lockless version of this
     std::mutex g_ComponentRegistryMutex;
 
     ComponentKey g_ComponentKeyCounter = ComponentKey(0x1);
@@ -40,34 +31,19 @@ namespace Savanna::Entities::ComponentRegistry
 
     const se_ComponentKeyMask_T GetNumberOfComponentKeySets()
     {
-        // TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.
-#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        VolatileLockGuard lock(g_ComponentKeyAccessLock);
-#else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
-#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
         return g_ComponentKeyCounter.GetRingIndex();
     }
 
     const uint32 GetTotalNumberOfRegisteredComponents()
     {
-        // TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.
-#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        VolatileLockGuard lock(g_ComponentKeyAccessLock);
-#else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
-#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
         return s_ComponentTypeMap.size();
     }
 
     const ComponentKey GetNextAvailableComponentKey()
     {
-        // TODO @DavidMohrhardt Perhaps can use a volatility lock instead of a mutex.
-#if SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
-        VolatileLockGuard lock(g_ComponentKeyAccessLock);
-#else // Original
         std::lock_guard<std::mutex> lock(g_ComponentRegistryMutex);
-#endif // end SAVANNA_TODO_TEST_LOCKLESS_COMPONENT_REGISTRY
         return g_ComponentKeyCounter;
     }
 

@@ -35,21 +35,21 @@ namespace Savanna
         ~MemoryManager();
 
     public:
-        void* Allocate(size_t size, const uint32 label = k_SavannaMemoryLabelGeneral);
-        void* Allocate(size_t size, size_t alignment, const uint32 label = k_SavannaMemoryLabelGeneral);
-        void* Reallocate(void* ptr, size_t newSize, const uint32 label = k_SavannaMemoryLabelGeneral);
-        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const uint32 label = k_SavannaMemoryLabelGeneral);
+        void* Allocate(size_t size, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+        void* Allocate(size_t size, size_t alignment, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+        void* Reallocate(void* ptr, size_t newSize, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
 
-        void Free(void* ptr, const uint32 label = k_SavannaMemoryLabelGeneral);
+        void Free(void* ptr, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
 
         template <typename T, typename ...ARGS>
-        inline T* New(const uint32 label, ARGS&&... args)
+        inline T* New(const se_MemoryLabelBackingInt_t label, ARGS&&... args)
         {
             return new (static_cast<T*>(Allocate(sizeof(T), label))) T(std::forward<ARGS>(args)...);
         }
 
         template <typename T>
-        inline T* NewArray(const size_t& count, const uint32 label)
+        inline T* NewArray(const size_t& count, const se_MemoryLabelBackingInt_t label)
         {
             return new (static_cast<T*>(Allocate(sizeof(T) * count, label))) T[count];
         }
@@ -62,7 +62,7 @@ namespace Savanna
         }
 
         template <typename T>
-        inline void DeleteArray(T* ptr, const size_t& count, const uint32 label)
+        inline void DeleteArray(T* ptr, const size_t& count, const se_MemoryLabelBackingInt_t label)
         {
             for (size_t i = 0; i < count; ++i)
             {
