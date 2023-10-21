@@ -165,9 +165,9 @@ namespace Savanna::Entities
 
     }
 
-    ArraySlice<ComponentKey> Paradigm::GetKeyChain() const
+    array_view<ComponentKey> Paradigm::GetKeyChain() const
     {
-        return ArraySlice<ComponentKey>(m_ParadigmKeyChain, SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
+        return array_view<ComponentKey>(m_ParadigmKeyChain, SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS);
     }
 } // namespace Savanna::Entities
 

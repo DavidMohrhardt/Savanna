@@ -21,7 +21,7 @@
 #include "Utilities/SavannaCoding.h"
 
 #include <Math/MathHelpers.h>
-#include <Types/Containers/Arrays/ArraySlice.h>
+#include <Types/Containers/Arrays/array_view.h>
 #include <Types/Memory/MemoryBlocks.h>
 
 
@@ -133,11 +133,11 @@ namespace Savanna::Entities
         void UpdateParadigmLayout();
 
     public:
-        ArraySlice<ComponentKey> GetKeyChain() const;
+        array_view<ComponentKey> GetKeyChain() const;
 
     public:
         template <typename T>
-        SAVANNA_NO_DISCARD ArraySlice<IComponentData<T>*> GetComponents(size_t* pOutComponentArrayLength)
+        SAVANNA_NO_DISCARD array_view<IComponentData<T>*> GetComponents(size_t* pOutComponentArrayLength)
         {
             if (pOutComponentArrayLength == nullptr)
             {

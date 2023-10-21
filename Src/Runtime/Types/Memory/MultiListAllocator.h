@@ -18,7 +18,7 @@
 
 #include "Memory/MemoryLabel.h"
 
-#include "Types/Containers/Arrays/DynamicArray.h"
+#include "Types/Containers/Arrays/dynamic_array.h"
 #include "Types/Memory/MemoryBuffer.h"
 
 namespace Savanna
@@ -42,6 +42,21 @@ namespace Savanna
                 : m_MemoryBuffer(size, label)
                 , m_FreeListAllocator(m_MemoryBuffer.GetBuffer(), size)
             {}
+
+            MemoryPool(MemoryPool&& other) noexcept
+                : m_MemoryBuffer(std::move(other.m_MemoryBuffer))
+                , m_FreeListAllocator(std::move(other.m_FreeListAllocator))
+            {}
+
+            MemoryPool& operator=(MemoryPool&& other) noexcept
+            {
+                if (this != &other)
+                {
+                    m_MemoryBuffer = std::move(other.m_MemoryBuffer);
+                    m_FreeListAllocator = std::move(other.m_FreeListAllocator);
+                }
+                return *this;
+            }
         };
 
         MemoryLabel m_MemoryLabel;
@@ -50,7 +65,7 @@ namespace Savanna
         size_t m_AllocatedBytes = 0;
         size_t m_Size = 0;
 
-        DynamicArray<MemoryPool> m_Pools;
+        dynamic_array<MemoryPool> m_Pools;
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
         size_t m_Allocations = 0;
@@ -68,12 +83,15 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
         void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
+        SAVANNA_NO_DISCARD void* realloc(void* const ptr, const size_t& newSize, const size_t& alignment) SAVANNA_OVERRIDE;
 
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; }
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; }
 
     private:
         void AllocateAdditionalMemoryBuffer(size_t size);
+        FreeListAllocator& FindPointerInPools(void* const ptr);
+        FreeListAllocator& FindAllocatorForSize(size_t size);
     };
 
     using AtomicMultiListAllocator = AtomicAllocatorWrapper<MultiListAllocator>;

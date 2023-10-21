@@ -34,4 +34,10 @@ namespace Savanna::Gfx::Vk2::Utils
     void PopulateVkDeviceCreateInfo(
         const se_VkDriverCreateInfo_t& createInfo,
         VkDeviceCreateInfo& deviceCreateInfo);
+
+    void PopulateVkDeviceCreateInfo(
+        const se_VkDriverCreateInfo_t& createInfo,
+        const VkDeviceQueueCreateInfo* pQueueCreateInfo,
+        const uint32 queueCreateInfoCount,
+        VkDeviceCreateInfo& deviceCreateInfo);
 } // namespace Savanna::Gfx::Vk

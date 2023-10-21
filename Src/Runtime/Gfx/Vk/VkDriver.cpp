@@ -10,6 +10,14 @@
 #include "Utilities/VkResultUtils.h"
 #include "Utilities/VkSurfaceCreateUtils.h"
 
+#define VK_DRIVER_SUCCESS_OR_TEARDOWN(__comparison, __msg) \
+    if (!(__comparison))                            \
+    {                                               \
+        SAVANNA_LOG(__msg);                         \
+        Teardown();                                 \
+        return;                                     \
+    }
+
 namespace Savanna::Gfx::Vk2
 {
     static VkDriver* g_pVulkanDriver = nullptr;
@@ -32,30 +40,27 @@ namespace Savanna::Gfx::Vk2
 
         {
             // TODO make this use a temporary allocator as it's not needed after this function
-            DynamicArray<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, createInfo.m_AllocatorInterface };
-            DynamicArray<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, createInfo.m_AllocatorInterface };
+            dynamic_array<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, k_SavannaMemoryArenaIdGfx };
+            dynamic_array<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, k_SavannaMemoryArenaIdGfx };
             if (driverCreateInfo.m_EnableValidationLayers)
             {
-                enabledInstanceExtensions.Append(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-                enabledInstanceLayers.Append("VK_LAYER_KHRONOS_validation");
+                enabledInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+                enabledInstanceLayers.push_back("VK_LAYER_KHRONOS_validation");
             }
 
             if (driverCreateInfo.m_RequestSurface)
             {
-                enabledInstanceExtensions.Append(VK_KHR_SURFACE_EXTENSION_NAME);
+                enabledInstanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
             }
 
-            for (uint32 i = 0; i < driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount; ++i)
-            {
-                enabledInstanceExtensions.Append(driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions[i]);
-            }
+            Utils::PopulateInstanceExtensions(enabledInstanceExtensions,
+                driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledInstanceExtensions,
+                driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount);
 
             for (uint32 i = 0; i < driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount; ++i)
             {
-                enabledInstanceLayers.Append(driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers[i]);
+                enabledInstanceLayers.push_back(driverCreateInfo.m_InstanceCreateArgs.m_ppEnabledLayers[i]);
             }
-
-            Utils::ValidateInstanceExtensions(enabledInstanceExtensions.Data(), enabledInstanceExtensions.Size());
 
             VkInstanceCreateInfo instanceCreateInfo {};
             Utils::PopulateInstanceCreateInfo(instanceCreateInfo,
@@ -63,50 +68,23 @@ namespace Savanna::Gfx::Vk2
                 enabledInstanceLayers.data(), enabledInstanceLayers.size());
             instanceCreateInfo.pApplicationInfo = &appInfo;
 
-            SAVANNA_INSERT_SCOPED_PROFILER(InitializedVulkanInstance);
-            auto result = vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance);
-            if (result != VK_SUCCESS)
-            {
-                SAVANNA_LOG("Failed to create Vulkan instance: {}", ResultToString(result));
-                return;
-            }
+            VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance), "Failed to create Vulkan instance.");
         }
 
         if (driverCreateInfo.m_EnableValidationLayers)
         {
-            // Utils::DebugMessenger::Initialize(m_Instance, &m_AllocationCallbacks);
+            Utils::DebugMessenger::Initialize(m_Instance, &m_AllocationCallbacks);
         }
 
-        // if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
-        // {
-        //     m_Surface = Utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, &m_AllocationCallbacks);
-        //     if (m_Surface == VK_NULL_HANDLE)
-        //     {
-        //         SAVANNA_LOG("Failed to create surface.");
-        //         Teardown();
-        //         return;
-        //     }
-        // }
-
-        // Get the physical device
-        if (!Utils::TrySelectPhysicalDevice(m_Instance, m_Gpu.m_PhysicalDevice, driverCreateInfo.m_PhysicalDeviceCreateArgs, createInfo.m_AllocatorInterface))
+        if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
         {
-            SAVANNA_LOG("Failed to select a physical device.");
-            Teardown();
-            return;
+            VK_DRIVER_SUCCESS_OR_TEARDOWN(
+                (m_Surface = Utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, &m_AllocationCallbacks)) != VK_NULL_HANDLE,
+                "Failed to create surface.");
         }
 
-        // Print the physical device properties
-        vkGetPhysicalDeviceProperties(m_Gpu.m_PhysicalDevice, &m_Gpu.m_PhysicalDeviceProperties);
-        SAVANNA_LOG("Selected physical device:\n\t{}", m_Gpu.m_PhysicalDeviceProperties.deviceName);
-
-        // Create the logical device
-        // VkDeviceCreateInfo logicalDeviceCreateInfo = Utils::PopulateLogicalDeviceCreateInfo(&driverCreateInfo);
-        // VkPhysicalDeviceFeatures physicalDeviceFeatures;
-        // vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &physicalDeviceFeatures);
-        // logicalDeviceCreateInfo.pEnabledFeatures = &physicalDeviceFeatures;
-
-        // VK_MUST_SUCCEED(vkCreateDevice(m_PhysicalDevice, &logicalDeviceCreateInfo, &m_AllocationCallbacks, &m_LogicalDevice), "Failed to create logical device.");
+        // Initialize the GPU
+        VK_DRIVER_SUCCESS_OR_TEARDOWN(m_Gpu.TryInitialize(driverCreateInfo, m_Instance, m_Surface, &m_AllocationCallbacks), "Failed to initialize GPU.");
     }
 
     VkDriver::~VkDriver()
@@ -165,7 +143,7 @@ namespace Savanna::Gfx::Vk2
 
     void VkDriver::Teardown()
     {
-        m_Gpu.Reset(m_Instance);
+        m_Gpu.Reset(m_Instance, &m_AllocationCallbacks);
 
         if (m_Surface != VK_NULL_HANDLE)
         {

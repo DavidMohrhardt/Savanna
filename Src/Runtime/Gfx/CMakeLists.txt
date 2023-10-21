@@ -8,5 +8,5 @@ target_include_directories(${SAVANNA_ACTIVE_TARGET} PUBLIC ${CMAKE_CURRENT_LIST_
 message(STATUS "[${SAVANNA_ACTIVE_TARGET}::Gfx] Processing GFX API subdirectories...")
 
 # add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Materials)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Vulkan)
+# add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Vulkan)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Vk)

@@ -6,7 +6,7 @@
 
 #include "SavannaMemory.h"
 
-#include "Types/Containers/Arrays/DynamicArray.h"
+#include "Types/Containers/Arrays/dynamic_array.h"
 #include "Types/Manager/GlobalManager.h"
 #include "Types/Memory/MemoryBlocks.h"
 
@@ -29,7 +29,7 @@ namespace Savanna
         static bool TryGetAllocatorInterfaceForLabel(const uint32& label, se_AllocatorInterface_t& outLabelInterface);
 
     private:
-        DynamicArray<AtomicMultiListAllocator> m_MemoryArenas;
+        dynamic_array<AtomicMultiListAllocator> m_MemoryArenas;
 
         MemoryManager();
         ~MemoryManager();

@@ -1,18 +1,17 @@
 #pragma once
 
 // Savanna Includes
-#include "SavannaVk.h"
+#include "SavannaVk2.h"
 
-// Vulkan Includes
-#include <vulkan/vulkan.h>
+#include "Types/Containers/Arrays/dynamic_array.h"
 
 #include <optional>
 
-namespace Savanna::Gfx::Vk
+namespace Savanna::Gfx::Vk2
 {
-    struct QueueFamilyIndices
+    struct VkQueueFamilyIndices
     {
-    public:
+    private:
         std::optional<uint32> m_GraphicsQueueFamilyIndex;
         std::optional<uint32> m_PresentQueueFamilyIndex;
         std::optional<uint32> m_ComputeQueueFamilyIndex;
@@ -20,20 +19,21 @@ namespace Savanna::Gfx::Vk
         std::optional<uint32> m_SparseBindingQueueFamilyIndex;
 
     public:
-        QueueFamilyIndices(const VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surfacePtr = nullptr);
+        VkQueueFamilyIndices(
+            const VkPhysicalDevice physicalDevice,
+            const VkSurfaceKHR surface = VK_NULL_HANDLE);
 
-        QueueFamilyIndices() = default;
-        QueueFamilyIndices(const QueueFamilyIndices& other) = default;
-        QueueFamilyIndices(QueueFamilyIndices&& other) = default;
-        QueueFamilyIndices& operator=(const QueueFamilyIndices& other) = default;
-        QueueFamilyIndices& operator=(QueueFamilyIndices&& other) = default;
-        ~QueueFamilyIndices() = default;
+        VkQueueFamilyIndices() = default;
+        VkQueueFamilyIndices(const VkQueueFamilyIndices& other) = default;
+        VkQueueFamilyIndices(VkQueueFamilyIndices&& other) = default;
+        VkQueueFamilyIndices& operator=(const VkQueueFamilyIndices& other) = default;
+        VkQueueFamilyIndices& operator=(VkQueueFamilyIndices&& other) = default;
+        ~VkQueueFamilyIndices() = default;
 
-    public:
-        void PopulateQueueFamilyIndices(const VkPhysicalDevice& physicalDevice, VkSurfaceKHR* surfacePtr = nullptr);
-        void SetupQueueFamilyCreateInfos(VkDeviceQueueCreateInfo* queueCreateInfos, const uint32 queueCreateInfoCount);
+        void GetUniqueQueueFamilies(
+            dynamic_array<VkDeviceQueueCreateInfo> &queueCreateInfos,
+            float* pQueuePriority = nullptr);
 
-    public:
         bool HasGraphicsQueueFamilyIndex() const
         {
             return m_GraphicsQueueFamilyIndex.has_value();

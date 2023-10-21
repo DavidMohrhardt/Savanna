@@ -7,7 +7,6 @@
  *
  */
 #include "FreeListAllocator.h"
-#include "MemoryChunkDescriptors.h"
 
 #include "Memory/MemoryManager.h"
 
@@ -20,6 +19,7 @@
 
 namespace Savanna
 {
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
     inline bool IsLinkedListCyclic(const MemoryChunkDescriptor* pHead)
     {
         // Find cycles in the linked list
@@ -38,11 +38,33 @@ namespace Savanna
         return false;
     }
 
-    FreeListAllocator::FreeListAllocator(size_t size, MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
-        : m_MemoryLabel { label }
-        , m_Head { nullptr }
-        , m_Size { size }
-        , m_AllocatedBytes { 0 }
+    inline bool IsPointerInList(MemoryChunkDescriptor* head, void* ptr)
+    {
+        MemoryChunkDescriptor* pCurrent = head;
+        while (pCurrent != nullptr)
+        {
+            if (pCurrent == ptr)
+            {
+                return true;
+            }
+            pCurrent = pCurrent->m_Next;
+        }
+        return false;
+    }
+#endif
+
+    AllocationDescriptor FreeListAllocator::GetAllocationDescriptor(void *const ptr) const
+    {
+        AllocationDescriptor allocationDescriptor = reinterpret_cast<AllocationDescriptor*>(ptr)[-1];
+        return allocationDescriptor;
+    }
+
+    FreeListAllocator::FreeListAllocator(
+        size_t size, MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
+        : m_MemoryLabel{label}
+        , m_Head{nullptr}
+        , m_Size{size}
+        , m_AllocatedBytes{0}
     {
         SAVANNA_ASSERT(label != k_SavannaMemoryLabelNone, "Invalid memory label for memory owning allocator");
         SAVANNA_ASSERT(size > 0, "Invalid size for memory owning allocator");
@@ -58,7 +80,7 @@ namespace Savanna
     }
 
     FreeListAllocator::FreeListAllocator(void* root, size_t size)
-        : Allocator(root)
+        : m_Root(root)
         , m_MemoryLabel { k_SavannaMemoryLabelNone }
         , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
         , m_Size(root != nullptr ? size : 0)
@@ -107,7 +129,7 @@ namespace Savanna
     {
         if (this != &other)
         {
-            Allocator::operator=(static_cast<Allocator&&>(other));
+            SAVANNA_MOVE_MEMBER(m_Root, other);
             SAVANNA_MOVE_MEMBER(m_MemoryLabel, other);
             SAVANNA_MOVE_MEMBER(m_Head, other);
             SAVANNA_MOVE_MEMBER(m_Size, other);
@@ -116,19 +138,15 @@ namespace Savanna
         return *this;
     }
 
-    void* FreeListAllocator::alloc(const size_t& size, const size_t& alignment)
+    MemoryChunkDescriptor* FreeListAllocator::FindBestFit(
+        const size_t &size,
+        const size_t &alignment,
+        AllocationDescriptor &outAllocationDescriptor,
+        MemoryChunkDescriptor*& pPrevious)
     {
-        // SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::alloc);
-        SAVANNA_ASSERT(size > 0, "Invalid size for allocation");
-        SAVANNA_ASSERT(alignment > 0, "Invalid alignment for allocation");
-        SAVANNA_ASSERT(m_Head != nullptr, "Allocator is not initialized");
-
-        MemoryChunkDescriptor* pCurrent = m_Head;
-        MemoryChunkDescriptor* pPrevious = nullptr;
-        MemoryChunkDescriptor* pBestFit = nullptr;
-
-        AllocationDescriptor allocationDescriptor {};
-
+        MemoryChunkDescriptor *pCurrent = m_Head;
+        pPrevious = nullptr;
+        MemoryChunkDescriptor *pBestFit = nullptr;
         while (pCurrent != nullptr)
         {
             // Manually calculate the forward alignment
@@ -138,16 +156,16 @@ namespace Savanna
 
             if (pCurrent->IsPerfectFit(requiredSize))
             {
-                allocationDescriptor.m_Offset = forwardAlignment;
-                allocationDescriptor.m_Size = requiredSize;
+                outAllocationDescriptor.m_Offset = forwardAlignment;
+                outAllocationDescriptor.m_Size = requiredSize;
                 pBestFit = pCurrent;
                 break;
             }
             else if (pCurrent->m_Size > requiredSize &&
                 (pBestFit == nullptr || pBestFit->m_Size < pCurrent->m_Size))
             {
-                allocationDescriptor.m_Offset = forwardAlignment;
-                allocationDescriptor.m_Size = requiredSize;
+                outAllocationDescriptor.m_Offset = forwardAlignment;
+                outAllocationDescriptor.m_Size = requiredSize;
                 pBestFit = pCurrent;
             }
 
@@ -159,6 +177,19 @@ namespace Savanna
             pPrevious = pCurrent;
             pCurrent = pCurrent->m_Next;
         }
+
+        return pBestFit;
+    }
+
+    void* FreeListAllocator::alloc(const size_t& size, const size_t& alignment)
+    {
+        SAVANNA_ASSERT(size > 0, "Invalid size for allocation");
+        SAVANNA_ASSERT(alignment > 0, "Invalid alignment for allocation");
+        SAVANNA_ASSERT(m_Head != nullptr, "Allocator is not initialized");
+
+        AllocationDescriptor allocationDescriptor {};
+        MemoryChunkDescriptor* pPrevious = nullptr;
+        MemoryChunkDescriptor* pBestFit = FindBestFit(size, alignment, allocationDescriptor, pPrevious);
 
         if (pBestFit == nullptr)
         {
@@ -188,28 +219,10 @@ namespace Savanna
         if (pBestFit == m_Head)
         {
             m_Head = pBestFit->m_Next;
-
-#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-            pCurrent = m_Head;
-            while (pCurrent != nullptr)
-            {
-                SAVANNA_ASSERT(pCurrent != pBestFit, "Pointer was still in the header list!");
-                pCurrent = pCurrent->m_Next;
-            }
-#endif
         }
         else if (pPrevious != pBestFit)
         {
             pPrevious->m_Next = pBestFit->m_Next;
-
-#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-            pCurrent = m_Head;
-            while (pCurrent != nullptr)
-            {
-                SAVANNA_ASSERT(pCurrent != pBestFit, "Pointer was still in the header list!");
-                pCurrent = pCurrent->m_Next;
-            }
-#endif
         }
         else
         {
@@ -224,18 +237,12 @@ namespace Savanna
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
         SAVANNA_ASSERT(m_Allocations.find(pAllocation) == m_Allocations.end(), "Pointer was already in the allocation list!");
         m_Allocations[pAllocation] = allocationDescriptor.m_Size;
-        m_AllocationCount++;
-        SAVANNA_ASSERT(m_AllocationCount == m_Allocations.size(), "Allocation count does not match allocation list size");
 
         SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
+        SAVANNA_ASSERT(!IsPointerInList(m_Head, pBestFit), "Pointer was still in the header list!");
 #endif
 
         return pAllocation;
-    }
-
-    inline bool IsAddressInBounds(const void* const ptr, const void* const start, const void* const end)
-    {
-        return ptr >= start && ptr < end;
     }
 
     void FreeListAllocator::free(void* const ptr, const size_t& alignment)
@@ -243,13 +250,13 @@ namespace Savanna
         // SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::free);
         SAVANNA_ASSERT(ptr != nullptr && alignment > 0, "Invalid arguments");
         SAVANNA_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkDescriptor), "Attempting to deallocate pointer from an empty allocator");
-        SAVANNA_ASSERT(IsAddressInBounds(ptr, m_Root, Add(m_Root, m_Size)), "Attempting to deallocate pointer from an allocator that does not own it");
+        SAVANNA_ASSERT(ptr >= m_Root && ptr < Add(m_Root, m_Size), "Attempting to deallocate pointer from an allocator that does not own it");
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
         SAVANNA_ASSERT(m_Allocations.find(ptr) != m_Allocations.end(), "Pointer is not known to the allocator");
 #endif
 
-        AllocationDescriptor allocationDescriptor = reinterpret_cast<AllocationDescriptor*>(ptr)[-1];
+        AllocationDescriptor allocationDescriptor = GetAllocationDescriptor(ptr);
 
         MemoryChunkDescriptor* pCurrent = m_Head;
         MemoryChunkDescriptor* pPrevious = nullptr;
@@ -263,7 +270,6 @@ namespace Savanna
             pCurrent = pCurrent->m_Next;
         }
 
-        // Is used later
         MemoryChunkDescriptor* pChunk = reinterpret_cast<MemoryChunkDescriptor*>(
             Subtract(ptr, sizeof(AllocationDescriptor) + allocationDescriptor.m_Offset));
 
@@ -282,28 +288,99 @@ namespace Savanna
                 pChunk[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size, pCurrent);
                 pPrevious->m_Next = pChunk;
             }
-#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-            SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
-#endif
         }
         else
         {
             // Insert chunk before current
             pChunk[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size, pCurrent);
             m_Head = pChunk;
-#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-            SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
-#endif
         }
 
         m_AllocatedBytes -= allocationDescriptor.m_Size;
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
         m_Allocations.erase(ptr);
-        m_AllocationCount--;
+        SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
         SAVANNA_ASSERT(m_Allocations.find(ptr) == m_Allocations.end(), "Pointer was still in the allocation list!");
-        SAVANNA_ASSERT(m_AllocationCount == m_Allocations.size(), "Allocation count does not match allocation list size");
 #endif
+    }
+
+    void* FreeListAllocator::realloc(void* const ptr, const size_t& newSize, const size_t& alignment)
+    {
+        // SAVANNA_INSERT_SCOPED_PROFILER(FreeListAllocator::realloc);
+        SAVANNA_ASSERT(ptr != nullptr && newSize > 0 && alignment > 0, "Invalid arguments");
+        SAVANNA_ASSERT(m_AllocatedBytes > sizeof(MemoryChunkDescriptor), "Attempting to reallocate pointer from an empty allocator");
+        SAVANNA_ASSERT(ptr >= m_Root && ptr < Add(m_Root, m_Size), "Attempting to reallocate pointer from an allocator that does not own it");
+
+#if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+        SAVANNA_ASSERT(m_Allocations.find(ptr) != m_Allocations.end(), "Pointer is not known to the allocator");
+#endif
+
+        AllocationDescriptor allocationDescriptor = GetAllocationDescriptor(ptr);
+
+        if (allocationDescriptor.m_Size == newSize)
+        {
+            // The allocation is already big enough
+            return ptr;
+        }
+        else if (allocationDescriptor.m_Size > newSize)
+        {
+            // The original allocation is bigger, so we can just shrink it
+            AllocationDescriptor* pAllocationDescriptor = reinterpret_cast<AllocationDescriptor*>(ptr) - 1;
+            pAllocationDescriptor->m_Size = newSize;
+            // Write a new header after the allocation
+            MemoryChunkDescriptor* pNewHeader =
+                reinterpret_cast<MemoryChunkDescriptor*>(Add(ptr, newSize));
+            pNewHeader[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size - newSize, nullptr);
+            MemoryChunkDescriptor* pCurrent = m_Head;
+            MemoryChunkDescriptor* pPrevious = nullptr;
+            while (pCurrent != nullptr)
+            {
+                if (pCurrent->IsGreaterOrEqual(ptr))
+                {
+                    break;
+                }
+                pPrevious = pCurrent;
+                pCurrent = pCurrent->m_Next;
+            }
+            if (pPrevious != nullptr)
+            {
+                SAVANNA_ASSERT(pPrevious != pNewHeader, "Pointer was still in the header list!");
+                if (pPrevious->IsAdjacent(pNewHeader))
+                {
+                    // Merge with previous chunk
+                    pPrevious->m_Size += allocationDescriptor.m_Size - newSize;
+                    m_AllocatedBytes -= sizeof(MemoryChunkDescriptor);
+                }
+                else
+                {
+                    // Insert chunk before current
+                    pNewHeader[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size - newSize, pCurrent);
+                    pPrevious->m_Next = pNewHeader;
+                }
+            }
+            else
+            {
+                // Insert chunk before current
+                pNewHeader[0] = MemoryChunkDescriptor(allocationDescriptor.m_Size - newSize, pCurrent);
+                m_Head = pNewHeader;
+            }
+            return ptr;
+        }
+
+        // The allocation is too small, allocate a new one and copy the data
+        void* pNewPtr = alloc(newSize, alignment);
+        if (pNewPtr == nullptr)
+        {
+            return nullptr;
+        }
+
+        // Copy the data from the old allocation to the new one
+        memcpy(pNewPtr, ptr, allocationDescriptor.m_Size);
+
+        // Free the old allocation
+        free(ptr, alignment);
+        return pNewPtr;
     }
 
 } // namespace Savanna

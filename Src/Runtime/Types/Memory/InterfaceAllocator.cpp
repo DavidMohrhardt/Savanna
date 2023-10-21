@@ -49,6 +49,13 @@ namespace Savanna
         Free(ptr);
     }
 
+    SAVANNA_NO_DISCARD void* InterfaceAllocator::realloc(
+        void *const ptr, const size_t &newSize,
+        const size_t &alignment)
+    {
+        return ReallocateAligned(ptr, newSize, alignment);
+    }
+
     void* InterfaceAllocator::Allocate(size_t size)
     {
         return m_AllocatorInterface.m_AllocFunc != nullptr

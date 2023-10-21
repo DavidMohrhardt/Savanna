@@ -1,3 +1,13 @@
+/**
+ * @file AtomicAllocatorWrapper.h
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
+ * @brief
+ * @version 0.1
+ * @date 2023-10-21
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
 #pragma once
 
 #include <Utilities/SavannaCoding.h>
@@ -6,12 +16,20 @@
 
 #include "Types/Locks/SpinLock.h"
 #include "Types/Memory/IAllocator.h"
+#include "Types/Memory/Allocator.h"
 
 namespace Savanna
 {
+    /**
+     * @brief Provides a naive atomic wrapper for an allocator.
+     * Is not the most efficient way to do this, but it works.
+     * TODO @DavidMohrhardt: Implement a more efficient way to do this.
+     *
+     * @tparam TAlloc
+     */
     template <class TAlloc>
     requires std::is_base_of_v<IAllocator, TAlloc>
-    class AtomicAllocatorWrapper final : public IAllocator
+    class AtomicAllocatorWrapper final : public Allocator
     {
         TAlloc m_Allocator;
         mutable SpinLock m_Lock;
@@ -49,6 +67,12 @@ namespace Savanna
         {
             auto sentinel = m_Lock.Auto();
             m_Allocator.free(ptr, alignment);
+        }
+
+        SAVANNA_NO_DISCARD void* realloc(void* const ptr, const size_t& newSize, const size_t& alignment) SAVANNA_OVERRIDE
+        {
+            auto sentinel = m_Lock.Auto();
+            return m_Allocator.realloc(ptr, newSize, alignment);
         }
     };
 } // namespace Savanna

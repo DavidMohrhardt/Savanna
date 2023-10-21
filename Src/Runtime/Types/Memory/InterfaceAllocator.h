@@ -9,12 +9,13 @@
  *
  */
 #pragma once
-#include "IAllocator.h"
 #include "Memory/Public/ISavannaMemory.h"
+#include "IAllocator.h"
+#include "Allocator.h"
 
 namespace Savanna
 {
-    class InterfaceAllocator final : public IAllocator
+    class InterfaceAllocator final : public Allocator
     {
     public:
         InterfaceAllocator(se_AllocatorInterface_t allocatorInterface = SavannaMemoryGetHeapAllocatorInterface());
@@ -27,6 +28,7 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) override;
         void free(void* const ptr, const size_t& alignment) override;
+        SAVANNA_NO_DISCARD void* realloc(void* const ptr, const size_t& newSize, const size_t& alignment) override;
 
         ~InterfaceAllocator() = default;
 

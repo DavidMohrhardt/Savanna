@@ -16,6 +16,5 @@
 
 #include "InterfaceAllocator.h"
 #include "FreeListAllocator.h"
-#include "LinearAllocator.h"
 #include "MultiListAllocator.h"
 

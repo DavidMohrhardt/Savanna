@@ -13,7 +13,7 @@
 #include <SavannaEngine.h>
 #include <Types/Singleton/Singleton.h>
 
-#include "Types/Containers/Arrays/DynamicArray.h"
+#include "Types/Containers/Arrays/dynamic_array.h"
 
 #include "Gfx/GfxDriver.h"
 
@@ -31,8 +31,8 @@ namespace Savanna::Gfx::Vk2
     class VkDriver final
     {
     private:
-        // For access to IAllocator::New<VkDriver> and IAllocator::Delete<VkDriver>
-        friend class Savanna::IAllocator;
+        // For access to Allocator::New<VkDriver> and Allocator::Delete<VkDriver>
+        friend class Savanna::Allocator;
         VkInstance m_Instance = VK_NULL_HANDLE;
         VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 

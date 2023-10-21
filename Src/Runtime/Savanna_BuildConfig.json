@@ -21,7 +21,7 @@
                 },
                 {
                     "Name": "SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION",
-                    "Value": "0"
+                    "Value": "1"
                 },
                 {
                     "Name": "SAVANNA_ENABLE_BOOT_CONFIG",

@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstring>
+#include "Public/ISavannaMemory.h"
 
 #define ENABLE_MEMORY_MANAGEMENT 1
 
@@ -84,7 +85,7 @@ namespace Savanna
 
     // TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.
     MemoryManager::MemoryManager()
-        : m_MemoryArenas(0, k_HeapAllocatorInterface)
+        : m_MemoryArenas(0, k_SavannaMemoryLabelHeap)
     {}
 
     MemoryManager::~MemoryManager() {}
@@ -124,13 +125,18 @@ namespace Savanna
         size_t alignment,
         const uint32 label)
     {
-        void* newPtr = Allocate(newSize, alignment, label);
-        if (ptr)
+        if (label == k_SavannaMemoryLabelHeap)
         {
-            memcpy(newPtr, ptr, newSize);
-            Free(ptr, label);
+            return k_HeapAllocatorInterface.m_ReallocAlignedFunc(ptr, alignment, newSize, nullptr);
         }
-        return newPtr;
+
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
+        {
+            throw BadAllocationException();
+        }
+
+        return m_MemoryArenas[arenaId].realloc(ptr, newSize, alignment);
     }
 
     void MemoryManager::Free(void* ptr, const uint32 label)
@@ -153,8 +159,11 @@ namespace Savanna
 
     bool MemoryManager::InitializeInternal()
     {
-        // m_MemoryArenas.ResizeInitialized(k_SavannaMemoryArenaIdCount, 1, GetPageSize() * 4);
-        m_MemoryArenas.ResizeInitialized(k_SavannaMemoryArenaIdCount, 1, sizeof(UnifiedPage4096KiB));
+        m_MemoryArenas.clear();
+        for (int i = 0; i < k_SavannaMemoryArenaIdCount; ++i)
+        {
+            m_MemoryArenas.push_back(std::move(AtomicMultiListAllocator(4, sizeof(UnifiedPage4096KiB))));
+        }
         return true;
     }
 
@@ -164,7 +173,7 @@ namespace Savanna
 
     void MemoryManager::ShutdownInternal()
     {
-        m_MemoryArenas.Clear();
+        m_MemoryArenas.clear();
     }
 } // namespace Savanna
 
@@ -210,6 +219,11 @@ void operator delete[](void *ptr, size_t size) noexcept
 
 
 // C-Api
+SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetAllocatorInterfaceForLabel(const se_uint32 &label)
+{
+    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(label);
+}
+
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
     return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGeneral);

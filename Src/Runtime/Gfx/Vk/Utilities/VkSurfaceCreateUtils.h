@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "SavannaVk.h"
+#include "SavannaVk2.h"
 
 namespace Savanna::Gfx::Vk2::Utils
 {

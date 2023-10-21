@@ -2,7 +2,7 @@
 
 #include "DependencyJobs.h"
 
-#include "Types/Containers/Arrays/DynamicArray.h"
+#include "Types/Containers/Arrays/dynamic_array.h"
 
 namespace Savanna::Concurrency
 {
@@ -65,7 +65,7 @@ namespace Savanna::Concurrency
     JobManager::JobManager()
         : m_ThreadPoolSize()
         , m_ProcessingJobs(false)
-        , m_JobThreads(k_SavannaMemoryArenaIdGeneral)
+        , m_JobThreads()
         , m_HighPriorityJobs()
         , m_NormalPriorityJobs()
         , m_LowPriorityJobs()
@@ -87,7 +87,11 @@ namespace Savanna::Concurrency
         bool expected = false;
         if (m_ProcessingJobs.compare_exchange_weak(expected, true, std::memory_order_release))
         {
-            m_JobThreads.ResizeInitialized(m_ThreadPoolSize, ProcessJobsInternal);
+            m_JobThreads.clear();
+            for (int i = 0; i < m_ThreadPoolSize; ++i)
+            {
+                m_JobThreads.push_back(std::move(std::thread(ProcessJobsInternal)));
+            }
         }
     }
 
@@ -101,7 +105,7 @@ namespace Savanna::Concurrency
                 {
                     m_JobThreads[i].join();
                 }
-                m_JobThreads.Clear();
+                m_JobThreads.clear();
             }
         }
     }
@@ -110,7 +114,6 @@ namespace Savanna::Concurrency
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ShutdownInternal());
         StopInternal();
-        m_JobThreads = {};
     }
 
     /**
@@ -169,13 +172,13 @@ namespace Savanna::Concurrency
 
     //     JobHandle outJobHandle = k_InvalidJobHandle;
 
-    //     DynamicArray<JobHandle> handles(jobCount);
+    //     dynamic_array<JobHandle> handles(jobCount);
     //     for (size_t i = 0; i < jobCount; ++i)
     //     {
     //         handles.Append(ScheduleJob(pJobs[i], priority, dependency));
     //     }
 
-    //     return ScheduleJob(SAVANNA_NEW(DependencyAwaiterJob, handles.Data(), handles.Size()), priority);
+    //     return ScheduleJob(SAVANNA_NEW(DependencyAwaiterJob, handles.data(), handles.Size()), priority);
     // }
 
     void JobManager::AwaitCompletion(JobHandle jobHandle)

@@ -12,7 +12,7 @@ namespace Savanna::Gfx::Vk2::Utils
     {
         if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
         {
-            Console::Print("[Vulkan] Validation Layer: {}", pCallbackData->pMessage);
+            Console::Print("[SavannaVK2] DEBUG: {}", pCallbackData->pMessage);
         }
 
         return VK_FALSE;
@@ -51,7 +51,10 @@ namespace Savanna::Gfx::Vk2::Utils
         debugUtilsMessengerCreateInfo.pfnUserCallback = DebugCallback;
         debugUtilsMessengerCreateInfo.pUserData = nullptr; // Optional
 
-        g_DebugMessenger = ::new DebugMessenger(instance, &debugUtilsMessengerCreateInfo, pAllocationCallbacks);
+        g_DebugMessenger = ::new DebugMessenger(
+            instance, &debugUtilsMessengerCreateInfo, pAllocationCallbacks);
+
+        SAVANNA_DEBUG_LOG("Savanna Vulkan: Debug Messenger Initialized...");
     }
 
     void DebugMessenger::Destroy()
@@ -60,6 +63,7 @@ namespace Savanna::Gfx::Vk2::Utils
         {
             ::delete g_DebugMessenger;
             g_DebugMessenger = nullptr;
+            SAVANNA_DEBUG_LOG("Savanna Vulkan: Debug Messenger Destroyed...");
         }
     }
 

@@ -22,18 +22,24 @@
 #include "Public/ISavannaGfx.h"
 #include "Public/ISavannaGfxVk2.h"
 
-#define VK_MUST_SUCCEED(__result, __message) \
-    if (__result != VK_SUCCESS) \
+#define VK_MUST_SUCCEED(__input, __message) \
     { \
-        SAVANNA_LOG(__message); \
-        return; \
+        auto __vk_result = __input; \
+        if (__vk_result != VK_SUCCESS) \
+        { \
+            SAVANNA_FATAL_LOG("[Vulkan] {}", __message); \
+            return; \
+        } \
     }
 
-#define VK_MUST_SUCCEED_RETURN(__result, __message, __returnValue) \
-    if (__result != VK_SUCCESS) \
+#define VK_MUST_SUCCEED_RETURN(__input, __message, __returnValue) \
     { \
-        SAVANNA_LOG(__message); \
-        return __returnValue; \
+        auto __vk_result = __input; \
+        if (__vk_result != VK_SUCCESS) \
+        { \
+            SAVANNA_FATAL_LOG("[Vulkan] {}", __message); \
+            return __returnValue; \
+        } \
     }
 
 namespace Savanna::Gfx::Vk2

@@ -58,8 +58,8 @@ namespace Savanna::Gfx
 
     protected:
         const GpuNodeType m_Type;
-        DynamicArray<IGpuNode*> m_InputNodes;
-        DynamicArray<IGpuNode*> m_OutputNodes;
+        dynamic_array<IGpuNode*> m_InputNodes;
+        dynamic_array<IGpuNode*> m_OutputNodes;
     };
 
     class GpuProgramPassNode : public IGpuNode
@@ -143,7 +143,7 @@ namespace Savanna::Gfx
     {
     private:
         IGpuNode* m_pNode;
-        DynamicArray<RenderGraphNode*> m_Children;
+        dynamic_array<RenderGraphNode*> m_Children;
 
     public:
         RenderGraphNode(IGpuNode* pNode) : m_pNode(pNode), m_Children() {}
@@ -176,7 +176,7 @@ namespace Savanna::Gfx
         void GenerateDependencyGraph();
         void ExecuteRenderNodes();
 
-        DynamicArray<RenderGraphNode> m_GraphNodes;
-        DynamicArray<DynamicArray<RenderGraphNode>> m_RenderTiers;
+        dynamic_array<RenderGraphNode> m_GraphNodes;
+        dynamic_array<dynamic_array<RenderGraphNode>> m_RenderTiers;
     };
 } // namespace Savanna::Gfx

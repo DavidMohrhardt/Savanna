@@ -17,23 +17,73 @@ namespace Savanna
 {
     class Allocator : public IAllocator, NonCopyable
     {
-    protected:
-        void* m_Root;
-
     public:
-        Allocator();
-        Allocator(void* root);
-        Allocator(Allocator&& other);
-
+        Allocator() = default;
         virtual ~Allocator() {}
-    public:
-        Allocator& operator=(Allocator&& other);
 
-        bool operator==(const Allocator& other) const { return m_Root == other.m_Root; }
+        template<typename T>
+        SAVANNA_NO_DISCARD T* AllocateAs(const size_t& count = 1)
+        {
+            constexpr size_t alignment = alignof(T);
+            constexpr size_t size = sizeof(T);
+            return reinterpret_cast<T*>(alloc(size * count, alignment));
+        }
 
-    public:
-        const void* GetRoot() const { return m_Root; };
+        template <typename T, typename... Args>
+        SAVANNA_NO_DISCARD T* New(Args&&... args)
+        {
+            return new (AllocateAs<T>()) T(std::forward<Args>(args)...);
+        }
 
-        SAVANNA_NO_DISCARD bool IsValid() const { return m_Root != nullptr; }
+        template <typename T, typename... Args>
+        SAVANNA_NO_DISCARD T* NewArray(const size_t& count, Args&&... args)
+        {
+            if constexpr (std::is_trivially_constructible_v<T>)
+            {
+                auto pBuffer = AllocateAs<T>(count);
+                if (!pBuffer)
+                {
+                    throw std::bad_alloc();
+                }
+
+                memset(pBuffer, 0, sizeof(T) * count);
+                return pBuffer;
+            }
+
+            T* pArray = AllocateAs<T>(count);
+            if (!pArray)
+            {
+                throw std::bad_alloc();
+            }
+
+            for (size_t i = 0; i < count; i++)
+            {
+                new (&pArray[i]) T(std::forward<Args>(args)...);
+            }
+            return pArray;
+        }
+
+        template <typename T>
+        void Delete(T* pObject)
+        {
+            if (pObject)
+            {
+                pObject->~T();
+                free(pObject, alignof(T));
+            }
+        }
+
+        template <typename T>
+        void DeleteArray(T* pArray)
+        {
+            if (pArray)
+            {
+                for (size_t i = 0; i < sizeof(pArray); i++)
+                {
+                    pArray[i].~T();
+                }
+                free(pArray, alignof(T));
+            }
+        }
     };
 } // namespace Savanna

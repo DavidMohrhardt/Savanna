@@ -10,13 +10,11 @@
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
-#include "Types/Memory/CacheLine.h"
 
 #include "Allocator.h"
-
 #include "AtomicAllocatorWrapper.h"
-
 #include "MemoryBuffer.h"
+#include "MemoryChunkDescriptors.h"
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
 #include <unordered_map>
@@ -32,15 +30,24 @@ namespace Savanna
     class FreeListAllocator : public Allocator
     {
     private:
+        // Some other implementations use this allocator as a
+        // member variable, allow those allocators to query the
+        // information for allocations made by these allocators.
+        friend struct MultiListAllocator;
+
         MemoryLabel m_MemoryLabel;
+        void* m_Root;
         MemoryChunkDescriptor* m_Head;
         size_t m_Size;
         size_t m_AllocatedBytes;
 
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-        size_t m_AllocationCount = 0;
         std::unordered_map<void*, size_t> m_Allocations;
 #endif // SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
+
+        AllocationDescriptor GetAllocationDescriptor(void* const ptr) const;
+        MemoryChunkDescriptor* FindBestFit(
+            const size_t& size, const size_t& alignment, AllocationDescriptor& outAllocationDescriptor, MemoryChunkDescriptor*& pPrevious);
 
     public:
         FreeListAllocator(size_t size, MemoryLabel label = k_SavannaMemoryLabelHeap);
@@ -49,12 +56,11 @@ namespace Savanna
 
         ~FreeListAllocator();
 
-    public:
         FreeListAllocator& operator=(FreeListAllocator&& other);
 
-    public:
         SAVANNA_NO_DISCARD void* alloc(const size_t& size, const size_t& alignment) SAVANNA_OVERRIDE;
         void free(void* const ptr, const size_t& alignment) SAVANNA_OVERRIDE;
+        SAVANNA_NO_DISCARD void* realloc(void* const ptr, const size_t& newSize, const size_t& alignment) SAVANNA_OVERRIDE;
 
         SAVANNA_NO_DISCARD size_t GetAllocatedBytes() const { return m_AllocatedBytes; }
         SAVANNA_NO_DISCARD size_t GetSize() const { return m_Size; }

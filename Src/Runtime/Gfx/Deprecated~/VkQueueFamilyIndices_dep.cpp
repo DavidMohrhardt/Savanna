@@ -1,21 +1,21 @@
-#include "VkQueueFamilyIndices.h"
+#include "VkVkQueueFamilyIndices.h"
 
-#include <vector>
+#include "Utilities/SavannaCoding.h"
 
 namespace Savanna::Gfx::Vk
 {
-    QueueFamilyIndices::QueueFamilyIndices(
-        const VkPhysicalDevice& physicalDevice,
-        VkSurfaceKHR* surfacePtr)
+    VkQueueFamilyIndices::VkQueueFamilyIndices(
+        const VkPhysicalDevice physicalDevice,
+        const VkSurfaceKHR surface)
     {
-        PopulateQueueFamilyIndices(physicalDevice, surfacePtr);
+        PopulateVkQueueFamilyIndices(physicalDevice, surface);
     }
 
-    void QueueFamilyIndices::PopulateQueueFamilyIndices(
+    void VkQueueFamilyIndices::PopulateVkQueueFamilyIndices(
         const VkPhysicalDevice& physicalDevice,
-        VkSurfaceKHR* surfacePtr)
+        const VkSurfaceKHR surface)
     {
-        if (HasAllQueueFamilyIndices())
+        if (HasAllVkQueueFamilyIndices())
         {
             return;
         }
@@ -52,17 +52,17 @@ namespace Savanna::Gfx::Vk
                 m_SparseBindingQueueFamilyIndex = static_cast<uint32>(i);
             }
 
-            if (surfacePtr != nullptr && !HasPresentQueueFamilyIndex())
+            if (surface != VK_NULL_HANDLE && !HasPresentQueueFamilyIndex())
             {
                 VkBool32 presentSupport = false;
-                vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, *surfacePtr, &presentSupport);
+                vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
                 if (presentSupport)
                 {
                     m_PresentQueueFamilyIndex = static_cast<uint32>(i);
                 }
             }
 
-            if (HasAllQueueFamilyIndices())
+            if (HasAllVkQueueFamilyIndices())
             {
                 return;
             }
@@ -71,16 +71,4 @@ namespace Savanna::Gfx::Vk
         }
     }
 
-    void QueueFamilyIndices::SetupQueueFamilyCreateInfos(
-        VkDeviceQueueCreateInfo* queueCreateInfos,
-        const uint32 queueCreateInfoCount)
-    {
-        for (int i = 0; i < queueCreateInfoCount; ++i)
-        {
-            queueCreateInfos[i] = {};
-            queueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueCreateInfos[i].queueFamilyIndex = static_cast<uint32>(i);
-            queueCreateInfos[i].queueCount = 1;
-        }
-    }
 } // namespace Savanna::Gfx::Vk

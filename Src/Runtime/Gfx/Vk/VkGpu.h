@@ -29,7 +29,19 @@ namespace Savanna::Gfx::Vk2
         VkGpu(const VkGpu&) = delete;
         VkGpu(VkGpu&&) = delete;
 
-        void Reset(VkInstance& instance);
+        bool InitializeLogicalDevice(
+            const se_VkDriverCreateInfo_t &createInfo,
+            VkInstance &instance,
+            VkSurfaceKHR& surface,
+            const VkAllocationCallbacks* pAllocationCallbacks);
+
+        bool TryInitialize(const se_VkDriverCreateInfo_t &createInfo,
+                            VkInstance &instance,
+                            VkSurfaceKHR& surface,
+                            const VkAllocationCallbacks* pAllocationCallbacks);
+        void Reset(
+            VkInstance& instance,
+            const VkAllocationCallbacks* pAllocationCallbacks);
 
     public:
         operator VkPhysicalDevice() const { return m_PhysicalDevice; }

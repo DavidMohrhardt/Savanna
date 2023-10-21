@@ -22,7 +22,8 @@
 
 #include "ConcurrencyCapabilities.h"
 
-#include <Types/Containers/Arrays/DynamicArray.h>
+#include <Types/Containers/Arrays/dynamic_array.h>
+#include <Types/Containers/Arrays/fixed_array.h>
 #include <Types/Containers/Concurrent/LocklessQueue.h>
 #include <Types/Locks/SpinLock.h>
 
@@ -42,16 +43,16 @@ namespace Savanna::Concurrency
         static uint8 k_MaxThreadPoolSize;
 
     private:
-      static JobResult ExecuteJobInternal(JobHandle handle);
-      static void ProcessJobsInternal();
+        static JobResult ExecuteJobInternal(JobHandle handle);
+        static void ProcessJobsInternal();
 
-      uint8 m_ThreadPoolSize;
-      std::atomic_bool m_ProcessingJobs;
-      DynamicArray<std::thread> m_JobThreads;
+        uint8 m_ThreadPoolSize;
+        std::atomic_bool m_ProcessingJobs;
+        dynamic_array<std::thread> m_JobThreads;
 
-      LocklessQueue<JobHandle> m_LowPriorityJobs;
-      LocklessQueue<JobHandle> m_NormalPriorityJobs;
-      LocklessQueue<JobHandle> m_HighPriorityJobs;
+        LocklessQueue<JobHandle> m_LowPriorityJobs;
+        LocklessQueue<JobHandle> m_NormalPriorityJobs;
+        LocklessQueue<JobHandle> m_HighPriorityJobs;
 
     public:
         JobManager();

@@ -13,20 +13,20 @@
 #include <SavannaEngine.h>
 #include "JobManager.h"
 
-#include <Types/Containers/Arrays/DynamicArray.h>
+#include <Types/Containers/Arrays/dynamic_array.h>
 
 namespace Savanna::Concurrency
 {
     class DependencyAwaiterJob final : public IJob
     {
     private:
-        DynamicArray<JobHandle> m_Dependencies;
+        dynamic_array<JobHandle> m_Dependencies;
 
     public:
         DependencyAwaiterJob(const JobHandle* dependencies, const size dependencyCount)
             : m_Dependencies(dependencyCount)
         {
-            std::memcpy(m_Dependencies.Data(), dependencies, dependencyCount * sizeof(JobHandle));
+            memcpy(m_Dependencies.data(), dependencies, dependencyCount * sizeof(JobHandle));
         }
 
         virtual ~DependencyAwaiterJob() override {}

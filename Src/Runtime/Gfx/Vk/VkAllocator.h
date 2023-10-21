@@ -14,7 +14,7 @@
 
 #include <vulkan/vulkan.h>
 
-#define SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING 0
+#define SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING 1
 
 namespace Savanna::Gfx::Vk2
 {
@@ -42,7 +42,13 @@ namespace Savanna::Gfx::Vk2
 
         static void* Realloc(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
         {
-            return SAVANNA_INTERFACE_REALLOCATE_ALIGNED(pUserData, pOriginal, size, alignment, nullptr);
+            void* newBuffer = SAVANNA_INTERFACE_ALLOCATE_ALIGNED(pUserData, size, alignment, nullptr);
+            if (pOriginal != nullptr)
+            {
+                ::memcpy(newBuffer, pOriginal, size);
+                SAVANNA_INTERFACE_FREE(pUserData, pOriginal, nullptr);
+            }
+            return newBuffer;
         }
 
         static void Free(void *pUserData, void *pMemory)

@@ -19,8 +19,7 @@ namespace Savanna::Gfx::Vk2::Utils
     inline bool TrySelectPhysicalDevice(
         VkInstance instance,
         VkPhysicalDevice& outPhysicalDevice,
-        const se_VkPhysicalDeviceCreateArgs_t& physicalDeviceCreateArgs,
-        const se_AllocatorInterface_t& allocatorInterface)
+        const se_VkPhysicalDeviceCreateArgs_t& physicalDeviceCreateArgs)
     {
         // TODO @DavidMohrhardt: It appears that VkEnumeratePhysicalDevices
         // has a memory leak in the implementation. It seemingly allocates
@@ -46,12 +45,12 @@ namespace Savanna::Gfx::Vk2::Utils
         }
         else
         {
-            DynamicArray<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, allocatorInterface };
-            physicalDevices.Resize(physicalDeviceCount);
+            dynamic_array<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, k_SavannaMemoryLabelGfx };
+            physicalDevices.resize(physicalDeviceCount);
 
             // TODO @DavidMohrhardt: Use a scratch allocator to allocate this array since it's short lived
             // Savanna::MemoryManager::GetScratchAllocator().Allocate(physicalDeviceCount * sizeof(VkPhysicalDevice), 1, 1);
-            VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.Data()),
+            VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, physicalDevices.data()),
                 "Failed to enumerate physical devices.",
                 false);
 
