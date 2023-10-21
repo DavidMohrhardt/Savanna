@@ -1,4 +1,5 @@
-# Total TODOs - 104
+# Total TODOs - 105
+
 ## Src
 
 ### [../Src\CMakeLists.txt](../Src/CMakeLists.txt)
@@ -117,7 +118,7 @@
 ### [../Src\Runtime\Gfx\GfxDriver.h](../Src/Runtime/Gfx/GfxDriver.h)
 
 
-- [L13 :// TODO @DavidMohrhardt: Move this to public interface definition](../Src/Runtime/Gfx/GfxDriver.h#L13)
+- [L23 :// TODO @DavidMohrhardt: Move this to public interface definition](../Src/Runtime/Gfx/GfxDriver.h#L23)
 
 ### [../Src\Runtime\Gfx\RenderGraph.h](../Src/Runtime/Gfx/RenderGraph.h)
 
@@ -156,10 +157,15 @@
 
 - [L18 :// TODO @DavidMohrhardt: For the time being prefer HDR formats over SDR formats.](../Src/Runtime/Gfx/Deprecated~/Utilities/VkSwapchainUtils.cpp#L18)
 
+### [../Src\Runtime\Gfx\Public\ISavannaGfx.h](../Src/Runtime/Gfx/Public/ISavannaGfx.h)
+
+
+- [L13 :// TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L13)
+
 ### [../Src\Runtime\Gfx\Vk\VkDriver.cpp](../Src/Runtime/Gfx/Vk/VkDriver.cpp)
 
 
-- [L41 :// TODO make this use a temporary allocator as it's not needed after this function](../Src/Runtime/Gfx/Vk/VkDriver.cpp#L41)
+- [L41 :// TODO Refactor once we support using temporary allocators in the managed memory arenas](../Src/Runtime/Gfx/Vk/VkDriver.cpp#L41)
 
 ### [../Src\Runtime\Gfx\Vk\Public\ISavannaGfxVk2.h](../Src/Runtime/Gfx/Vk/Public/ISavannaGfxVk2.h)
 

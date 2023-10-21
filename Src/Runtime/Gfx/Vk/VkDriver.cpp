@@ -39,7 +39,7 @@ namespace Savanna::Gfx::Vk2
             : *reinterpret_cast<se_VkDriverCreateInfo_t*>(createInfo.m_pNext);
 
         {
-            // TODO make this use a temporary allocator as it's not needed after this function
+            // TODO Refactor once we support using temporary allocators in the managed memory arenas
             dynamic_array<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, k_SavannaMemoryArenaIdGfx };
             dynamic_array<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, k_SavannaMemoryArenaIdGfx };
             if (driverCreateInfo.m_EnableValidationLayers)
@@ -129,16 +129,33 @@ namespace Savanna::Gfx::Vk2
         return reinterpret_cast<se_GfxDriverHandle_t>(g_pVulkanDriver);
     }
 
+    se_GfxErrorCode_t VkDriver::RequestSwapchain(const se_GfxSwapchainCreateInfo_t &createInfo, se_GfxHandle_t *const pOutSwapchainHandle)
+    {
+        if (g_pVulkanDriver != nullptr)
+        {
+            return g_pVulkanDriver->m_Gpu.RequestSwapchain(createInfo, pOutSwapchainHandle);
+        }
+
+        return kSavannaGfxErrorCodeNotInitialized;
+    }
+
     void VkDriver::PopulateDriverInterface(se_GfxDriverInterface_t &outDriverInterface)
     {
+
+#   define FILL_OUT_INTERFACE_FUNC(__func) \
+        .m_pfn##__func = VkDriver::__func
+
         constexpr se_GfxDriverInterface_t k_VulkanDriverInterface
         {
-            .m_pfnInitialize = VkDriver::Initialize,
-            .m_pfnDestroy = VkDriver::Destroy,
-            .m_pfnGetDriverHandle = VkDriver::GetDriverHandle,
+            FILL_OUT_INTERFACE_FUNC(Initialize),
+            FILL_OUT_INTERFACE_FUNC(Destroy),
+            FILL_OUT_INTERFACE_FUNC(GetDriverHandle),
+            FILL_OUT_INTERFACE_FUNC(RequestSwapchain),
             .m_pfnGetBackend = []() { return kSavannaGfxApiVulkan; },
         };
         outDriverInterface = k_VulkanDriverInterface;
+
+#   undef FILL_OUT_INTERFACE_FUNC
     }
 
     void VkDriver::Teardown()

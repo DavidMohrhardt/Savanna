@@ -77,4 +77,11 @@ namespace Savanna::Gfx::Vk2
         m_PhysicalDevice = VK_NULL_HANDLE;
         m_PhysicalDeviceProperties = {};
     }
+
+    se_GfxErrorCode_t VkGpu::RequestSwapchain(
+        const se_GfxSwapchainCreateInfo_t &createInfo,
+        se_GfxHandle_t *const pOutSwapchainHandle)
+    {
+        return kSavannaGfxErrorCodeNotImplemented;
+    }
 } // namespace Savanna::Gfx::Vk2

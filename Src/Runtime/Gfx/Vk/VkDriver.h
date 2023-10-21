@@ -50,9 +50,12 @@ namespace Savanna::Gfx::Vk2
         VkDriver& operator=(const VkDriver&) = delete;
         VkDriver& operator=(VkDriver&&) = delete;
 
-        static se_GfxErrorCode_t Initialize(const se_GfxDriverCreateInfo_t& createInfo);
-        static se_GfxErrorCode_t Destroy();
-        static se_GfxDriverHandle_t GetDriverHandle();
+        DECL_GFX_DRIVER_INTERFACE_FUNCS();
+
+        // static se_GfxErrorCode_t Initialize(const se_GfxDriverCreateInfo_t& createInfo);
+        // static se_GfxErrorCode_t Destroy();
+        // static se_GfxDriverHandle_t GetDriverHandle();
+        // static se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
 
     public:
         static void PopulateDriverInterface(se_GfxDriverInterface_t& outDriverInterface);

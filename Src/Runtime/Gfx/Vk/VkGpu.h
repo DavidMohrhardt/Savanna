@@ -43,6 +43,8 @@ namespace Savanna::Gfx::Vk2
             VkInstance& instance,
             const VkAllocationCallbacks* pAllocationCallbacks);
 
+        se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
+
     public:
         operator VkPhysicalDevice() const { return m_PhysicalDevice; }
         operator VkPhysicalDevice*() { return &m_PhysicalDevice; }

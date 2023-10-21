@@ -53,6 +53,7 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
     else:
         return ""
 
+# TODO make this multithreaded
 
 content = SearchForTodosInFiles(r"./Src", "Src")
 content += SearchForTodosInFiles(r"./BuildScripts", "BuildScripts")
@@ -60,7 +61,7 @@ content += SearchForTodosInFiles(r"./Documentation", "Documentation")
 content += SearchForTodosInFiles(r"./Tools", "Tools")
 
 with open("./Progress/TODOTracker.md", 'w') as todoFile:
-    todoFile.write("# Total TODOs - " + str(total_todos) + "\n")
+    todoFile.write("# Total TODOs - " + str(total_todos) + "\n\n")
     todoFile.write(content)
 
 print("Found " + str(total_todos) + " TODOs in the codebase.")

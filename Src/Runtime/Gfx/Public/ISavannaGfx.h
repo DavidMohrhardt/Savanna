@@ -11,7 +11,10 @@
 #ifndef I_SAVANNA_GFX_H
 #define I_SAVANNA_GFX_H
 
+// TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type
+
 #include "Public/ISavannaEngine.h"
+#include "ISavannaGfxFormat.h"
 #include "Memory/Public/ISavannaMemory.h"
 
 #undef SAVANNA_GFX_SUCCESS
@@ -41,6 +44,11 @@ typedef enum se_GfxErrorCode_t : se_uint32
      * @brief There was an unknown error.
      */
     kSavannaGfxErrorCodeUnknownError,
+
+    /**
+     * @brief The function is not implemented.
+     */
+    kSavannaGfxErrorCodeNotImplemented,
 
     /**
      * @brief There was not enough memory to complete the operation.
@@ -107,7 +115,7 @@ typedef enum se_GfxBackend_t : se_uint32
 typedef enum se_GfxSupportedBackend_t : se_uint8
 {
     kSavannaSupportedGfxApiNone = kSavannaGfxApiNone,
-    kSavannaSupportedGfxApiAll = static_cast<se_uint8>(~0),
+    kSavannaSupportedGfxApiAll = (se_uint8)(~0),
 
     kSavannaSupportedGfxApiVulkan = 1 << kSavannaGfxApiVulkan,
     // kSavannaSupportedGfxApiDirectX12 = 1 << kSavannaGfxApiDirectX12,
@@ -119,7 +127,7 @@ typedef enum se_GfxSupportedBackend_t : se_uint8
 
 typedef intptr_t se_GfxHandle_t;
 
-#define SE_GFX_INVALID_HANDLE static_cast<se_GfxHandle_t>(0)
+#define SE_GFX_INVALID_HANDLE (se_GfxHandle_t)(0)
 
 #define SE_GFX_HANDLE_TYPEDEF(__handleType) \
     typedef se_GfxHandle_t se_##__handleType##Handle_t;
@@ -226,6 +234,30 @@ typedef struct se_GfxDriverCreateInfoList_t
     void* m_pUserData;
 } se_GfxDriverCreateInfoList_t;
 
+// Swapchain Section
+typedef struct se_GfxSwapchainCreateInfo_t
+{
+    /**
+     * @brief The width of the swapchain.
+     */
+    se_uint32 m_Width;
+
+    /**
+     * @brief The height of the swapchain.
+     */
+    se_uint32 m_Height;
+
+    /**
+     * @brief The number of images in the swapchain.
+     */
+    se_uint32 m_ImageCount;
+
+    /**
+     * @brief The format of the swapchain images.
+     */
+    se_GfxTextureFormat_t m_Format;
+} se_GfxSwapchainCreateInfo_t;
+
 /**
  * @brief A function pointer defining the function signature for creating a graphics driver.
  */
@@ -240,6 +272,11 @@ typedef se_GfxErrorCode_t (*se_pfnGfxDriverDestroy_t)();
  * @brief A function pointer defining the function signature for retrieving the real, underlying driver handle.
  */
 typedef se_GfxDriverHandle_t (*se_pfnGfxDriverGetDriverHandle_t)();
+
+/**
+ * @brief A function pointer defining the function signature for requesting a swapchain.
+ */
+typedef se_GfxErrorCode_t (*se_pfnGfxDriverRequestSwapchain_t)(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
 
 /**
  * @brief Retrieves the type of backend the driver represents.
@@ -268,6 +305,12 @@ typedef struct se_GfxDriverInterface_t
      * @brief A pointer to the function for retrieving the real, underlying driver handle.
      */
     se_pfnGfxDriverGetDriverHandle_t m_pfnGetDriverHandle;
+
+    /**
+     * @brief A pointer to the function for requesting a initialization of a swapchain.
+     *
+     */
+    se_pfnGfxDriverRequestSwapchain_t m_pfnRequestSwapchain;
 
     /**
      * @brief

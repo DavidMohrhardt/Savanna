@@ -67,6 +67,7 @@ namespace Savanna::Gfx
     }
 } // namespace Savanna::Gfx
 
+// Public API
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxInit(const se_GfxContextCreateInfo_t* const pCreateInfo)
 {
     return Savanna::Gfx::Initialize(pCreateInfo);

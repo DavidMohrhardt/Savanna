@@ -11,6 +11,16 @@
 #ifndef SAVANNA_GFX_DRIVER_H
 #define SAVANNA_GFX_DRIVER_H
 
+/**
+ * @brief A helper macro for defining the driver interface functions.
+ * ensures that each interface function is declared with the correct signature.
+ */
+#define DECL_GFX_DRIVER_INTERFACE_FUNCS() \
+    static se_GfxErrorCode_t Initialize(const se_GfxDriverCreateInfo_t& createInfo); \
+    static se_GfxErrorCode_t Destroy(); \
+    static se_GfxDriverHandle_t GetDriverHandle(); \
+    static se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+
 // TODO @DavidMohrhardt: Move this to public interface definition
 
 #include <SavannaEngine.h>
@@ -50,6 +60,16 @@ namespace Savanna::Gfx
         se_GfxErrorCode_t Destroy()
         {
             return m_Interface.m_pfnDestroy();
+        }
+
+        se_GfxDriverHandle_t GetDriverHandle()
+        {
+            return m_Interface.m_pfnGetDriverHandle();
+        }
+
+        se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+        {
+            return m_Interface.m_pfnRequestSwapchain(createInfo, pOutSwapchainHandle);
         }
 
         const se_GfxBackend_t GetBackendType() const
