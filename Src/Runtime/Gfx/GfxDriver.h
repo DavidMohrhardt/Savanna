@@ -19,7 +19,7 @@
     static se_GfxErrorCode_t Initialize(const se_GfxDriverCreateInfo_t& createInfo); \
     static se_GfxErrorCode_t Destroy(); \
     static se_GfxDriverHandle_t GetDriverHandle(); \
-    static se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+    static se_GfxErrorCode_t CreateSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
 
 // TODO @DavidMohrhardt: Move this to public interface definition
 
@@ -67,9 +67,9 @@ namespace Savanna::Gfx
             return m_Interface.m_pfnGetDriverHandle();
         }
 
-        se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+        se_GfxErrorCode_t CreateSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
         {
-            return m_Interface.m_pfnRequestSwapchain(createInfo, pOutSwapchainHandle);
+            return m_Interface.m_pfnCreateSwapchain(createInfo, pOutSwapchainHandle);
         }
 
         const se_GfxBackend_t GetBackendType() const

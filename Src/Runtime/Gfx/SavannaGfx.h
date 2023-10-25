@@ -6,6 +6,15 @@
 
 #include <Public/ISavannaGfx.h>
 
+#define SAVANNA_GFX_RETURN_ERROR_CODE(__Operation) \
+    {                                              \
+        const se_GfxErrorCode_t __result = __Operation; \
+        if (SAVANNA_GFX_FAILURE(__result))         \
+        {                                          \
+            return __result;                       \
+        }                                          \
+    }
+
 namespace Savanna::Gfx
 {
     using GfxErrorCode = Enumeration<se_GfxErrorCode_t, se_uint32>;
@@ -18,6 +27,10 @@ namespace Savanna::Gfx
     GfxErrorCode Shutdown();
 
     GfxErrorCode CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
+    GfxSupportedBackend GetSupportedGfxBackends();
+    const GfxBackend GetActiveGfxBackend();
+
+    GfxErrorCode CreateSwapchain(const se_GfxSwapchainCreateInfo_t* const pCreateInfo, se_GfxHandle_t* const pOutSwapchainHandle);
 }
 
 #endif // !SAVANNA_GFX_H

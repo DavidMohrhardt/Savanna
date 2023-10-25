@@ -73,3 +73,9 @@ bool Savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t &allocator
         && allocatorInterface.m_FreeFunc != nullptr
         && allocatorInterface.m_ReallocAlignedFunc != nullptr;
 }
+
+bool Savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t *pAllocatorInterface)
+{
+    return pAllocatorInterface != nullptr
+        && IsAllocatorInterfaceValid(*pAllocatorInterface);
+}

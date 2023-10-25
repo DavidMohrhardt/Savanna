@@ -59,6 +59,12 @@ namespace Savanna::Gfx::Vk2
             return m_SparseBindingQueueFamilyIndex.has_value();
         }
 
+        inline uint32 GetGraphicsQueueFamilyIndex() const { return m_GraphicsQueueFamilyIndex.value(); }
+        inline uint32 GetPresentQueueFamilyIndex() const { return m_PresentQueueFamilyIndex.value(); }
+        inline uint32 GetComputeQueueFamilyIndex() const { return m_ComputeQueueFamilyIndex.value(); }
+        inline uint32 GetTransferQueueFamilyIndex() const { return m_TransferQueueFamilyIndex.value(); }
+        inline uint32 GetSparseBindingQueueFamilyIndex() const { return m_SparseBindingQueueFamilyIndex.value(); }
+
         uint8 GetQueueFamilyCount() const
         {
             return static_cast<uint8>(

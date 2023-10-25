@@ -65,6 +65,34 @@ namespace Savanna::Gfx
         }
         return kSavannaGfxApiNone;
     }
+
+    const se_GfxHandle_t GetDriverHandle()
+    {
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
+        {
+            if (auto pDriver = pContext->GetDriver()) SAVANNA_BRANCH_LIKELY
+            {
+                return pDriver->GetDriverHandle();
+            }
+        }
+        return 0x0;
+    }
+
+    GfxErrorCode CreateSwapchain(const se_GfxSwapchainCreateInfo_t* const pCreateInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+    {
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
+        {
+            if (auto pDriver = pContext->GetDriver()) SAVANNA_BRANCH_LIKELY
+            {
+                if (pCreateInfo == nullptr)
+                {
+                    return kSavannaGfxErrorCodeInvalidArgument;
+                }
+                return pDriver->CreateSwapchain(*pCreateInfo, pOutSwapchainHandle);
+            }
+        }
+        return kSavannaGfxErrorCodeNotInitialized;
+    }
 } // namespace Savanna::Gfx
 
 // Public API
@@ -92,4 +120,16 @@ SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends(
 SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend()
 {
     return Savanna::Gfx::GetActiveGfxBackend();
+}
+
+SAVANNA_EXPORT(se_GfxHandle_t) SavannaGfxGetDriverHandle()
+{
+    return Savanna::Gfx::GetDriverHandle();
+}
+
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
+    const se_GfxSwapchainCreateInfo_t* const pCreateInfo,
+    se_GfxHandle_t* const pOutSwapchainHandle)
+{
+    return Savanna::Gfx::CreateSwapchain(pCreateInfo, pOutSwapchainHandle);
 }

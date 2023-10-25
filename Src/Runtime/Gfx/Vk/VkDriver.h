@@ -18,6 +18,7 @@
 #include "Gfx/GfxDriver.h"
 
 #include "VkGpu.h"
+#include "VkSwapchain.h"
 
 #include <vulkan/vulkan.h>
 
@@ -33,13 +34,16 @@ namespace Savanna::Gfx::Vk2
     private:
         // For access to Allocator::New<VkDriver> and Allocator::Delete<VkDriver>
         friend class Savanna::Allocator;
+        friend class VkAllocator;
+
+        static se_AllocatorInterface_t s_AllocatorInterface;
+
         VkInstance m_Instance = VK_NULL_HANDLE;
         VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 
+        // Helper classes
+        VkSwapchain m_Swapchain;
         VkGpu m_Gpu;
-
-        se_AllocatorInterface_t m_AllocatorInterface;
-        VkAllocationCallbacks m_AllocationCallbacks;
 
         VkDriver(const se_GfxDriverCreateInfo_t& createInfo);
         ~VkDriver();
@@ -55,13 +59,11 @@ namespace Savanna::Gfx::Vk2
         // static se_GfxErrorCode_t Initialize(const se_GfxDriverCreateInfo_t& createInfo);
         // static se_GfxErrorCode_t Destroy();
         // static se_GfxDriverHandle_t GetDriverHandle();
-        // static se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
+        // static se_GfxErrorCode_t CreateSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
 
     public:
         static void PopulateDriverInterface(se_GfxDriverInterface_t& outDriverInterface);
 
         void Teardown();
-
-        VkAllocationCallbacks& GetAllocationCallbacks() { return m_AllocationCallbacks; }
     };
 } // namespace Savanna::Gfx

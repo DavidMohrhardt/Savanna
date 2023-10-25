@@ -1,7 +1,5 @@
 #include "VkGpu.h"
 
-#include "VkQueueFamilyIndices.h"
-
 #include "Utilities/VkPhysicalDeviceSelectionUtils.h"
 #include "Utilities/VkInfoCreateUtils.h"
 #include "Utilities/VkExtensionUtils.h"
@@ -19,11 +17,11 @@ namespace Savanna::Gfx::Vk2
         VkSurfaceKHR& surface,
         const VkAllocationCallbacks* pAllocationCallbacks)
     {
-        VkQueueFamilyIndices queueFamilyIndices(m_PhysicalDevice, surface);
-        uint32 queueCreateInfoCount = queueFamilyIndices.GetQueueFamilyCount();
+        m_QueueFamilyIndices = VkQueueFamilyIndices(m_PhysicalDevice, surface);
+        uint32 queueCreateInfoCount = m_QueueFamilyIndices.GetQueueFamilyCount();
         dynamic_array<VkDeviceQueueCreateInfo> queueCreateInfos(queueCreateInfoCount, k_SavannaMemoryArenaIdGfx);
         float queuePriority = 1.0f;
-        queueFamilyIndices.GetUniqueQueueFamilies(queueCreateInfos, &queuePriority);
+        m_QueueFamilyIndices.GetUniqueQueueFamilies(queueCreateInfos, &queuePriority);
 
         dynamic_array<const char*> enabledDeviceExtensions { createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount, k_SavannaMemoryArenaIdGfx };
         Utils::PopulateDeviceExtensions(enabledDeviceExtensions,
@@ -76,12 +74,5 @@ namespace Savanna::Gfx::Vk2
         }
         m_PhysicalDevice = VK_NULL_HANDLE;
         m_PhysicalDeviceProperties = {};
-    }
-
-    se_GfxErrorCode_t VkGpu::RequestSwapchain(
-        const se_GfxSwapchainCreateInfo_t &createInfo,
-        se_GfxHandle_t *const pOutSwapchainHandle)
-    {
-        return kSavannaGfxErrorCodeNotImplemented;
     }
 } // namespace Savanna::Gfx::Vk2

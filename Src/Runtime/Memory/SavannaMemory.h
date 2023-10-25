@@ -33,6 +33,7 @@ namespace Savanna
     };
 
     bool IsAllocatorInterfaceValid(const se_AllocatorInterface_t& allocatorInterface);
+    bool IsAllocatorInterfaceValid(const se_AllocatorInterface_t* pAllocatorInterface);
 } // namespace Savanna::Memory
 
 #define SAVANNA_ASSERT_VALID_ALLOCATOR_INTERFACE(allocatorInterface) \

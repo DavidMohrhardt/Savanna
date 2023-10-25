@@ -22,11 +22,11 @@ namespace Savanna::Gfx::Vk2
 {
     static VkDriver* g_pVulkanDriver = nullptr;
 
+    se_AllocatorInterface_t VkDriver::s_AllocatorInterface = {};
+
     VkDriver::VkDriver(const se_GfxDriverCreateInfo_t& createInfo)
         : m_Instance(VK_NULL_HANDLE)
         , m_Gpu()
-        , m_AllocatorInterface(createInfo.m_AllocatorInterface)
-        , m_AllocationCallbacks(VkAllocator::CreateAllocationCallbacksForInterface(&m_AllocatorInterface))
     {
         // Create the Vulkan Instance
         VkApplicationInfo appInfo = Utils::k_SavannaDefaultVulkanAppInfo;
@@ -68,23 +68,23 @@ namespace Savanna::Gfx::Vk2
                 enabledInstanceLayers.data(), enabledInstanceLayers.size());
             instanceCreateInfo.pApplicationInfo = &appInfo;
 
-            VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, &m_AllocationCallbacks, &m_Instance), "Failed to create Vulkan instance.");
+            VK_MUST_SUCCEED(vkCreateInstance(&instanceCreateInfo, VkAllocator::Get(), &m_Instance), "Failed to create Vulkan instance.");
         }
 
         if (driverCreateInfo.m_EnableValidationLayers)
         {
-            Utils::DebugMessenger::Initialize(m_Instance, &m_AllocationCallbacks);
+            Utils::DebugMessenger::Initialize(m_Instance, VkAllocator::Get());
         }
 
         if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
         {
             VK_DRIVER_SUCCESS_OR_TEARDOWN(
-                (m_Surface = Utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, &m_AllocationCallbacks)) != VK_NULL_HANDLE,
+                (m_Surface = Utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, VkAllocator::Get())) != VK_NULL_HANDLE,
                 "Failed to create surface.");
         }
 
         // Initialize the GPU
-        VK_DRIVER_SUCCESS_OR_TEARDOWN(m_Gpu.TryInitialize(driverCreateInfo, m_Instance, m_Surface, &m_AllocationCallbacks), "Failed to initialize GPU.");
+        VK_DRIVER_SUCCESS_OR_TEARDOWN(m_Gpu.TryInitialize(driverCreateInfo, m_Instance, m_Surface, VkAllocator::Get()), "Failed to initialize GPU.");
     }
 
     VkDriver::~VkDriver()
@@ -94,12 +94,15 @@ namespace Savanna::Gfx::Vk2
 
     se_GfxErrorCode_t VkDriver::Initialize(const se_GfxDriverCreateInfo_t &createInfo)
     {
-        if (!IsAllocatorInterfaceValid(createInfo.m_AllocatorInterface))
+        if (!IsAllocatorInterfaceValid(createInfo.m_pAllocationInterface))
         {
             return kSavannaGfxErrorCodeInvalidAllocatorInterface;
         }
 
-        InterfaceAllocator allocator{createInfo.m_AllocatorInterface};
+        VkAllocator::SetVkAllocationInterfacePtr(createInfo.m_pAllocationInterface);
+        s_AllocatorInterface = *createInfo.m_pAllocationInterface;
+
+        InterfaceAllocator allocator{ s_AllocatorInterface };
         VkDriver* pDriver = allocator.New<VkDriver>(createInfo);
         if (pDriver->m_Instance == VK_NULL_HANDLE)
         {
@@ -113,7 +116,7 @@ namespace Savanna::Gfx::Vk2
 
     se_GfxErrorCode_t VkDriver::Destroy()
     {
-        InterfaceAllocator allocator{g_pVulkanDriver->m_AllocatorInterface};
+        InterfaceAllocator allocator{ s_AllocatorInterface };
         if (g_pVulkanDriver != nullptr)
         {
             allocator.Delete(g_pVulkanDriver);
@@ -129,14 +132,23 @@ namespace Savanna::Gfx::Vk2
         return reinterpret_cast<se_GfxDriverHandle_t>(g_pVulkanDriver);
     }
 
-    se_GfxErrorCode_t VkDriver::RequestSwapchain(const se_GfxSwapchainCreateInfo_t &createInfo, se_GfxHandle_t *const pOutSwapchainHandle)
+    se_GfxErrorCode_t VkDriver::CreateSwapchain(const se_GfxSwapchainCreateInfo_t &createInfo, se_GfxHandle_t *const pOutSwapchainHandle)
     {
+        se_GfxErrorCode_t result = kSavannaGfxErrorCodeNotInitialized;
         if (g_pVulkanDriver != nullptr)
         {
-            return g_pVulkanDriver->m_Gpu.RequestSwapchain(createInfo, pOutSwapchainHandle);
+            result = g_pVulkanDriver->m_Swapchain.Initialize(
+                createInfo,
+                g_pVulkanDriver->m_Gpu,
+                g_pVulkanDriver->m_Surface);
+
+            if (SAVANNA_GFX_SUCCESS(result) && pOutSwapchainHandle != nullptr)
+            {
+                *pOutSwapchainHandle = (se_GfxHandle_t)&g_pVulkanDriver->m_Swapchain;
+            }
         }
 
-        return kSavannaGfxErrorCodeNotInitialized;
+        return result;
     }
 
     void VkDriver::PopulateDriverInterface(se_GfxDriverInterface_t &outDriverInterface)
@@ -150,7 +162,7 @@ namespace Savanna::Gfx::Vk2
             FILL_OUT_INTERFACE_FUNC(Initialize),
             FILL_OUT_INTERFACE_FUNC(Destroy),
             FILL_OUT_INTERFACE_FUNC(GetDriverHandle),
-            FILL_OUT_INTERFACE_FUNC(RequestSwapchain),
+            FILL_OUT_INTERFACE_FUNC(CreateSwapchain),
             .m_pfnGetBackend = []() { return kSavannaGfxApiVulkan; },
         };
         outDriverInterface = k_VulkanDriverInterface;
@@ -160,11 +172,11 @@ namespace Savanna::Gfx::Vk2
 
     void VkDriver::Teardown()
     {
-        m_Gpu.Reset(m_Instance, &m_AllocationCallbacks);
+        m_Gpu.Reset(m_Instance, VkAllocator::Get());
 
         if (m_Surface != VK_NULL_HANDLE)
         {
-            vkDestroySurfaceKHR(m_Instance, m_Surface, &m_AllocationCallbacks);
+            vkDestroySurfaceKHR(m_Instance, m_Surface, VkAllocator::Get());
             m_Surface = VK_NULL_HANDLE;
         }
 
@@ -173,7 +185,7 @@ namespace Savanna::Gfx::Vk2
 
         if (m_Instance != VK_NULL_HANDLE)
         {
-            vkDestroyInstance(m_Instance, &m_AllocationCallbacks);
+            vkDestroyInstance(m_Instance, VkAllocator::Get());
             m_Instance = VK_NULL_HANDLE;
         }
     }

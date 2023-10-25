@@ -14,7 +14,7 @@ namespace Savanna::Gfx::Vk2::Utils
     public:
         static void Initialize(
             VkInstance instance,
-            VkAllocationCallbacks* pAllocationCallbacks = nullptr);
+            const VkAllocationCallbacks* const pAllocationCallbacks = nullptr);
 
         static void Destroy();
 

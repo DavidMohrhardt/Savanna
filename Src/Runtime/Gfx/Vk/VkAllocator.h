@@ -18,68 +18,28 @@
 
 namespace Savanna::Gfx::Vk2
 {
-#if SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
-    inline static int64 s_Allocations = 0;
-    inline static int64 s_AllocationsMax = 0;
-#endif // SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
-
-    struct VkAllocator
+    class VkAllocator
     {
-        static void* Alloc(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
-        {
-#if !SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
-            return SAVANNA_INTERFACE_ALLOCATE_ALIGNED(pUserData, size, alignment, nullptr);
-#else
-            void* pBuffer = SAVANNA_INTERFACE_ALLOCATE_ALIGNED(pUserData, size, alignment, nullptr);
-            if (pBuffer != nullptr)
-            {
-                s_Allocations++;
-                s_AllocationsMax = std::max(s_AllocationsMax, s_Allocations);
-            }
-            return pBuffer;
-#endif // !SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
-        }
+    private:
+        // Only allow VkDriver to set the allocator interface pointer from the init and destroy functions
+        // This ensures that the same allocator interface is used for all allocations.
+        friend class VkDriver;
 
-        static void* Realloc(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope)
-        {
-            void* newBuffer = SAVANNA_INTERFACE_ALLOCATE_ALIGNED(pUserData, size, alignment, nullptr);
-            if (pOriginal != nullptr)
-            {
-                ::memcpy(newBuffer, pOriginal, size);
-                SAVANNA_INTERFACE_FREE(pUserData, pOriginal, nullptr);
-            }
-            return newBuffer;
-        }
+    public:
+        static void* Alloc(void *pUserData, size_t size, size_t alignment, VkSystemAllocationScope allocationScope);
+        static void* Realloc(void *pUserData, void *pOriginal, size_t size, size_t alignment, VkSystemAllocationScope allocationScope);
+        static void Free(void *pUserData, void *pMemory);
 
-        static void Free(void *pUserData, void *pMemory)
-        {
-            if (pMemory == nullptr)
-            {
-                return;
-            }
+        static const VkAllocationCallbacks* const Get();
+
+    private:
+        static VkAllocationCallbacks s_AllocationCallbacks;
+
 #if SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
-            s_Allocations -= 1;
-            SAVANNA_ASSERT(s_Allocations >= 0, "Cannot free more times that you've allocated!");
+        inline static int64 s_Allocations = 0;
+        inline static int64 s_AllocationsMax = 0;
 #endif // SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
 
-            SAVANNA_INTERFACE_FREE(pUserData, pMemory, nullptr);
-        }
-
-        static VkAllocationCallbacks CreateAllocationCallbacksForInterface(se_AllocatorInterface_t* pAllocator)
-        {
-            if (pAllocator == nullptr)
-            {
-                throw std::runtime_error("pAllocator is nullptr!");
-            }
-
-            return {
-                .pUserData = pAllocator,
-                .pfnAllocation = Alloc,
-                .pfnReallocation = Realloc,
-                .pfnFree = Free,
-                .pfnInternalAllocation = nullptr,
-                .pfnInternalFree = nullptr
-            };
-        }
+        static void SetVkAllocationInterfacePtr(const se_AllocatorInterface_t* pInterface);
     };
 }

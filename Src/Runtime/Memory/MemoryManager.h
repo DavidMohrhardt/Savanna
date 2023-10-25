@@ -26,6 +26,7 @@ namespace Savanna
 
     public:
         static const se_AllocatorInterface_t GetAllocatorInterfaceForLabel(const MemoryLabel& label);
+        static const se_AllocatorInterface_t* GetAllocatorInterfaceForLabelPtr(const MemoryLabel& label);
         static bool TryGetAllocatorInterfaceForLabel(const uint32& label, se_AllocatorInterface_t& outLabelInterface);
 
     private:

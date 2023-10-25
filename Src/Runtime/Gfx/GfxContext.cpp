@@ -10,7 +10,7 @@ namespace Savanna::Gfx
 {
     GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
         : m_Allocator(pCreateInfo != nullptr
-            ? pCreateInfo->m_Allocator
+            ? *pCreateInfo->m_pAllocatorInterface
             : MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx))
         , m_Driver{}
     {

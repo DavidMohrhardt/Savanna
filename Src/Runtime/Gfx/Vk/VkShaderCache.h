@@ -20,11 +20,6 @@
 #include <Types/Strings/FixedString.h>
 #include <Utilities/Console.h>
 
-#include "VkGfxDevice.h"
-
-#include <mutex>
-#include <unordered_map>
-
 namespace Savanna::Gfx::Vk
 {
     using namespace Savanna::Concurrency;
@@ -33,12 +28,8 @@ namespace Savanna::Gfx::Vk
     private:
         using ShaderModuleMap = std::unordered_map<FixedString64, VkShaderModule>;
 
-        VkDevice m_Device;
         ShaderModuleMap m_ShaderModuleMap;
 
-        std::mutex m_DataMutex;
-
-        friend class Renderer;
         friend class ShaderModuleCreationJob;
 
     public:

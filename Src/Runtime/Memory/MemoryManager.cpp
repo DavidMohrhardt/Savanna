@@ -70,6 +70,15 @@ namespace Savanna
         return k_LabelAllocatorInterfaces[label.m_BackingValue];
     }
 
+    const se_AllocatorInterface_t* MemoryManager::GetAllocatorInterfaceForLabelPtr(const MemoryLabel &label)
+    {
+        if (label >= k_SavannaMemoryLabelCount)
+        {
+            return nullptr;
+        }
+        return &k_LabelAllocatorInterfaces[label.m_BackingValue];
+    }
+
     bool MemoryManager::TryGetAllocatorInterfaceForLabel(
         const uint32& label,
         se_AllocatorInterface_t& outLabelInterface)

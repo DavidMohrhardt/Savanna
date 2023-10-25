@@ -25,6 +25,10 @@
 #define SAVANNA_GFX_FAILURE(__operationOrValue) \
     ((__operationOrValue) >= kSavannaGfxErrorCodeFailure)
 
+#undef SAVANNA_GFX_FATAL_ERROR
+#define SAVANNA_GFX_FATAL_ERROR(__operationOrValue) \
+    ((__operationOrValue) >= kSavannaGfxErrorCodeFatalError)
+
 typedef enum se_GfxErrorCode_t : se_uint32
 {
     /**
@@ -41,14 +45,29 @@ typedef enum se_GfxErrorCode_t : se_uint32
     kSavannaGfxErrorCodeFailure,
 
     /**
-     * @brief There was an unknown error.
-     */
-    kSavannaGfxErrorCodeUnknownError,
-
-    /**
      * @brief The function is not implemented.
      */
     kSavannaGfxErrorCodeNotImplemented,
+
+    /**
+     * @brief The graphics system has already been initialized.
+     */
+    kSavannaGfxErrorCodeContextAlreadyInitialized,
+
+    /**
+     * @brief The operation was an unrecoverable error.
+     * @note This error code is not intended to be used for specific errors
+     *       but rather as a value to compare against to check if an operation
+     *       was successful or not. Some implementations may consider an unimplemented
+     *       function to be a fatal error or not.
+     *
+     */
+    kSavannaGfxErrorCodeFatalError,
+
+    /**
+     * @brief There was an unknown error.
+     */
+    kSavannaGfxErrorCodeUnknownError,
 
     /**
      * @brief There was not enough memory to complete the operation.
@@ -170,7 +189,7 @@ typedef struct se_GfxContextCreateInfo_t
 {
     const char* m_pApplicationName;
 
-    se_AllocatorInterface_t m_Allocator;
+    const se_AllocatorInterface_t* m_pAllocatorInterface;
 
     void* m_pUserData;
 } se_GfxContextCreateInfo_t;
@@ -192,7 +211,7 @@ typedef struct se_GfxDriverCreateInfo_t
     /**
      * @brief The allocator the driver should use.
      */
-    se_AllocatorInterface_t m_AllocatorInterface;
+    const se_AllocatorInterface_t* m_pAllocationInterface;
 
     /**
      * @brief A pointer to potential extension structs to modify
@@ -276,7 +295,7 @@ typedef se_GfxDriverHandle_t (*se_pfnGfxDriverGetDriverHandle_t)();
 /**
  * @brief A function pointer defining the function signature for requesting a swapchain.
  */
-typedef se_GfxErrorCode_t (*se_pfnGfxDriverRequestSwapchain_t)(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
+typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateSwapchain_t)(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
 
 /**
  * @brief Retrieves the type of backend the driver represents.
@@ -310,7 +329,7 @@ typedef struct se_GfxDriverInterface_t
      * @brief A pointer to the function for requesting a initialization of a swapchain.
      *
      */
-    se_pfnGfxDriverRequestSwapchain_t m_pfnRequestSwapchain;
+    se_pfnGfxDriverCreateSwapchain_t m_pfnCreateSwapchain;
 
     /**
      * @brief
@@ -382,6 +401,20 @@ SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends(
  * @return se_GfxBackend_t The active graphics backend.
  */
 SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend();
+
+/**
+ * @brief TODO
+ *
+ */
+SAVANNA_EXPORT(se_GfxHandle_t) SavannaGfxGetDriverHandle();
+
+/**
+ * @brief TODO
+ *
+ */
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
+    const se_GfxSwapchainCreateInfo_t* const pCreateInfo,
+    se_GfxHandle_t* const pOutSwapchainHandle);
 
 /**
  * @brief Gets the capabilities of the graphics system. Is valid even before

@@ -98,8 +98,8 @@ namespace Savanna::Gfx::Vk2::Utils
 
     void PopulateSwapchainSupportDetails(SwapchainSupportDetails& outSupportDetails,const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface)
     {
-        GetSwapchainCapabilities(physicalDevice, surface, outSupportDetails.capabilities);
-        GetSwapchainFormats(physicalDevice, surface, outSupportDetails.formats, outSupportDetails.formatProperties);
-        GetSwapchainPresentModes(physicalDevice, surface, outSupportDetails.presentModes);
+        GetSwapchainCapabilities(physicalDevice, surface, outSupportDetails.m_Capabilities);
+        GetSwapchainFormats(physicalDevice, surface, outSupportDetails.m_Formats, outSupportDetails.m_FormatProperties);
+        GetSwapchainPresentModes(physicalDevice, surface, outSupportDetails.m_PresentModes);
     }
 }

@@ -24,11 +24,10 @@
 
 #define VK_MUST_SUCCEED(__input, __message) \
     { \
-        auto __vk_result = __input; \
+        VkResult __vk_result = __input; \
         if (__vk_result != VK_SUCCESS) \
         { \
-            SAVANNA_FATAL_LOG("[Vulkan] {}", __message); \
-            return; \
+            throw Savanna::RuntimeErrorException("[Vulkan] " __message); \
         } \
     }
 
@@ -49,6 +48,8 @@ namespace Savanna::Gfx::Vk2
 
     using VkQueueKind = Enumeration<se_VkQueueKind_t, uint8_t>;
     using VkQueueFlags = FlagEnumeration<se_VkQueueFlags_t, uint8_t>;
+
+    inline static VkAllocationCallbacks* g_VkAllocationCallbacks = nullptr;
 
     /**
      * @brief

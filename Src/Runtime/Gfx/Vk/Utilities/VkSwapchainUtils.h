@@ -16,10 +16,10 @@ namespace Savanna::Gfx::Vk2::Utils
 {
     struct SwapchainSupportDetails
     {
-        VkSurfaceCapabilitiesKHR capabilities;
-        dynamic_array<VkSurfaceFormatKHR> formats;
-        dynamic_array<VkFormatProperties> formatProperties;
-        dynamic_array<VkPresentModeKHR> presentModes;
+        VkSurfaceCapabilitiesKHR m_Capabilities;
+        dynamic_array<VkSurfaceFormatKHR> m_Formats;
+        dynamic_array<VkFormatProperties> m_FormatProperties;
+        dynamic_array<VkPresentModeKHR> m_PresentModes;
     };
 
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const dynamic_array<VkSurfaceFormatKHR>& availableFormats);

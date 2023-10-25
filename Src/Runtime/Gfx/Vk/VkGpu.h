@@ -11,6 +11,7 @@
 #pragma once
 
 #include "SavannaVk2.h"
+#include "VkQueueFamilyIndices.h"
 
 namespace Savanna::Gfx::Vk2
 {
@@ -22,6 +23,8 @@ namespace Savanna::Gfx::Vk2
         VkPhysicalDevice m_PhysicalDevice;
         VkDevice m_LogicalDevice;
         VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
+        VkQueueFamilyIndices m_QueueFamilyIndices;
+
 
         VkGpu() = default;
         ~VkGpu() = default;
@@ -43,20 +46,17 @@ namespace Savanna::Gfx::Vk2
             VkInstance& instance,
             const VkAllocationCallbacks* pAllocationCallbacks);
 
-        se_GfxErrorCode_t RequestSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
-
     public:
-        operator VkPhysicalDevice() const { return m_PhysicalDevice; }
-        operator VkPhysicalDevice*() { return &m_PhysicalDevice; }
-        operator const VkPhysicalDevice*() const { return &m_PhysicalDevice; }
-        operator VkPhysicalDevice&() { return m_PhysicalDevice; }
-        operator const VkPhysicalDevice&() const { return m_PhysicalDevice; }
+        inline operator VkPhysicalDevice*() { return &m_PhysicalDevice; }
+        inline operator const VkPhysicalDevice*() const { return &m_PhysicalDevice; }
+        inline operator VkPhysicalDevice&() { return m_PhysicalDevice; }
+        inline operator const VkPhysicalDevice&() const { return m_PhysicalDevice; }
 
-        operator VkDevice() const { return m_LogicalDevice; }
-        operator VkDevice*() { return &m_LogicalDevice; }
-        operator const VkDevice*() const { return &m_LogicalDevice; }
-        operator VkDevice&() { return m_LogicalDevice; }
-        operator const VkDevice&() const { return m_LogicalDevice; }
+        inline operator VkDevice*() { return &m_LogicalDevice; }
+        inline operator const VkDevice*() const { return &m_LogicalDevice; }
+        inline operator VkDevice&() { return m_LogicalDevice; }
+        inline operator const VkDevice&() const { return m_LogicalDevice; }
 
+        const VkQueueFamilyIndices& GetQueueFamilyIndices() const { return m_QueueFamilyIndices; }
     };
 } // namespace Savanna::Gfx::Vk2

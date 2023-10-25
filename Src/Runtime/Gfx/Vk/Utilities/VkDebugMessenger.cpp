@@ -37,7 +37,7 @@ namespace Savanna::Gfx::Vk2::Utils
 
     void DebugMessenger::Initialize(
         VkInstance instance,
-        VkAllocationCallbacks* pAllocationCallbacks)
+        const VkAllocationCallbacks* const pAllocationCallbacks)
     {
         if (g_DebugMessenger != nullptr)
         {

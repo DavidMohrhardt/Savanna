@@ -94,7 +94,6 @@ namespace Savanna::Gfx::Vk
 
     void ShaderCache::Clear()
     {
-        std::lock_guard<std::mutex> lock(m_DataMutex);
         for (auto& shaderModule : m_ShaderModuleMap)
         {
             vkDestroyShaderModule(m_Device, shaderModule.second, nullptr);
