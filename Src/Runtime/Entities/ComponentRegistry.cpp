@@ -71,7 +71,7 @@ namespace Savanna::Entities::ComponentRegistry
     static inline void UpdateComponentKeyCounter()
     {
         se_ComponentKey_t nextComponentKey = g_ComponentKeyCounter.GetKeyValue() << 1;
-        if ((nextComponentKey & k_SEComponentKeyTeethMask) != 0x0)
+        if ((nextComponentKey & k_ComponentKeyDataTeethMask) != 0x0)
         {
             g_ComponentKeyCounter.SetKeyValue(nextComponentKey);
         }

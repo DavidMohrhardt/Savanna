@@ -25,7 +25,7 @@ namespace Savanna
             },
             .m_AllocAlignedFunc = [](size_t size, size_t alignment, void* pUserData) -> void*
             {
-                return MemoryManager::Get()->Allocate(size, alignment, LABEL);
+                return MemoryManager::Get()->AllocateAligned(size, alignment, LABEL);
             },
             .m_ReallocFunc = [](void* ptr, const size_t& newSize, void* pUserData) -> void*
             {
@@ -33,7 +33,7 @@ namespace Savanna
             },
             .m_ReallocAlignedFunc = [](void* ptr, size_t alignment, const size_t& newSize, void* pUserData) -> void*
             {
-                return MemoryManager::Get()->Reallocate(ptr, newSize, alignment, LABEL);
+                return MemoryManager::Get()->ReallocateAligned(ptr, newSize, alignment, LABEL);
             },
             .m_FreeFunc = [](void* ptr, void* pUserData) -> void
             {
@@ -101,57 +101,36 @@ namespace Savanna
 
     void* MemoryManager::Allocate(size_t size, const se_MemoryLabelBackingInt_t label)
     {
-        return Allocate(size, 1, label);
+        return AllocateInternal(size, alignof(byte), label);
     }
 
-    void* MemoryManager::Allocate(size_t size, size_t alignment, const se_MemoryLabelBackingInt_t label)
-    {
-        if (label == k_SavannaMemoryLabelHeap)
-        {
-            return k_HeapAllocatorInterface.m_AllocAlignedFunc(size, alignment, nullptr);
-        }
-
-        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
-        if (arenaId == k_SavannaMemoryArenaIdInvalid)
-        {
-            throw BadAllocationException();
-        }
-
-        return m_MemoryArenas[arenaId].alloc(size, alignment);
-    }
-
-    void* MemoryManager::Reallocate(
-        void *ptr,
-        size_t newSize,
+    void* MemoryManager::AllocateAligned(
+        const size_t& size,
+        const size_t& alignment,
         const se_MemoryLabelBackingInt_t label)
     {
-        return Reallocate(ptr, newSize, 1, label);
+        return AllocateInternal(size, alignment, label);
     }
 
     void* MemoryManager::Reallocate(
         void* ptr,
-        size_t newSize,
+        const size_t& newSize,
+        const se_MemoryLabelBackingInt_t label)
+    {
+        return ReallocateInternal(ptr, newSize, alignof(byte), label);
+    }
+
+    void* MemoryManager::ReallocateAligned(
+        void* ptr,
+        const size_t& newSize,
         size_t alignment,
         const se_MemoryLabelBackingInt_t label)
     {
-        if (label == k_SavannaMemoryLabelHeap)
-        {
-            return k_HeapAllocatorInterface.m_ReallocAlignedFunc(ptr, alignment, newSize, nullptr);
-        }
-
-        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
-        if (arenaId == k_SavannaMemoryArenaIdInvalid)
-        {
-            throw BadAllocationException();
-        }
-
-        return m_MemoryArenas[arenaId].realloc(ptr, newSize, alignment);
+        return ReallocateInternal(ptr, newSize, alignment, label);
     }
 
     void MemoryManager::Free(void* ptr, const se_MemoryLabelBackingInt_t label)
     {
-        // TODO @DavidMohrhardt: This is a hack to get the heap allocator working.
-        //      Remove this once MemoryArena's are implemented.
         if (label == k_SavannaMemoryLabelHeap)
         {
             return k_HeapAllocatorInterface.m_FreeFunc(ptr, nullptr);
@@ -164,6 +143,45 @@ namespace Savanna
         }
 
         m_MemoryArenas[arenaId].free(ptr, 1);
+    }
+
+    inline void* MemoryManager::AllocateInternal(
+        const size_t& size,
+        const size_t& alignment,
+        const se_MemoryLabelBackingInt_t label)
+    {
+        if (label == k_SavannaMemoryLabelHeap)
+        {
+            return k_HeapAllocatorInterface.m_AllocAlignedFunc(size, alignof(byte), nullptr);
+        }
+
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
+        {
+            throw BadAllocationException();
+        }
+
+        return m_MemoryArenas[arenaId].alloc(size, alignof(byte));
+    }
+
+    inline void* MemoryManager::ReallocateInternal(
+        void* ptr,
+        const size_t& newSize,
+        const size_t& alignment,
+        const se_MemoryLabelBackingInt_t label)
+    {
+        if (label == k_SavannaMemoryLabelHeap)
+        {
+            return k_HeapAllocatorInterface.m_ReallocAlignedFunc(ptr, alignof(byte), newSize, nullptr);
+        }
+
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
+        {
+            throw BadAllocationException();
+        }
+
+        return m_MemoryArenas[arenaId].realloc(ptr, newSize, alignof(byte));
     }
 
     bool MemoryManager::InitializeInternal()

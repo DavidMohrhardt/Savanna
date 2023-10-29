@@ -13,6 +13,7 @@
 #include "Utilities/SavannaCoding.h"
 
 #include "Memory/Public/ISavannaMemory.h"
+#include "Memory/SavannaMemory.h"
 #include "Memory/MemoryLabel.h"
 
 #include <initializer_list>
@@ -81,9 +82,9 @@ namespace Savanna
         {
             return;
         }
+        void* buffer = SAVANNA_MALLOC_ALIGNED(providerLabel, size * sizeof(T), alignof(T));
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * m_Capacity, alignof(T), nullptr));
+        m_Buffer = reinterpret_cast<T*>(buffer);
     }
 
     template <typename T>
@@ -97,8 +98,7 @@ namespace Savanna
             return;
         }
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * m_Capacity, alignof(T), nullptr));
+        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(providerLabel, size * sizeof(T), alignof(T)));
 
         if constexpr (std::is_trivially_copyable_v<T>)
         {
@@ -131,8 +131,7 @@ namespace Savanna
             return;
         }
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * m_Capacity, alignof(T), nullptr));
+        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(m_ProviderLabel, m_Capacity * sizeof(T), alignof(T)));
 
         if constexpr (std::is_trivially_copyable_v<T>)
         {
@@ -172,8 +171,7 @@ namespace Savanna
                 }
             }
 
-            auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
-            SAVANNA_INTERFACE_FREE(&interface, m_Buffer, nullptr);
+            SAVANNA_FREE(m_ProviderLabel, m_Buffer);
         }
     }
 
@@ -224,15 +222,15 @@ namespace Savanna
                 }
             }
 
-            auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
-            SAVANNA_INTERFACE_FREE(&interface, m_Buffer, nullptr);
+            SAVANNA_FREE(m_ProviderLabel, m_Buffer);
         }
 
         SAVANNA_MOVE_ASSIGN(m_Buffer, other.m_Buffer);
         SAVANNA_MOVE_ASSIGN(m_Size, other.m_Size);
         SAVANNA_MOVE_ASSIGN(m_Capacity, other.m_Capacity);
-        // SAVANNA_MOVE_ASSIGN(m_ProviderLabel, other.m_ProviderLabel);
-        this->m_ProviderLabel = other.m_ProviderLabel;
+        // Do not overwrite the other's provider label, as it's possible the object may be
+        // used again and we don't want to change it's provider.
+        m_ProviderLabel = other.m_ProviderLabel;
         return *this;
     }
 
@@ -249,8 +247,6 @@ namespace Savanna
         SAVANNA_DEBUG_ASSERT(index < m_Size, "Index out of bounds");
         return m_Buffer[index];
     }
-
-    // The rest of the vector interface:
 
     template <typename T>
     inline void dynamic_array<T>::push_back(const T& value)
@@ -359,8 +355,8 @@ namespace Savanna
             return;
         }
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
-        T* newBuffer = reinterpret_cast<T*>(SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * newCapacity, alignof(T), nullptr));
+        T* newBuffer = reinterpret_cast<T*>(
+            SAVANNA_MALLOC_ALIGNED(m_ProviderLabel, sizeof(T) * newCapacity, alignof(T)));
         if (m_Buffer)
         {
             if constexpr (std::is_trivially_copyable_v<T>)
@@ -375,7 +371,7 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_INTERFACE_FREE(&interface, m_Buffer, nullptr);
+            SAVANNA_FREE(m_ProviderLabel, m_Buffer);
         }
 
         m_Buffer = newBuffer;

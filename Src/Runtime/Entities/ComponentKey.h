@@ -46,7 +46,7 @@ typedef se_uint8 se_ComponentKeyMask_T;
  * @brief Defines a unique key/identifier for a component type. Components of like types are assigned the same
  * key.
  */
-typedef union SEComponentKey
+typedef union ComponentKeyData
 {
     /**
      * @brief The full component key.
@@ -64,24 +64,24 @@ typedef union SEComponentKey
          */
         se_ComponentKey_t m_RingIndex : SAVANNA_ECS_KEY_RING_INDEX_BIT_COUNT;
     };
-} SEComponentKey;
+} ComponentKeyData;
 
-static_assert(sizeof(SEComponentKey) == sizeof(se_ComponentKey_t), "SEComponentKey is not 32 bits");
+static_assert(sizeof(ComponentKeyData) == sizeof(se_ComponentKey_t), "ComponentKeyData is not 32 bits");
 
 /**
  * @brief Represents an invalid component key.
  */
-constexpr SEComponentKey k_InvalidComponentKey = { 0x0 };
+constexpr ComponentKeyData k_InvalidComponentKey = { 0x0 };
 
 constexpr se_ComponentKey_t k_MaxKeyValue = 0x1 << (SAVANNA_ECS_KEY_TEETH_BIT_COUNT - 1);
 constexpr se_ComponentKey_t k_MaxSetMaskValue = SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS;
 
-constexpr se_ComponentKey_t k_SEComponentKeyRingIndexMask = { 0xFF000000u };
-constexpr se_ComponentKey_t k_SEComponentKeyTeethMask = { 0x00FFFFFFu };
+constexpr se_ComponentKey_t k_ComponentKeyDataRingIndexMask = { 0xFF000000u };
+constexpr se_ComponentKey_t k_ComponentKeyDataTeethMask = { 0x00FFFFFFu };
 
-bool SavannaIsValidComponentKey(const SEComponentKey& componentId);
+bool SavannaIsValidComponentKey(const ComponentKeyData& componentId);
 
-bool SavannaCompareKeys(const SEComponentKey& entityKey, const SEComponentKey& systemLock);
+bool SavannaCompareKeys(const ComponentKeyData& entityKey, const ComponentKeyData& systemLock);
 
 #if defined(__cplusplus)
 namespace Savanna::Entities
@@ -90,11 +90,11 @@ namespace Savanna::Entities
     {
     private:
 
-        SEComponentKey m_ComponentKey;
+        ComponentKeyData m_ComponentKey;
 
     public:
         ComponentKey() : m_ComponentKey({ 0 }) {}
-        ComponentKey(const SEComponentKey& componentKey) : m_ComponentKey(componentKey) {}
+        ComponentKey(const ComponentKeyData& componentKey) : m_ComponentKey(componentKey) {}
         ComponentKey(const ComponentKey& componentKey) : m_ComponentKey(componentKey.m_ComponentKey) {}
         ComponentKey(const se_ComponentKey_t& componentKey) : m_ComponentKey({ componentKey }) {}
 
@@ -103,11 +103,11 @@ namespace Savanna::Entities
     public:
         bool CompareKey(const ComponentKey& componentKey) const;
 
-        SEComponentKey GetKey() const;
+        ComponentKeyData GetKey() const;
         se_ComponentKey_t GetKeyValue() const;
         se_ComponentKeyMask_T GetRingIndex() const;
 
-        void SetKey(const SEComponentKey& componentKey);
+        void SetKey(const ComponentKeyData& componentKey);
         void SetKey(const se_ComponentKey_t& componentKey);
         void SetRingIndex(const se_ComponentKeyMask_T& componentKeyRingIndex);
         void SetKeyValue(const se_ComponentKey_t& componentKeyValue);
@@ -117,7 +117,7 @@ namespace Savanna::Entities
         bool IsValid() const;
 
     public:
-        operator SEComponentKey() const { return m_ComponentKey; }
+        operator ComponentKeyData() const { return m_ComponentKey; }
         operator se_ComponentKey_t() const { return m_ComponentKey.m_FullComponentKey; }
 
         ComponentKey& operator=(const ComponentKey& componentKey)
@@ -126,7 +126,7 @@ namespace Savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator=(const SEComponentKey& componentKey)
+        ComponentKey& operator=(const ComponentKeyData& componentKey)
         {
             m_ComponentKey = componentKey;
             return *this;
@@ -143,7 +143,7 @@ namespace Savanna::Entities
             return ComponentKey(m_ComponentKey.m_FullComponentKey | componentKey.m_ComponentKey.m_FullComponentKey);
         }
 
-        ComponentKey operator |(const SEComponentKey& componentKey)
+        ComponentKey operator |(const ComponentKeyData& componentKey)
         {
             return ComponentKey(m_ComponentKey.m_FullComponentKey | componentKey.m_FullComponentKey);
         }
@@ -159,7 +159,7 @@ namespace Savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator |=(const SEComponentKey& componentKey)
+        ComponentKey& operator |=(const ComponentKeyData& componentKey)
         {
             m_ComponentKey.m_FullComponentKey |= componentKey.m_FullComponentKey;
             return *this;
@@ -176,7 +176,7 @@ namespace Savanna::Entities
             return ComponentKey(m_ComponentKey.m_FullComponentKey & componentKey.m_ComponentKey.m_FullComponentKey);
         }
 
-        ComponentKey operator &(const SEComponentKey& componentKey)
+        ComponentKey operator &(const ComponentKeyData& componentKey)
         {
             return ComponentKey(m_ComponentKey.m_FullComponentKey & componentKey.m_FullComponentKey);
         }
@@ -192,7 +192,7 @@ namespace Savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator &=(const SEComponentKey& componentKey)
+        ComponentKey& operator &=(const ComponentKeyData& componentKey)
         {
             m_ComponentKey.m_FullComponentKey &= componentKey.m_FullComponentKey;
             return *this;
@@ -209,7 +209,7 @@ namespace Savanna::Entities
             return ComponentKey(m_ComponentKey.m_FullComponentKey ^ componentKey.m_ComponentKey.m_FullComponentKey);
         }
 
-        ComponentKey operator ^(const SEComponentKey& componentKey)
+        ComponentKey operator ^(const ComponentKeyData& componentKey)
         {
             return ComponentKey(m_ComponentKey.m_FullComponentKey ^ componentKey.m_FullComponentKey);
         }
@@ -225,7 +225,7 @@ namespace Savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator ^=(const SEComponentKey& componentKey)
+        ComponentKey& operator ^=(const ComponentKeyData& componentKey)
         {
             m_ComponentKey.m_FullComponentKey ^= componentKey.m_FullComponentKey;
             return *this;
@@ -242,7 +242,7 @@ namespace Savanna::Entities
             return m_ComponentKey.m_FullComponentKey <=> other.m_ComponentKey.m_FullComponentKey;
         };
 
-        auto operator<=>(const SEComponentKey& other) const
+        auto operator<=>(const ComponentKeyData& other) const
         {
             return *this <=> ComponentKey(other);
         }

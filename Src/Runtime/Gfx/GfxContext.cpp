@@ -12,7 +12,9 @@ namespace Savanna::Gfx
         : m_Allocator(pCreateInfo != nullptr
             ? *pCreateInfo->m_pAllocatorInterface
             : MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx))
-        , m_Driver{}
+        , m_Driver {pCreateInfo != nullptr
+            ? *pCreateInfo->m_pAllocatorInterface
+            : MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx)}
     {
     }
 

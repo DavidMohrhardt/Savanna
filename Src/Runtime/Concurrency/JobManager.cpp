@@ -1,4 +1,5 @@
 #include "JobManager.h"
+#include "SavannaConcurrency.h"
 
 #include "DependencyJobs.h"
 
@@ -6,6 +7,10 @@
 
 namespace Savanna::Concurrency
 {
+    uint8 JobManager::s_ThreadPoolSize = std::thread::hardware_concurrency() - 1 < s_ThreadPoolSize
+            ? std::thread::hardware_concurrency() - 1
+            : s_ThreadPoolSize;
+
     inline JobResult JobManager::ExecuteJobInternal(JobHandle handle)
     {
         if (handle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
@@ -63,8 +68,7 @@ namespace Savanna::Concurrency
     }
 
     JobManager::JobManager()
-        : m_ThreadPoolSize()
-        , m_ProcessingJobs(false)
+        : m_ProcessingJobs(false)
         , m_JobThreads()
         , m_HighPriorityJobs()
         , m_NormalPriorityJobs()
@@ -76,7 +80,7 @@ namespace Savanna::Concurrency
     bool JobManager::InitializeInternal()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::InitializeInternal());
-        m_ThreadPoolSize = std::thread::hardware_concurrency() - 1;
+        Info::Initialize();
         return true;
     }
 
@@ -88,7 +92,7 @@ namespace Savanna::Concurrency
         if (m_ProcessingJobs.compare_exchange_weak(expected, true, std::memory_order_release))
         {
             m_JobThreads.clear();
-            for (int i = 0; i < m_ThreadPoolSize; ++i)
+            for (int i = 0; i < s_ThreadPoolSize; ++i)
             {
                 m_JobThreads.push_back(std::move(std::thread(ProcessJobsInternal)));
             }
@@ -100,13 +104,11 @@ namespace Savanna::Concurrency
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::StopInternal());
         while (m_ProcessingJobs.exchange(false, std::memory_order_release))
         {
+            for (int i = 0; i < m_JobThreads.size(); ++i)
             {
-                for (int i = 0; i < m_JobThreads.size(); ++i)
-                {
-                    m_JobThreads[i].join();
-                }
-                m_JobThreads.clear();
+                m_JobThreads[i].join();
             }
+            m_JobThreads.clear();
         }
     }
 
@@ -114,6 +116,7 @@ namespace Savanna::Concurrency
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ShutdownInternal());
         StopInternal();
+        Info::Reset();
     }
 
     /**
@@ -236,6 +239,14 @@ namespace Savanna::Concurrency
         }
 
         return ScheduleJob(SAVANNA_NEW(k_SavannaMemoryLabelGeneral, DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
+    }
+
+    void JobManager::SetThreadPoolSize(uint8 threadPoolSize)
+    {
+        if (!IsInitialized())
+        {
+            s_ThreadPoolSize = threadPoolSize;
+        }
     }
 
     JobResult JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency)

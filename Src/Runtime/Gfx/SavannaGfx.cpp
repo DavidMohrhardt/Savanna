@@ -11,6 +11,8 @@
 #include "SavannaGfx.h"
 #include "GfxContext.h"
 
+#include "Concurrency/JobManager.h"
+
 namespace Savanna::Gfx
 {
     const se_AllocatorInterface_t GetDefaultAllocatorInterface()
@@ -19,14 +21,14 @@ namespace Savanna::Gfx
         return k_DefaultGraphicsAllocatorInterface;
     }
 
-    GfxErrorCode Initialize(const se_GfxContextCreateInfo_t *const pCreateInfo)
+    inline GfxErrorCode Initialize(const se_GfxContextCreateInfo_t *const pCreateInfo)
     {
         return GfxContext::Construct(pCreateInfo) != nullptr
             ? kSavannaGfxErrorCodeSuccess
             : kSavannaGfxErrorCodeNotInitialized;
     }
 
-    GfxErrorCode Shutdown()
+    inline GfxErrorCode Shutdown()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -36,7 +38,7 @@ namespace Savanna::Gfx
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    GfxErrorCode CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
+    inline GfxErrorCode CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -45,7 +47,7 @@ namespace Savanna::Gfx
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    GfxSupportedBackend GetSupportedGfxBackends()
+    inline GfxSupportedBackend GetSupportedGfxBackends()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -54,7 +56,7 @@ namespace Savanna::Gfx
         return kSavannaSupportedGfxApiNone;
     }
 
-    const GfxBackend GetActiveGfxBackend()
+    inline const GfxBackend GetActiveGfxBackend()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -66,7 +68,7 @@ namespace Savanna::Gfx
         return kSavannaGfxApiNone;
     }
 
-    const se_GfxHandle_t GetDriverHandle()
+    inline const se_GfxHandle_t GetDriverHandle()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -78,7 +80,7 @@ namespace Savanna::Gfx
         return 0x0;
     }
 
-    GfxErrorCode CreateSwapchain(const se_GfxSwapchainCreateInfo_t* const pCreateInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+    inline GfxErrorCode CreateSwapchain(const se_GfxSwapchainCreateInfo_t* const pCreateInfo, se_GfxHandle_t* const pOutSwapchainHandle)
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -89,6 +91,33 @@ namespace Savanna::Gfx
                     return kSavannaGfxErrorCodeInvalidArgument;
                 }
                 return pDriver->CreateSwapchain(*pCreateInfo, pOutSwapchainHandle);
+            }
+        }
+        return kSavannaGfxErrorCodeNotInitialized;
+    }
+
+    inline GfxErrorCode CreateShaderModule(const se_GfxShaderModuleCreateInfo_t& createInfo, se_GfxShaderModuleHandle_t& outShaderModuleHandle)
+    {
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
+        {
+            if (auto pDriver = pContext->GetDriver()) SAVANNA_BRANCH_LIKELY
+            {
+                return pDriver->CreateShaderModule(createInfo, outShaderModuleHandle);
+            }
+        }
+        return kSavannaGfxErrorCodeNotInitialized;
+    }
+
+    inline se_JobHandle_t CreateShaderModulesAsync(
+        const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+        const size_t createInfoCount,
+        se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles)
+    {
+        if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
+        {
+            if (auto pDriver = pContext->GetDriver()) SAVANNA_BRANCH_LIKELY
+            {
+                return pDriver->CreateShaderModulesAsync(pCreateInfos, createInfoCount, ppOutShaderModuleHandles);
             }
         }
         return kSavannaGfxErrorCodeNotInitialized;
@@ -132,4 +161,19 @@ SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
     se_GfxHandle_t* const pOutSwapchainHandle)
 {
     return Savanna::Gfx::CreateSwapchain(pCreateInfo, pOutSwapchainHandle);
+}
+
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateShaderModule(
+    const se_GfxShaderModuleCreateInfo_t& createInfo,
+    se_GfxShaderModuleHandle_t& outShaderModuleHandle)
+{
+    return Savanna::Gfx::CreateShaderModule(createInfo, outShaderModuleHandle);
+}
+
+SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
+    const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+    const size_t createInfoCount,
+    se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles)
+{
+    return Savanna::Gfx::CreateShaderModulesAsync(pCreateInfos, createInfoCount, ppOutShaderModuleHandles);
 }

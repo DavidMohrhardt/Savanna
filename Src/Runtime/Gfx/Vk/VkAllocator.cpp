@@ -56,7 +56,7 @@ namespace Savanna::Gfx::Vk2
 
     const VkAllocationCallbacks *const VkAllocator::Get()
     {
-        return nullptr;
+        return s_pAllocationCallbacks;
     }
 
     void VkAllocator::SetVkAllocationInterfacePtr(const se_AllocatorInterface_t* pInterface)
@@ -69,6 +69,12 @@ namespace Savanna::Gfx::Vk2
         }
         else
         {
+#if SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
+            if (s_Allocations != 0)
+            {
+                SAVANNA_FATAL_LOG("Vulkan allocator is being destroyed with {} allocations still active!", s_Allocations);
+            }
+#endif // SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
             s_AllocationInterface = {};
             s_pAllocationCallbacks = nullptr;
         }

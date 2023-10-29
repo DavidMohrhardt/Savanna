@@ -11,6 +11,11 @@
 #ifndef I_SAVANNA_GFX_H
 #define I_SAVANNA_GFX_H
 
+// Potentially external headers
+#ifndef I_SAVANNA_CONCURRENCY_H
+    typedef se_intptr se_JobHandle_t;
+#endif
+
 // TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type
 
 #include "Public/ISavannaEngine.h"
@@ -107,6 +112,12 @@ typedef enum se_GfxErrorCode_t : se_uint32
     kSavannaGfxErrorCodeUnableToCreateGfxDriver,
 
     /**
+     * @brief The driver interface provided was invalid.
+     *
+     */
+    kSavannaGfxErrorCodeInvalidDriverInterface,
+
+    /**
      * @brief The graphics driver has already been created.
      * @note This error code may not always be considered an error.
      */
@@ -167,21 +178,21 @@ SE_GFX_HANDLE_TYPEDEF(GfxDriver);
  * @brief A handle to a native command buffer. This is a handle to the native graphics API.
  *
  */
-// SE_GFX_HANDLE_TYPEDEF(se_GfxCommandBuffer);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxFence);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxSemaphore);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxBuffer);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxImage);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxImageView);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxSampler);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxShaderModule);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxPipelineLayout);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxRenderPass);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxPipeline);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxDescriptorSetLayout);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxDescriptorPool);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxDescriptorSet);
-// SE_GFX_HANDLE_TYPEDEF(se_GfxFramebuffer);
+// SE_GFX_HANDLE_TYPEDEF(GfxCommandBuffer);
+// SE_GFX_HANDLE_TYPEDEF(GfxFence);
+// SE_GFX_HANDLE_TYPEDEF(GfxSemaphore);
+// SE_GFX_HANDLE_TYPEDEF(GfxBuffer);
+// SE_GFX_HANDLE_TYPEDEF(GfxImage);
+// SE_GFX_HANDLE_TYPEDEF(GfxImageView);
+// SE_GFX_HANDLE_TYPEDEF(GfxSampler);
+SE_GFX_HANDLE_TYPEDEF(GfxShaderModule);
+// SE_GFX_HANDLE_TYPEDEF(GfxPipelineLayout);
+// SE_GFX_HANDLE_TYPEDEF(GfxRenderPass);
+// SE_GFX_HANDLE_TYPEDEF(GfxPipeline);
+// SE_GFX_HANDLE_TYPEDEF(GfxDescriptorSetLayout);
+// SE_GFX_HANDLE_TYPEDEF(GfxDescriptorPool);
+// SE_GFX_HANDLE_TYPEDEF(GfxDescriptorSet);
+// SE_GFX_HANDLE_TYPEDEF(GfxFramebuffer);
 
 #undef SE_GFX_HANDLE_TYPEDEF
 
@@ -297,6 +308,242 @@ typedef se_GfxDriverHandle_t (*se_pfnGfxDriverGetDriverHandle_t)();
  */
 typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateSwapchain_t)(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
 
+
+/// Shaders Section
+
+#define k_SavannaGfxInvalidShaderModuleHandle (0x0)
+
+/**
+ * @brief The stage of the shader module.
+ *
+ */
+typedef enum se_GfxShaderModuleStage_t : se_uint32
+{
+    kSavannaGfxShaderModuleStageVertex = 0,
+    kSavannaGfxShaderModuleStageFragment,
+    kSavannaGfxShaderModuleStageCompute,
+    kSavannaGfxShaderModuleStageGeometry,
+    kSavannaGfxShaderModuleStageTessellationControl,
+    kSavannaGfxShaderModuleStageTessellationEvaluation,
+    kSavannaGfxShaderModuleStageRayGeneration,
+    kSavannaGfxShaderModuleStageIntersection,
+    kSavannaGfxShaderModuleStageAnyHit,
+    kSavannaGfxShaderModuleStageClosestHit,
+    kSavannaGfxShaderModuleStageMiss,
+    kSavannaGfxShaderModuleStageCallable,
+    kSavannaGfxShaderModuleStageTask,
+    kSavannaGfxShaderModuleStageMesh,
+    kSavannaGfxShaderModuleStageCount,
+} se_GfxShaderModuleStage_t;
+
+/**
+ * @brief The type of shader module.
+ *
+ */
+typedef enum se_GfxShaderModuleType_t : se_uint32
+{
+    kSavannaGfxShaderModuleTypeUnknown = 0,
+    kSavannaGfxShaderModuleTypeSpirv,
+
+    // Currently unsupported
+    // kSavannaGfxShaderModuleTypeGlsl,
+    // kSavannaGfxShaderModuleTypeHlsl,
+
+    kSavannaGfxShaderModuleTypeCount,
+} se_GfxShaderModuleType_t;
+
+/**
+ * @brief The create info for a shader module.
+ *
+ */
+typedef struct se_GfxShaderModuleCreateInfo_t
+{
+    /**
+     * @brief The type of shader module.
+     *
+     */
+    se_GfxShaderModuleType_t m_Type;
+
+    /**
+     * @brief The stage of the shader module.
+     *
+     */
+    se_GfxShaderModuleStage_t m_Stage;
+
+    /**
+     * @brief The size of the shader module data.
+     *
+     */
+    se_uint32 m_Size;
+
+    /**
+     * @brief The shader module data.
+     *
+     */
+    const void* m_pData;
+
+    /**
+     * @brief The allocator interface to use for the shader module.
+     *
+     */
+    const se_AllocatorInterface_t* m_pAllocatorInterface;
+
+    /**
+     * @brief The user data to pass to the shader module.
+     *
+     */
+    void* m_pUserData;
+} se_GfxShaderModuleCreateInfo_t;
+
+/**
+ * @brief A list of shader module create infos.
+ *
+ */
+typedef struct se_GfxShaderModuleCreateInfoList_t
+{
+    /**
+     * @brief The list of shader module create infos.
+     *
+     */
+    se_GfxShaderModuleCreateInfo_t* m_pCreateInfos;
+
+    /**
+     * @brief The number of shader module create infos.
+     *
+     */
+    se_uint32 m_CreateInfoCount;
+
+    /**
+     * @brief The allocator interface to use for the shader module.
+     *
+     */
+    const se_AllocatorInterface_t* m_pAllocatorInterface;
+
+    /**
+     * @brief The user data to pass to the shader module.
+     *
+     */
+    void* m_pUserData;
+} se_GfxShaderModuleCreateInfoList_t;
+
+/**
+ * @brief A function pointer defining the function signature for requesting shader module creation.
+ */
+typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateShaderModule_t)(
+    const se_GfxShaderModuleCreateInfo_t& createInfo,
+    se_GfxShaderModuleHandle_t& outShaderModuleHandle);
+
+/**
+ * @brief A function pointer defining the function signature for requesting shader module creation
+ * for a given number of shader module create infos. This function is asynchronous.
+ *
+ * @note This function is not required to be implemented and can return
+ * kSavannaGfxErrorCodeNotImplemented or be nullptr.
+ */
+typedef se_JobHandle_t (*se_pfnGfxDriverCreateShaderModulesAsync_t)(
+    const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+    const size_t createInfoCount,
+    se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles);
+
+/// Pipelines
+
+/**
+ * @brief The type of pipeline.
+ *
+ */
+typedef enum se_GfxPipelineType_t : se_uint32
+{
+    kSavannaGfxPipelineTypeGraphics = 0,
+    kSavannaGfxPipelineTypeCompute,
+    kSavannaGfxPipelineTypeRayTracing,
+    kSavannaGfxPipelineTypeCount,
+} se_GfxPipelineType_t;
+
+/**
+ * @brief The flags for the graphics shader stages.
+ *
+ */
+typedef enum se_GfxGraphicsShaderStageFlags_t : se_uint32
+{
+    /**
+     * @brief Indicates that no shader stages are enabled.
+     *
+    */
+    kSavannaGfxShaderStageNone = 0,
+
+    /**
+     * @brief Indicates that the vertex shader stage is enabled.
+     *
+     * @note This is the default value and must be explicitly true for a valid pipeline.
+     */
+    kSavannaGfxVertexShaderStage = 1 << kSavannaGfxShaderModuleStageVertex,
+
+    /**
+     * @brief Indicates that the fragment shader stage is enabled.
+     *
+     * @note This is a default value and must be explicitly true for a valid pipeline.
+     */
+    kSavannaGfxFragmentShaderStage = 1 << kSavannaGfxShaderModuleStageFragment,
+
+    /**
+     * @brief Indicates that the minimal graphics shader stages are enabled.
+     *
+     */
+    kSavannaGfxMinimalGraphicsShaderStage = kSavannaGfxVertexShaderStage | kSavannaGfxFragmentShaderStage,
+
+    kSavannaGfxGeometryShaderStage = 1 << kSavannaGfxShaderModuleStageGeometry,
+    kSavannaGfxTessellationControlShaderStage = 1 << kSavannaGfxShaderModuleStageTessellationControl,
+    kSavannaGfxTessellationEvaluationShaderStage = 1 << kSavannaGfxShaderModuleStageTessellationEvaluation,
+} se_GfxGraphicsShaderStageFlags_t;
+
+typedef struct se_GfxShaderStageCreateInfo_t
+{
+    se_GfxShaderModuleHandle_t m_ShaderModule;
+    const char* m_pEntryPoint;
+    se_GfxShaderModuleStage_t m_Stage;
+    void* pNext;
+} se_GfxShaderStageCreateInfo_t;
+
+typedef struct se_GfxGraphicsPipelineCreateInfo_t
+{
+    /**
+     * @brief A linked list of shader stages. Must have at least a vertex and fragment shader.
+     *
+     * @decl_spec_rule Must have at least a vertex and fragment shader.
+     */
+    se_GfxShaderStageCreateInfo_t* m_pShaderStages;
+
+    // Vertex input state
+    // Input assembly state
+    // Tessellation state
+
+    // Fixed function pipeline inputs
+    // se_GfxGraphicsViewportStateCreateInfo_t m_ViewportState;
+    // se_GfxGraphicsRasterizationStateCreateInfo_t m_RasterizationState;
+    // se_GfxGraphicsMultisampleStateCreateInfo_t m_MultisampleState;
+    // se_GfxGraphicsDepthStencilStateCreateInfo_t m_DepthStencilState;
+    // se_GfxGraphicsColorBlendStateCreateInfo_t m_ColorBlendState;
+    // se_GfxGraphicsDynamicStateCreateInfo_t m_DynamicState;
+
+    void* pNext;
+} se_GfxGraphicsPipelineCreateInfo_t;
+
+typedef struct se_GfxComputePipelineCreateInfo_t
+{
+    // Required
+    se_GfxShaderModuleHandle_t m_ComputeShader;
+
+    void* pNext;
+} se_GfxComputePipelineCreateInfo_t;
+
+typedef struct se_GfxRayTracingPipelineCreateInfo_t
+{
+    // Required
+    se_GfxShaderModuleHandle_t m_RayGenerationShader;
+
+    void* pNext;
+} se_GfxRayTracingPipelineCreateInfo_t;
+
 /**
  * @brief Retrieves the type of backend the driver represents.
  *
@@ -330,6 +577,21 @@ typedef struct se_GfxDriverInterface_t
      *
      */
     se_pfnGfxDriverCreateSwapchain_t m_pfnCreateSwapchain;
+
+    /**
+     * @brief A pointer to the function for requesting a shader module.
+     *
+     */
+    se_pfnGfxDriverCreateShaderModule_t m_pfnCreateShaderModule;
+
+    /**
+     * @brief A pointer to the function for requesting multiple shader modules be created
+     * asynchronously.
+     *
+     * @note This function is not required to be implemented and can be nullptr.
+     *
+     */
+    se_pfnGfxDriverCreateShaderModulesAsync_t m_pfnCreateShaderModulesAsync;
 
     /**
      * @brief
@@ -415,6 +677,15 @@ SAVANNA_EXPORT(se_GfxHandle_t) SavannaGfxGetDriverHandle();
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
     const se_GfxSwapchainCreateInfo_t* const pCreateInfo,
     se_GfxHandle_t* const pOutSwapchainHandle);
+
+SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateShaderModule(
+    const se_GfxShaderModuleCreateInfo_t& createInfo,
+    se_GfxShaderModuleHandle_t& outShaderModuleHandle);
+
+SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
+    const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+    const size_t createInfoCount,
+    se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles);
 
 /**
  * @brief Gets the capabilities of the graphics system. Is valid even before

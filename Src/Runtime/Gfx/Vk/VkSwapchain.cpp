@@ -115,10 +115,30 @@ namespace Savanna::Gfx::Vk2
         return kSavannaGfxErrorCodeSuccess;
     }
 
+    void VkSwapchain::Reset(const VkGpu& gpu)
+    {
+
+    }
+
+    void VkSwapchain::Destroy(const VkGpu &gpu)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(VkSwapchain::Destroy())
+        const VkDevice& device = gpu;
+
+        ReleaseImageViews(device);
+
+        if (m_Swapchain != VK_NULL_HANDLE)
+        {
+            vkDestroySwapchainKHR(device, m_Swapchain, VkAllocator::Get());
+            m_Swapchain = VK_NULL_HANDLE;
+        }
+    }
+
     void VkSwapchain::ConfigureSwapchainImageViews(const VkGpu& gpu)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VkSwapchain::ConfigureSwapchainImageViews())
         const VkDevice& device = gpu;
+
         ReleaseImageViews(device);
 
         uint32 swapchainImageCount;
@@ -140,7 +160,7 @@ namespace Savanna::Gfx::Vk2
         }
     }
 
-    void VkSwapchain::ReleaseImageViews(const VkDevice& device)
+    inline void VkSwapchain::ReleaseImageViews(const VkDevice& device)
     {
         if (device != VK_NULL_HANDLE)
         {

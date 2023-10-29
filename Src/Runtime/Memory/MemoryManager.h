@@ -36,27 +36,42 @@ namespace Savanna
         ~MemoryManager();
 
     public:
-        void* Allocate(size_t size, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
-        void* Allocate(size_t size, size_t alignment, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
-        void* Reallocate(void* ptr, size_t newSize, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
-        void* Reallocate(void* ptr, size_t newSize, size_t alignment, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+        void* Allocate(
+            size_t size,
+            const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+
+        void* AllocateAligned(
+            const size_t& size,
+            const size_t& alignment,
+            const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+
+        void* Reallocate(
+            void* ptr,
+            const size_t& newSize,
+            const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
+
+        void* ReallocateAligned(
+            void* ptr,
+            const size_t& newSize,
+            size_t alignment,
+            const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
 
         void Free(void* ptr, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelGeneral);
 
         template <typename T, typename ...ARGS>
         inline T* New(const se_MemoryLabelBackingInt_t label, ARGS&&... args)
         {
-            return new (static_cast<T*>(Allocate(sizeof(T), label))) T(std::forward<ARGS>(args)...);
+            return new (static_cast<T*>(AllocateAligned(sizeof(T), alignof(T), label))) T(std::forward<ARGS>(args)...);
         }
 
         template <typename T>
         inline T* NewArray(const size_t& count, const se_MemoryLabelBackingInt_t label)
         {
-            return new (static_cast<T*>(Allocate(sizeof(T) * count, label))) T[count];
+            return new (static_cast<T*>(AllocateAligned(sizeof(T) * count, alignof(T), label))) T[count];
         }
 
         template <typename T>
-        inline void Delete(T* ptr)
+        inline void Delete(T* ptr, const se_MemoryLabelBackingInt_t label)
         {
             ptr->~T();
             Free(static_cast<void*>(ptr));
@@ -73,6 +88,17 @@ namespace Savanna
         }
 
     protected:
+        void* AllocateInternal(
+            const size_t& size,
+            const size_t& alignment,
+            const se_MemoryLabelBackingInt_t label);
+
+        void* ReallocateInternal(
+            void* ptr,
+            const size_t& newSize,
+            const size_t& alignment,
+            const se_MemoryLabelBackingInt_t label);
+
         bool InitializeInternal() override;
         void StartInternal() override;
         void StopInternal() override;
@@ -91,32 +117,5 @@ void operator delete[](void* ptr) noexcept;
 void operator delete[](void* ptr, size_t size) noexcept;
 
 #endif // ENABLE_GLOBAL_NEW_DELETE_OP_OVERRIDES
-
-#define SAVANNA_NEW(label, type, ...) \
-    Savanna::MemoryManager::Get()->New<type>(label, __VA_ARGS__)
-
-#define SAVANNA_NEW_ARRAY(label, type, count) \
-    Savanna::MemoryManager::Get()->NewArray<type>(count, label)
-
-#define SAVANNA_DELETE(label, ptr) \
-    Savanna::MemoryManager::Get()->Delete(ptr)
-
-#define SAVANNA_DELETE_ARRAY(label, ptr, count) \
-    Savanna::MemoryManager::Get()->DeleteArray(ptr, count, label)
-
-#define SAVANNA_INPLACE_NEW(label, type, ptr, ...) \
-    new (ptr) type(__VA_ARGS__)
-
-#define SAVANNA_INPLACE_NEW_ARRAY(label, type, count, ptr) \
-    new (ptr) type[count]
-
-#define SAVANNA_MALLOC(label, size) \
-    Savanna::MemoryManager::Get()->Allocate(size, label)
-
-#define SAVANNA_MALLOC_ALIGNED(label, size, alignment) \
-    Savanna::MemoryManager::Get()->Allocate(size, alignment, label)
-
-#define SAVANNA_FREE(label, ptr) \
-    Savanna::MemoryManager::Get()->Free(ptr, label)
 
 #endif // defined(__cplusplus)

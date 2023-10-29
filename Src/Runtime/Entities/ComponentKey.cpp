@@ -10,16 +10,16 @@
  */
 #include "ComponentKey.h"
 
-static_assert((k_MaxKeyValue & k_SEComponentKeyTeethMask) > 0, "Component key max value is too large");
+static_assert((k_MaxKeyValue & k_ComponentKeyDataTeethMask) > 0, "Component key max value is too large");
 // static_assert
-static_assert((k_SEComponentKeyRingIndexMask >> SAVANNA_ECS_KEY_TEETH_BIT_COUNT) == k_MaxSetMaskValue, "Component set max value is too large");
+static_assert((k_ComponentKeyDataRingIndexMask >> SAVANNA_ECS_KEY_TEETH_BIT_COUNT) == k_MaxSetMaskValue, "Component set max value is too large");
 
-bool SavannaIsValidComponentKey(const SEComponentKey& componentId)
+bool SavannaIsValidComponentKey(const ComponentKeyData& componentId)
 {
     return componentId.m_FullComponentKey != k_InvalidComponentKey.m_FullComponentKey;
 }
 
-bool SavannaCompareKeys(const SEComponentKey& entityKey, const SEComponentKey& systemLock)
+bool SavannaCompareKeys(const ComponentKeyData& entityKey, const ComponentKeyData& systemLock)
 {
     return entityKey.m_FullComponentKey == systemLock.m_FullComponentKey;
 }
@@ -31,7 +31,7 @@ namespace Savanna::Entities
         return SavannaCompareKeys(m_ComponentKey, componentKey);
     }
 
-    SEComponentKey ComponentKey::GetKey() const
+    ComponentKeyData ComponentKey::GetKey() const
     {
         return m_ComponentKey;
     }
@@ -46,7 +46,7 @@ namespace Savanna::Entities
         return static_cast<se_ComponentKeyMask_T>(m_ComponentKey.m_RingIndex);
     }
 
-    void ComponentKey::SetKey(const SEComponentKey& componentKey)
+    void ComponentKey::SetKey(const ComponentKeyData& componentKey)
     {
         m_ComponentKey = componentKey;
     }

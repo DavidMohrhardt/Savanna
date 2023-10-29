@@ -69,13 +69,7 @@ namespace Savanna
         SAVANNA_ASSERT(label != k_SavannaMemoryLabelNone, "Invalid memory label for memory owning allocator");
         SAVANNA_ASSERT(size > 0, "Invalid size for memory owning allocator");
 
-        m_Head = reinterpret_cast<MemoryChunkDescriptor*>(
-            MemoryManager::Get()->Allocate(
-                size,
-                alignof(MemoryChunkDescriptor),
-                label)
-            );
-        *m_Head = MemoryChunkDescriptor(size);
+        m_Head = SAVANNA_NEW(label, MemoryChunkDescriptor, size);
         m_Root = m_Head;
     }
 
@@ -117,7 +111,7 @@ namespace Savanna
 
         if (m_MemoryLabel != k_SavannaMemoryLabelNone)
         {
-            MemoryManager::Get()->Free(m_Head, m_MemoryLabel);
+            SAVANNA_DELETE(m_MemoryLabel, m_Head);
         }
 
         m_Head = nullptr;

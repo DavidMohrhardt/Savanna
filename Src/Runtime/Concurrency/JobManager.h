@@ -39,14 +39,11 @@ namespace Savanna::Concurrency
         friend class DependentJobWrapper;
         friend class JobRunner;
 
-    public:
-        static uint8 k_MaxThreadPoolSize;
-
     private:
         static JobResult ExecuteJobInternal(JobHandle handle);
         static void ProcessJobsInternal();
+        static uint8 s_ThreadPoolSize;
 
-        uint8 m_ThreadPoolSize;
         std::atomic_bool m_ProcessingJobs;
         dynamic_array<std::thread> m_JobThreads;
 
@@ -55,14 +52,16 @@ namespace Savanna::Concurrency
         LocklessQueue<JobHandle> m_HighPriorityJobs;
 
     public:
+        static void SetThreadPoolSize(uint8 threadPoolSize);
+
         JobManager();
         ~JobManager();
 
     protected:
-        virtual bool InitializeInternal() final override;
-        virtual void StartInternal() final override;
-        virtual void StopInternal() final override;
-        virtual void ShutdownInternal() final override;
+        virtual bool InitializeInternal() final;
+        virtual void StartInternal() final;
+        virtual void StopInternal() final;
+        virtual void ShutdownInternal() final;
 
     public:
         JobHandle ScheduleJob(
@@ -70,7 +69,8 @@ namespace Savanna::Concurrency
             JobPriority priority = JobPriority::k_SavannaJobPriorityNormal,
             JobHandle dependency = k_InvalidJobHandle);
 
-        void ScheduleJob(JobHandle& handle, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
+        void ScheduleJob(
+            JobHandle& handle, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal);
 
         // TODO @david.mohrhardt: Fix this. Currently it can cause issues because there is no user client contract
         // for who owns the memory of a batch job.
@@ -84,6 +84,8 @@ namespace Savanna::Concurrency
         SAVANNA_NO_DISCARD JobState GetJobState(JobHandle jobHandle);
 
         JobHandle CombineDependencies(const JobHandle* handles, size_t jobCount);
+
+        uint8 GetThreadPoolSize() const { return s_ThreadPoolSize; }
 
     private:
         JobResult AwaitJobOrExecuteImmediateInternal(JobHandle dependency);

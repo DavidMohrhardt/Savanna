@@ -121,6 +121,7 @@ namespace Savanna::Gfx::Vk2
         {
             allocator.Delete(g_pVulkanDriver);
             g_pVulkanDriver = nullptr;
+            VkAllocator::SetVkAllocationInterfacePtr(nullptr);
             return kSavannaGfxErrorCodeSuccess;
         }
 
@@ -151,9 +152,41 @@ namespace Savanna::Gfx::Vk2
         return result;
     }
 
+    se_GfxErrorCode_t VkDriver::CreateShaderModule(
+        const se_GfxShaderModuleCreateInfo_t& createInfo,
+        se_GfxShaderModuleHandle_t& outShaderModuleHandle)
+    {
+        outShaderModuleHandle = k_SavannaGfxInvalidShaderModuleHandle;
+        if (g_pVulkanDriver != nullptr)
+        {
+            outShaderModuleHandle = g_pVulkanDriver->m_ShaderModuleCache.CreateShaderModuleSynchronized(g_pVulkanDriver->m_Gpu, createInfo);
+        }
+
+        return outShaderModuleHandle != k_SavannaGfxInvalidShaderModuleHandle
+            ? kSavannaGfxErrorCodeSuccess
+            : kSavannaGfxErrorCodeUnknownError;
+    }
+
+    se_JobHandle_t VkDriver::CreateShaderModulesAsync(
+        const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+        const size_t createInfoCount,
+        se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles)
+    {
+        JobHandle jobHandle = k_InvalidJobHandle;
+        if (g_pVulkanDriver != nullptr)
+        {
+            jobHandle = g_pVulkanDriver->m_ShaderModuleCache.CreateShaderModulesAsync(
+                g_pVulkanDriver->m_Gpu,
+                const_cast<se_GfxShaderModuleCreateInfo_t*>(pCreateInfos),
+                createInfoCount,
+                ppOutShaderModuleHandles);
+        }
+
+        return jobHandle;
+    }
+
     void VkDriver::PopulateDriverInterface(se_GfxDriverInterface_t &outDriverInterface)
     {
-
 #   define FILL_OUT_INTERFACE_FUNC(__func) \
         .m_pfn##__func = VkDriver::__func
 
@@ -163,6 +196,8 @@ namespace Savanna::Gfx::Vk2
             FILL_OUT_INTERFACE_FUNC(Destroy),
             FILL_OUT_INTERFACE_FUNC(GetDriverHandle),
             FILL_OUT_INTERFACE_FUNC(CreateSwapchain),
+            FILL_OUT_INTERFACE_FUNC(CreateShaderModule),
+            FILL_OUT_INTERFACE_FUNC(CreateShaderModulesAsync),
             .m_pfnGetBackend = []() { return kSavannaGfxApiVulkan; },
         };
         outDriverInterface = k_VulkanDriverInterface;
@@ -172,6 +207,13 @@ namespace Savanna::Gfx::Vk2
 
     void VkDriver::Teardown()
     {
+        m_ShaderModuleCache.Clear(m_Gpu);
+
+        if (m_Swapchain.m_Swapchain != VK_NULL_HANDLE)
+        {
+            m_Swapchain.Destroy(m_Gpu);
+        }
+
         m_Gpu.Reset(m_Instance, VkAllocator::Get());
 
         if (m_Surface != VK_NULL_HANDLE)

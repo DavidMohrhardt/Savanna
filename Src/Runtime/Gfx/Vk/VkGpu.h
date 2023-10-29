@@ -25,7 +25,6 @@ namespace Savanna::Gfx::Vk2
         VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
         VkQueueFamilyIndices m_QueueFamilyIndices;
 
-
         VkGpu() = default;
         ~VkGpu() = default;
 
@@ -42,8 +41,8 @@ namespace Savanna::Gfx::Vk2
                             VkInstance &instance,
                             VkSurfaceKHR& surface,
                             const VkAllocationCallbacks* pAllocationCallbacks);
-        void Reset(
-            VkInstance& instance,
+
+        void Reset(VkInstance& instance,
             const VkAllocationCallbacks* pAllocationCallbacks);
 
     public:

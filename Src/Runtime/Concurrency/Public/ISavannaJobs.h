@@ -69,6 +69,8 @@ typedef enum se_JobState_t
  *
  * Jobs are computed in the order they are received but
  * higher priority jobs will always be checked for first.
+ *
+ * TODO @david.mohrhardt: Rework priority to instead use a work stealing queue.
  */
 typedef enum se_JobPriority_t
 {
