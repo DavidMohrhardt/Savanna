@@ -12,7 +12,7 @@
 
 #include "SavannaEntities.h"
 
-#include "ISystem.h"
+#include "System.h"
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 

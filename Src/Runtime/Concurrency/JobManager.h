@@ -29,7 +29,7 @@
 
 namespace Savanna::Concurrency
 {
-    class JobManager
+    class JobManager : public Singleton<JobManager>
     {
     private:
         friend class ThreadManager;
@@ -50,8 +50,6 @@ namespace Savanna::Concurrency
         atomic_queue<JobHandle> m_HighPriorityJobs;
 
     public:
-        static void SetThreadPoolSize(uint8 threadPoolSize);
-
         JobManager();
         ~JobManager();
 

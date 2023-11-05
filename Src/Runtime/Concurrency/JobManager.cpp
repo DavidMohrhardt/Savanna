@@ -241,14 +241,6 @@ namespace Savanna::Concurrency
         return ScheduleJob(SAVANNA_NEW(k_SavannaMemoryLabelGeneral, DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
     }
 
-    void JobManager::SetThreadPoolSize(uint8 threadPoolSize)
-    {
-        if (!IsInitialized())
-        {
-            s_ThreadPoolSize = threadPoolSize;
-        }
-    }
-
     JobResult JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::AwaitJobOrExecuteImmediateInternal(JobHandle dependency));
