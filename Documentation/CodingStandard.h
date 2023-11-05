@@ -1,20 +1,30 @@
 /**
  * C++ Coding Standard:
  *
- * Comments:
+ * Files:
+ * - Files should be named in PascalCase.
+ * - Files should be named after the class they contain.
+ *    - If the file contains multiple classes, it should be named after the most important class.
+ * - Headers should only have the .h extension when used within the engine library code.
+ * - Headers should have the .hpp extension when defining a C++ version of a public header and
+ *   said header must have a C version as well. For example, ISavannaMemory.h and ISavannaMemory.hpp.
+ * - Public headers must be placed within a "Public" folder within the module.
  *
+ * Comments:
  * All forms of comments are allowed, however each form is dedicated to a certain kind of comment.
  * //    - Short, one-line comments.  Used for explaining things in code blocks
  * /*    - Multiline comments only.  Used for explaining the purpose of a file or function
  * ///   - Multiline Comments only.  Used for defining function/variable comments in a file
+ *
  * Classes:
  *      - Use Class instead of Struct.
- *          - Structs should be reserved for pure data types.
- *      - Only single inheritance is allowed.  Any and all multiple inheritance classes will be tossed aside.  Don't waste your time.
- *      - Friend classes are acceptable except in the case where there would be more than one friend class. Acceptable in tests.
+ *      - Structs should be reserved for pure data types.
+ *
  * Templates:
  *      - Should be avoided if there are less than four generic use cases.
  *          - This is to cut down on compile time and obfuscation of the code base.
+ *     - Template functions should be defined in the header file if they might be used in multiple
+ *       applications.
  *
  */
 
@@ -27,6 +37,13 @@
 ///     - Savanna::Gfx::Vulkan (This is the namespace for the Vulkan graphics implementation of the Savanna::Rendering namespace)
 namespace Savanna::CodingStandard
 {
+    struct ExampleStruct
+    {
+        // Structs should only contain data members and no functions.
+        int m_ExampleInt;
+        float m_ExampleFloat;
+    };
+
     class ExampleClass
     {
     private:

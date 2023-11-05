@@ -59,9 +59,9 @@ namespace Savanna
             m_EndTime = Now();
             m_Sampling = false;
             // ProfilerManager::EndProfilerMarker(this);
-            SAVANNA_LOG("[Profiler] {} {}ms Elapsed",
-                m_ProfilerMarkerName,
-                Poll());
+            SAVANNA_LOG("[Profiler] ({}ms)\t{}",
+                Poll(),
+                m_ProfilerMarkerName);
         }
     }
 }

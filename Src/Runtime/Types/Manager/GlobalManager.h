@@ -2,11 +2,11 @@
 
 #include <Utilities/SavannaCoding.h>
 
-#include "Types/Singleton/EmbeddedSingleton.h"
+#include "Types/Singleton/Singleton.h"
 
 #define DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(__className) \
     friend class GlobalManager<__className>; \
-    friend class EmbeddedSingleton<__className>;
+    friend class Singleton<__className>;
 
 namespace Savanna
 {
@@ -23,14 +23,14 @@ namespace Savanna
     };
 
     template <typename T>
-    class GlobalManager : public EmbeddedSingleton<T>, public IGlobalManager
+    class GlobalManager : public IGlobalManager, public Singleton<T>
     {
     public:
         static bool Initialize()
         {
             if (!IsInitialized())
             {
-                s_Initialized = EmbeddedSingleton<T>::Get().InitializeInternal();
+                s_Initialized = Singleton<T>::Construct()->InitializeInternal();
             }
             return s_Initialized;
         }
@@ -38,20 +38,27 @@ namespace Savanna
         static void Start()
         {
             if (!IsRunning())
-                EmbeddedSingleton<T>::Get().StartInternal();
+            {
+                Singleton<T>::Get()->StartInternal();
+                s_Running = true;
+            }
         }
 
         static void Stop()
         {
             if (IsRunning())
-                EmbeddedSingleton<T>::Get().StopInternal();
+            {
+                Singleton<T>::Get()->StopInternal();
+                s_Running = false;
+            }
         }
 
         static void Shutdown()
         {
             if (IsInitialized())
             {
-                EmbeddedSingleton<T>::Get().ShutdownInternal();
+                Singleton<T>::Get()->ShutdownInternal();
+                Singleton<T>::Destroy();
                 s_Initialized = false;
             }
         }

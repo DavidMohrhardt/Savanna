@@ -1,34 +1,196 @@
+#include "SavannaMemory.h"
 #include "MemoryManager.h"
 
+#include "Profiling/Profiler.h"
+
+#include <array>
 #include <cstring>
+#include "Public/ISavannaMemory.h"
+
+#define ENABLE_MEMORY_MANAGEMENT 1
 
 namespace Savanna
 {
-    static constexpr size_t k_DefaultAlignment = L1CacheLineLength();
+    template <se_MemoryLabelBackingInt_t LABEL>
+    consteval se_AllocatorInterface_t GetInterfaceForLabel()
+    {
+#if !ENABLE_MEMORY_MANAGEMENT
+        return k_HeapAllocatorInterface;
+#else // ENABLE_MEMORY_MANAGEMENT
+        return se_AllocatorInterface_t
+        {
+            .m_AllocFunc = [](size_t size, void* pUserData) -> void*
+            {
+                return MemoryManager::Get()->Allocate(size, LABEL);
+            },
+            .m_AllocAlignedFunc = [](size_t size, size_t alignment, void* pUserData) -> void*
+            {
+                return MemoryManager::Get()->AllocateAligned(size, alignment, LABEL);
+            },
+            .m_ReallocFunc = [](void* ptr, const size_t& newSize, void* pUserData) -> void*
+            {
+                return MemoryManager::Get()->Reallocate(ptr, newSize, LABEL);
+            },
+            .m_ReallocAlignedFunc = [](void* ptr, size_t alignment, const size_t& newSize, void* pUserData) -> void*
+            {
+                return MemoryManager::Get()->ReallocateAligned(ptr, newSize, alignment, LABEL);
+            },
+            .m_FreeFunc = [](void* ptr, void* pUserData) -> void
+            {
+                MemoryManager::Get()->Free(ptr, LABEL);
+            }
+        };
+#endif // !ENABLE_MEMORY_MANAGEMENT
+    }
+
+    template<>
+    consteval se_AllocatorInterface_t GetInterfaceForLabel<k_SavannaMemoryLabelHeap>()
+    {
+        return k_HeapAllocatorInterface;
+    }
+
+    template <std::size_t... I>
+    consteval auto GenerateInterfaceArray(std::index_sequence<I...>)
+    {
+        return std::array
+        {
+            GetInterfaceForLabel<I>()...
+        };
+    }
+
+    static constexpr auto k_LabelAllocatorInterfaces = GenerateInterfaceArray(std::make_index_sequence<static_cast<size_t>(k_SavannaMemoryLabelCount)>());
+
+    const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForLabel(
+        const MemoryLabel& label)
+    {
+        if (label >= k_SavannaMemoryLabelCount)
+        {
+            throw BadAllocationException();
+        }
+        return k_LabelAllocatorInterfaces[label.m_BackingValue];
+    }
+
+    const se_AllocatorInterface_t* MemoryManager::GetAllocatorInterfaceForLabelPtr(const MemoryLabel &label)
+    {
+        if (label >= k_SavannaMemoryLabelCount)
+        {
+            return nullptr;
+        }
+        return &k_LabelAllocatorInterfaces[label.m_BackingValue];
+    }
+
+    bool MemoryManager::TryGetAllocatorInterfaceForLabel(
+        const uint32& label,
+        se_AllocatorInterface_t& outLabelInterface)
+    {
+        if (label >= k_SavannaMemoryLabelCount)
+        {
+            return false;
+        }
+
+        outLabelInterface = k_LabelAllocatorInterfaces[label];
+        return true;
+    }
 
     // TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.
-    MemoryManager::MemoryManager() {}
+    MemoryManager::MemoryManager()
+        : m_MemoryArenas(0, k_SavannaMemoryLabelHeap)
+    {}
 
     MemoryManager::~MemoryManager() {}
 
-    void* MemoryManager::Allocate(size_t size, const MemoryLabel label)
+    void* MemoryManager::Allocate(size_t size, const se_MemoryLabelBackingInt_t label)
     {
-        return Allocate(size, k_DefaultAlignment, label);
+        return AllocateInternal(size, alignof(byte), label);
     }
 
-    inline void* MemoryManager::Allocate(size_t size, size_t alignment, const MemoryLabel label)
+    void* MemoryManager::AllocateAligned(
+        const size_t& size,
+        const size_t& alignment,
+        const se_MemoryLabelBackingInt_t label)
     {
-        return m_RootAllocator.alloc(size, alignment);
+        return AllocateInternal(size, alignment, label);
     }
 
-    void MemoryManager::Free(void* ptr)
+    void* MemoryManager::Reallocate(
+        void* ptr,
+        const size_t& newSize,
+        const se_MemoryLabelBackingInt_t label)
     {
-        m_RootAllocator.free(ptr, k_DefaultAlignment);
+        return ReallocateInternal(ptr, newSize, alignof(byte), label);
+    }
+
+    void* MemoryManager::ReallocateAligned(
+        void* ptr,
+        const size_t& newSize,
+        size_t alignment,
+        const se_MemoryLabelBackingInt_t label)
+    {
+        return ReallocateInternal(ptr, newSize, alignment, label);
+    }
+
+    void MemoryManager::Free(void* ptr, const se_MemoryLabelBackingInt_t label)
+    {
+        if (label == k_SavannaMemoryLabelHeap)
+        {
+            return k_HeapAllocatorInterface.m_FreeFunc(ptr, nullptr);
+        }
+
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
+        {
+            throw BadAllocationException();
+        }
+
+        m_MemoryArenas[arenaId].free(ptr, 1);
+    }
+
+    inline void* MemoryManager::AllocateInternal(
+        const size_t& size,
+        const size_t& alignment,
+        const se_MemoryLabelBackingInt_t label)
+    {
+        if (label == k_SavannaMemoryLabelHeap)
+        {
+            return k_HeapAllocatorInterface.m_AllocAlignedFunc(size, alignof(byte), nullptr);
+        }
+
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
+        {
+            throw BadAllocationException();
+        }
+
+        return m_MemoryArenas[arenaId].alloc(size, alignof(byte));
+    }
+
+    inline void* MemoryManager::ReallocateInternal(
+        void* ptr,
+        const size_t& newSize,
+        const size_t& alignment,
+        const se_MemoryLabelBackingInt_t label)
+    {
+        if (label == k_SavannaMemoryLabelHeap)
+        {
+            return k_HeapAllocatorInterface.m_ReallocAlignedFunc(ptr, alignof(byte), newSize, nullptr);
+        }
+
+        auto arenaId = SavannaMemoryGetArenaIdFromLabel(label);
+        if (arenaId == k_SavannaMemoryArenaIdInvalid)
+        {
+            throw BadAllocationException();
+        }
+
+        return m_MemoryArenas[arenaId].realloc(ptr, newSize, alignof(byte));
     }
 
     bool MemoryManager::InitializeInternal()
     {
-        m_RootAllocator = std::move(AtomicExpandableBlockAllocator(1, sizeof(UnifiedPage4096KiB), true));
+        m_MemoryArenas.clear();
+        for (int i = 0; i < k_SavannaMemoryArenaIdCount; ++i)
+        {
+            m_MemoryArenas.push_back(std::move(AtomicMultiListAllocator(4, sizeof(UnifiedPage4096KiB))));
+        }
         return true;
     }
 
@@ -38,7 +200,7 @@ namespace Savanna
 
     void MemoryManager::ShutdownInternal()
     {
-        m_RootAllocator.~AtomicAllocatorWrapper();
+        m_MemoryArenas.clear();
     }
 } // namespace Savanna
 
@@ -47,67 +209,54 @@ namespace Savanna
 // Operator new and delete overrides
 void *operator new(size_t sz)
 {
-    return Savanna::MemoryManager::Get().Allocate(sz);
+    return Savanna::MemoryManager::Get()->Allocate(sz);
 }
 
-void* operator new(size_t sz, const se_MemoryLabel_t& label)
+void* operator new(size_t sz, const uint32_t& label)
 {
-    return Savanna::MemoryManager::Get().Allocate(sz, label);
+    return Savanna::MemoryManager::Get()->Allocate(sz, label);
 }
 
 void *operator new[](size_t sz)
 {
-    return Savanna::MemoryManager::Get().Allocate(sz);
+    return Savanna::MemoryManager::Get()->Allocate(sz);
 }
 
 void operator delete(void *ptr) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 void operator delete(void *ptr, size_t size) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 void operator delete[](void *ptr) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 void operator delete[](void *ptr, size_t size) noexcept
 {
-    Savanna::MemoryManager::Get().Free(ptr);
+    Savanna::MemoryManager::Get()->Free(ptr);
 }
 
 #endif // ENABLE_OPERATOR_NEW_DELETE_OVERRIDES
 
+
 // C-Api
-
-inline void* savanna_memory_manager_allocate(
-    size_t size,
-    size_t alignment,
-    se_MemoryLabel_t label)
+SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetAllocatorInterfaceForLabel(const se_uint32 &label)
 {
-    return Savanna::MemoryManager::Get().Allocate(size, alignment, label);
+    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(label);
 }
 
-inline void savanna_memory_manager_free(void* ptr)
+SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
-    if (ptr)
-    {
-        Savanna::MemoryManager::Get().Free(ptr);
-    }
+    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGeneral);
 }
 
-inline void* savanna_memory_manager_realloc(
-    void* ptr,
-    size_t alignment,
-    const size_t& originalSize,
-    const size_t& newSize)
+SAVANNA_EXPORT(bool) SavannaMemoryManagerTryGetAllocatorInterfaceForLabel(const se_uint32& label, se_AllocatorInterface_t& outLabelInterface)
 {
-    void* newPtr = savanna_memory_manager_allocate(newSize, alignment);
-    memcpy(newPtr, ptr, originalSize);
-    savanna_memory_manager_free(ptr);
-    return newPtr;
+    return Savanna::MemoryManager::TryGetAllocatorInterfaceForLabel(label, outLabelInterface);
 }

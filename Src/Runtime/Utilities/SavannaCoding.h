@@ -9,17 +9,11 @@
  */
 #pragma once
 
-// Preprocessor definitions
-#include "PreprocessorDefinitions/Definitions.h"
+#include "Public/ISavannaEngine.h"
 
 // Common types
-#include "Types/Primitive/PrimitiveTypes.inl"
-#include "Types/Primitive/FloatingPointUnions.h"
-
 #include "Types/Enums/Enumeration.h"
 #include "Types/Enums/Flags.h"
-
-#include "Types/Version/Version.h"
 
 // Assertions
 #include "Assertions/SavannaAssertions.h"
@@ -27,7 +21,6 @@
 // These macro headers are guarded in case compiling with C rather than C++ so it's safe to include
 #include "Macros/CppCommonDefs.h"
 #include "Macros/CppFunctionality.h"
-#include "Macros/CppTypeDefs.h"
 #include "Macros/Enums.h"
 #include "Macros/PlatformSpecific.h"
 
@@ -36,6 +29,7 @@
 #include "Math/PointerMath.h"
 
 #ifdef __cplusplus
+#include "Public/ISavannaEngine.hpp"
 
 // For headers that explicitly only work in C++
 #include "Types/Classes/Immovable.h"
@@ -45,4 +39,5 @@
 #include "Utilities/Semantics/Move.h"
 #include "Utilities/Semantics/SizeOf.h"
 
+#include "Utilities/Console.h"
 #endif

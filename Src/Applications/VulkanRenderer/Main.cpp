@@ -22,13 +22,13 @@ int main(int argc, char** argvs)
 
     using namespace Savanna;
 
-    InitializeManagers();
-    StartManagers();
+    SavannaInitialize();
+    SavannaStart();
 
     // Initialize File System
     IO::VirtualFileSystem::Construct(argvs[0]);
 
-    VulkanApplication* app = SAVANNA_NEW(VulkanApplication, argc, argvs);
+    VulkanApplication* app = SAVANNA_NEW(k_SavannaMemoryLabelHeap, VulkanApplication, argc, argvs);
     try
     {
         app->Run();
@@ -39,12 +39,12 @@ int main(int argc, char** argvs)
         result = -1;
     }
 
-    SAVANNA_DELETE(app);
+    SAVANNA_DELETE(k_SavannaMemoryLabelHeap, app);
 
     IO::VirtualFileSystem::Destroy();
 
-    StopManagers();
-    ShutdownManagers();
+    SavannaStop();
+    SavannaShutdown();
 
     return result;
 }

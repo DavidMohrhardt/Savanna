@@ -1,51 +1,65 @@
 cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
-# Set Application Name
-set(target_name SavannaTestRunner)
+set(SAVANNA_ACTIVE_TARGET SavannaTestRunner)
 
-message(STATUS "Processing: ${target_name}")
+message(STATUS "Building [${SAVANNA_ACTIVE_TARGET}] Application")
 
 set(GOOGLETEST_TAG "main")
 
-# Fetch the content of GoogleTest
 include(FetchContent)
+
+# # Fetch the content of GoogleTest
 FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG ${GOOGLETEST_TAG}
 )
+
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+# message (STATUS "Fetching glfw")
+# FetchContent_Declare(
+#     glfw
+#     GIT_REPOSITORY https://github.com/glfw/glfw
+# )
+
+# message (STATUS "Fetching glm")
+# FetchContent_Declare(
+#     glm
+#     GIT_REPOSITORY https://github.com/g-truc/glm
+# )
+
+# FetchContent_MakeAvailable(glfw glm)
+    #protobuf)
+
+collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
+
+# Sort the files into Filters based on Folder Hierarchy
+SOURCE_GROUP_BY_FOLDER()
 
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Acquire all subdirectories, This is evil for the record
-file(GLOB_RECURSE src
-    ${CMAKE_CURRENT_LIST_DIR}/*.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/*.c
-    ${CMAKE_CURRENT_LIST_DIR}/*.h
-    ${CMAKE_CURRENT_LIST_DIR}/*.hpp)
+# Add Executable
+add_executable(${SAVANNA_ACTIVE_TARGET} ${src})
 
-# Filter any directory that contains a '~' in it's path.
-list(FILTER src EXCLUDE REGEX "${CMAKE_CURRENT_LIST_DIR}/(.+)~(.+)")
+# Link libraries
+target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
+                        Savanna)
 
-# Sort the files into Filters based on Folder Hierarchy
-SOURCE_GROUP_BY_FOLDER()
+include_savanna_directories(${SAVANNA_ACTIVE_TARGET}
+                            ${CMAKE_SOURCE_DIR}/Runtime)
 
-# Enable Testing
-enable_testing()
+target_include_directories( ${SAVANNA_ACTIVE_TARGET}
+                            PUBLIC ${Vulkan_INCLUDE_DIRS})
+                            # PUBLIC ${CMAKE_SOURCE_DIR}/Runtime)
 
-# set(core_libs SavannaVk SavannaIO SavannaCore)
-set(core_libs SavannaEntities SavannaCore)
-set(core_include_dirs ${CMAKE_SOURCE_DIR}/Modules/Core/ ${CMAKE_SOURCE_DIR}/Modules/Entities)
-set(external_libs GTest::gtest_main)
-set(external_include_dirs)
+# Copy Assets folder to install directory
 
-CREATE_APP_WITH_LIBS(SavannaTestRunner "${core_libs}" "${core_include_dirs}" "${external_libs}" "${external_include_dirs}")
 
 include(GoogleTest)
 
@@ -65,9 +79,15 @@ set_property(TARGET ${Recipe_Name} PROPERTY C_STANDARD 99)
 set_property(TARGET ${Recipe_Name} PROPERTY C_STANDARD_REQUIRED ON)
 
 # Discover Tests
-gtest_discover_tests(${target_name})
+gtest_discover_tests(${SAVANNA_ACTIVE_TARGET})
 
-# Install Binaries in Build Folder
-install(TARGETS ${target_name} RUNTIME DESTINATION bin)
+# Enable Testing
+enable_testing()
 
-message (STATUS "Finished ${target_name}\n")
+# Install the executable
+install(TARGETS ${SAVANNA_ACTIVE_TARGET}
+            EXPORT ${SAVANNA_ACTIVE_TARGET}Targets
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

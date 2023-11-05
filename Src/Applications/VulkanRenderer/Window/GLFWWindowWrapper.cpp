@@ -8,7 +8,7 @@ void InitGlfwWindow(GLFWwindow*& outWindow, int width = 1920, int height = 1080)
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-    outWindow = glfwCreateWindow(width, height, "Savanna Vulkan", nullptr, nullptr);
+    outWindow = glfwCreateWindow(width, height, "Savanna Vulkan 2", nullptr, nullptr);
 }
 
 GLFWWindowWrapper::GLFWWindowWrapper()

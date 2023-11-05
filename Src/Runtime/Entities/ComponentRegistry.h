@@ -10,41 +10,39 @@
 
 #pragma once
 
+#include "Public/ISavannaEntities.hpp"
+
 #include "SavannaEngine.h"
 #include "Utilities/SavannaCoding.h"
 
-#include "ComponentKey.h"
+#include "Types/Locks/MultiReadSingleWriteLock.h"
+#include "Types/Singleton/Singleton.h"
 
+#include <atomic>
 #include <typeindex>
 #include <unordered_map>
 
-namespace Savanna::Entities::ComponentRegistry
+namespace Savanna::Entities
 {
-    class IComponent;
-    template<typename T> class IComponentData;
-
-    const uint8 GetNumberOfComponentKeySets();
-    const uint32 GetTotalNumberOfRegisteredComponents();
-    const ComponentKey GetNextAvailableComponentKey();
-
-    // Might be overkill here, maybe just use the templated IComponentData
-    const ComponentKey GetComponentKey(const IComponent* const componentPtr);
-    const ComponentKey RegisterComponentType(const IComponent* const componentPtr);
-
-    const ComponentKey GetComponentKeyFromType(const std::type_index typeIndex);
-    const ComponentKey RegisterComponentWithTypeIndex(const std::type_index typeIndex);
-
-    template<typename T, class TComponentData = IComponentData<T>>
-    const ComponentKey GetComponentKeyFromType()
+    class ComponentRegistry : public Singleton<ComponentRegistry>
     {
-        static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
-        return GetComponentKeyFromType(typeid(TComponentData));
-    }
+    private:
+        DECLARE_FRIENDS_FOR_SINGLETON(ComponentRegistry);
 
-    template<typename T, class TComponentData = IComponentData<T>>
-    const ComponentKey RegisterComponentWithTypeIndex()
-    {
-        static_assert(std::is_base_of<IComponentData<T>, TComponentData>::value, "TComponentData must be a subclass of IComponentData<T>");
-        return RegisterComponentWithTypeIndex(typeid(TComponentData));
-    }
+        std::atomic<se_ComponentKey_t> m_NextAvailableComponentKey;
+        MultiReadSingleWriteLock m_ComponentTypeMapLock;
+        std::unordered_map<intptr, se_ComponentKey_t> m_ComponentTypeMap;
+
+        ComponentRegistry() = default;
+        ~ComponentRegistry() = default;
+
+    private:
+        const uint32 GetTotalNumberOfRegisteredComponentsInternal();
+        // const se_ComponentKey_t RegisterComponent(const std::type_index& typeIndex);
+
+    public:
+        static const uint8 GetNumberOfComponentKeySets();
+        static const uint32 GetTotalNumberOfRegisteredComponents();
+        // static const se_ComponentKey_t RegisterComponent(const IComponent);
+    };
 } // namespace Savanna::Entities

@@ -7,7 +7,7 @@
  *
  */
 
-#include <Types/Primitive/PrimitiveTypes.inl>
+#include <Public/ISavannaEngine.h>
 
 #include <string>
 #include <wtypes.h>

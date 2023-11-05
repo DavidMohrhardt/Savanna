@@ -7,8 +7,14 @@ total_todos = 0
 def IsTextFile(filePath:str):
     return mimetypes.guess_type(filePath)[0] == 'text/plain'
 
+def FixupRelativeFilePath(relativeFilePath:str):
+    return relativeFilePath.replace('\\', '/')
+
+def CreateFileLink(relativeFilePath:str):
+    return "[" + relativeFilePath + "](" + FixupRelativeFilePath(relativeFilePath) + ")\n"
+
 def CreateFileLineLink(relativeFilePath:str, l_no:int, line:str):
-    return "- [L" + str(l_no) + " :" +  line.strip().replace("\n", "") + "](" + relativeFilePath.replace('\\', '/') + "#L" + str(l_no) + ")\n"
+    return "- [L" + str(l_no) + " :" +  line.strip().replace("\n", "") + "](" + FixupRelativeFilePath(relativeFilePath) + "#L" + str(l_no) + ")\n"
 
 def SearchForTodosInFiles(regex:str, directoryName:str):
     global total_todos
@@ -38,7 +44,7 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
                                 wasWritten = True
                             if (isFirstWriteForFile):
                                 isFirstWriteForFile = False
-                                content += "\n### " + filename + "\n\n"
+                                content += "\n### " + CreateFileLink("." + filePath) + "\n\n"
                             content += CreateFileLineLink("." + filePath, l_no, line)
                 except:
                     print("Error in file " + filename)
@@ -47,6 +53,7 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
     else:
         return ""
 
+# TODO make this multithreaded
 
 content = SearchForTodosInFiles(r"./Src", "Src")
 content += SearchForTodosInFiles(r"./BuildScripts", "BuildScripts")
@@ -54,8 +61,7 @@ content += SearchForTodosInFiles(r"./Documentation", "Documentation")
 content += SearchForTodosInFiles(r"./Tools", "Tools")
 
 with open("./Progress/TODOTracker.md", 'w') as todoFile:
-    todoFile.write("# TODO\n\n")
-    todoFile.write("Total TODOs: " + str(total_todos) + "\n")
+    todoFile.write("# Total TODOs - " + str(total_todos) + "\n\n")
     todoFile.write(content)
 
 print("Found " + str(total_todos) + " TODOs in the codebase.")

@@ -1,6 +1,14 @@
+/**
+ * @file VolatileLock.h
+ * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
+ * @brief
+ * @version 0.1
+ * @date 2023-09-25
+ *
+ */
 #pragma once
 
-// Idea gathered from Game Engine Architecture 3E by Jason Gregory pg. 326
+// Idea gathered from Game Engine Architecture 3E by Jason Gregory pg.326
 
 #include <assert.h>
 
@@ -8,30 +16,37 @@
 
 namespace Savanna
 {
+    /**
+     * @brief A lock that leverages the properties of the volatile keyword to ensure that the compiler
+     * does not optimize away the lock or any of its accesses.
+     *
+     * @note This lock is not actually a lock. Instead it merely acts as a sentinel for catching
+     * overlapping accesses to a critical section by multiple threads when they should not be
+     * overlapping.
+     *
+     */
     class VolatileLock
     {
     private:
         // Prevent optimization to ensure SAVANNA_ASSERTions catch overlapping accesses to critical section by threads.
-        volatile bool m_Locked;
+        volatile bool m_Locked = false;
 
     public:
+        VolatileLock() = default;
+        ~VolatileLock() = default;
+
+        VolatileLock(const VolatileLock&) = delete;
+        VolatileLock(VolatileLock&&) = delete;
+
         /**
          * @brief Acquire the volatile lock if released.
          */
-        void Acquire()
-        {
-            SAVANNA_ASSERT(!m_Locked, "Volatile lock is already acquired. Critical section integrity is compromised.");
-            m_Locked = true;
-        }
+        void Acquire() SAVANNA_NOEXCEPT;
 
         /**
          * @brief Release the volatile lock if acquired.
          */
-        void Release()
-        {
-            SAVANNA_ASSERT(m_Locked, "Volatile lock is already released. Critical section integrity is compromised.");
-            m_Locked = false;
-        }
+        void Release() SAVANNA_NOEXCEPT;
 
         /**
          * @brief Check if the volatile lock is acquired.
@@ -39,20 +54,14 @@ namespace Savanna
          * @return true if the volatile lock is acquired.
          * @return false if the volatile lock is released.
          */
-        SAVANNA_NO_DISCARD inline bool IsAcquired() const noexcept
-        {
-            return m_Locked;
-        }
+        SAVANNA_NO_DISCARD inline bool IsAcquired() const SAVANNA_NOEXCEPT;
 
-        SAVANNA_NO_DISCARD VolatileLock& AwaitLock() noexcept
-        {
-            while (IsAcquired())
-            {
-                // Spin
-            }
-            Acquire();
-            return *this;
-        }
+        /**
+         * @brief Await the volatile lock to be released.
+         *
+         * @return VolatileLock& A reference to the volatile lock.
+         */
+        SAVANNA_NO_DISCARD VolatileLock& AwaitLock() SAVANNA_NOEXCEPT;
     };
 
     class VolatileLockGuard

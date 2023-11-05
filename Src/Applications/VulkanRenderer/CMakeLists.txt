@@ -18,11 +18,6 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/g-truc/glm
 )
 
-# if (${CMAKE_VERSION} VERSION_GREATER "3.8.0")
-#     # Ensure C++ standard is propogated from the project to ABSL
-#     set(ABSL_PROPAGATE_CXX_STD ON)
-# endif()
-
 FetchContent_MakeAvailable(glfw glm)
 
 collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
@@ -42,11 +37,14 @@ add_executable(${SAVANNA_ACTIVE_TARGET} ${src})
 # TODO Make find Vulkan QUIET and enable the runtime loader for vulkan in the case it's not just defined
 find_package(Vulkan REQUIRED)
 
-add_dependencies(   ${SAVANNA_ACTIVE_TARGET}
-                    Savanna)
+# add_dependencies(   ${SAVANNA_ACTIVE_TARGET}
+#                     Savanna)
 
 target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
-                        Savanna
+                        Savanna)
+                        # SavannaVk1)
+
+target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
                         glfw
                         glm
                         Vulkan::Vulkan)
@@ -57,6 +55,7 @@ include_savanna_directories(${SAVANNA_ACTIVE_TARGET}
 
 target_include_directories( ${SAVANNA_ACTIVE_TARGET}
                             PUBLIC ${Vulkan_INCLUDE_DIRS})
+                            # PUBLIC ${CMAKE_SOURCE_DIR}/Runtime)
 
 # Copy Assets folder to install directory
 add_custom_command( TARGET ${SAVANNA_ACTIVE_TARGET} POST_BUILD

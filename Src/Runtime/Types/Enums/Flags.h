@@ -16,6 +16,24 @@
 #define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type)
 #define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type)
 
+/**
+ * @brief Defines a C flag enumeration.
+ *
+ * Example:
+ * @code{.c}
+ * DEFINE_C_FLAG_ENUMERATION(se_GfxBackend_t, se_uint32,
+ *    kSavannaGfxApiNone = 0,
+ *    kSavannaGfxApiVulkan,
+ * );
+ * // Becomes:
+ * // typedef enum se_GfxBackend_t : se_uint32 { kSavannaGfxApiNone = 0, kSavannaGfxApiVulkan } se_GfxBackend_t;
+ * @endcode
+ *
+ * @arg __cName The name of the C enumeration.
+ * @arg __value_type The underlying type of the C enumeration.
+ * @arg ... The enumeration values.
+ *
+ */
 #define DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, ...) \
     typedef enum __cName : __value_type { __VA_ARGS__ } __cName;
 
@@ -25,17 +43,93 @@
 #include <concepts>
 #include <type_traits>
 
+/**
+ * @brief Declares a C++ flag enumeration wrapper for a C enumeration.
+ *
+ * Example:
+ * @code{.cpp}
+ * DECLARE_CPP_FLAG_ENUMERATION(GfxApi, se_GfxBackend_t, se_uint32);
+ * // Becomes:
+ * // using GfxApi = Savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>;
+ * @endcode
+ *
+ * @arg __cppName The name of the C++ enumeration.
+ * @arg __cName The name of the C enumeration.
+ * @arg __value_type The underlying type of the C enumeration.
+ *
+ * @note This macro is empty when compiling for C.
+ *
+ */
 #undef DECLARE_CPP_FLAG_ENUMERATION
 #define DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type) \
     using __cppName = Savanna::FlagEnumeration<__cName, __value_type>
 
+/**
+ * @brief Declares a namespaced C++ flag enumeration wrapper for a C enumeration.
+ * Uses the DECLARE_CPP_FLAG_ENUMERATION macro internally.
+ *
+ * Example:
+ * @code{.cpp}
+ * DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(Savanna::Gfx, GfxApi, se_GfxBackend_t, se_uint32);
+ * // Becomes:
+ * // namespace Savanna::Gfx { using GfxApi = Savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>; }
+ * @endcode
+ *
+ * @arg __nameSpace The namespace to declare the enumeration in.
+ * @arg __cppName The name of the C++ enumeration.
+ * @arg __cName The name of the C enumeration.
+ * @arg __value_type The underlying type of the C enumeration.
+ *
+ * @note This macro is empty when compiling for C.
+ *
+ */
 #undef DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION
 #define DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type) \
     namespace __nameSpace { DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type); }
 
+/**
+ * @brief Declares a namespaced C++ flag enumeration wrapper for an externally defined
+ * enumeration. This is useful for wrapping enumerations from external libraries, particularly
+ * when the external library is written in C as it will provide a C++ wrapper and default
+ * conversion operators for the external flag enumeration.
+ *
+ * Example:
+ * @code{.cpp}
+ * DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(Savanna::Gfx, GfxApi, se_GfxBackend_t, se_GfxBackend_t, se_uint32);
+ * // Becomes:
+ * // namespace Savanna::Gfx { using GfxApi = Savanna::ExternalFlagEnumeration<se_GfxBackend_t, se_GfxBackend_t, se_uint32>; }
+ * @endcode
+ *
+ * @arg __nameSpace The namespace to declare the enumeration in.
+ * @arg __cppName The name of the C++ enumeration.
+ * @arg __cName The name of the C enumeration.
+ * @arg __external_enum The name of the external enumeration.
+ * @arg __value_type The underlying type of the C enumeration.
+ *
+ */
 #undef DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION
 #define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type) \
     namespace __nameSpace { using __cppName = Savanna::ExternalFlagEnumeration<__cName, __external_enum, __value_type>; }
+
+#endif // defined(__cplusplus)
+
+#define DEFINE_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
+
+#define DEFINE_SAVANNA_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(Savanna, __cppName, __cName, __value_type)
+
+#define DEFINE_NAMESPACED_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type)
+
+#define DEFINE_SAVANNA_EXTERNAL_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type, ...) \
+    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
+    DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type)
+
+#if defined(__cplusplus)
 
 namespace Savanna
 {
@@ -89,15 +183,3 @@ namespace Savanna
     };
 } // namespace Savanna
 #endif // end __cplusplus
-
-#define DEFINE_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
-    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
-    DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type)
-
-#define DEFINE_SAVANNA_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
-    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
-    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(Savanna, __cppName, __cName, __value_type)
-
-#define DEFINE_SAVANNA_EXTERNAL_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type, ...) \
-    DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
-    DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type)

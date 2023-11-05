@@ -9,21 +9,21 @@
 
 namespace Savanna
 {
-    inline size_t GetPageSize()
+    size_t GetPageSize()
     {
         SYSTEM_INFO systemInfo;
         GetSystemInfo(&systemInfo);
         return systemInfo.dwPageSize;
     }
 
-    inline size_t GetAllocationGranularity()
+    size_t GetAllocationGranularity()
     {
         SYSTEM_INFO systemInfo;
         GetSystemInfo(&systemInfo);
         return systemInfo.dwAllocationGranularity;
     }
 
-    inline size_t GetTotalSystemMemory()
+    size_t GetTotalSystemMemory()
     {
         MEMORYSTATUSEX memoryStatus;
         memoryStatus.dwLength = sizeof(memoryStatus);

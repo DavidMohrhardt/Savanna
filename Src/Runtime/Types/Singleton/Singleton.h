@@ -8,20 +8,21 @@
  */
 #pragma once
 
-#include "Utilities/PreprocessorDefinitions/InterfaceDefinitions.h"
+#include "Public/ISavannaEngine.hpp"
+
+#include "Types/Classes/Immovable.h"
+#include "Types/Classes/NonCopyable.h"
 
 #include <utility>
 
-#include "Memory/SmartPtrUtils.h"
-
 #define DECLARE_FRIENDS_FOR_SINGLETON(__className) \
     friend class Singleton<__className>; \
-    friend class std::shared_ptr<__className>;
+    /*friend class std::shared_ptr<__className>;*/
 
 namespace Savanna
 {
     template <typename T>
-    class Singleton
+    class Singleton : public NonCopyable, public Immovable
     {
     private:
         using TYPE = T;
@@ -53,12 +54,9 @@ namespace Savanna
     {
         if (s_pInstance == nullptr)
         {
-            // Can't use SAVANNA_NEW here due to the possibility of a private friend constructor
-            // So instead use new placement syntax to provide a MemoryManager buffer, and then construct the
-            // object
-            // s_pInstance = CreateManagedSharedPtr(new (MemoryManager::Get().Allocate(sizeof(T), alignof(T))) TYPE(std::forward<Args>(args)...));
-            // s_pInstance = SAVANNA_INPLACE_NEW(TYPE, std::forward<Args>(args)...);
-            s_pInstance = new TYPE(std::forward<Args>(args)...);
+            // Singletons are one time constructs, so we can use new here
+            // over SAVANNA_NEW or an se_AllocatorInterface_t.
+            s_pInstance = ::new TYPE(std::forward<Args>(args)...);
         }
         return Get();
     }
@@ -68,8 +66,7 @@ namespace Savanna
     {
         if (s_pInstance != nullptr)
         {
-            // SAVANNA_DELETE(s_pInstance);
-            delete s_pInstance;
+            ::delete s_pInstance;
         }
     }
 

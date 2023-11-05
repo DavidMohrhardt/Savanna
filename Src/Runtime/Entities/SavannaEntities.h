@@ -9,6 +9,12 @@
 
 #pragma once
 
-#include "Entity.h"
-#include "IComponentData.h"
-#include "ISystem.h"
+#include "Public/ISavannaEntities.hpp"
+
+#include "ComponentParadigm.h"
+
+namespace Savanna::Entities
+{
+    using Entity = se_Entity_t;
+    using ComponentKey = se_ComponentKey_t;
+} // namespace Savanna::Entities
