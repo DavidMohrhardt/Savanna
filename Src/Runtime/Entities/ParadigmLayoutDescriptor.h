@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include "Public/ISavannaEntities.hpp"
+
 namespace Savanna::Entities
 {
     /**
@@ -19,6 +21,7 @@ namespace Savanna::Entities
      */
     struct ParadigmLayoutDescriptor
     {
+        const se_ComponentKey_t m_ParadigmComponentKey;
         size_t m_TotalSize;
         size_t m_NumberOfComponents;
         const size_t* m_pComponentSizes;

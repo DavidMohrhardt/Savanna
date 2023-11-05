@@ -5,12 +5,13 @@
 #include <Gfx/SavannaGfx.h>
 #include <IO/VirtualFileSystem.h>
 
+#include "Renderer.h"
 #include "Window/GLFWWindowWrapper.h"
 
 class Application
 {
 private:
-    bool m_FailedInitialization = false;
+    vk::Renderer* m_pRenderer;
     GLFWWindowWrapper m_Window;
 
 public:

@@ -1,5 +1,5 @@
 /**
- * @file LocklessQueue.h
+ * @file atomic_queue.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
  * @brief
  * @version 0.1
@@ -20,7 +20,7 @@
 namespace Savanna
 {
     template <typename T>
-    class LocklessQueue
+    class atomic_queue
     {
     private:
         MemoryLabel m_MemoryLabel;
@@ -37,14 +37,14 @@ namespace Savanna
         void EnqueueNode(Node* node);
 
     public:
-        LocklessQueue(MemoryLabel label = k_SavannaMemoryLabelHeap) : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr) {}
-        ~LocklessQueue() = default;
+        atomic_queue(MemoryLabel label = k_SavannaMemoryLabelHeap) : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr) {}
+        ~atomic_queue() = default;
 
-        LocklessQueue(const LocklessQueue&) = delete;
-        LocklessQueue& operator=(const LocklessQueue&) = delete;
+        atomic_queue(const atomic_queue&) = delete;
+        atomic_queue& operator=(const atomic_queue&) = delete;
 
-        LocklessQueue(LocklessQueue&&) = default;
-        LocklessQueue& operator=(LocklessQueue&&) = default;
+        atomic_queue(atomic_queue&&) = default;
+        atomic_queue& operator=(atomic_queue&&) = default;
 
         void Enqueue(const T& data);
         void Enqueue(T&& data);
@@ -58,7 +58,7 @@ namespace Savanna
     };
 
     template <typename T>
-    inline void LocklessQueue<T>::EnqueueNode(Node *node)
+    inline void atomic_queue<T>::EnqueueNode(Node *node)
     {
         Node* checkedNodePtr { nullptr };
         // First if the head is null, set the head and tail to the new node
@@ -77,7 +77,7 @@ namespace Savanna
         checkedNodePtr->m_Next = node;
     }
 
-    template <typename T> inline void LocklessQueue<T>::Enqueue(const T& data)
+    template <typename T> inline void atomic_queue<T>::Enqueue(const T& data)
     {
         static_assert(std::is_copy_constructible<T>::value, "Type must be copy constructible!");
         Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
@@ -86,7 +86,7 @@ namespace Savanna
         EnqueueNode(node);
     }
 
-    template <typename T> inline void LocklessQueue<T>::Enqueue(T&& data)
+    template <typename T> inline void atomic_queue<T>::Enqueue(T&& data)
     {
         static_assert(std::is_move_constructible<T>::value, "Type must be move constructible!");
         Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
@@ -95,7 +95,7 @@ namespace Savanna
         EnqueueNode(node);
     }
 
-    template <typename T> inline bool LocklessQueue<T>::TryDequeue(T &data)
+    template <typename T> inline bool atomic_queue<T>::TryDequeue(T &data)
     {
         // Note: even if the head becomes null, we don't need to modify the tail as it will be overwritten
         // during the next enqueue operation.

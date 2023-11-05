@@ -74,7 +74,7 @@ namespace Savanna
         inline void Delete(T* ptr, const se_MemoryLabelBackingInt_t label)
         {
             ptr->~T();
-            Free(static_cast<void*>(ptr));
+            Free(static_cast<void*>(ptr), label);
         }
 
         template <typename T>

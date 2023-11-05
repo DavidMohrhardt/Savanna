@@ -18,23 +18,21 @@
 
 #include "Public/ISavannaJobs.hpp"
 
-#include <Types/Manager/GlobalManager.h>
-
 #include "ConcurrencyCapabilities.h"
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 #include <Types/Containers/Arrays/fixed_array.h>
-#include <Types/Containers/Concurrent/LocklessQueue.h>
+#include <Types/Containers/Queues/atomic_queue.h>
 #include <Types/Locks/SpinLock.h>
 
 #include <atomic>
 
 namespace Savanna::Concurrency
 {
-    class JobManager final : public GlobalManager<JobManager>
+    class JobManager
     {
     private:
-        DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(JobManager);
+        friend class ThreadManager;
         friend class DependencyAwaiterJob;
         friend class DependentJobWrapper;
         friend class JobRunner;
@@ -47,9 +45,9 @@ namespace Savanna::Concurrency
         std::atomic_bool m_ProcessingJobs;
         dynamic_array<std::thread> m_JobThreads;
 
-        LocklessQueue<JobHandle> m_LowPriorityJobs;
-        LocklessQueue<JobHandle> m_NormalPriorityJobs;
-        LocklessQueue<JobHandle> m_HighPriorityJobs;
+        atomic_queue<JobHandle> m_LowPriorityJobs;
+        atomic_queue<JobHandle> m_NormalPriorityJobs;
+        atomic_queue<JobHandle> m_HighPriorityJobs;
 
     public:
         static void SetThreadPoolSize(uint8 threadPoolSize);

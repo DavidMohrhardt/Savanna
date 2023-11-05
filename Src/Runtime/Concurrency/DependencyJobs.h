@@ -26,6 +26,7 @@ namespace Savanna::Concurrency
         DependencyAwaiterJob(const JobHandle* dependencies, const size dependencyCount)
             : m_Dependencies(dependencyCount)
         {
+            m_Dependencies.resize_uninitialized(dependencyCount);
             memcpy(m_Dependencies.data(), dependencies, dependencyCount * sizeof(JobHandle));
         }
 

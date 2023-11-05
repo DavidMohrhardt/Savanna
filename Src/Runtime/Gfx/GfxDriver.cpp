@@ -89,8 +89,8 @@ namespace Savanna::Gfx
     }
 
     se_GfxErrorCode_t GfxDriver::CreateShaderModule(
-        const se_GfxShaderModuleCreateInfo_t& createInfo,
-        se_GfxShaderModuleHandle_t& outShaderModuleHandle)
+        const se_GfxShaderCreateInfo_t& createInfo,
+        se_GfxShaderHandle_t& outShaderModuleHandle)
     {
         if (m_pInterface == nullptr)
         {
@@ -100,9 +100,9 @@ namespace Savanna::Gfx
     }
 
     se_JobHandle_t GfxDriver::CreateShaderModulesAsync(
-        const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+        const se_GfxShaderCreateInfo_t* pCreateInfos,
         const size_t createInfoCount,
-        se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles)
+        se_GfxShaderHandle_t** const ppOutShaderModuleHandles)
     {
         if (m_pInterface == nullptr || (*m_pInterface).m_pfnCreateShaderModulesAsync == nullptr)
         {

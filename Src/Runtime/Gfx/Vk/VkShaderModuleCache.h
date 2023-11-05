@@ -17,7 +17,7 @@
 // Grab the ISavannaJobs header to submit jobs to the job system.
 #include "Concurrency/Public/ISavannaJobs.hpp"
 
-#include "Types/Strings/FixedString.h"
+#include "Types/Locks/MultiReadSingleWriteLock.h"
 
 #include <unordered_map>
 
@@ -30,44 +30,43 @@ namespace Savanna::Gfx::Vk2
         friend class VkShaderModuleCreateJob;
         friend class VkDriver;
 
-        std::atomic_int64_t m_NextHandle = 0;
+        std::atomic_int64_t m_NextHandle = 1;
 
-        std::unordered_map<se_GfxShaderModuleHandle_t, VkShaderModule> m_ShaderModules;
-        AtomicCounter m_ReaderCounter;
-        SpinLock m_WriterLock;
+        std::unordered_map<se_GfxShaderHandle_t, VkShaderModule> m_ShaderModules;
+        MultiReadSingleWriteLock m_ReadWriteLock;
 
         JobHandle m_AllActiveShaderModulesJob = k_InvalidJobHandle;
 
         void RegisterShaderIdInternal(
-            const se_GfxShaderModuleHandle_t& shaderModuleHandle,
+            const se_GfxShaderHandle_t& shaderModuleHandle,
             const VkShaderModule& shaderModule);
 
         void UnregisterShaderIdInternal(
-            const se_GfxShaderModuleHandle_t& shaderModuleHandle);
+            const se_GfxShaderHandle_t& shaderModuleHandle);
 
         VkShaderModuleCache() = default;
         ~VkShaderModuleCache() = default;
 
         JobHandle CreateShaderModulesAsync(
             const VkGpu &gpu,
-            const se_GfxShaderModuleCreateInfo_t *createInfos,
+            const se_GfxShaderCreateInfo_t *createInfos,
             const size_t createInfoCount,
-            se_GfxShaderModuleHandle_t **const ppOutShaderModuleHandles);
+            se_GfxShaderHandle_t **const ppOutShaderModuleHandles);
 
-        se_GfxShaderModuleHandle_t CreateShaderModuleSynchronized(
+        se_GfxShaderHandle_t CreateShaderModuleSynchronized(
             const VkGpu& gpu,
-            const se_GfxShaderModuleCreateInfo_t& createInfo);
+            const se_GfxShaderCreateInfo_t& createInfo);
 
         void DestroyShaderModules(
             const VkGpu& gpu,
-            const se_GfxShaderModuleHandle_t* shaderModuleHandles,
+            const se_GfxShaderHandle_t* shaderModuleHandles,
             size_t shaderModuleHandleCount);
 
         void Clear(const VkGpu& gpu);
 
         void GetShaderModule(
             const VkGpu& gpu,
-            const se_GfxShaderModuleHandle_t& shaderModuleHandle,
+            const se_GfxShaderHandle_t& shaderModuleHandle,
             VkShaderModule& outShaderModule);
     };
 } // namespace Savanna::Gfx::Vk2

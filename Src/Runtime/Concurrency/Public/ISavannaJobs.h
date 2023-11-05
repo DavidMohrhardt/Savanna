@@ -129,3 +129,12 @@ typedef struct se_IJobInterface_t
     */
     void* pUserData;
 } se_IJobInterface_t;
+
+SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobManagerScheduleJob(
+    se_IJobInterface_t* pJobInterface,
+    se_JobPriority_t priority,
+    se_JobHandle_t dependency);
+
+SAVANNA_EXPORT(void) SavannaConcurrencyJobManagerAwaitJob(se_JobHandle_t jobHandle);
+
+

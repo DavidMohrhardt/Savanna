@@ -7,9 +7,9 @@
 
 namespace Savanna::Concurrency
 {
-    uint8 JobManager::s_ThreadPoolSize = std::thread::hardware_concurrency() - 1 < s_ThreadPoolSize
-            ? std::thread::hardware_concurrency() - 1
-            : s_ThreadPoolSize;
+    uint8 JobManager::s_ThreadPoolSize = std::thread::hardware_concurrency() - 1;// < s_ThreadPoolSize
+            // ? std::thread::hardware_concurrency() - 1
+            // : s_ThreadPoolSize;
 
     inline JobResult JobManager::ExecuteJobInternal(JobHandle handle)
     {

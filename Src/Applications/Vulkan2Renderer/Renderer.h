@@ -1,16 +1,24 @@
 #include <SavannaEngine.h>
-#include <Gfx/Public/ISavannaGfx.hpp>
+#include <Gfx/Public/ISavannaGfx.h>
 
 namespace vk
 {
-    using namespace Savanna::Gfx;
+    using namespace Savanna;
 
     class Renderer
     {
     private:
-        se_GfxContextHandle_t m_pGfxContext;
-        se_GfxDisplaySurface_t m_pDisplaySurfaceHandle;
+        se_GfxShaderHandle_t m_DefaultShaderHandles[2] {};
 
+    public:
+        Renderer();
+        ~Renderer();
 
+        bool TryInitialize(
+            const se_GfxContextCreateInfo_t* pCreateInfo,
+            // TODO change this to a create info for the window
+            void* pWindowHandle);
+
+        void Render();
     };
 } // namespace vk

@@ -43,5 +43,9 @@ namespace Savanna::IO
         std::string GetFileNameWithExtension(const std::filesystem::path &path) const;
 
         std::string GetFileNameWithoutExtension(const std::filesystem::path &path) const;
+
+        dynamic_array<std::string> GetAllFilesAtPath(
+            const std::filesystem::path &relativePath,
+            const char* filter = nullptr) const;
     };
 } // namespace Savanna::IO

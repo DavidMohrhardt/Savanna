@@ -1,6 +1,8 @@
 #include <SavannaEngine.h>
 
 #include <Memory/MemoryManager.h>
+
+#include <Concurrency/ThreadManager.h>
 #include <Concurrency/JobManager.h>
 
 using namespace Savanna;
@@ -51,8 +53,13 @@ static constexpr GlobalManagerFunctionTable k_DefaultManagerOrder[] = {
     SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(MemoryManager),
 
     // Put other managers here
-    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(Concurrency::JobManager),
+    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(Concurrency::ThreadManager)
 };
+
+// Ensure that the memory manager is the first entry in the table
+static_assert(
+    k_DefaultManagerOrder[0].Initialize == MemoryManager::Initialize,
+    "MemoryManager must be the first entry in the default manager order table");
 
 static constexpr size_t k_ManagerCount = sizeof(k_DefaultManagerOrder) / sizeof(GlobalManagerFunctionTable);
 

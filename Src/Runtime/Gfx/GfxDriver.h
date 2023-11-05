@@ -21,12 +21,12 @@
     static se_GfxDriverHandle_t GetDriverHandle(); \
     static se_GfxErrorCode_t CreateSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle); \
     static se_GfxErrorCode_t CreateShaderModule( \
-        const se_GfxShaderModuleCreateInfo_t& createInfo, \
-        se_GfxShaderModuleHandle_t& outShaderModuleHandle); \
+        const se_GfxShaderCreateInfo_t& createInfo, \
+        se_GfxShaderHandle_t& outShaderModuleHandle); \
     static se_JobHandle_t CreateShaderModulesAsync( \
-        const se_GfxShaderModuleCreateInfo_t* pCreateInfos, \
+        const se_GfxShaderCreateInfo_t* pCreateInfos, \
         const size_t createInfoCount, \
-        se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles)
+        se_GfxShaderHandle_t** const ppOutShaderModuleHandles)
 
 
 // TODO @DavidMohrhardt: Move this to public interface definition
@@ -76,13 +76,13 @@ namespace Savanna::Gfx
         const se_GfxBackend_t GetBackendType() const;
 
         se_GfxErrorCode_t CreateShaderModule(
-            const se_GfxShaderModuleCreateInfo_t& createInfo,
-            se_GfxShaderModuleHandle_t& outShaderModuleHandle);
+            const se_GfxShaderCreateInfo_t& createInfo,
+            se_GfxShaderHandle_t& outShaderModuleHandle);
 
         se_JobHandle_t CreateShaderModulesAsync(
-            const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+            const se_GfxShaderCreateInfo_t* pCreateInfos,
             const size_t createInfoCount,
-            se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles);
+            se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
     };
 } // namespace Savanna::Gfx
 

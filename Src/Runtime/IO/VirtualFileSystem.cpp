@@ -63,4 +63,26 @@ namespace Savanna::IO
         return path.stem().string();
     }
 
+    dynamic_array<std::string> VirtualFileSystem::GetAllFilesAtPath(
+        const std::filesystem::path &relativePath, const char *filter) const
+    {
+        std::filesystem::path fullPath = GetFullPath(relativePath);
+        if (!std::filesystem::exists(fullPath))
+        {
+            // SAVANNA_ERROR("The specified path does not exist!");
+            throw Savanna::RuntimeErrorException("The specified path does not exist!");
+        }
+
+        dynamic_array<std::string> files;
+        for (const auto &entry : std::filesystem::directory_iterator(fullPath))
+        {
+            if (filter != nullptr && entry.path().extension() != filter)
+            {
+                continue;
+            }
+            files.push_back(entry.path().string());
+        }
+        return files;
+    }
+
 } // namespace Savanna::IO

@@ -60,7 +60,7 @@ namespace Savanna::Gfx::Vk2::Utils
         uint32 supportedExtensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, nullptr);
         dynamic_array<VkExtensionProperties> supportedExtensions(supportedExtensionCount, k_SavannaMemoryLabelGfx);
-        supportedExtensions.resizeUninitialized(supportedExtensionCount);
+        supportedExtensions.resize_uninitialized(supportedExtensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensions.data());
 
 #if SAVANNA_LOG_LEVEL >= SAVANNA_LOG_LEVEL_DEBUG
@@ -92,7 +92,7 @@ namespace Savanna::Gfx::Vk2::Utils
         uint32 supportedExtensionCount = 0;
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &supportedExtensionCount, nullptr);
         dynamic_array<VkExtensionProperties> supportedExtensions(supportedExtensionCount, k_SavannaMemoryLabelGfx);
-        supportedExtensions.resizeUninitialized(supportedExtensionCount);
+        supportedExtensions.resize_uninitialized(supportedExtensionCount);
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &supportedExtensionCount, supportedExtensions.data());
 
 #if SAVANNA_LOG_LEVEL >= SAVANNA_LOG_LEVEL_DEBUG

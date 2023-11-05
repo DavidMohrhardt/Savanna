@@ -14,8 +14,6 @@
 
 #include <thread>
 
-#define SAVANNA_ASSERT_MAIN_THREAD() SAVANNA_ASSERT(SavannaConcurrencyIsMainThread(), "This function must be called from the main thread");
-
 namespace Savanna::Concurrency
 {
     static std::thread::id s_MainThreadId;
@@ -37,4 +35,22 @@ using namespace Savanna::Concurrency;
 SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread()
 {
     return s_MainThreadId == std::this_thread::get_id();
+}
+
+SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobManagerScheduleJob(
+    se_IJobInterface_t* pJobInterface,
+    se_JobPriority_t priority,
+    se_JobHandle_t dependency)
+{
+    if (auto manager = JobManager::Get())
+    {
+        // return manager->ScheduleJobFromInterface(pJobInterface, priority, dependency);
+    }
+    return k_InvalidJobHandle;
+}
+
+SAVANNA_EXPORT(void) SavannaConcurrencyJobManagerAwaitJob(se_JobHandle_t jobHandle)
+{
+    if (auto manager = JobManager::Get())
+        manager->AwaitCompletion(jobHandle);
 }

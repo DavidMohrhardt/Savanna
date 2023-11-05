@@ -10,17 +10,16 @@
  */
 #ifndef I_SAVANNA_GFX_H
 #define I_SAVANNA_GFX_H
-
-// Potentially external headers
-#ifndef I_SAVANNA_CONCURRENCY_H
-    typedef se_intptr se_JobHandle_t;
-#endif
-
 // TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type
 
 #include "Public/ISavannaEngine.h"
 #include "ISavannaGfxFormat.h"
 #include "Memory/Public/ISavannaMemory.h"
+
+// Potentially external headers
+#ifndef I_SAVANNA_CONCURRENCY_H
+    typedef se_intptr se_JobHandle_t;
+#endif
 
 #undef SAVANNA_GFX_SUCCESS
 #define SAVANNA_GFX_SUCCESS(__operationOrValue) \
@@ -34,6 +33,10 @@
 #define SAVANNA_GFX_FATAL_ERROR(__operationOrValue) \
     ((__operationOrValue) >= kSavannaGfxErrorCodeFatalError)
 
+/**
+ * @brief A list of error codes for the graphics system.
+ *
+ */
 typedef enum se_GfxErrorCode_t : se_uint32
 {
     /**
@@ -124,6 +127,10 @@ typedef enum se_GfxErrorCode_t : se_uint32
     kSavannaGfxErrorCodeGfxDriverAlreadyCreated,
 } se_GfxErrorCode_t;
 
+/**
+ * @brief The type of graphics backend.
+ *
+ */
 typedef enum se_GfxBackend_t : se_uint32
 {
     kSavannaGfxApiNone = 0,
@@ -142,6 +149,10 @@ typedef enum se_GfxBackend_t : se_uint32
     kSavannaGfxApiCount,
 } se_GfxBackend_t;
 
+/**
+ * @brief The supported graphics backends.
+ *
+ */
 typedef enum se_GfxSupportedBackend_t : se_uint8
 {
     kSavannaSupportedGfxApiNone = kSavannaGfxApiNone,
@@ -155,10 +166,22 @@ typedef enum se_GfxSupportedBackend_t : se_uint8
     // kSavannaSupportedGfxApiMetal = 1 << kSavannaGfxApiMetal,
 } se_GfxSupportedBackend_t;
 
+/**
+ * @brief A handle to a graphics object.
+ *
+ */
 typedef intptr_t se_GfxHandle_t;
 
+/**
+ * @brief Defines the invalid handle for a graphics object.
+ *
+ */
 #define SE_GFX_INVALID_HANDLE (se_GfxHandle_t)(0)
 
+/**
+ * @brief A helper macro for typedefing the graphics handles.
+ *
+ */
 #define SE_GFX_HANDLE_TYPEDEF(__handleType) \
     typedef se_GfxHandle_t se_##__handleType##Handle_t;
 
@@ -181,11 +204,11 @@ SE_GFX_HANDLE_TYPEDEF(GfxDriver);
 // SE_GFX_HANDLE_TYPEDEF(GfxCommandBuffer);
 // SE_GFX_HANDLE_TYPEDEF(GfxFence);
 // SE_GFX_HANDLE_TYPEDEF(GfxSemaphore);
-// SE_GFX_HANDLE_TYPEDEF(GfxBuffer);
+SE_GFX_HANDLE_TYPEDEF(GfxBuffer);
 // SE_GFX_HANDLE_TYPEDEF(GfxImage);
 // SE_GFX_HANDLE_TYPEDEF(GfxImageView);
 // SE_GFX_HANDLE_TYPEDEF(GfxSampler);
-SE_GFX_HANDLE_TYPEDEF(GfxShaderModule);
+SE_GFX_HANDLE_TYPEDEF(GfxShader);
 // SE_GFX_HANDLE_TYPEDEF(GfxPipelineLayout);
 // SE_GFX_HANDLE_TYPEDEF(GfxRenderPass);
 // SE_GFX_HANDLE_TYPEDEF(GfxPipeline);
@@ -317,58 +340,58 @@ typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateSwapchain_t)(const se_GfxSwapch
  * @brief The stage of the shader module.
  *
  */
-typedef enum se_GfxShaderModuleStage_t : se_uint32
+typedef enum se_GfxShaderStage_t : se_uint32
 {
-    kSavannaGfxShaderModuleStageVertex = 0,
-    kSavannaGfxShaderModuleStageFragment,
-    kSavannaGfxShaderModuleStageCompute,
-    kSavannaGfxShaderModuleStageGeometry,
-    kSavannaGfxShaderModuleStageTessellationControl,
-    kSavannaGfxShaderModuleStageTessellationEvaluation,
-    kSavannaGfxShaderModuleStageRayGeneration,
-    kSavannaGfxShaderModuleStageIntersection,
-    kSavannaGfxShaderModuleStageAnyHit,
-    kSavannaGfxShaderModuleStageClosestHit,
-    kSavannaGfxShaderModuleStageMiss,
-    kSavannaGfxShaderModuleStageCallable,
-    kSavannaGfxShaderModuleStageTask,
-    kSavannaGfxShaderModuleStageMesh,
-    kSavannaGfxShaderModuleStageCount,
-} se_GfxShaderModuleStage_t;
+    kSavannaGfxShaderStageVertex = 0,
+    kSavannaGfxShaderStageFragment,
+    kSavannaGfxShaderStageCompute,
+    kSavannaGfxShaderStageGeometry,
+    kSavannaGfxShaderStageTessellationControl,
+    kSavannaGfxShaderStageTessellationEvaluation,
+    kSavannaGfxShaderStageRayGeneration,
+    kSavannaGfxShaderStageIntersection,
+    kSavannaGfxShaderStageAnyHit,
+    kSavannaGfxShaderStageClosestHit,
+    kSavannaGfxShaderStageMiss,
+    kSavannaGfxShaderStageCallable,
+    kSavannaGfxShaderStageTask,
+    kSavannaGfxShaderStageMesh,
+    kSavannaGfxShaderStageCount,
+} se_GfxShaderStage_t;
 
 /**
  * @brief The type of shader module.
  *
  */
-typedef enum se_GfxShaderModuleType_t : se_uint32
+typedef enum se_GfxShaderType_t : se_uint32
 {
-    kSavannaGfxShaderModuleTypeUnknown = 0,
-    kSavannaGfxShaderModuleTypeSpirv,
+    kSavannaGfxShaderTypeUnknown = 0,
+    kSavannaGfxShaderTypeSpirv,
 
     // Currently unsupported
-    // kSavannaGfxShaderModuleTypeGlsl,
-    // kSavannaGfxShaderModuleTypeHlsl,
+    // kSavannaGfxShaderTypeGlsl,
+    // kSavannaGfxShaderTypeHlsl,
 
-    kSavannaGfxShaderModuleTypeCount,
-} se_GfxShaderModuleType_t;
+    kSavannaGfxShaderTypeCount,
+} se_GfxShaderType_t;
 
 /**
  * @brief The create info for a shader module.
  *
  */
-typedef struct se_GfxShaderModuleCreateInfo_t
+typedef struct se_GfxShaderCreateInfo_t
 {
     /**
      * @brief The type of shader module.
      *
      */
-    se_GfxShaderModuleType_t m_Type;
+    se_GfxShaderType_t m_Type;
 
     /**
      * @brief The stage of the shader module.
      *
      */
-    se_GfxShaderModuleStage_t m_Stage;
+    se_GfxShaderStage_t m_Stage;
 
     /**
      * @brief The size of the shader module data.
@@ -393,19 +416,19 @@ typedef struct se_GfxShaderModuleCreateInfo_t
      *
      */
     void* m_pUserData;
-} se_GfxShaderModuleCreateInfo_t;
+} se_GfxShaderCreateInfo_t;
 
 /**
  * @brief A list of shader module create infos.
  *
  */
-typedef struct se_GfxShaderModuleCreateInfoList_t
+typedef struct se_GfxShaderCreateInfoList_t
 {
     /**
      * @brief The list of shader module create infos.
      *
      */
-    se_GfxShaderModuleCreateInfo_t* m_pCreateInfos;
+    se_GfxShaderCreateInfo_t* m_pCreateInfos;
 
     /**
      * @brief The number of shader module create infos.
@@ -424,14 +447,14 @@ typedef struct se_GfxShaderModuleCreateInfoList_t
      *
      */
     void* m_pUserData;
-} se_GfxShaderModuleCreateInfoList_t;
+} se_GfxShaderCreateInfoList_t;
 
 /**
  * @brief A function pointer defining the function signature for requesting shader module creation.
  */
 typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateShaderModule_t)(
-    const se_GfxShaderModuleCreateInfo_t& createInfo,
-    se_GfxShaderModuleHandle_t& outShaderModuleHandle);
+    const se_GfxShaderCreateInfo_t& createInfo,
+    se_GfxShaderHandle_t& outShaderModuleHandle);
 
 /**
  * @brief A function pointer defining the function signature for requesting shader module creation
@@ -441,9 +464,9 @@ typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateShaderModule_t)(
  * kSavannaGfxErrorCodeNotImplemented or be nullptr.
  */
 typedef se_JobHandle_t (*se_pfnGfxDriverCreateShaderModulesAsync_t)(
-    const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+    const se_GfxShaderCreateInfo_t* pCreateInfos,
     const size_t createInfoCount,
-    se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles);
+    se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
 
 /// Pipelines
 
@@ -476,14 +499,14 @@ typedef enum se_GfxGraphicsShaderStageFlags_t : se_uint32
      *
      * @note This is the default value and must be explicitly true for a valid pipeline.
      */
-    kSavannaGfxVertexShaderStage = 1 << kSavannaGfxShaderModuleStageVertex,
+    kSavannaGfxVertexShaderStage = 1 << kSavannaGfxShaderStageVertex,
 
     /**
      * @brief Indicates that the fragment shader stage is enabled.
      *
      * @note This is a default value and must be explicitly true for a valid pipeline.
      */
-    kSavannaGfxFragmentShaderStage = 1 << kSavannaGfxShaderModuleStageFragment,
+    kSavannaGfxFragmentShaderStage = 1 << kSavannaGfxShaderStageFragment,
 
     /**
      * @brief Indicates that the minimal graphics shader stages are enabled.
@@ -491,16 +514,16 @@ typedef enum se_GfxGraphicsShaderStageFlags_t : se_uint32
      */
     kSavannaGfxMinimalGraphicsShaderStage = kSavannaGfxVertexShaderStage | kSavannaGfxFragmentShaderStage,
 
-    kSavannaGfxGeometryShaderStage = 1 << kSavannaGfxShaderModuleStageGeometry,
-    kSavannaGfxTessellationControlShaderStage = 1 << kSavannaGfxShaderModuleStageTessellationControl,
-    kSavannaGfxTessellationEvaluationShaderStage = 1 << kSavannaGfxShaderModuleStageTessellationEvaluation,
+    kSavannaGfxGeometryShaderStage = 1 << kSavannaGfxShaderStageGeometry,
+    kSavannaGfxTessellationControlShaderStage = 1 << kSavannaGfxShaderStageTessellationControl,
+    kSavannaGfxTessellationEvaluationShaderStage = 1 << kSavannaGfxShaderStageTessellationEvaluation,
 } se_GfxGraphicsShaderStageFlags_t;
 
 typedef struct se_GfxShaderStageCreateInfo_t
 {
-    se_GfxShaderModuleHandle_t m_ShaderModule;
+    se_GfxShaderHandle_t m_ShaderModule;
     const char* m_pEntryPoint;
-    se_GfxShaderModuleStage_t m_Stage;
+    se_GfxShaderStage_t m_Stage;
     void* pNext;
 } se_GfxShaderStageCreateInfo_t;
 
@@ -531,7 +554,7 @@ typedef struct se_GfxGraphicsPipelineCreateInfo_t
 typedef struct se_GfxComputePipelineCreateInfo_t
 {
     // Required
-    se_GfxShaderModuleHandle_t m_ComputeShader;
+    se_GfxShaderHandle_t m_ComputeShader;
 
     void* pNext;
 } se_GfxComputePipelineCreateInfo_t;
@@ -539,7 +562,7 @@ typedef struct se_GfxComputePipelineCreateInfo_t
 typedef struct se_GfxRayTracingPipelineCreateInfo_t
 {
     // Required
-    se_GfxShaderModuleHandle_t m_RayGenerationShader;
+    se_GfxShaderHandle_t m_RayGenerationShader;
 
     void* pNext;
 } se_GfxRayTracingPipelineCreateInfo_t;
@@ -679,13 +702,13 @@ SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
     se_GfxHandle_t* const pOutSwapchainHandle);
 
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateShaderModule(
-    const se_GfxShaderModuleCreateInfo_t& createInfo,
-    se_GfxShaderModuleHandle_t& outShaderModuleHandle);
+    const se_GfxShaderCreateInfo_t& createInfo,
+    se_GfxShaderHandle_t& outShaderModuleHandle);
 
 SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
-    const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+    const se_GfxShaderCreateInfo_t* pCreateInfos,
     const size_t createInfoCount,
-    se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles);
+    se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
 
 /**
  * @brief Gets the capabilities of the graphics system. Is valid even before

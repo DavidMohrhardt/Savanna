@@ -159,4 +159,8 @@ SAVANNA_EXPORT(void) SavannaStop();
  */
 SAVANNA_EXPORT(void) SavannaShutdown();
 
+#if __cplusplus
+#include "ISavannaEngine.hpp"
+#endif // __cplusplus
+
 #endif // !I_SAVANNA_ENGINE_H

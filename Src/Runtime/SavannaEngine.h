@@ -40,12 +40,12 @@
     #ifndef SAVANNA_ENGINE_H_EXTRA__
     #define SAVANNA_ENGINE_H_EXTRA__
 
-    // Coding includes
-    #include "Utilities/SavannaCoding.h"
+        // Coding includes
+        #include "Utilities/SavannaCoding.h"
 
-    // Profiling
-    #include "Profiling/Profiler.h"
-    #include "Utilities/Console.h"
+        // Profiling
+        #include "Profiling/Profiler.h"
+        #include "Utilities/Console.h"
 
     #endif // end SAVANNA_ENGINE_H_EXTRA__
 

@@ -153,8 +153,8 @@ namespace Savanna::Gfx::Vk2
     }
 
     se_GfxErrorCode_t VkDriver::CreateShaderModule(
-        const se_GfxShaderModuleCreateInfo_t& createInfo,
-        se_GfxShaderModuleHandle_t& outShaderModuleHandle)
+        const se_GfxShaderCreateInfo_t& createInfo,
+        se_GfxShaderHandle_t& outShaderModuleHandle)
     {
         outShaderModuleHandle = k_SavannaGfxInvalidShaderModuleHandle;
         if (g_pVulkanDriver != nullptr)
@@ -168,16 +168,16 @@ namespace Savanna::Gfx::Vk2
     }
 
     se_JobHandle_t VkDriver::CreateShaderModulesAsync(
-        const se_GfxShaderModuleCreateInfo_t* pCreateInfos,
+        const se_GfxShaderCreateInfo_t* pCreateInfos,
         const size_t createInfoCount,
-        se_GfxShaderModuleHandle_t** const ppOutShaderModuleHandles)
+        se_GfxShaderHandle_t** const ppOutShaderModuleHandles)
     {
         JobHandle jobHandle = k_InvalidJobHandle;
         if (g_pVulkanDriver != nullptr)
         {
             jobHandle = g_pVulkanDriver->m_ShaderModuleCache.CreateShaderModulesAsync(
                 g_pVulkanDriver->m_Gpu,
-                const_cast<se_GfxShaderModuleCreateInfo_t*>(pCreateInfos),
+                const_cast<se_GfxShaderCreateInfo_t*>(pCreateInfos),
                 createInfoCount,
                 ppOutShaderModuleHandles);
         }

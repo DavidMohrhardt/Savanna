@@ -52,7 +52,6 @@ namespace Savanna
         void pop_back();
 
         void resize(const size_t size);
-        void resizeUninitialized(const size_t size);
 
         void clear();
 
@@ -67,6 +66,12 @@ namespace Savanna
 
         T* end() { return m_Buffer + m_Size; }
         const T* end() const { return m_Buffer + m_Size; }
+
+        // extensions for Savanna
+        void resize_uninitialized(const size_t size);
+
+        template <typename... Args>
+        void resize_initialized(const size_t& size, Args&&... args);
 
     private:
         void Reserve(const size_t newCapacity);
@@ -318,22 +323,6 @@ namespace Savanna
         m_Size = size;
     }
 
-    template <typename T>
-    inline void dynamic_array<T>::resizeUninitialized(const size_t size)
-    {
-        if (size == m_Size)
-        {
-            return;
-        }
-
-        if (size > m_Capacity)
-        {
-            Reserve(size);
-        }
-
-        m_Size = size;
-    }
-
     template <typename T> inline void dynamic_array<T>::clear()
     {
         if constexpr (!std::is_trivially_destructible_v<T>)
@@ -348,8 +337,45 @@ namespace Savanna
     }
 
     template <typename T>
-    inline void dynamic_array<T>::Reserve(const size_t newCapacity)
+    inline void dynamic_array<T>::resize_uninitialized(const size_t size)
     {
+        if (size == m_Size)
+        {
+            return;
+        }
+
+        if (size > m_Capacity)
+        {
+            Reserve(size);
+        }
+
+        m_Size = size;
+    }
+
+    template <typename T>
+    template <typename... Args>
+    inline void dynamic_array<T>::resize_initialized(const size_t& size, Args&&... args)
+    {
+        if (size == 0)
+        {
+            return;
+        }
+
+        if (size > m_Capacity)
+        {
+            Reserve(size);
+        }
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            new (m_Buffer + i) T(std::forward<Args>(args)...);
+        }
+
+        m_Size = size;
+    }
+
+    template <typename T>
+    inline void dynamic_array<T>::Reserve(const size_t newCapacity) {
         if (newCapacity == 0)
         {
             return;

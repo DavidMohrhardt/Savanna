@@ -13,16 +13,20 @@
 #include "Public/ISavannaConcurrency.h"
 #include "Public/ISavannaJobs.hpp"
 
+#define SAVANNA_ASSERT_MAIN_THREAD() \
+    SAVANNA_ASSERT( \
+        SavannaConcurrencyIsMainThread(), \
+        "This function must be called from the main thread");
+
 namespace Savanna::Concurrency
 {
     class Info
     {
     private:
+        friend class ThreadManager;
         friend class JobManager;
 
         static void Initialize();
         static void Reset();
-
-    public:
     };
 } // namespace Savanna::Concurrency

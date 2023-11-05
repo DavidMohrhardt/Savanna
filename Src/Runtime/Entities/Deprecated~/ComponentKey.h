@@ -42,47 +42,6 @@ typedef se_uint8 se_ComponentKeyMask_T;
 // 4 bytes * 256 = 1024 bytes which is better but still not ideal. On a cacheline size of 64 bytes,
 // that's still 1024 / 64 = 16 cache lines to read.
 
-/**
- * @brief Defines a unique key/identifier for a component type. Components of like types are assigned the same
- * key.
- */
-typedef union ComponentKeyData
-{
-    /**
-     * @brief The full component key.
-     */
-    se_ComponentKey_t m_FullComponentKey;
-
-    struct {
-        /**
-         * @brief The key portion of the component id. Used to identify a component type.
-         */
-        se_ComponentKey_t m_KeyTeeth : SAVANNA_ECS_KEY_TEETH_BIT_COUNT;
-
-        /**
-         * @brief Indicates which component registration set this component ID belongs to.
-         */
-        se_ComponentKey_t m_RingIndex : SAVANNA_ECS_KEY_RING_INDEX_BIT_COUNT;
-    };
-} ComponentKeyData;
-
-static_assert(sizeof(ComponentKeyData) == sizeof(se_ComponentKey_t), "ComponentKeyData is not 32 bits");
-
-/**
- * @brief Represents an invalid component key.
- */
-constexpr ComponentKeyData k_InvalidComponentKey = { 0x0 };
-
-constexpr se_ComponentKey_t k_MaxKeyValue = 0x1 << (SAVANNA_ECS_KEY_TEETH_BIT_COUNT - 1);
-constexpr se_ComponentKey_t k_MaxSetMaskValue = SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS;
-
-constexpr se_ComponentKey_t k_ComponentKeyDataRingIndexMask = { 0xFF000000u };
-constexpr se_ComponentKey_t k_ComponentKeyDataTeethMask = { 0x00FFFFFFu };
-
-bool SavannaIsValidComponentKey(const ComponentKeyData& componentId);
-
-bool SavannaCompareKeys(const ComponentKeyData& entityKey, const ComponentKeyData& systemLock);
-
 #if defined(__cplusplus)
 namespace Savanna::Entities
 {
