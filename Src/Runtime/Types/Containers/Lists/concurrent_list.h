@@ -56,7 +56,7 @@ namespace Savanna
 
         Node* m_Head;
         Node* m_Tail;
-        size m_Size;
+        se_size m_Size;
 
     public:
         concurrent_list(MemoryLabel label = k_SavannaMemoryLabelHeap)

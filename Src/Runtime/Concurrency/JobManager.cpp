@@ -2,15 +2,13 @@
 #include "SavannaConcurrency.h"
 
 #include "DependencyJobs.h"
+#include "EngineThread.h"
+#include "ThreadManager.h"
 
 #include "Types/Containers/Arrays/dynamic_array.h"
 
 namespace Savanna::Concurrency
 {
-    uint8 JobManager::s_ThreadPoolSize = std::thread::hardware_concurrency() - 1;// < s_ThreadPoolSize
-            // ? std::thread::hardware_concurrency() - 1
-            // : s_ThreadPoolSize;
-
     inline JobResult JobManager::ExecuteJobInternal(JobHandle handle)
     {
         if (handle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
@@ -67,9 +65,33 @@ namespace Savanna::Concurrency
         }
     }
 
+    void JobManager::ProcessJobsInternalWithReturn()
+    {
+        JobManager* pManager = Get();
+        if (pManager->m_ProcessingJobs.load())
+        {
+            JobHandle jobHandle = k_InvalidJobHandle;
+
+            uint32 expectedState = k_SavannaJobStateReady;
+            uint32 desiredState = k_SavannaJobStateRunning;
+
+                // In the current implementation of the lockless queue you can simply pop from the queue
+            if (pManager->m_HighPriorityJobs.TryDequeue(jobHandle) ||
+                pManager->m_NormalPriorityJobs.TryDequeue(jobHandle) ||
+                pManager->m_LowPriorityJobs.TryDequeue(jobHandle))
+            {
+                if (reinterpret_cast<IJob*>(jobHandle)->m_JobState.compare_exchange_weak(expectedState, desiredState, std::memory_order_release, std::memory_order_relaxed))
+                {
+                    ExecuteJobInternal(jobHandle);
+                }
+            }
+
+            std::this_thread::yield();
+        }
+    }
+
     JobManager::JobManager()
         : m_ProcessingJobs(false)
-        , m_JobThreads()
         , m_HighPriorityJobs()
         , m_NormalPriorityJobs()
         , m_LowPriorityJobs()
@@ -80,35 +102,56 @@ namespace Savanna::Concurrency
     bool JobManager::InitializeInternal()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::InitializeInternal());
-        Info::Initialize();
         return true;
     }
 
     void JobManager::StartInternal()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::StartInternal());
+
+        // This is the interface for the primary job thread. It will loop until the atomic bool is set to false.
+        static ThreadExecutionInterface k_PrimaryThreadJobProcessingInterface =
+        {
+            reinterpret_cast<se_pfnThreadFunction_t>(ProcessJobsInternal),
+            nullptr
+        };
+
+        // This is the interface for the unreserved threads. Allows them to check if there is work to do
+        // while they await reservation.
+        static ThreadExecutionInterface k_UnreservedThreadJobProcessingInterface =
+        {
+            reinterpret_cast<se_pfnThreadFunction_t>(ProcessJobsInternalWithReturn),
+            nullptr
+        };
+
         // If the atomic started bool is false, then we set it to true and spin up the threads.
         bool expected = false;
         if (m_ProcessingJobs.compare_exchange_weak(expected, true, std::memory_order_release))
         {
-            m_JobThreads.clear();
-            for (int i = 0; i < s_ThreadPoolSize; ++i)
+
+            if (!ThreadManager::Get()->TryAcquireThreads(1, &m_PrimaryJobThreadHandle))
             {
-                m_JobThreads.push_back(std::move(std::thread(ProcessJobsInternal)));
+                SAVANNA_WARNING_LOG("Failed to acquire primary job thread.");
+                return;
             }
+
+            // For the primary job thread we want to set the execution interface to a looping function with it's own yield.
+            ThreadManager::Get()->SetThreadExecutionInterface(1, &m_PrimaryJobThreadHandle, &k_PrimaryThreadJobProcessingInterface);
+            ThreadManager::Get()->StartThreads(1, &m_PrimaryJobThreadHandle);
+
+            // Then set the unreserved threads to also process jobs while they await reservation.
+            ThreadManager::Get()->SetUnreservedThreadDefaultExecution(&k_UnreservedThreadJobProcessingInterface);
         }
     }
 
     void JobManager::StopInternal()
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::StopInternal());
-        while (m_ProcessingJobs.exchange(false, std::memory_order_release))
+        bool expected = true;
+        if (m_ProcessingJobs.compare_exchange_strong(expected, false, std::memory_order_acq_rel))
         {
-            for (int i = 0; i < m_JobThreads.size(); ++i)
-            {
-                m_JobThreads[i].join();
-            }
-            m_JobThreads.clear();
+            ThreadManager::Get()->SetUnreservedThreadDefaultExecution(nullptr);
+            ThreadManager::Get()->ReleaseThreads(1, &m_PrimaryJobThreadHandle);
         }
     }
 
@@ -116,7 +159,6 @@ namespace Savanna::Concurrency
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobManager::ShutdownInternal());
         StopInternal();
-        Info::Reset();
     }
 
     /**

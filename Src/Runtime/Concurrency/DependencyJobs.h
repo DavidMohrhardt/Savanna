@@ -23,7 +23,7 @@ namespace Savanna::Concurrency
         dynamic_array<JobHandle> m_Dependencies;
 
     public:
-        DependencyAwaiterJob(const JobHandle* dependencies, const size dependencyCount)
+        DependencyAwaiterJob(const JobHandle* dependencies, const se_size dependencyCount)
             : m_Dependencies(dependencyCount)
         {
             m_Dependencies.resize_uninitialized(dependencyCount);

@@ -12,19 +12,27 @@
 
 #include "Public/ISavannaEngine.hpp"
 
+#define DECL_C_LEVEL_ENUM(__cName, __type, ...) \
+    typedef enum __cName : __type { __VA_ARGS__ } __cName
+
 #if defined(__cplusplus)
 
 #include <concepts>
 #include <type_traits>
 
+#define DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type) \
+    using __cppName = Savanna::Enumeration<__cName, __type>
+
 #define DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type) \
-    namespace __nameSpace { using __cppName = Savanna::Enumeration<__cName, __type>; }
+    namespace __nameSpace { DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type); }
 
 #define DECLARE_NAMESPACED_ENUMERATION(__nameSpace, __cName, __cppName, __type, ...) \
-    typedef enum __cName : __type { __VA_ARGS__ } __cName; \
+    DECL_C_LEVEL_ENUM(__cName, __type, __VA_ARGS__); \
     DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type)
 
 #else
+
+#define DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type)
 
 #define DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type)
 
@@ -311,3 +319,7 @@ namespace Savanna
 
 #define DEFINE_SAVANNA_ENUM(__nameSpace, __cName, __cppName, __type, ...) \
     DECLARE_NAMESPACED_ENUMERATION(__nameSpace, __cName, __cppName, __type, __VA_ARGS__)
+
+#define DEFINE_ENUM(__cName, __cppName, __type, ...) \
+    DECL_C_LEVEL_ENUM(__cName, __type, __VA_ARGS__); \
+    DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type)

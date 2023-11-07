@@ -1,4 +1,4 @@
-# Total TODOs - 105
+# Total TODOs - 99
 
 ## Src
 
@@ -33,6 +33,11 @@
 - [L37 :# TODO Make find Vulkan QUIET and enable the runtime loader for vulkan in the case it's not just defined](../Src/Applications/Vulkan2Renderer/CMakeLists.txt#L37)
 - [L64 :# TODO: Find all source headers in Public folders and copy them to the install directory](../Src/Applications/Vulkan2Renderer/CMakeLists.txt#L64)
 
+### [../Src\Applications\Vulkan2Renderer\Renderer.h](../Src/Applications/Vulkan2Renderer/Renderer.h)
+
+
+- [L18 :// TODO change this to a create info for the window](../Src/Applications/Vulkan2Renderer/Renderer.h#L18)
+
 ### [../Src\Applications\VulkanRenderer\CMakeLists.txt](../Src/Applications/VulkanRenderer/CMakeLists.txt)
 
 
@@ -52,41 +57,33 @@
 ### [../Src\Runtime\Concurrency\JobManager.cpp](../Src/Runtime/Concurrency/JobManager.cpp)
 
 
-- [L164 :// See TODO in JobManager.h](../Src/Runtime/Concurrency/JobManager.cpp#L164)
+- [L209 :// See TODO in JobManager.h](../Src/Runtime/Concurrency/JobManager.cpp#L209)
 
 ### [../Src\Runtime\Concurrency\JobManager.h](../Src/Runtime/Concurrency/JobManager.h)
 
 
-- [L74 :// TODO @david.mohrhardt: Fix this. Currently it can cause issues because there is no user client contract](../Src/Runtime/Concurrency/JobManager.h#L74)
+- [L33 :// TODO @David.Mohrhardt (2023/11/06): Make this a feature on the ThreadManager instead of it's own global manager.](../Src/Runtime/Concurrency/JobManager.h#L33)
+- [L76 :// TODO @david.mohrhardt: Fix this. Currently it can cause issues because there is no user client contract](../Src/Runtime/Concurrency/JobManager.h#L76)
+
+### [../Src\Runtime\Concurrency\Public\ISavannaJobs.h](../Src/Runtime/Concurrency/Public/ISavannaJobs.h)
+
+
+- [L72 :* TODO @david.mohrhardt: Rework priority to instead use a work stealing queue.](../Src/Runtime/Concurrency/Public/ISavannaJobs.h#L72)
 
 ### [../Src\Runtime\Entities\ComponentRegistry.cpp](../Src/Runtime/Entities/ComponentRegistry.cpp)
 
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/ComponentRegistry.cpp#L3)
-- [L24 :// TODO @DavidMohrhardt Create a SingleWriterMultipleReader lockless version of this](../Src/Runtime/Entities/ComponentRegistry.cpp#L24)
 
-### [../Src\Runtime\Entities\Entity.h](../Src/Runtime/Entities/Entity.h)
-
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/Entity.h#L3)
-
-### [../Src\Runtime\Entities\IComponentData.h](../Src/Runtime/Entities/IComponentData.h)
+### [../Src\Runtime\Entities\SavannaEntities.cpp](../Src/Runtime/Entities/SavannaEntities.cpp)
 
 
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/IComponentData.h#L3)
+- [L17 :// TODO](../Src/Runtime/Entities/SavannaEntities.cpp#L17)
 
-### [../Src\Runtime\Entities\ISystem.h](../Src/Runtime/Entities/ISystem.h)
-
-
-- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/ISystem.h#L3)
-
-### [../Src\Runtime\Entities\Paradigms\ComponentParadigm.cpp](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp)
+### [../Src\Runtime\Entities\System.h](../Src/Runtime/Entities/System.h)
 
 
-- [L45 :// TODO @DavidMohrhardt Release memory](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L45)
-- [L136 :// TODO @DavidMohrhardt Remove this, component paradigms should be defined at construction. Reformatting layouts is unnecessary. as the all paradigms are the same size, instead just copy construct a new paradigm on top of the old one.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L136)
-- [L150 :// TODO @DavidMohrhardt return an error code instead of throwing an exception.](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L150)
-- [L157 :// TODO @DavidMohrhardt consider making this asynchronous](../Src/Runtime/Entities/Paradigms/ComponentParadigm.cpp#L157)
+- [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Entities/System.h#L3)
 
 ### [../Src\Runtime\Experimental~\Animation\IK\JacobianMatrix.cpp](../Src/Runtime/Experimental~/Animation/IK/JacobianMatrix.cpp)
 
@@ -118,7 +115,7 @@
 ### [../Src\Runtime\Gfx\GfxDriver.h](../Src/Runtime/Gfx/GfxDriver.h)
 
 
-- [L23 :// TODO @DavidMohrhardt: Move this to public interface definition](../Src/Runtime/Gfx/GfxDriver.h#L23)
+- [L31 :// TODO @DavidMohrhardt: Move this to public interface definition](../Src/Runtime/Gfx/GfxDriver.h#L31)
 
 ### [../Src\Runtime\Gfx\RenderGraph.h](../Src/Runtime/Gfx/RenderGraph.h)
 
@@ -128,22 +125,6 @@
 - [L106 :// TODO @DavidMohrhardt: Implement](../Src/Runtime/Gfx/RenderGraph.h#L106)
 - [L111 :// TODO @DavidMohrhardt: Implement](../Src/Runtime/Gfx/RenderGraph.h#L111)
 - [L123 :// TODO @DavidMohrhardt: Implement](../Src/Runtime/Gfx/RenderGraph.h#L123)
-
-### [../Src\Runtime\Gfx\Deprecated~\VkRendererCreateInfo.h](../Src/Runtime/Gfx/Deprecated~/VkRendererCreateInfo.h)
-
-
-- [L27 :// TODO @DavidMohrhardt - This is far too cumbersome. Implement a better structure creating both VK and DX12 renderers](../Src/Runtime/Gfx/Deprecated~/VkRendererCreateInfo.h#L27)
-
-### [../Src\Runtime\Gfx\Deprecated~\VkShaderCache.cpp](../Src/Runtime/Gfx/Deprecated~/VkShaderCache.cpp)
-
-
-- [L40 :// TODO determine why this operator doesn't work as expected.](../Src/Runtime/Gfx/Deprecated~/VkShaderCache.cpp#L40)
-
-### [../Src\Runtime\Gfx\Deprecated~\VkSwapchain.cpp](../Src/Runtime/Gfx/Deprecated~/VkSwapchain.cpp)
-
-
-- [L79 :// TODO @DavidMohrhardt: Get extents from renderer create info and pass them to the swapchain creation](../Src/Runtime/Gfx/Deprecated~/VkSwapchain.cpp#L79)
-- [L157 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Runtime/Gfx/Deprecated~/VkSwapchain.cpp#L157)
 
 ### [../Src\Runtime\Gfx\Deprecated~\Utilities\VkPhysicalDeviceUtils.cpp](../Src/Runtime/Gfx/Deprecated~/Utilities/VkPhysicalDeviceUtils.cpp)
 
@@ -160,12 +141,20 @@
 ### [../Src\Runtime\Gfx\Public\ISavannaGfx.h](../Src/Runtime/Gfx/Public/ISavannaGfx.h)
 
 
-- [L13 :// TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L13)
+- [L12 :// TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L12)
+- [L690 :* @brief TODO](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L690)
+- [L696 :* @brief TODO](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L696)
 
 ### [../Src\Runtime\Gfx\Vk\VkDriver.cpp](../Src/Runtime/Gfx/Vk/VkDriver.cpp)
 
 
 - [L41 :// TODO Refactor once we support using temporary allocators in the managed memory arenas](../Src/Runtime/Gfx/Vk/VkDriver.cpp#L41)
+
+### [../Src\Runtime\Gfx\Vk\VkSwapchain.cpp](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp)
+
+
+- [L63 :// TODO @DavidMohrhardt: Submit the format requested by the user.](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L63)
+- [L152 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L152)
 
 ### [../Src\Runtime\Gfx\Vk\Public\ISavannaGfxVk2.h](../Src/Runtime/Gfx/Vk/Public/ISavannaGfxVk2.h)
 
@@ -208,8 +197,7 @@
 ### [../Src\Runtime\Memory\MemoryManager.cpp](../Src/Runtime/Memory/MemoryManager.cpp)
 
 
-- [L85 :// TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.](../Src/Runtime/Memory/MemoryManager.cpp#L85)
-- [L143 :// TODO @DavidMohrhardt: This is a hack to get the heap allocator working.](../Src/Runtime/Memory/MemoryManager.cpp#L143)
+- [L94 :// TODO @DavidMohrhardt: Add initialization of memory manager based on a provided boot configuration.](../Src/Runtime/Memory/MemoryManager.cpp#L94)
 
 ### [../Src\Runtime\Memory\Deprecated~\MemoryPool.h](../Src/Runtime/Memory/Deprecated~/MemoryPool.h)
 
@@ -251,12 +239,6 @@
 
 
 - [L3 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Memory/FreeListAllocator.h#L3)
-
-### [../Src\Runtime\Types\Primitive~\FloatingPointUnions.h](../Src/Runtime/Types/Primitive~/FloatingPointUnions.h)
-
-
-- [L29 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive~/FloatingPointUnions.h#L29)
-- [L53 :* @brief TODO @DavidMohrhardt Document](../Src/Runtime/Types/Primitive~/FloatingPointUnions.h#L53)
 
 ### [../Src\Runtime\Utilities\Console.h](../Src/Runtime/Utilities/Console.h)
 

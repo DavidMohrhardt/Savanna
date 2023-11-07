@@ -20,13 +20,11 @@ namespace Savanna::Concurrency
 
     void Info::Initialize()
     {
-        s_MainThreadId = std::this_thread::get_id();
-    }
-
-    void Info::Reset()
-    {
-        SAVANNA_ASSERT_MAIN_THREAD();
-        s_MainThreadId = std::thread::id();
+        static auto execOnceSentinel = []()
+        {
+            s_MainThreadId = std::this_thread::get_id();
+            return true;
+        }();
     }
 } // namespace Savanna::Concurrency
 

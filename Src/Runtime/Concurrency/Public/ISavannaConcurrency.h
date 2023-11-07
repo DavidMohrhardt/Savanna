@@ -15,6 +15,9 @@
 
 typedef se_intptr se_ThreadHandle_t;
 
+#undef k_SavannaInvalidThreadHandle
+#define k_SavannaInvalidThreadHandle ((se_ThreadHandle_t)NULL)
+
 SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread();
 
 /**

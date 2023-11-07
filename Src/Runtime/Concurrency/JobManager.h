@@ -16,9 +16,11 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
+#include "Public/ISavannaConcurrency.h"
 #include "Public/ISavannaJobs.hpp"
 
 #include "ConcurrencyCapabilities.h"
+#include "EngineThread.h"
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 #include <Types/Containers/Arrays/fixed_array.h>
@@ -29,9 +31,11 @@
 
 namespace Savanna::Concurrency
 {
-    class JobManager : public Singleton<JobManager>
+    // TODO @David.Mohrhardt (2023/11/06): Make this a feature on the ThreadManager instead of it's own global manager.
+    class JobManager : public GlobalManager<JobManager>
     {
     private:
+        DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(JobManager);
         friend class ThreadManager;
         friend class DependencyAwaiterJob;
         friend class DependentJobWrapper;
@@ -40,10 +44,12 @@ namespace Savanna::Concurrency
     private:
         static JobResult ExecuteJobInternal(JobHandle handle);
         static void ProcessJobsInternal();
+        static void ProcessJobsInternalWithReturn();
         static uint8 s_ThreadPoolSize;
 
+        se_ThreadHandle_t m_PrimaryJobThreadHandle;
+
         std::atomic_bool m_ProcessingJobs;
-        dynamic_array<std::thread> m_JobThreads;
 
         atomic_queue<JobHandle> m_LowPriorityJobs;
         atomic_queue<JobHandle> m_NormalPriorityJobs;

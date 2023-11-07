@@ -103,7 +103,7 @@ namespace Savanna
             return;
         }
 
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(providerLabel, size * sizeof(T), alignof(T)));
+        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(providerLabel, list.size() * sizeof(T), alignof(T)));
 
         if constexpr (std::is_trivially_copyable_v<T>)
         {
