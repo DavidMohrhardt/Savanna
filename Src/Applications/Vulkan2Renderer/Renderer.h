@@ -1,5 +1,8 @@
+#pragma once
 #include <SavannaEngine.h>
 #include <Gfx/Public/ISavannaGfx.h>
+
+#include <Types/Containers/Arrays/dynamic_array.h>
 
 namespace vk
 {
@@ -7,9 +10,6 @@ namespace vk
 
     class Renderer
     {
-    private:
-        se_GfxShaderHandle_t m_DefaultShaderHandles[2] {};
-
     public:
         Renderer();
         ~Renderer();

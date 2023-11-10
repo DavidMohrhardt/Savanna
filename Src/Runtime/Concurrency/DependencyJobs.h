@@ -1,7 +1,7 @@
 /**
  * @file DependencyJobs.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-16
  *
@@ -11,23 +11,26 @@
 #pragma once
 
 #include <SavannaEngine.h>
-#include "JobManager.h"
+#include "ThreadManager.h"
+#include "JobSystem.h"
+#include "AutoDisposeJob.h"
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 
 namespace Savanna::Concurrency
 {
-    class DependencyAwaiterJob final : public IJob
+    class DependencyAwaiterJob final : public AutoDisposeJobBase
     {
     private:
         dynamic_array<JobHandle> m_Dependencies;
 
     public:
         DependencyAwaiterJob(const JobHandle* dependencies, const se_size dependencyCount)
-            : m_Dependencies(dependencyCount)
+            : AutoDisposeJobBase(k_SavannaAllocatorKindGeneral)
+            , m_Dependencies(dependencyCount, k_SavannaAllocatorKindGeneral)
         {
             m_Dependencies.resize_uninitialized(dependencyCount);
-            memcpy(m_Dependencies.data(), dependencies, dependencyCount * sizeof(JobHandle));
+            ::memcpy(m_Dependencies.data(), dependencies, dependencyCount * sizeof(JobHandle));
         }
 
         virtual ~DependencyAwaiterJob() override {}
@@ -36,35 +39,14 @@ namespace Savanna::Concurrency
         {
             for (const auto& dependency : m_Dependencies)
             {
-                JobManager::Get()->AwaitJobOrExecuteImmediateInternal(dependency);
+                ThreadManager::Get()->GetJobSystem()->AwaitJobOrExecuteImmediateInternal(dependency);
             }
 
             return k_SavannaJobResultSuccess;
         }
-
-        void OnComplete() override
-        {
-            Dispose();
-        }
-
-        void OnError() override
-        {
-            Dispose();
-        }
-
-        void OnCancel() override
-        {
-            Dispose();
-        }
-
-    private:
-        void Dispose()
-        {
-            SAVANNA_DELETE(k_SavannaMemoryLabelGeneral, this);
-        }
     };
 
-    class DependentJobWrapper : public IJob
+    class DependentJobWrapper : public AutoDisposeJobBase
     {
     private:
         friend class IJob;
@@ -75,7 +57,8 @@ namespace Savanna::Concurrency
         DependentJobWrapper() = delete;
 
         DependentJobWrapper(JobHandle dependency, IJob* job)
-            : m_Job(job)
+            : AutoDisposeJobBase(k_SavannaAllocatorKindGeneral)
+            , m_Job(job)
             , m_Dependency(dependency)
         {}
 
@@ -83,29 +66,8 @@ namespace Savanna::Concurrency
 
         JobResult Execute() override
         {
-            JobManager::Get()->AwaitJobOrExecuteImmediateInternal(m_Dependency);
+            ThreadManager::Get()->GetJobSystem()->AwaitJobOrExecuteImmediateInternal(m_Dependency);
             return m_Job->Execute();
-        }
-
-        void OnComplete() override
-        {
-            Dispose();
-        }
-
-        void OnError() override
-        {
-            Dispose();
-        }
-
-        void OnCancel() override
-        {
-            Dispose();
-        }
-
-    private:
-        void Dispose()
-        {
-            SAVANNA_DELETE(k_SavannaMemoryLabelGeneral, this);
         }
     };
 } // namespace Savanna

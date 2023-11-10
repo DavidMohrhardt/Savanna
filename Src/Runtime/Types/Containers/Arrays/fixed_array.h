@@ -1,7 +1,7 @@
 /**
  * @file fixed_array.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-19
  *
@@ -11,8 +11,6 @@
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
-
-#include "Memory/MemoryLabel.h"
 
 #include "dynamic_array.h"
 
@@ -30,11 +28,11 @@ namespace Savanna
         void* m_Buffer = nullptr;
         size_t m_Size = 0;
         size_t m_Capacity = 0;
-        const MemoryLabel m_ProviderLabel = k_SavannaMemoryLabelHeap;
+        const AllocatorKind m_ProviderAllocatorKind = k_SavannaAllocatorKindHeap;
 
     public:
         fixed_array() = default;
-        fixed_array(const size_t size, const MemoryLabel providerLabel = k_SavannaMemoryLabelHeap);
+        fixed_array(const size_t size, const AllocatorKind providerAllocatorKind = k_SavannaAllocatorKindHeap);
         fixed_array(const std::initializer_list<T>& list);
         fixed_array(const fixed_array& other);
         fixed_array(const dynamic_array<T>& other);
@@ -63,14 +61,14 @@ namespace Savanna
     };
 
     template <typename T>
-    inline fixed_array<T>::fixed_array(const size_t size, const MemoryLabel providerLabel)
+    inline fixed_array<T>::fixed_array(const size_t size, const AllocatorKind providerAllocatorKind)
         : m_Capacity(size)
         , m_Size(size)
-        , m_ProviderLabel(k_SavannaMemoryLabelHeap)
+        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
     {
         SAVANNA_DEBUG_ASSERT(m_Capacity, "Can't create empty fixed array");
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
+        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForAllocatorKind(m_ProviderAllocatorKind);
         m_Buffer = SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * m_Capacity, alignof(T), nullptr);
 
         if constexpr (std::is_trivially_constructible_v<T>)
@@ -94,11 +92,11 @@ namespace Savanna
     inline fixed_array<T>::fixed_array(const std::initializer_list<T>& list)
         : m_Capacity(list.size())
         , m_Size(list.size())
-        , m_ProviderLabel(k_SavannaMemoryLabelHeap)
+        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
     {
         SAVANNA_DEBUG_ASSERT(m_Capacity > 0, "Can't create empty fixed array");
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
+        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForAllocatorKind(m_ProviderAllocatorKind);
         m_Buffer = SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * m_Capacity, alignof(T), nullptr);
 
         size_t i = 0;
@@ -113,11 +111,11 @@ namespace Savanna
     inline fixed_array<T>::fixed_array(const fixed_array &other)
         : m_Capacity(other.m_Capacity)
         , m_Size(other.m_Size)
-        , m_ProviderLabel(k_SavannaMemoryLabelHeap)
+        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
     {
         SAVANNA_DEBUG_ASSERT(m_Capacity > 0, "This shouldn't even be possible! Can't create empty fixed array");
 
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
+        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForAllocatorKind(m_ProviderAllocatorKind);
         m_Buffer = SAVANNA_INTERFACE_ALLOCATE_ALIGNED(&interface, sizeof(T) * m_Capacity, alignof(T), nullptr);
 
         if constexpr (std::is_trivially_copyable_v<T>)
@@ -148,7 +146,7 @@ namespace Savanna
         : m_Buffer(other.m_Buffer)
         , m_Size(other.m_Size)
         , m_Capacity(other.m_Capacity)
-        , m_ProviderLabel(other.m_ProviderLabel)
+        , m_ProviderAllocatorKind(other.m_ProviderAllocatorKind)
     {
         // This is fine because we're going to destroy the other object anyway
         other.m_Buffer = nullptr;
@@ -169,7 +167,7 @@ namespace Savanna
                 }
             }
 
-            auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_ProviderLabel);
+            auto interface = MemoryManager::Get()->GetAllocatorInterfaceForAllocatorKind(m_ProviderAllocatorKind);
             SAVANNA_INTERFACE_FREE(&interface, m_Buffer, nullptr);
         }
     }

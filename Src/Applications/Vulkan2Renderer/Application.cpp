@@ -1,6 +1,8 @@
 #include "Application.h"
+#include "Triangle.h"
 
-#include <Concurrency/JobManager.h>
+#include <Concurrency/ThreadManager.h>
+#include <Concurrency/JobSystem.h>
 
 using namespace Savanna;
 
@@ -12,15 +14,13 @@ Application::Application(const char *rootPath)
     SavannaStart();
 
     IO::VirtualFileSystem::Construct(rootPath);
-
-    Concurrency::JobManager::Construct();
-    Concurrency::JobManager::Get()->Initialize();
-    Concurrency::JobManager::Get()->Start();
+    Concurrency::ThreadManager::Get()->StartJobSystem();
 
     m_pRenderer = new vk::Renderer();
     if (m_pRenderer->TryInitialize(nullptr, m_Window.GetWindowPtr()))
     {
         SAVANNA_LOG("Renderer initialized.");
+        TriangleMesh::GetDefaultMesh();
     }
     else
     {
@@ -39,9 +39,6 @@ Application::~Application()
 
     Savanna::Gfx::Shutdown();
 
-    Concurrency::JobManager::Get()->Stop();
-    Concurrency::JobManager::Get()->Shutdown();
-
     Savanna::IO::VirtualFileSystem::Destroy();
 
     SavannaStop();
@@ -54,5 +51,6 @@ void Application::Run()
     while (!m_Window.ShouldClose())
     {
         glfwPollEvents();
+        MemoryManager::Get()->OnFrameEnd();
     }
 }

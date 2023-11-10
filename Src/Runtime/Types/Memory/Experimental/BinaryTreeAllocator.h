@@ -1,7 +1,7 @@
 /**
  * @file FreeListAllocator.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-18
  *
@@ -10,9 +10,7 @@
  */
 #pragma once
 
-#include "Memory/MemoryLabel.h"
-
-#include <cstdint>
+#include "Memory/Public/ISavannaMemory.hpp"
 
 namespace Savanna
 {
@@ -35,7 +33,7 @@ namespace Savanna
     {
     private:
         static_assert(sizeof(FreeBlock) == sizeof(AllocatedBlock), "FreeBlock and AllocatedBlock must be the same size");
-        MemoryLabel m_Label;
+        AllocatorKind m_AllocatorKind;
 
         void* m_Buffer;
         // The tracking is implemented as a balanced binary tree
@@ -43,7 +41,7 @@ namespace Savanna
 
     public:
 
-        BinaryTreeAllocator(size_t size, const MemoryLabel providerLabel = k_SavannaMemoryLabelHeap);
+        BinaryTreeAllocator(size_t size, const AllocatorKind providerAllocatorKind = k_SavannaAllocatorKindHeap);
         ~BinaryTreeAllocator();
 
         void* Allocate(const size_t size, const size_t alignment);

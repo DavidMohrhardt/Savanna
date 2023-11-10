@@ -1,7 +1,7 @@
 /**
  * @file ISavannaJobs.hpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-30
  *
@@ -27,6 +27,8 @@ namespace Savanna::Concurrency
     using JobResultCallbackFunc = se_JobResultCallbackFunc_t;
     using IJobInterface = se_IJobInterface_t;
 
+    class JobSystem;
+
     /**
      * @brief An interface for a job. Jobs are the basic unit of work in the job system.
      *
@@ -34,7 +36,7 @@ namespace Savanna::Concurrency
     class IJob
     {
     private:
-        friend class JobManager;
+        friend class JobSystem;
         friend class JobRunner;
 
         std::atomic<uint32> m_JobState = static_cast<uint32>(k_SavannaJobStateInvalid);
@@ -95,79 +97,6 @@ namespace Savanna::Concurrency
          *
          */
         virtual void OnError() {};
-    };
-
-    /**
-     * @brief A primitive job is a job that is created from a set of function pointers.
-     * This is useful for creating jobs from C functions and lambdas.
-     *
-     */
-    class PrimitiveJob final : public IJob
-    {
-    private:
-        IJobInterface m_JobInterface = { nullptr, nullptr, nullptr, nullptr, nullptr };
-
-    public:
-        PrimitiveJob() = default;
-        PrimitiveJob(const IJobInterface& jobInterface)
-            : m_JobInterface(jobInterface)
-        {
-        }
-
-        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, void* pUserData)
-            : m_JobInterface({ executeFunc, nullptr, nullptr, nullptr, pUserData })
-        {}
-
-        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, const se_JobResultCallbackFunc_t& onCompleteFunc, void* pUserData)
-            : m_JobInterface({ executeFunc, onCompleteFunc, nullptr, nullptr, pUserData })
-        {}
-
-        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, const se_JobResultCallbackFunc_t& onCompleteFunc, const se_JobResultCallbackFunc_t& onCancelFunc, void* pUserData)
-            : m_JobInterface({ executeFunc, onCompleteFunc, onCancelFunc, nullptr, pUserData })
-        {}
-
-        PrimitiveJob(const se_JobExecuteFunc_t& executeFunc, const se_JobResultCallbackFunc_t& onCompleteFunc, const se_JobResultCallbackFunc_t& onCancelFunc, const se_JobResultCallbackFunc_t& onErrorFunc, void* pUserData)
-            : m_JobInterface({ executeFunc, onCompleteFunc, onCancelFunc, onErrorFunc, pUserData })
-        {}
-
-        virtual ~PrimitiveJob() {}
-
-    public:
-        virtual JobResult Execute() override
-        {
-            return m_JobInterface.executeFunc != nullptr
-                ? m_JobInterface.executeFunc(m_JobInterface.pUserData)
-                : k_SavannaJobResultInvalid;
-        }
-
-        virtual void OnComplete() override
-        {
-            if (m_JobInterface.onCompleteFunc)
-            {
-                m_JobInterface.onCompleteFunc(m_JobInterface.pUserData);
-            }
-        }
-
-        virtual void OnCancel() override
-        {
-            if (m_JobInterface.onCancelFunc)
-            {
-                m_JobInterface.onCancelFunc(m_JobInterface.pUserData);
-            }
-        }
-
-        virtual void OnError() override
-        {
-            if (m_JobInterface.onErrorFunc)
-            {
-                m_JobInterface.onErrorFunc(m_JobInterface.pUserData);
-            }
-        }
-
-        void SetJobInterface(const IJobInterface& jobInterface)
-        {
-            m_JobInterface = jobInterface;
-        }
     };
 
 } // namespace Savanna::Concurrency

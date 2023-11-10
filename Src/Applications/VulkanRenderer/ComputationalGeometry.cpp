@@ -1,6 +1,6 @@
 #include "ComputationalGeometry.h"
 
-#include <Concurrency/JobManager.h>
+#include <Concurrency/JobSystem.h>
 
 #include <IO/FileStream.h>
 #include <IO/VirtualFileSystem.h>
@@ -76,15 +76,15 @@ namespace Savanna::Gfx::Vk
 
         JobHandle shaderCreateJobHandles[2]
         {
-            JobManager::Get()->ScheduleJob(&shaderCreateJobs[0]),
-            JobManager::Get()->ScheduleJob(&shaderCreateJobs[1])
+            JobSystem::Get()->ScheduleJob(&shaderCreateJobs[0]),
+            JobSystem::Get()->ScheduleJob(&shaderCreateJobs[1])
         };
         for (auto& handle : shaderCreateJobHandles)
         {
-            JobManager::Get()->AwaitCompletion(handle);
+            JobSystem::Get()->AwaitCompletion(handle);
         }
 
-        // JobManager::Get()->AwaitCompletion(JobManager::Get()->ScheduleJobBatch(shaderCreateJobPtrs, 2));
+        // JobSystem::Get()->AwaitCompletion(JobSystem::Get()->ScheduleJobBatch(shaderCreateJobPtrs, 2));
     }
 
 } // namespace Savanna::Gfx::Vk

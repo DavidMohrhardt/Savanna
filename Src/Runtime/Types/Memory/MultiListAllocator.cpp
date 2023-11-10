@@ -6,27 +6,26 @@
 
 namespace Savanna
 {
-    MultiListAllocator::MultiListAllocator(const MemoryLabel label)
+    MultiListAllocator::MultiListAllocator(const AllocatorKind allocatorKind)
         : Allocator()
-        , m_MemoryLabel {label}
+        , m_AllocatorKind {allocatorKind}
         , m_BufferBlockSize {0}
         , m_AllocatedBytes {0}
         , m_Size { 0 }
-        , m_Pools(0, label)
+        , m_Pools(0, allocatorKind)
     {}
 
     MultiListAllocator::MultiListAllocator(
         size_t initialBufferCount,
         size_t bufferBlockSize,
-        const MemoryLabel label)
+        const AllocatorKind allocatorKind)
         : Allocator()
-        , m_MemoryLabel {label}
+        , m_AllocatorKind {allocatorKind}
         , m_BufferBlockSize { bufferBlockSize }
         , m_AllocatedBytes {0}
         , m_Size { 0 }
-        , m_Pools(initialBufferCount > 0 ? initialBufferCount : 1, label)
+        , m_Pools(initialBufferCount > 0 ? initialBufferCount : 1, allocatorKind)
     {
-        // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::ctor);
         SAVANNA_ASSERT(m_BufferBlockSize != 0, "Buffer block size must be greater than 0.");
         size_t bufferSize = m_BufferBlockSize;
         AllocateAdditionalMemoryBuffer(bufferSize * initialBufferCount);
@@ -36,13 +35,13 @@ namespace Savanna
     {
         if (this != &other)
         {
-            m_MemoryLabel = other.m_MemoryLabel;
+            m_AllocatorKind = other.m_AllocatorKind;
             m_BufferBlockSize = other.m_BufferBlockSize;
             m_AllocatedBytes = other.m_AllocatedBytes;
             m_Size = other.m_Size;
             m_Pools = std::move(other.m_Pools);
 
-            other.m_MemoryLabel = k_SavannaMemoryLabelNone;
+            other.m_AllocatorKind = k_SavannaAllocatorKindNone;
             other.m_BufferBlockSize = 0;
             other.m_AllocatedBytes = 0;
             other.m_Size = 0;
@@ -54,8 +53,26 @@ namespace Savanna
         const size_t& size, const size_t& alignment)
     {
         // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::alloc);
-        FreeListAllocator& freeListAllocator = FindAllocatorForSize(size);
-        return freeListAllocator.alloc(size, alignment);
+        void* pBuffer = nullptr;
+        for (auto& pool : m_Pools)
+        {
+            FreeListAllocator& freeListAllocator = pool.m_FreeListAllocator;
+            if (freeListAllocator.GetSize() - freeListAllocator.GetAllocatedBytes() >= size)
+            {
+                pBuffer = freeListAllocator.alloc(size, alignment);
+                if (pBuffer != nullptr)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (pBuffer == nullptr)
+        {
+            AllocateAdditionalMemoryBuffer(size);
+            pBuffer = m_Pools[m_Pools.size() - 1].m_FreeListAllocator.alloc(size, alignment);
+        }
+        return pBuffer;
     }
 
     void MultiListAllocator::free(
@@ -70,16 +87,35 @@ namespace Savanna
         void* const ptr, const size_t& newSize, const size_t& alignment)
     {
         // SAVANNA_INSERT_SCOPED_PROFILER(MultiListAllocator::realloc);
+        void* pBuffer = nullptr;
         FreeListAllocator& owningAllocator = FindPointerInPools(ptr);
         if (owningAllocator.GetSize() - owningAllocator.GetAllocatedBytes() >= newSize)
         {
-            return owningAllocator.realloc(ptr, newSize, alignment);
+            pBuffer = owningAllocator.realloc(ptr, newSize, alignment);
         }
-        else
+
+        if (pBuffer == nullptr)
         {
             auto allocationDescriptor = owningAllocator.GetAllocationDescriptor(ptr);
-            FreeListAllocator& secondaryAllocator = FindAllocatorForSize(newSize);
-            void* pBuffer = secondaryAllocator.alloc(newSize, alignment);
+            for (auto& pool : m_Pools)
+            {
+                FreeListAllocator& freeListAllocator = pool.m_FreeListAllocator;
+                if (freeListAllocator.GetSize() - freeListAllocator.GetAllocatedBytes() >= newSize)
+                {
+                    pBuffer = freeListAllocator.alloc(newSize, alignment);
+                    if (pBuffer != nullptr)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (pBuffer == nullptr)
+            {
+                AllocateAdditionalMemoryBuffer(newSize);
+                pBuffer = m_Pools[m_Pools.size() - 1].m_FreeListAllocator.alloc(newSize, alignment);
+            }
+
             memcpy(pBuffer, ptr, allocationDescriptor.m_Size);
             owningAllocator.free(ptr, alignment);
             return pBuffer;
@@ -97,7 +133,7 @@ namespace Savanna
             bufferSize *= 2;
         }
 
-        m_Pools.push_back(std::move(MemoryPool(bufferSize, m_MemoryLabel)));
+        m_Pools.push_back(std::move(MemoryPool(bufferSize, m_AllocatorKind)));
         m_Size += bufferSize;
     }
 
@@ -114,21 +150,6 @@ namespace Savanna
         }
 
         throw BadAllocationException();
-    }
-
-    inline FreeListAllocator &MultiListAllocator::FindAllocatorForSize(size_t size)
-    {
-        for (auto& pool : m_Pools)
-        {
-            FreeListAllocator& freeListAllocator = pool.m_FreeListAllocator;
-            if (freeListAllocator.GetSize() - freeListAllocator.GetAllocatedBytes() >= size)
-            {
-                return freeListAllocator;
-            }
-        }
-
-        AllocateAdditionalMemoryBuffer(size);
-        return m_Pools[m_Pools.size() - 1].m_FreeListAllocator;
     }
 
 } // namespace Savanna

@@ -1,7 +1,7 @@
 /**
  * @file SavannaGfx.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-19
  *
@@ -85,7 +85,7 @@ typedef enum se_GfxErrorCode_t : se_uint32
     /**
      * @brief The allocator interface provided was invalid.
      *        To avoid this error, acquire the default allocator interface
-     *       using @SavannaMemoryManagerTryGetAllocatorInterfaceForLabel.
+     *       using @SavannaMemoryManagerTryGetAllocatorInterfaceForAllocatorKind.
      */
     kSavannaGfxErrorCodeInvalidAllocatorInterface,
 
@@ -617,13 +617,13 @@ typedef struct se_GfxDriverInterface_t
     se_pfnGfxDriverCreateShaderModulesAsync_t m_pfnCreateShaderModulesAsync;
 
     /**
-     * @brief
+     * @brief TODO @David.Mohrhardt Document
      *
      */
     se_pfnGfxDriverGetBackend_t m_pfnGetBackend;
 
     /**
-     * @brief
+     * @brief TODO @David.Mohrhardt Document
      */
     void* m_pUserData;
 } se_GfxDriverInterface_t;

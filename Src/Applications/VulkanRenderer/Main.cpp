@@ -28,7 +28,7 @@ int main(int argc, char** argvs)
     // Initialize File System
     IO::VirtualFileSystem::Construct(argvs[0]);
 
-    VulkanApplication* app = SAVANNA_NEW(k_SavannaMemoryLabelHeap, VulkanApplication, argc, argvs);
+    VulkanApplication* app = SAVANNA_NEW(k_SavannaAllocatorKindHeap, VulkanApplication, argc, argvs);
     try
     {
         app->Run();
@@ -39,7 +39,7 @@ int main(int argc, char** argvs)
         result = -1;
     }
 
-    SAVANNA_DELETE(k_SavannaMemoryLabelHeap, app);
+    SAVANNA_DELETE(k_SavannaAllocatorKindHeap, app);
 
     IO::VirtualFileSystem::Destroy();
 

@@ -19,11 +19,11 @@ namespace Savanna::Gfx::Vk2
     {
         m_QueueFamilyIndices = VkQueueFamilyIndices(m_PhysicalDevice, surface);
         uint32 queueCreateInfoCount = m_QueueFamilyIndices.GetQueueFamilyCount();
-        dynamic_array<VkDeviceQueueCreateInfo> queueCreateInfos(queueCreateInfoCount, k_SavannaMemoryArenaIdGfx);
+        dynamic_array<VkDeviceQueueCreateInfo> queueCreateInfos(queueCreateInfoCount, k_SavannaAllocatorKindTemp);
         float queuePriority = 1.0f;
         m_QueueFamilyIndices.GetUniqueQueueFamilies(queueCreateInfos, &queuePriority);
 
-        dynamic_array<const char*> enabledDeviceExtensions { createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount, k_SavannaMemoryArenaIdGfx };
+        dynamic_array<const char*> enabledDeviceExtensions { createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount, k_SavannaAllocatorKindTemp };
         Utils::PopulateDeviceExtensions(enabledDeviceExtensions,
             m_PhysicalDevice,
             createInfo.m_LogicalDeviceCreateArgs.m_ppEnabledDeviceExtensions,

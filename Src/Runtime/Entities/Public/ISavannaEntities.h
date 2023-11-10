@@ -1,7 +1,7 @@
 /**
  * @file ISavannaEntities.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-30
  *
@@ -122,7 +122,6 @@ typedef struct se_EntitySystemCreateInfo_t
      */
     se_EntitySystemInterface_t* m_pSystemInterface;
 } se_EntitySystemCreateInfo_t;
-
 
 // API
 

@@ -40,8 +40,8 @@ namespace Savanna::Gfx::Vk2
 
         {
             // TODO Refactor once we support using temporary allocators in the managed memory arenas
-            dynamic_array<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, k_SavannaMemoryArenaIdGfx };
-            dynamic_array<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, k_SavannaMemoryArenaIdGfx };
+            dynamic_array<const char*> enabledInstanceExtensions { driverCreateInfo.m_InstanceCreateArgs.m_EnabledInstanceExtensionCount, k_SavannaAllocatorKindTemp };
+            dynamic_array<const char*> enabledInstanceLayers { driverCreateInfo.m_InstanceCreateArgs.m_EnabledLayerCount, k_SavannaAllocatorKindTemp };
             if (driverCreateInfo.m_EnableValidationLayers)
             {
                 enabledInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

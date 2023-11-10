@@ -30,6 +30,7 @@
 
 #ifdef __cplusplus
 #include "Public/ISavannaEngine.hpp"
+#include "Memory/Public/ISavannaMemory.hpp"
 
 // For headers that explicitly only work in C++
 #include "Types/Classes/Immovable.h"

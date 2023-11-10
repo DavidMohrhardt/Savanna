@@ -25,7 +25,7 @@ namespace Savanna
     struct MemoryChunkDescriptor;
 
     /**
-     * @brief
+     * @brief TODO @David.Mohrhardt Document
      */
     class FreeListAllocator : public Allocator
     {
@@ -35,7 +35,7 @@ namespace Savanna
         // information for allocations made by these allocators.
         friend struct MultiListAllocator;
 
-        MemoryLabel m_MemoryLabel;
+        AllocatorKind m_AllocatorKind;
         void* m_Root;
         MemoryChunkDescriptor* m_Head;
         size_t m_Size;
@@ -50,7 +50,7 @@ namespace Savanna
             const size_t& size, const size_t& alignment, AllocationDescriptor& outAllocationDescriptor, MemoryChunkDescriptor*& pPrevious);
 
     public:
-        FreeListAllocator(size_t size, MemoryLabel label = k_SavannaMemoryLabelHeap);
+        FreeListAllocator(size_t size, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
         FreeListAllocator(void* root, size_t size);
         FreeListAllocator(FreeListAllocator&& other);
 

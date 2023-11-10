@@ -52,7 +52,7 @@ namespace Savanna::Gfx::Vk2
     inline static VkAllocationCallbacks* g_VkAllocationCallbacks = nullptr;
 
     /**
-     * @brief
+     * @brief TODO @David.Mohrhardt Document
      *
      * @param pCreateInfo
      * @param ppDriver

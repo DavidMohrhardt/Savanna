@@ -1,7 +1,7 @@
 /**
  * @file ISavannaJobs.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-01-16
  *
@@ -123,18 +123,29 @@ typedef struct se_IJobInterface_t
      * @brief The function pointer to the on error function of the job.
     */
     se_JobResultCallbackFunc_t onErrorFunc;
-
-    /**
-     * @brief The user data pointer of the job. User data is passed to the execute function.
-    */
-    void* pUserData;
 } se_IJobInterface_t;
 
-SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobManagerScheduleJob(
-    se_IJobInterface_t* pJobInterface,
+typedef struct se_JobDefinition_t
+{
+    /**
+     * @brief A pointer to the interface the job should be using. Must remain
+     * valid for the duration of the job.
+     */
+    se_IJobInterface_t* m_pInterface;
+
+    /**
+     * @brief A pointer to the job input data. Must be valid for the
+     * duration of the job.
+     *
+     */
+    void* m_pJobInputData;
+} se_JobDefinition_t;
+
+SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobSystemScheduleJob(
+    se_JobDefinition_t& jobInterface,
     se_JobPriority_t priority,
     se_JobHandle_t dependency);
 
-SAVANNA_EXPORT(void) SavannaConcurrencyJobManagerAwaitJob(se_JobHandle_t jobHandle);
+SAVANNA_EXPORT(void) SavannaConcurrencyJobSystemAwaitJob(se_JobHandle_t jobHandle);
 
 

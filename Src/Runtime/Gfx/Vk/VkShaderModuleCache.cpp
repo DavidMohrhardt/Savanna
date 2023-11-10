@@ -2,7 +2,9 @@
 
 #include "VkAllocator.h"
 
-#include "Concurrency/JobManager.h"
+#include "Concurrency/AutoDisposeJob.h"
+#include "Concurrency/ThreadManager.h"
+#include "Concurrency/JobSystem.h"
 
 namespace Savanna::Gfx::Vk2
 {
@@ -21,7 +23,7 @@ namespace Savanna::Gfx::Vk2
     }
 
     using namespace Concurrency;
-    struct VkShaderModuleCreateJob final : public IJob
+    struct VkShaderModuleCreateJob final : public AutoDisposeJobBase
     {
     private:
         DECLARE_SAVANNA_MEMORY_CLASS_FRIENDS();
@@ -30,7 +32,7 @@ namespace Savanna::Gfx::Vk2
         void Dispose()
         {
             SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::Dispose);
-            SAVANNA_DELETE(k_SavannaMemoryLabelGfx, this);
+            SAVANNA_DELETE(k_SavannaAllocatorKindThreadSafeTemp, this);
         }
 
         VkShaderModuleCache& m_ShaderModuleCache;
@@ -53,12 +55,12 @@ namespace Savanna::Gfx::Vk2
 
         VkShaderModuleCreateJob(
             VkShaderModuleCache& shaderModuleCache,
-            const VkGpu& gpu,
-            MemoryLabel providerLabel = k_SavannaMemoryLabelGfx)
-            : m_ShaderModuleCache(shaderModuleCache)
+            const VkGpu& gpu)
+            : AutoDisposeJobBase(k_SavannaAllocatorKindThreadSafeTemp)
+            , m_ShaderModuleCache(shaderModuleCache)
             , m_Gpu(gpu)
-            , m_CreateInfos(1, providerLabel)
-            , m_ShaderModuleHandles(1, providerLabel)
+            , m_CreateInfos(1, k_SavannaAllocatorKindThreadSafeTemp)
+            , m_ShaderModuleHandles(1, k_SavannaAllocatorKindThreadSafeTemp)
         {
         }
 
@@ -98,31 +100,6 @@ namespace Savanna::Gfx::Vk2
 
             return k_SavannaJobResultSuccess;
         }
-
-    protected:
-        bool TryCancel() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::TryCancel);
-            return true;
-        }
-
-        void OnComplete() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::OnComplete);
-            Dispose();
-        }
-
-        void OnCancel() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::OnCancel);
-            Dispose();
-        }
-
-        void OnError() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::OnError);
-            Dispose();
-        }
     };
 
     inline void VkShaderModuleCache::RegisterShaderIdInternal(
@@ -151,12 +128,14 @@ namespace Savanna::Gfx::Vk2
         se_GfxShaderHandle_t **const ppOutShaderModuleHandles)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCache::CreateShaderModulesAsync);
-        if (createInfoCount == 0 || createInfos == nullptr)
+        ThreadManager* pThreadManager = ThreadManager::Get();
+
+        if (pThreadManager == nullptr || createInfoCount == 0 || createInfos == nullptr)
         {
             return k_InvalidJobHandle;
         }
 
-        auto pJob = SAVANNA_NEW(k_SavannaMemoryLabelGfx, VkShaderModuleCreateJob, *this, gpu);
+        auto pJob = SAVANNA_NEW(k_SavannaAllocatorKindThreadSafeTemp, VkShaderModuleCreateJob, *this, gpu);
 
         // Critical section, registers the shader module handles before the job is scheduled.
         SAVANNA_WRITE_CRITICAL_SECTION(m_ReadWriteLock,
@@ -171,11 +150,11 @@ namespace Savanna::Gfx::Vk2
             }
         });
 
-        JobHandle jobHandle = JobManager::Get()->ScheduleJob(pJob, k_SavannaJobPriorityHigh);
+        JobHandle jobHandle = pThreadManager->GetJobSystem()->ScheduleJob(static_cast<IJob*>(pJob), k_SavannaJobPriorityHigh);
 
         // From here we combine the dependencies of the job we're about to schedule with the dependencies of the jobs that are already running. This way we can wait for all of them to finish before we continue.
         JobHandle handlesArray[2] { jobHandle, m_AllActiveShaderModulesJob };
-        m_AllActiveShaderModulesJob = JobManager::Get()->CombineDependencies(handlesArray, 2);
+        m_AllActiveShaderModulesJob = pThreadManager->GetJobSystem()->CombineDependencies(handlesArray, 2);
 
         return jobHandle;
     }

@@ -1,7 +1,7 @@
 /**
  * @file SavannaConcurrency.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-28
  *
@@ -10,7 +10,7 @@
  */
 #include "SavannaConcurrency.h"
 
-#include "JobManager.h"
+#include "JobSystem.h"
 
 #include <thread>
 
@@ -28,6 +28,8 @@ namespace Savanna::Concurrency
     }
 } // namespace Savanna::Concurrency
 
+#include "ThreadManager.h"
+
 using namespace Savanna::Concurrency;
 
 SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread()
@@ -35,20 +37,20 @@ SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread()
     return s_MainThreadId == std::this_thread::get_id();
 }
 
-SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobManagerScheduleJob(
-    se_IJobInterface_t* pJobInterface,
+SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobSystemScheduleJob(
+    se_JobDefinition_t& jobDefinition,
     se_JobPriority_t priority,
     se_JobHandle_t dependency)
 {
-    if (auto manager = JobManager::Get())
+    if (auto manager = ThreadManager::Get())
     {
-        // return manager->ScheduleJobFromInterface(pJobInterface, priority, dependency);
+        return manager->GetJobSystem()->ScheduleJob(jobDefinition, priority, dependency);
     }
     return k_InvalidJobHandle;
 }
 
-SAVANNA_EXPORT(void) SavannaConcurrencyJobManagerAwaitJob(se_JobHandle_t jobHandle)
+SAVANNA_EXPORT(void) SavannaConcurrencyJobSystemAwaitJob(se_JobHandle_t jobHandle)
 {
-    if (auto manager = JobManager::Get())
-        manager->AwaitCompletion(jobHandle);
+    if (auto manager = ThreadManager::Get())
+        manager->GetJobSystem()->AwaitCompletion(jobHandle);
 }

@@ -19,7 +19,7 @@
 // Savanna Includes
 #include <Profiling/Profiler.h>
 
-#include <Concurrency/JobManager.h>
+#include <Concurrency/JobSystem.h>
 
 #include "ComputationalGeometry.h"
 

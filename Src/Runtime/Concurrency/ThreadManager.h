@@ -1,7 +1,7 @@
 /**
  * @file ThreadManager.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-11-05
  *
@@ -22,6 +22,7 @@
 #include "Public/ISavannaJobs.hpp"
 #include "ConcurrencyCapabilities.h"
 #include "EngineThread.h"
+#include "JobSystem.h"
 
 #include <atomic>
 
@@ -31,7 +32,7 @@ namespace Savanna::Concurrency
     {
     private:
         DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(ThreadManager);
-        friend class JobManager;
+        friend class JobSystem;
 
         static ThreadExecutionInterface* s_pDefaultUnreservedThreadInterface;
         static void SetUnreservedThreadDefaultExecution(ThreadExecutionInterface* pExecutionInterface);
@@ -41,8 +42,9 @@ namespace Savanna::Concurrency
         MemoryBuffer m_ThreadScratchBuffer;
         dynamic_array<EngineThread> m_ThreadPool;
         dynamic_array<std::atomic_uint8_t> m_ReservationStates;
-
         size_t m_ReservedThreadCount;
+
+        JobSystem m_JobSystem;
 
         void StartUnreservedThreadsInternal();
 
@@ -57,6 +59,10 @@ namespace Savanna::Concurrency
 
         void StartThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
         void StopThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
+
+        bool StartJobSystem();
+        void StopJobSystem();
+        JobSystem* GetJobSystem() { return &m_JobSystem; }
 
     protected:
         virtual bool InitializeInternal() final;

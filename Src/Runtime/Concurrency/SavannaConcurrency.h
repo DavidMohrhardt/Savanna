@@ -1,7 +1,7 @@
 /**
  * @file SavannaConcurrency.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-28
  *
@@ -24,7 +24,7 @@ namespace Savanna::Concurrency
     {
     private:
         friend class ThreadManager;
-        friend class JobManager;
+        friend class JobSystem;
 
         static void Initialize();
         static void Reset();

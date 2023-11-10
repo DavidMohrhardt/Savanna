@@ -13,7 +13,7 @@ namespace Savanna::Gfx::Vk2
     {
         uint32_t queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
-        dynamic_array<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount, k_SavannaMemoryArenaIdGfx);
+        dynamic_array<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount, k_SavannaAllocatorKindTemp);
         queueFamilyProperties.resize(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(
             physicalDevice, &queueFamilyCount, queueFamilyProperties.data());

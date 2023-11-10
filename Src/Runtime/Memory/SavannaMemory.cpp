@@ -1,7 +1,7 @@
 /**
  * @file SavannaMemory.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-25
  *
@@ -60,11 +60,6 @@ extern "C"
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryGetHeapAllocatorInterface()
 {
     return Savanna::k_HeapAllocatorInterface;
-}
-
-SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryGetDefaultAllocatorInterfaceForLabel(const se_uint32& label)
-{
-    return Savanna::MemoryManager::GetAllocatorInterfaceForLabel(label);
 }
 
 bool Savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t &allocatorInterface)

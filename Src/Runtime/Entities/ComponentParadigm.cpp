@@ -10,7 +10,7 @@
  */
 #include "ComponentParadigm.h"
 
-#include <Concurrency/JobManager.h>
+#include <Concurrency/JobSystem.h>
 
 namespace Savanna::Entities
 {

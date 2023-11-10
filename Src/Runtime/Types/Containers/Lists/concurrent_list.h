@@ -1,7 +1,7 @@
 /**
  * @file concurrent_list.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-31
  *
@@ -14,8 +14,6 @@
 
 #include "Utilities/SavannaCoding.h"
 
-#include "Memory/MemoryLabel.h"
-
 #include "Types/Locks/MultiReadSingleWriteLock.h"
 
 #include <algorithm>
@@ -26,20 +24,20 @@
 namespace Savanna
 {
 
-    // Implements the same interface as std::list except it accepts a MemoryLabel
+    // Implements the same interface as std::list except it accepts a AllocatorKind
     template <typename T>
     class concurrent_list
     {
     public:
         using value_type = T;
-        using allocator_type = MemoryLabel;
+        using allocator_type = AllocatorKind;
         using reference = T&;
         using const_reference = const T&;
         using pointer = T*;
         using const_pointer = const T*;
 
     private:
-        MemoryLabel m_MemoryLabel;
+        AllocatorKind m_AllocatorKind;
         MultiReadSingleWriteLock m_Lock;
 
         struct Node
@@ -59,15 +57,15 @@ namespace Savanna
         se_size m_Size;
 
     public:
-        concurrent_list(MemoryLabel label = k_SavannaMemoryLabelHeap)
-            : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr)
+        concurrent_list(AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+            : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {}
 
         concurrent_list(const concurrent_list<T>& other);
         concurrent_list(concurrent_list&& other) noexcept;
 
-        concurrent_list(std::initializer_list<T> init, MemoryLabel label = k_SavannaMemoryLabelHeap)
-            : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr)
+        concurrent_list(std::initializer_list<T> init, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+            : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {
             for (const auto& item : init)
             {
@@ -247,7 +245,7 @@ namespace Savanna
         SAVANNA_WRITE_CRITICAL_SECTION(other.m_Lock,
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
-            m_MemoryLabel = other.m_MemoryLabel;
+            m_AllocatorKind = other.m_AllocatorKind;
             m_Head = other.m_Head;
             m_Tail = other.m_Tail;
             m_Size = other.m_Size;
@@ -284,7 +282,7 @@ namespace Savanna
             SAVANNA_WRITE_CRITICAL_SECTION(other.m_Lock,
             SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
             {
-                m_MemoryLabel = other.m_MemoryLabel;
+                m_AllocatorKind = other.m_AllocatorKind;
                 m_Head = other.m_Head;
                 m_Tail = other.m_Tail;
                 m_Size = other.m_Size;
@@ -305,7 +303,7 @@ namespace Savanna
             {
                 auto* node = m_Head;
                 RemoveNodeUnsafe(node);
-                SAVANNA_DELETE(m_MemoryLabel, node);
+                SAVANNA_DELETE(m_AllocatorKind, node);
             }
 
             m_Head = nullptr;
@@ -315,7 +313,7 @@ namespace Savanna
             for (const auto& item : init)
             {
                 InsertNodeUnsafe(
-                    SAVANNA_NEW(m_MemoryLabel, Node, item),
+                    SAVANNA_NEW(m_AllocatorKind, Node, item),
                     m_Tail,
                     nullptr);
             }
@@ -336,7 +334,7 @@ namespace Savanna
             for (size_t i = 0; i < count; ++i)
             {
                 InsertNodeUnsafe(
-                    SAVANNA_NEW(m_MemoryLabel, Node, value),
+                    SAVANNA_NEW(m_AllocatorKind, Node, value),
                     m_Tail,
                     nullptr);
             }
@@ -346,7 +344,7 @@ namespace Savanna
         while (node != nullptr)
         {
             Node* next = node->m_Next;
-            SAVANNA_DELETE(m_MemoryLabel, node);
+            SAVANNA_DELETE(m_AllocatorKind, node);
             node = next;
         }
     }
@@ -365,7 +363,7 @@ namespace Savanna
         while (node != nullptr)
         {
             Node* next = node->m_Next;
-            SAVANNA_DELETE(m_MemoryLabel, node);
+            SAVANNA_DELETE(m_AllocatorKind, node);
             node = next;
         }
     }
@@ -376,7 +374,7 @@ namespace Savanna
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
             InsertNodeUnsafe(
-                SAVANNA_NEW(m_MemoryLabel, Node, value),
+                SAVANNA_NEW(m_AllocatorKind, Node, value),
                 m_Tail,
                 nullptr);
         });
@@ -388,7 +386,7 @@ namespace Savanna
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
             InsertNodeUnsafe(
-                SAVANNA_NEW(m_MemoryLabel, Node, std::move(value)),
+                SAVANNA_NEW(m_AllocatorKind, Node, std::move(value)),
                 m_Tail,
                 nullptr);
         });
@@ -400,7 +398,7 @@ namespace Savanna
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
             InsertNodeUnsafe(
-                SAVANNA_NEW(m_MemoryLabel, Node, value),
+                SAVANNA_NEW(m_AllocatorKind, Node, value),
                 nullptr,
                 m_Head);
         });
@@ -412,7 +410,7 @@ namespace Savanna
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
             InsertNodeUnsafe(
-                SAVANNA_NEW(m_MemoryLabel, Node, std::move(value)),
+                SAVANNA_NEW(m_AllocatorKind, Node, std::move(value)),
                 nullptr,
                 m_Head);
         });
@@ -425,7 +423,7 @@ namespace Savanna
         Node* node = nullptr;
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
-            node = SAVANNA_NEW(m_MemoryLabel, Node, std::forward<Args>(args)...);
+            node = SAVANNA_NEW(m_AllocatorKind, Node, std::forward<Args>(args)...);
             InsertNodeUnsafe(node, m_Tail, nullptr);
         });
         return node->m_Data;
@@ -438,7 +436,7 @@ namespace Savanna
         Node* node = nullptr;
         SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
         {
-            node = SAVANNA_NEW(m_MemoryLabel, Node, std::forward<Args>(args)...);
+            node = SAVANNA_NEW(m_AllocatorKind, Node, std::forward<Args>(args)...);
             InsertNodeUnsafe(node, nullptr, m_Head);
         });
         return node->m_Data;
@@ -452,7 +450,7 @@ namespace Savanna
             node = m_Tail;
             RemoveNodeUnsafe(node);
         });
-        SAVANNA_DELETE(m_MemoryLabel, node);
+        SAVANNA_DELETE(m_AllocatorKind, node);
     }
 
     template <typename T> inline void concurrent_list<T>::pop_front()
@@ -463,7 +461,7 @@ namespace Savanna
             node = m_Head;
             RemoveNodeUnsafe(node);
         });
-        SAVANNA_DELETE(m_MemoryLabel, node);
+        SAVANNA_DELETE(m_AllocatorKind, node);
     }
 
     template <typename T> inline void concurrent_list<T>::resize(size_t count)
@@ -476,7 +474,7 @@ namespace Savanna
                 {
                     Node* node = m_Tail;
                     RemoveNodeUnsafe(node);
-                    SAVANNA_DELETE(m_MemoryLabel, node);
+                    SAVANNA_DELETE(m_AllocatorKind, node);
                 }
             }
             else if (count > m_Size)
@@ -484,7 +482,7 @@ namespace Savanna
                 for (size_t i = 0; i < count - m_Size; ++i)
                 {
                     InsertNodeUnsafe(
-                        SAVANNA_NEW(m_MemoryLabel, Node),
+                        SAVANNA_NEW(m_AllocatorKind, Node),
                         m_Tail,
                         nullptr);
                 }
@@ -503,7 +501,7 @@ namespace Savanna
                 {
                     Node* node = m_Tail;
                     RemoveNodeUnsafe(node);
-                    SAVANNA_DELETE(m_MemoryLabel, node);
+                    SAVANNA_DELETE(m_AllocatorKind, node);
                 }
             }
             else if (count > m_Size)
@@ -511,7 +509,7 @@ namespace Savanna
                 for (size_t i = 0; i < count - m_Size; ++i)
                 {
                     InsertNodeUnsafe(
-                        SAVANNA_NEW(m_MemoryLabel, Node, value),
+                        SAVANNA_NEW(m_AllocatorKind, Node, value),
                         m_Tail,
                         nullptr);
                 }
@@ -526,7 +524,7 @@ namespace Savanna
             SAVANNA_WRITE_CRITICAL_SECTION(other.m_Lock,
             SAVANNA_WRITE_CRITICAL_SECTION(m_Lock,
             {
-                m_MemoryLabel = other.m_MemoryLabel;
+                m_AllocatorKind = other.m_AllocatorKind;
                 std::swap(m_Head, other.m_Head);
                 std::swap(m_Tail, other.m_Tail);
                 std::swap(m_Size, other.m_Size);
@@ -548,7 +546,7 @@ namespace Savanna
                     Node* next = node->m_Next;
                     Node* prev = node->m_Prev;
                     RemoveNodeUnsafe(node);
-                    SAVANNA_DELETE(m_MemoryLabel, node);
+                    SAVANNA_DELETE(m_AllocatorKind, node);
                     node = next;
                 }
                 else

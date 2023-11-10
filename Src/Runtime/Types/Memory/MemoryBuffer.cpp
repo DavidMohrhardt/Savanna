@@ -6,31 +6,31 @@
 
 namespace Savanna
 {
-    MemoryBuffer::MemoryBuffer(MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
+    MemoryBuffer::MemoryBuffer(AllocatorKind allocatorKind /*= k_SavannaAllocatorKindHeap*/)
         : m_Buffer(nullptr)
         , m_Size(0)
-        , m_MemoryLabel(label)
+        , m_AllocatorKind(allocatorKind)
     {
     }
 
-    MemoryBuffer::MemoryBuffer(size_t size, MemoryLabel label /*= k_SavannaMemoryLabelHeap*/)
+    MemoryBuffer::MemoryBuffer(size_t size, AllocatorKind allocatorKind /*= k_SavannaAllocatorKindHeap*/)
         : m_Buffer(nullptr)
         , m_Size(size)
-        , m_MemoryLabel(label)
+        , m_AllocatorKind(allocatorKind)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(MemoryBuffer::ctor);
         if (m_Size > 0)
-            m_Buffer = MemoryManager::Get()->Allocate(m_Size, m_MemoryLabel.m_BackingValue);
+            m_Buffer = SAVANNA_MALLOC(m_AllocatorKind, m_Size);
     }
 
     MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
         : m_Buffer(other.m_Buffer)
         , m_Size(other.m_Size)
-        , m_MemoryLabel(other.m_MemoryLabel)
+        , m_AllocatorKind(other.m_AllocatorKind)
     {
         other.m_Buffer = nullptr;
         other.m_Size = 0;
-        other.m_MemoryLabel = k_SavannaMemoryLabelNone;
+        other.m_AllocatorKind = k_SavannaAllocatorKindNone;
     }
 
     MemoryBuffer::~MemoryBuffer()
@@ -38,7 +38,7 @@ namespace Savanna
         SAVANNA_INSERT_SCOPED_PROFILER(MemoryBuffer::dtor);
         if (m_Buffer != nullptr)
         {
-            MemoryManager::Get()->Free(m_Buffer, m_MemoryLabel);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
 
         m_Buffer = nullptr;

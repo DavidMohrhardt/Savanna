@@ -3,7 +3,7 @@
 #include <Memory/MemoryManager.h>
 
 #include <Concurrency/ThreadManager.h>
-#include <Concurrency/JobManager.h>
+#include <Concurrency/JobSystem.h>
 
 using namespace Savanna;
 
@@ -29,21 +29,21 @@ struct GlobalManagerFunctionTable
  * For example:
  * // Initialize is called, initialize in order of declaration
  * MemoryManager::Initialize()
- * JobManager::Initialize()
+ * JobSystem::Initialize()
  * // ...
  *
  * // Start is called, start in order of initialization
  * MemoryManager::Start()
- * JobManager::Start()
+ * JobSystem::Start()
  * // ...
  *
  * // Stop is called, stop in reverse order of start
- * JobManager::Stop()
+ * JobSystem::Stop()
  * MemoryManager::Stop()
  * // ...
  *
  * // Shutdown is called, shutdown in reverse order of initialization
- * JobManager::Shutdown()
+ * JobSystem::Shutdown()
  * MemoryManager::Shutdown()
  * // ...
  *
