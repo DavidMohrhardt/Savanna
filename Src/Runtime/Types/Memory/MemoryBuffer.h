@@ -1,7 +1,7 @@
 /**
  * @file MemoryBuffer.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-02-03
  *
@@ -11,7 +11,6 @@
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
-#include "Memory/MemoryLabel.h"
 
 namespace Savanna
 {
@@ -20,11 +19,11 @@ namespace Savanna
     protected:
         void* m_Buffer;
         size_t m_Size;
-        MemoryLabel m_MemoryLabel;
+        AllocatorKind m_AllocatorKind;
 
     public:
-        MemoryBuffer(MemoryLabel label = k_SavannaMemoryLabelHeap);
-        MemoryBuffer(size_t size, MemoryLabel label = k_SavannaMemoryLabelHeap);
+        MemoryBuffer(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
+        MemoryBuffer(size_t size, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
         MemoryBuffer(MemoryBuffer&& other);
         ~MemoryBuffer();
 
@@ -35,5 +34,8 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD bool IsValid() const { return m_Buffer != nullptr; }
         SAVANNA_NO_DISCARD bool PointerIsInBuffer(void* const ptr) const { return ptr >= m_Buffer && ptr < Add(m_Buffer, m_Size); }
+
+        void Reset();
+        void Resize(const size_t size);
     };
 } // namespace Savanna::Memory

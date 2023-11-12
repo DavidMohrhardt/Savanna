@@ -1,7 +1,7 @@
 /**
  * @file Singleton.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2022-08-17
  *

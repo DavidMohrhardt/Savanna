@@ -1,7 +1,7 @@
 /**
  * @file list.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-31
  *
@@ -14,8 +14,6 @@
 
 #include "Utilities/SavannaCoding.h"
 
-#include "Memory/MemoryLabel.h"
-
 #include <algorithm>
 #include <initializer_list>
 #include <iterator>
@@ -23,20 +21,20 @@
 
 namespace Savanna
 {
-    // Implements the same interface as std::list except it accepts a MemoryLabel
+    // Implements the same interface as std::list except it accepts a AllocatorKind
     template <typename T>
     class list
     {
     public:
         using value_type = T;
-        using allocator_type = MemoryLabel;
+        using allocator_type = AllocatorKind;
         using reference = T&;
         using const_reference = const T&;
         using pointer = T*;
         using const_pointer = const T*;
 
     private:
-        MemoryLabel m_MemoryLabel;
+        AllocatorKind m_AllocatorKind;
 
         struct Node
         {
@@ -58,15 +56,15 @@ namespace Savanna
         void RemoveNode(Node* node);
 
     public:
-        list(MemoryLabel label = k_SavannaMemoryLabelHeap)
-            : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr)
+        list(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
+            : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {}
 
         list(const list& other);
         list(list&& other) noexcept;
 
-        list(std::initializer_list<T> init, MemoryLabel label = k_SavannaMemoryLabelHeap)
-            : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr)
+        list(std::initializer_list<T> init, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
+            : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {
             for (const auto& item : init)
             {
@@ -234,7 +232,7 @@ namespace Savanna
 
     template <typename T>
     list<T>::list(const list& other)
-        : m_MemoryLabel(other.m_MemoryLabel), m_Head(nullptr), m_Tail(nullptr)
+        : m_AllocatorKind(other.m_AllocatorKind), m_Head(nullptr), m_Tail(nullptr)
     {
         for (const auto& item : other)
         {
@@ -270,7 +268,7 @@ namespace Savanna
         {
             Node* next = node->m_Next;
 
-            SAVANNA_DELETE(m_MemoryLabel, node);
+            SAVANNA_DELETE(m_AllocatorKind, node);
             node = next;
         }
         m_Head = nullptr;
@@ -281,7 +279,7 @@ namespace Savanna
     template<typename T>
     inline void Savanna::list<T>::push_back(const T & value)
     {
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, value };
 
         if (m_Head == nullptr)
@@ -301,7 +299,7 @@ namespace Savanna
     template<typename T>
     inline void Savanna::list<T>::push_back(T && value)
     {
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::move(value) };
 
         if (m_Head == nullptr)
@@ -321,7 +319,7 @@ namespace Savanna
     template<typename T>
     inline void Savanna::list<T>::push_front(const T & value)
     {
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, value };
 
         if (m_Head == nullptr)
@@ -341,7 +339,7 @@ namespace Savanna
     template<typename T>
     inline void Savanna::list<T>::push_front(T && value)
     {
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::move(value) };
 
         if (m_Head == nullptr)
@@ -362,7 +360,7 @@ namespace Savanna
     template<typename ...Args>
     inline T & Savanna::list<T>::emplace_back(Args && ...args)
     {
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::forward<Args>(args)... };
 
         if (m_Head == nullptr)
@@ -385,7 +383,7 @@ namespace Savanna
     template<typename ...Args>
     inline T & Savanna::list<T>::emplace_front(Args && ...args)
     {
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::forward<Args>(args)... };
 
         if (m_Head == nullptr)
@@ -423,7 +421,7 @@ namespace Savanna
             m_Head = nullptr;
         }
 
-        SAVANNA_DELETE(m_MemoryLabel, node);
+        SAVANNA_DELETE(m_AllocatorKind, node);
         --m_Size;
     }
 
@@ -446,7 +444,7 @@ namespace Savanna
             m_Tail = nullptr;
         }
 
-        SAVANNA_DELETE(m_MemoryLabel, node);
+        SAVANNA_DELETE(m_AllocatorKind, node);
         --m_Size;
     }
 
@@ -501,7 +499,7 @@ namespace Savanna
     template<typename T>
     inline void list<T>::swap(list & other)
     {
-        std::swap(m_MemoryLabel, other.m_MemoryLabel);
+        std::swap(m_AllocatorKind, other.m_AllocatorKind);
         std::swap(m_Head, other.m_Head);
         std::swap(m_Tail, other.m_Tail);
         std::swap(m_Size, other.m_Size);
@@ -575,7 +573,7 @@ namespace Savanna
             m_Tail = prev;
         }
 
-        SAVANNA_DELETE(m_MemoryLabel, node);
+        SAVANNA_DELETE(m_AllocatorKind, node);
         --m_Size;
     }
 } // namespace Savanna

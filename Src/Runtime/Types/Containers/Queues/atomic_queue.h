@@ -1,7 +1,7 @@
 /**
  * @file atomic_queue.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-01-20
  *
@@ -23,7 +23,7 @@ namespace Savanna
     class atomic_queue
     {
     private:
-        MemoryLabel m_MemoryLabel;
+        AllocatorKind m_AllocatorKind;
 
         struct Node
         {
@@ -37,7 +37,7 @@ namespace Savanna
         void EnqueueNode(Node* node);
 
     public:
-        atomic_queue(MemoryLabel label = k_SavannaMemoryLabelHeap) : m_MemoryLabel(label), m_Head(nullptr), m_Tail(nullptr) {}
+        atomic_queue(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap) : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr) {}
         ~atomic_queue() = default;
 
         atomic_queue(const atomic_queue&) = delete;
@@ -80,7 +80,7 @@ namespace Savanna
     template <typename T> inline void atomic_queue<T>::Enqueue(const T& data)
     {
         static_assert(std::is_copy_constructible<T>::value, "Type must be copy constructible!");
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, data };
 
         EnqueueNode(node);
@@ -89,7 +89,7 @@ namespace Savanna
     template <typename T> inline void atomic_queue<T>::Enqueue(T&& data)
     {
         static_assert(std::is_move_constructible<T>::value, "Type must be move constructible!");
-        Node* node = SAVANNA_NEW(m_MemoryLabel, Node);
+        Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, std::move(data) };
 
         EnqueueNode(node);
@@ -110,7 +110,7 @@ namespace Savanna
         } while (!m_Head.compare_exchange_weak(oldHead, oldHead->m_Next, std::memory_order_release, std::memory_order_relaxed));
 
         data = std::move(oldHead->m_Data);
-        SAVANNA_DELETE(m_MemoryLabel, oldHead);
+        SAVANNA_DELETE(m_AllocatorKind, oldHead);
         return true;
     }
 } // namespace Savanna

@@ -1,7 +1,7 @@
 /**
  * @file ThreadManager.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-11-05
  *
@@ -12,134 +12,57 @@
 
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
-
-#include "Public/ISavannaJobs.hpp"
-
 #include <Types/Manager/GlobalManager.h>
-
-#include "ConcurrencyCapabilities.h"
-
 #include <Types/Containers/Arrays/dynamic_array.h>
 #include <Types/Containers/Arrays/fixed_array.h>
 #include <Types/Containers/Queues/atomic_queue.h>
 #include <Types/Locks/SpinLock.h>
 
+#include "Public/ISavannaConcurrency.h"
+#include "Public/ISavannaJobs.hpp"
+#include "ConcurrencyCapabilities.h"
+#include "EngineThread.h"
+#include "JobSystem.h"
+
 #include <atomic>
 
 namespace Savanna::Concurrency
 {
-    using se_ThreadId_t = int64;
-
-    class Thread
-    {
-    private:
-        std::thread m_Thread;
-        std::atomic_bool m_IsRunning;
-        std::atomic_bool m_IsFinished;
-
-        friend class std::thread;
-
-        inline static void SleepThreadInternal()
-        {
-            std::this_thread::yield();
-        }
-
-    public:
-        Thread()
-            : m_Thread{SleepThreadInternal}
-            , m_IsRunning{false}
-            , m_IsFinished{false}
-        {}
-
-        ~Thread() = default;
-
-        Thread(const Thread&) = delete;
-        Thread& operator=(const Thread&) = delete;
-
-        Thread(Thread&& other) noexcept
-            : m_Thread{SleepThreadInternal}
-            , m_IsRunning{false}
-            , m_IsFinished{false}
-        {
-            *this = std::move(other);
-        }
-
-        Thread& operator=(Thread&& other) noexcept
-        {
-            if (this != &other)
-            {
-                m_Thread = std::move(other.m_Thread);
-                m_IsRunning = other.m_IsRunning.load(std::memory_order_acquire);
-                m_IsFinished = other.m_IsFinished.load(std::memory_order_acquire);
-
-                other.m_IsRunning = false;
-                other.m_IsFinished = false;
-            }
-            return *this;
-        }
-
-        template <typename Function, typename... Args>
-        void Start(Function& function, Args&&... args)
-        {
-            m_IsRunning = true;
-            m_IsFinished = false;
-            m_Thread = std::thread(function, std::forward<Args>(args)...);
-        }
-
-        void Join()
-        {
-            m_Thread.join();
-        }
-
-        bool IsRunning() const noexcept
-        {
-            return m_IsRunning.load(std::memory_order_acquire);
-        }
-
-        bool IsFinished() const noexcept
-        {
-            return m_IsFinished.load(std::memory_order_acquire);
-        }
-    };
-
     class ThreadManager final : public GlobalManager<ThreadManager>
     {
     private:
         DEFINE_GLOBAL_MANAGER_FRIENDS_FOR(ThreadManager);
+        friend class JobSystem;
 
-        struct ThreadReservation
-        {
-            Thread m_Thread;
-            bool m_IsReserved;
+        static ThreadExecutionInterface* s_pDefaultUnreservedThreadInterface;
+        static void SetUnreservedThreadDefaultExecution(ThreadExecutionInterface* pExecutionInterface);
 
-            ThreadReservation()
-                : m_Thread{}
-                , m_IsReserved{false}
-            {}
-            ThreadReservation(const ThreadReservation&) = delete;
+        // EngineThread uses a pointer to a std::thread internally so we provide that thread
+        // space here to avoid allocations during runtime.
+        MemoryBuffer m_ThreadScratchBuffer;
+        dynamic_array<EngineThread> m_ThreadPool;
+        dynamic_array<std::atomic_uint8_t> m_ReservationStates;
+        size_t m_ReservedThreadCount;
 
-            ThreadReservation(ThreadReservation&& other) noexcept
-                : m_Thread{std::move(other.m_Thread)}
-                , m_IsReserved{other.m_IsReserved}
-            {
-                other.m_IsReserved = false;
-            }
+        JobSystem m_JobSystem;
 
-            ~ThreadReservation() = default;
-        };
-
-        dynamic_array<ThreadReservation> m_Threads;
+        void StartUnreservedThreadsInternal();
 
     public:
         ThreadManager();
         ~ThreadManager();
 
-        bool TryReserveThreads(uint8 threadCount, se_ThreadId_t* pThreadIds);
-        void ReleaseThreads(uint8 threadCount, se_ThreadId_t* pThreadIds);
+        bool TryAcquireThreads(const uint8 requestedThreads, se_ThreadHandle_t* pOutThreadHandles);
+        void ReleaseThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
 
-        uint8 GetReservedThreadCount() const noexcept;
+        void SetThreadExecutionInterface(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles, ThreadExecutionInterface* pExecutionInterface);
 
-        Thread& GetThread(se_ThreadId_t threadId);
+        void StartThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
+        void StopThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
+
+        bool StartJobSystem();
+        void StopJobSystem();
+        JobSystem* GetJobSystem() { return &m_JobSystem; }
 
     protected:
         virtual bool InitializeInternal() final;

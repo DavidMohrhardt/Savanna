@@ -42,8 +42,6 @@ namespace Savanna
     using intptr = se_intptr;
     using uintptr = se_uintptr;
 
-    using size = se_size;
-
     struct float16
     {
         se_float16 m_Value;

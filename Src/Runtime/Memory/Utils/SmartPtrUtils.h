@@ -6,47 +6,49 @@
 
 namespace Savanna
 {
+    template <typename T>
     struct MemoryManagerDeleter
     {
-        void operator()(void* ptr)
+        AllocatorKind m_AllocatorKind;
+
+        void operator()(T* ptr)
         {
-            MemoryManager::Free(ptr);
+            SAVANNA_DELETE(m_AllocatorKind, ptr);
         }
     };
 
     template <typename T>
-    std::shared_ptr<T> CreateManagedSharedPtr(T* ptr)
+    struct MemoryManagerArrayDeleter
     {
-        return std::shared_ptr<T>(ptr, MemoryManagerDeleter{});
+        AllocatorKind m_AllocatorKind;
+
+        void operator()(T* ptr)
+        {
+            SAVANNA_DELETE_ARRAY(m_AllocatorKind, ptr);
+        }
+    };
+
+    template <typename T>
+    inline std::shared_ptr<T> CreateManagedSharedPtr(const AllocatorKind allocatorKind, T* ptr)
+    {
+        return std::shared_ptr<T>(ptr, MemoryManagerDeleter{allocatorKind});
     }
 
     template <typename T>
-    std::unique_ptr<T> CreateManagedUniquePtr(T* ptr)
+    inline std::unique_ptr<T> CreateManagedUniquePtr(const AllocatorKind allocatorKind, T* ptr)
     {
-        return std::unique_ptr<T>(ptr, MemoryManagerDeleter{});
+        return std::unique_ptr<T>(ptr, MemoryManagerDeleter{allocatorKind});
     }
 
     template <typename T, typename... Args>
-    std::shared_ptr<T> MakeShared(Args&&... args)
+    inline std::shared_ptr<T> MakeShared(const AllocatorKind allocatorKind, Args&&... args)
     {
-        return CreateManagedSharedPtr(SAVANNA_NEW(T, std::forward<Args>(args)...));
+        return CreateManagedSharedPtr(allocatorKind, SAVANNA_NEW(allocatorKind, T, std::forward<Args>(args)...));
     }
 
     template <typename T, typename... Args>
-    std::unique_ptr<T> MakeUnique(Args&&... args)
+    inline std::unique_ptr<T> MakeUnique(const AllocatorKind allocatorKind, Args&&... args)
     {
-        return CreateManagedUniquePtr(SAVANNA_NEW(T, std::forward<Args>(args)...));
-    }
-
-    template <typename T>
-    std::shared_ptr<T> MakeSharedArray(const size_t& count)
-    {
-        return CreateManagedSharedPtr(SAVANNA_NEW_ARRAY(T, count));
-    }
-
-    template <typename T>
-    std::unique_ptr<T> MakeUniqueArray(const size_t& count)
-    {
-        return CreateManagedUniquePtr(SAVANNA_NEW_ARRAY(T, count));
+        return CreateManagedUniquePtr(allocatorKind, SAVANNA_NEW(allocatorKind, T, std::forward<Args>(args)...));
     }
 } // namespace Savanna

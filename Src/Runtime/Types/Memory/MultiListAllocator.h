@@ -1,7 +1,7 @@
 /**
  * @file MultiListAllocator.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-10
  *
@@ -15,8 +15,6 @@
 #include "Allocator.h"
 #include "AtomicAllocatorWrapper.h"
 #include "FreeListAllocator.h"
-
-#include "Memory/MemoryLabel.h"
 
 #include "Types/Containers/Arrays/dynamic_array.h"
 #include "Types/Memory/MemoryBuffer.h"
@@ -38,8 +36,8 @@ namespace Savanna
                 , m_FreeListAllocator(m_MemoryBuffer.GetBuffer(), m_MemoryBuffer.GetSize())
             {}
 
-            MemoryPool(size_t size, MemoryLabel label)
-                : m_MemoryBuffer(size, label)
+            MemoryPool(size_t size, AllocatorKind allocatorKind)
+                : m_MemoryBuffer(size, allocatorKind)
                 , m_FreeListAllocator(m_MemoryBuffer.GetBuffer(), size)
             {}
 
@@ -59,7 +57,7 @@ namespace Savanna
             }
         };
 
-        MemoryLabel m_MemoryLabel;
+        AllocatorKind m_AllocatorKind;
 
         size_t m_BufferBlockSize = 0;
         size_t m_AllocatedBytes = 0;
@@ -73,8 +71,8 @@ namespace Savanna
 #endif
 
     public:
-        MultiListAllocator(const MemoryLabel label = k_SavannaMemoryLabelHeap);
-        MultiListAllocator(size_t initialBufferCount, size_t bufferBlockSize, const MemoryLabel label = k_SavannaMemoryLabelHeap);
+        MultiListAllocator(const AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
+        MultiListAllocator(size_t initialBufferCount, size_t bufferBlockSize, const AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
 
         virtual ~MultiListAllocator() = default;
 

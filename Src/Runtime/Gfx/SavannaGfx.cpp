@@ -1,7 +1,7 @@
 /**
  * @file SavannaGfx.cpp
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-19
  *
@@ -11,16 +11,10 @@
 #include "SavannaGfx.h"
 #include "GfxContext.h"
 
-#include "Concurrency/JobManager.h"
+#include "Concurrency/JobSystem.h"
 
 namespace Savanna::Gfx
 {
-    const se_AllocatorInterface_t GetDefaultAllocatorInterface()
-    {
-        static se_AllocatorInterface_t k_DefaultGraphicsAllocatorInterface = MemoryManager::GetAllocatorInterfaceForLabel(k_SavannaMemoryLabelGfx);
-        return k_DefaultGraphicsAllocatorInterface;
-    }
-
     inline GfxErrorCode Initialize(const se_GfxContextCreateInfo_t *const pCreateInfo)
     {
         return GfxContext::Construct(pCreateInfo) != nullptr

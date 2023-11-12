@@ -1,7 +1,7 @@
 /**
  * @file VkShaderModuleCache.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-26
  *
@@ -24,10 +24,10 @@
 namespace Savanna::Gfx::Vk2
 {
     using namespace Concurrency;
-    class VkShaderModuleCache
+    class ShaderModuleCache
     {
     private:
-        friend class VkShaderModuleCreateJob;
+        friend class ShaderModuleCreateJob;
         friend class VkDriver;
 
         std::atomic_int64_t m_NextHandle = 1;
@@ -44,8 +44,8 @@ namespace Savanna::Gfx::Vk2
         void UnregisterShaderIdInternal(
             const se_GfxShaderHandle_t& shaderModuleHandle);
 
-        VkShaderModuleCache() = default;
-        ~VkShaderModuleCache() = default;
+        ShaderModuleCache() = default;
+        ~ShaderModuleCache() = default;
 
         JobHandle CreateShaderModulesAsync(
             const VkGpu &gpu,

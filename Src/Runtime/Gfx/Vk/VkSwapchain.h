@@ -1,7 +1,7 @@
 /**
  * @file VkSwapchain.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-22
  *
@@ -16,7 +16,7 @@
 
 namespace Savanna::Gfx::Vk2
 {
-    class VkSwapchain
+    class Swapchain
     {
     private:
         friend class VkDriver;
@@ -33,11 +33,11 @@ namespace Savanna::Gfx::Vk2
         dynamic_array<VkImage> m_SwapchainImages;
         dynamic_array<VkImageView> m_SwapchainImageViews;
 
-        VkSwapchain() = default;
-        ~VkSwapchain() = default;
+        Swapchain();
+        ~Swapchain() = default;
 
-        VkSwapchain(const VkSwapchain&) = delete;
-        VkSwapchain(VkSwapchain&&) = delete;
+        Swapchain(const Swapchain&) = delete;
+        Swapchain(Swapchain&&) = delete;
 
         se_GfxErrorCode_t Initialize(
             const se_GfxSwapchainCreateInfo_t& createInfo,

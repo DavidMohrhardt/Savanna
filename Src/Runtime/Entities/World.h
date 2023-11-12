@@ -1,7 +1,7 @@
 /**
  * @file World.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-30
  *
@@ -21,7 +21,7 @@ namespace Savanna::Entities
     class UpdateLoop
     {
     private:
-        Scenario& m_Scenario;
+        World& m_Scenario;
         uint32 m_Priority;
         dynamic_array<uint32> m_SystemIndices;
         MemoryBuffer m_ComponentBatchMemorySpace;
@@ -39,7 +39,7 @@ namespace Savanna::Entities
         void Update() noexcept;
     };
 
-    class Scenario
+    class World
     {
     private:
         friend class UpdateLoop;
@@ -50,11 +50,10 @@ namespace Savanna::Entities
         dynamic_array<UpdateLoop> m_UpdateLoops;
 
     public:
-        Scenario() = default;
-        ~Scenario() = default;
+        World() = default;
+        ~World() = default;
 
         void RegisterEntities(void** pComponents, uint32 componentCount, const ComponentKey& keyDefinition) noexcept;
-
         void RegisterSystem(const System& system) noexcept;
         void RegisterUpdateLoop(const UpdateLoop& updateLoop) noexcept;
 

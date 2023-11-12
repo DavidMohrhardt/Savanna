@@ -6,95 +6,239 @@ namespace Savanna::Concurrency
 {
     static const uint8 k_MaxThreadCount = std::thread::hardware_concurrency() - 1;
 
-    ThreadManager::ThreadManager()
-        : m_Threads{k_MaxThreadCount, k_SavannaMemoryLabelGeneral}
+    ThreadExecutionInterface* ThreadManager::s_pDefaultUnreservedThreadInterface = nullptr;
+
+    DEFINE_ENUM(se_ReservationState_t, ReservationState, uint8_t,
+        Unreserved,
+        Awaiting,
+        Reserved);
+
+    inline void ThreadManager::StartUnreservedThreadsInternal()
     {
+        dynamic_array<EngineThread>& threadPool = m_ThreadPool;
+        dynamic_array<std::atomic_uint8_t>& reservationStates = m_ReservationStates;
+        std::thread* pScratchBuffer = reinterpret_cast<std::thread*>(m_ThreadScratchBuffer.GetBuffer());
+
+        for (int i = 0; i < k_MaxThreadCount; ++i)
+        {
+            auto& thread = threadPool[i];
+            auto& reservationState = reservationStates[i];
+
+            uint8 expected = Unreserved;
+            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            {
+                thread.SetExecutionInterface(s_pDefaultUnreservedThreadInterface);
+
+                if (s_pDefaultUnreservedThreadInterface == nullptr && thread.IsActive())
+                {
+                    thread.Stop();
+                }
+                else
+                {
+                    thread.Start(pScratchBuffer + i);
+                }
+
+                // Explicitly set the thread to unreserved so it can be reserved but
+                // passively allowed to execute jobs.
+                reservationState.store(Unreserved, std::memory_order_release);
+            }
+        }
     }
+
+    void ThreadManager::SetUnreservedThreadDefaultExecution(ThreadExecutionInterface *pExecutionInterface)
+    {
+        SAVANNA_ASSERT_MAIN_THREAD();
+
+        s_pDefaultUnreservedThreadInterface = pExecutionInterface;
+        Get()->StartUnreservedThreadsInternal();
+    }
+
+    ThreadManager::ThreadManager()
+        : m_ThreadScratchBuffer{kSavannaAllocatorKindGeneral}
+        , m_ThreadPool{0, kSavannaAllocatorKindGeneral}
+        , m_ReservationStates{0, kSavannaAllocatorKindGeneral}
+        , m_ReservedThreadCount(0)
+    {}
 
     ThreadManager::~ThreadManager()
     {
     }
 
-    bool ThreadManager::TryReserveThreads(uint8 threadCount, se_ThreadId_t* pThreadIds)
+    bool ThreadManager::TryAcquireThreads(const uint8 requestedThreads, se_ThreadHandle_t *pOutThreadHandles)
     {
-        // Can only reserve threads from the main thread
         SAVANNA_ASSERT_MAIN_THREAD();
-
-        uint8 fulfilledThreadCount = 0;
-        for (auto& reservedThread : m_Threads)
+        if (requestedThreads > k_MaxThreadCount)
         {
-            if (!reservedThread.m_IsReserved)
+            return false;
+        }
+
+        if (m_ReservedThreadCount + requestedThreads > k_MaxThreadCount)
+        {
+            return false;
+        }
+
+        uint8 reservedThreads = 0;
+        for (int i = 0; i < k_MaxThreadCount; ++i)
+        {
+            auto& thread = m_ThreadPool[i];
+            auto& reservationState = m_ReservationStates[i];
+
+            uint8 expected = Unreserved;
+            if (reservationState.compare_exchange_strong(expected, Awaiting))
             {
-                reservedThread.m_IsReserved = true;
-                pThreadIds[fulfilledThreadCount] = fulfilledThreadCount;
-                ++fulfilledThreadCount;
+                thread.Stop();
+                pOutThreadHandles[reservedThreads++] = (se_ThreadHandle_t)i;
+                reservationState.store(Reserved, std::memory_order_release);
             }
 
-            if (fulfilledThreadCount == threadCount)
+            if (reservedThreads == requestedThreads)
             {
                 break;
             }
         }
-
-        if (fulfilledThreadCount != threadCount)
-        {
-            ReleaseThreads(fulfilledThreadCount, pThreadIds);
-            return false;
-        }
-
+        m_ReservedThreadCount += reservedThreads;
         return true;
     }
 
-    Thread& ThreadManager::GetThread(se_ThreadId_t threadId)
+    void ThreadManager::ReleaseThreads(const uint8 threadCount, const se_ThreadHandle_t *pThreadHandles)
     {
-        return m_Threads[threadId].m_Thread;
+        SAVANNA_ASSERT_MAIN_THREAD();
+        for (int i = 0; i < threadCount; ++i)
+        {
+            auto& thread = m_ThreadPool[pThreadHandles[i]];
+            auto& reservationState = m_ReservationStates[pThreadHandles[i]];
+            uint8 expected = Reserved;
+            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            {
+                thread.SetExecutionInterface(s_pDefaultUnreservedThreadInterface);
+                m_ReservedThreadCount--;
+            }
+        }
     }
 
-    void ThreadManager::ReleaseThreads(uint8 threadCount, se_ThreadId_t *pThreadIds)
+    void ThreadManager::SetThreadExecutionInterface(
+        const uint8 threadCount, const se_ThreadHandle_t *pThreadHandles,
+        ThreadExecutionInterface *pExecutionInterface)
     {
-        // Can only release threads from the main thread
         SAVANNA_ASSERT_MAIN_THREAD();
-
-        for (uint8 i = 0; i < threadCount; ++i)
+        if (pThreadHandles != nullptr)
         {
-            m_Threads[pThreadIds[i]].m_Thread.Join();
-            m_Threads[pThreadIds[i]].m_IsReserved = false;
+            for (int i = 0; i < threadCount; ++i)
+            {
+                auto& thread = m_ThreadPool[pThreadHandles[i]];
+                auto& reservationState = m_ReservationStates[pThreadHandles[i]];
+                uint8 expected = Reserved;
+                if (reservationState.compare_exchange_strong(expected, Awaiting))
+                {
+                    thread.SetExecutionInterface(pExecutionInterface);
+                    reservationState.store(Reserved, std::memory_order_release);
+                }
+            }
         }
+    }
+
+    void ThreadManager::StartThreads(const uint8 threadCount, const se_ThreadHandle_t *pThreadHandles)
+    {
+        SAVANNA_ASSERT_MAIN_THREAD();
+        if (pThreadHandles == nullptr)
+        {
+            return;
+        }
+
+        auto scratchBuffer = reinterpret_cast<std::thread*>(m_ThreadScratchBuffer.GetBuffer());
+        for (int i = 0; i < threadCount; ++i)
+        {
+            auto& thread = m_ThreadPool[pThreadHandles[i]];
+            auto& reservationState = m_ReservationStates[pThreadHandles[i]];
+            uint8 expected = Reserved;
+            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            {
+                if (thread.IsActive())
+                {
+                    thread.Stop();
+                }
+                thread.Start(scratchBuffer + pThreadHandles[i]);
+                reservationState.store(Reserved, std::memory_order_release);
+            }
+        }
+    }
+
+    void ThreadManager::StopThreads(
+        const uint8 threadCount,
+        const se_ThreadHandle_t *pThreadHandles)
+    {
+        SAVANNA_ASSERT_MAIN_THREAD();
+        if (pThreadHandles == nullptr)
+        {
+            return;
+        }
+
+        for (int i = 0; i < threadCount; ++i)
+        {
+            EngineThread& thread = m_ThreadPool[pThreadHandles[i]];
+            std::atomic_uint8_t& reservationState = m_ReservationStates[pThreadHandles[i]];
+            uint8 expected = Reserved;
+            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            {
+                if (thread.IsActive())
+                {
+                    thread.Stop();
+                }
+                reservationState.store(Reserved, std::memory_order_release);
+            }
+        }
+    }
+
+    bool ThreadManager::StartJobSystem()
+    {
+        se_ThreadHandle_t threadHandle;
+        if (!TryAcquireThreads(1, &threadHandle))
+        {
+            return false;
+        }
+
+        m_JobSystem.Start(threadHandle);
+        return true;
+    }
+
+    void ThreadManager::StopJobSystem()
+    {
+        m_JobSystem.Stop();
     }
 
     bool ThreadManager::InitializeInternal()
     {
         Info::Initialize();
+        m_ThreadScratchBuffer = MemoryBuffer{sizeof(std::thread) * k_MaxThreadCount, kSavannaAllocatorKindGeneral};
+        m_ThreadPool.resize_initialized(k_MaxThreadCount);
+        m_ReservationStates.resize_initialized(k_MaxThreadCount);
+
+        // Zero out the thread scratch buffer
+        ::memset(m_ThreadScratchBuffer.GetBuffer(), 0, m_ThreadScratchBuffer.GetSize());
+
         return true;
     }
 
     void ThreadManager::StartInternal()
     {
-        m_Threads.clear();
-        for (int i = 0; i < k_MaxThreadCount; ++i)
-        {
-            m_Threads.push_back(
-                std::move(ThreadReservation{}));
-        }
+        StartUnreservedThreadsInternal();
     }
 
     void ThreadManager::StopInternal()
     {
-        for (auto& thread : m_Threads)
+        StopJobSystem();
+        for (auto& thread : m_ThreadPool)
         {
-            if (thread.m_Thread.IsRunning())
-            {
-                thread.m_Thread.Join();
-            }
-            thread.m_IsReserved = false;
+            thread.Stop();
         }
     }
 
     void ThreadManager::ShutdownInternal()
     {
         StopInternal();
-        m_Threads.clear();
-        Info::Reset();
+        m_ThreadPool.clear();
+        m_ReservationStates.clear();
+        m_ThreadScratchBuffer = MemoryBuffer{kSavannaAllocatorKindGeneral};
     }
 } // namespace Savanna::Concurrency
 
@@ -107,7 +251,7 @@ SAVANNA_EXPORT(se_bool) SavannaConcurrencyThreadManagerTryAcquireThreads(
 {
     if (ThreadManager::Get() != nullptr)
     {
-        return ThreadManager::Get()->TryReserveThreads(requestedThreads, acquiredThreadHandles);
+        return ThreadManager::Get()->TryAcquireThreads(requestedThreads, acquiredThreadHandles);
     }
 
     return false;

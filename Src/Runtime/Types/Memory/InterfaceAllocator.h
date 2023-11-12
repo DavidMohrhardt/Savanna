@@ -1,7 +1,7 @@
 /**
  * @file InterfaceAllocator.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-19
  *
@@ -18,7 +18,7 @@ namespace Savanna
     class InterfaceAllocator final : public Allocator
     {
     public:
-        InterfaceAllocator(se_AllocatorInterface_t allocatorInterface = SavannaMemoryGetHeapAllocatorInterface());
+        InterfaceAllocator(se_AllocatorInterface_t allocatorInterface = SavannaMemoryManagerGetHeapAllocatorInterface());
 
         // These allocators are allowed to move and copy
         InterfaceAllocator(const InterfaceAllocator& other);

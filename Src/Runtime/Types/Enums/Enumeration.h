@@ -1,7 +1,7 @@
 /**
  * @file Enumeration.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-01-08
  *
@@ -12,19 +12,27 @@
 
 #include "Public/ISavannaEngine.hpp"
 
+#define DECL_C_LEVEL_ENUM(__cName, __type, ...) \
+    typedef enum __cName : __type { __VA_ARGS__ } __cName
+
 #if defined(__cplusplus)
 
 #include <concepts>
 #include <type_traits>
 
+#define DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type) \
+    using __cppName = Savanna::Enumeration<__cName, __type>
+
 #define DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type) \
-    namespace __nameSpace { using __cppName = Savanna::Enumeration<__cName, __type>; }
+    namespace __nameSpace { DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type); }
 
 #define DECLARE_NAMESPACED_ENUMERATION(__nameSpace, __cName, __cppName, __type, ...) \
-    typedef enum __cName : __type { __VA_ARGS__ } __cName; \
+    DECL_C_LEVEL_ENUM(__cName, __type, __VA_ARGS__); \
     DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type)
 
 #else
+
+#define DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type)
 
 #define DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type)
 
@@ -68,10 +76,13 @@ namespace Savanna
      * @tparam enum_type The C enumeration type to wrap.
      * @tparam value_type The value type to use for the backing value. IE uint32_t
      */
-    template <typename enum_type, typename value_type>
-    requires EnumReq<enum_type> && EnumBackingTypeReq<value_type>
+    template <typename TEnum, typename TValue>
+    requires EnumReq<TEnum> && EnumBackingTypeReq<TValue>
     struct Enumeration
     {
+        using enum_type = TEnum;
+        using value_type = TValue;
+
         // Insists that the backing type is trivially convertible to the enum type
         static_assert(std::is_convertible<enum_type, value_type>());
 
@@ -311,3 +322,7 @@ namespace Savanna
 
 #define DEFINE_SAVANNA_ENUM(__nameSpace, __cName, __cppName, __type, ...) \
     DECLARE_NAMESPACED_ENUMERATION(__nameSpace, __cName, __cppName, __type, __VA_ARGS__)
+
+#define DEFINE_ENUM(__cName, __cppName, __type, ...) \
+    DECL_C_LEVEL_ENUM(__cName, __type, __VA_ARGS__); \
+    DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type)

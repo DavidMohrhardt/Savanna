@@ -44,20 +44,20 @@ def SearchForTodosInFiles(regex:str, directoryName:str):
                                 wasWritten = True
                             if (isFirstWriteForFile):
                                 isFirstWriteForFile = False
-                                content += "\n### " + CreateFileLink("." + filePath) + "\n\n"
+                                content += "\n### " + CreateFileLink("." + filePath) + "\n"
                             content += CreateFileLineLink("." + filePath, l_no, line)
                 except:
                     print("Error in file " + filename)
     if wasWritten:
-        return content + "\n"
+        return content
     else:
         return ""
 
 # TODO make this multithreaded
 
-content = SearchForTodosInFiles(r"./Src", "Src")
-content += SearchForTodosInFiles(r"./BuildScripts", "BuildScripts")
-content += SearchForTodosInFiles(r"./Documentation", "Documentation")
+content = SearchForTodosInFiles(r"./Src", "Src") + "\n"
+content += SearchForTodosInFiles(r"./BuildScripts", "BuildScripts") + "\n"
+content += SearchForTodosInFiles(r"./Documentation", "Documentation") + "\n"
 content += SearchForTodosInFiles(r"./Tools", "Tools")
 
 with open("./Progress/TODOTracker.md", 'w') as todoFile:

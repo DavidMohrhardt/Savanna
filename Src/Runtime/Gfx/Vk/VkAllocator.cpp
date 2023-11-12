@@ -59,6 +59,11 @@ namespace Savanna::Gfx::Vk2
         return s_pAllocationCallbacks;
     }
 
+    const se_AllocatorInterface_t &VkAllocator::GetAllocatorInterface()
+    {
+        return s_AllocationInterface;
+    }
+
     void VkAllocator::SetVkAllocationInterfacePtr(const se_AllocatorInterface_t* pInterface)
     {
         if (pInterface != nullptr)

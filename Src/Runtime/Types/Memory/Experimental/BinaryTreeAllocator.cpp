@@ -15,10 +15,10 @@ namespace Savanna
         return adjustment;
     }
 
-    BinaryTreeAllocator::BinaryTreeAllocator(size_t size, const MemoryLabel providerLabel)//void *pBuffer, size_t size)
-        : m_Buffer(nullptr), m_Root(nullptr), m_Label(providerLabel)
+    BinaryTreeAllocator::BinaryTreeAllocator(size_t size, const AllocatorKind providerAllocatorKind)//void *pBuffer, size_t size)
+        : m_Buffer(nullptr), m_Root(nullptr), m_AllocatorKind(providerAllocatorKind)
     {
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_Label);
+        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForAllocatorKind(m_AllocatorKind);
         m_Buffer = SAVANNA_INTERFACE_ALLOCATE(&interface, size + sizeof(FreeBlock), nullptr);
 
         size_t forwardAlignment = AlignForwardAdjust(m_Buffer, alignof(FreeBlock));
@@ -28,7 +28,7 @@ namespace Savanna
 
     BinaryTreeAllocator::~BinaryTreeAllocator()
     {
-        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForLabel(m_Label);
+        auto interface = MemoryManager::Get()->GetAllocatorInterfaceForAllocatorKind(m_AllocatorKind);
         SAVANNA_INTERFACE_FREE(&interface, m_Buffer, nullptr);
     }
 

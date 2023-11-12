@@ -1,7 +1,7 @@
 /**
  * @file VkPhysicalDeviceSelectionUtils.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-07
  *
@@ -45,7 +45,7 @@ namespace Savanna::Gfx::Vk2::Utils
         }
         else
         {
-            dynamic_array<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, k_SavannaMemoryLabelGfx };
+            dynamic_array<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, kSavannaAllocatorKindTemp };
             physicalDevices.resize(physicalDeviceCount);
 
             // TODO @DavidMohrhardt: Use a scratch allocator to allocate this array since it's short lived

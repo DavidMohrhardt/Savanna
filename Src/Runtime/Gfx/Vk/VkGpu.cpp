@@ -4,6 +4,7 @@
 #include "Utilities/VkInfoCreateUtils.h"
 #include "Utilities/VkExtensionUtils.h"
 #include "Utilities/VkResultUtils.h"
+#include "Utilities/VkSynchronizationUtils.h"
 
 #include "Memory/MemoryManager.h"
 
@@ -19,12 +20,19 @@ namespace Savanna::Gfx::Vk2
     {
         m_QueueFamilyIndices = VkQueueFamilyIndices(m_PhysicalDevice, surface);
         uint32 queueCreateInfoCount = m_QueueFamilyIndices.GetQueueFamilyCount();
-        dynamic_array<VkDeviceQueueCreateInfo> queueCreateInfos(queueCreateInfoCount, k_SavannaMemoryArenaIdGfx);
+        dynamic_array<VkDeviceQueueCreateInfo> queueCreateInfos {
+            queueCreateInfoCount,
+            kSavannaAllocatorKindTemp
+        };
         float queuePriority = 1.0f;
         m_QueueFamilyIndices.GetUniqueQueueFamilies(queueCreateInfos, &queuePriority);
 
-        dynamic_array<const char*> enabledDeviceExtensions { createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount, k_SavannaMemoryArenaIdGfx };
-        Utils::PopulateDeviceExtensions(enabledDeviceExtensions,
+        dynamic_array<const char*> enabledDeviceExtensions {
+            createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount,
+            kSavannaAllocatorKindTemp
+        };
+        Utils::PopulateDeviceExtensions(
+            enabledDeviceExtensions,
             m_PhysicalDevice,
             createInfo.m_LogicalDeviceCreateArgs.m_ppEnabledDeviceExtensions,
             createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount);

@@ -1,7 +1,7 @@
 /**
  * @file dynamic_array.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-05-16
  *
@@ -11,10 +11,7 @@
 #pragma once
 
 #include "Utilities/SavannaCoding.h"
-
-#include "Memory/Public/ISavannaMemory.h"
 #include "Memory/SavannaMemory.h"
-#include "Memory/MemoryLabel.h"
 
 #include <initializer_list>
 
@@ -27,15 +24,17 @@ namespace Savanna
     class dynamic_array
     {
     private:
+        static constexpr AllocatorKind k_DefaultAllocatorKind = kSavannaAllocatorKindHeap;
+
         T* m_Buffer = nullptr;
         size_t m_Size = 0;
         size_t m_Capacity = 0;
-        MemoryLabel m_ProviderLabel = k_SavannaMemoryLabelHeap;
+        AllocatorKind m_AllocatorKind = k_DefaultAllocatorKind;
 
     public:
         dynamic_array() = default;
-        dynamic_array(const size_t size, const MemoryLabel providerLabel = k_SavannaMemoryLabelHeap);
-        dynamic_array(const std::initializer_list<T>& list, const MemoryLabel providerLabel = k_SavannaMemoryLabelHeap);
+        dynamic_array(const size_t size, const AllocatorKind providerAllocatorKind = k_DefaultAllocatorKind);
+        dynamic_array(const std::initializer_list<T>& list, const AllocatorKind providerAllocatorKind = k_DefaultAllocatorKind);
         dynamic_array(const dynamic_array& other);
         dynamic_array(dynamic_array&& other) noexcept;
         ~dynamic_array();
@@ -54,6 +53,7 @@ namespace Savanna
         void resize(const size_t size);
 
         void clear();
+        void clear_dealloc();
 
         size_t size() const { return m_Size; }
         size_t capacity() const { return m_Capacity; }
@@ -78,32 +78,32 @@ namespace Savanna
     };
 
     template <typename T>
-    inline dynamic_array<T>::dynamic_array(const size_t size, const MemoryLabel providerLabel)
+    inline dynamic_array<T>::dynamic_array(const size_t size, const AllocatorKind providerAllocatorKind)
         : m_Capacity(size)
         , m_Size(0)
-        , m_ProviderLabel(providerLabel)
+        , m_AllocatorKind(providerAllocatorKind)
     {
         if (size == 0)
         {
             return;
         }
-        void* buffer = SAVANNA_MALLOC_ALIGNED(providerLabel, size * sizeof(T), alignof(T));
+        void* buffer = SAVANNA_MALLOC_ALIGNED(providerAllocatorKind, size * sizeof(T), alignof(T));
 
         m_Buffer = reinterpret_cast<T*>(buffer);
     }
 
     template <typename T>
-    inline dynamic_array<T>::dynamic_array(const std::initializer_list<T>& list, const MemoryLabel providerLabel)
+    inline dynamic_array<T>::dynamic_array(const std::initializer_list<T>& list, const AllocatorKind providerAllocatorKind)
         : m_Capacity(list.size())
         , m_Size(0)
-        , m_ProviderLabel(providerLabel)
+        , m_AllocatorKind(providerAllocatorKind)
     {
         if (list.size() == 0)
         {
             return;
         }
 
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(providerLabel, size * sizeof(T), alignof(T)));
+        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(providerAllocatorKind, list.size() * sizeof(T), alignof(T)));
 
         if constexpr (std::is_trivially_copyable_v<T>)
         {
@@ -129,14 +129,14 @@ namespace Savanna
     inline dynamic_array<T>::dynamic_array(const dynamic_array &other)
         : m_Capacity(other.m_Capacity)
         , m_Size(other.m_Size)
-        , m_ProviderLabel(k_SavannaMemoryLabelHeap)
+        , m_AllocatorKind(other.m_AllocatorKind)
     {
         if (other.m_Size == 0)
         {
             return;
         }
 
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(m_ProviderLabel, m_Capacity * sizeof(T), alignof(T)));
+        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(m_AllocatorKind, m_Capacity * sizeof(T), alignof(T)));
 
         if constexpr (std::is_trivially_copyable_v<T>)
         {
@@ -156,7 +156,7 @@ namespace Savanna
         : m_Buffer(other.m_Buffer)
         , m_Size(other.m_Size)
         , m_Capacity(other.m_Capacity)
-        , m_ProviderLabel(other.m_ProviderLabel)
+        , m_AllocatorKind(other.m_AllocatorKind)
     {
         other.m_Buffer = nullptr;
         other.m_Size = 0;
@@ -176,7 +176,7 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_FREE(m_ProviderLabel, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
     }
 
@@ -188,9 +188,9 @@ namespace Savanna
             return *this;
         }
 
-        if (m_ProviderLabel == k_SavannaMemoryLabelNone)
+        if (m_AllocatorKind == kSavannaAllocatorKindNone)
         {
-            m_ProviderLabel = other.m_ProviderLabel;
+            m_AllocatorKind = other.m_AllocatorKind;
         }
 
         this->Reserve(other.m_Capacity);
@@ -227,15 +227,15 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_FREE(m_ProviderLabel, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
 
         SAVANNA_MOVE_ASSIGN(m_Buffer, other.m_Buffer);
         SAVANNA_MOVE_ASSIGN(m_Size, other.m_Size);
         SAVANNA_MOVE_ASSIGN(m_Capacity, other.m_Capacity);
-        // Do not overwrite the other's provider label, as it's possible the object may be
+        // Do not overwrite the other's provider allocatorKind, as it's possible the object may be
         // used again and we don't want to change it's provider.
-        m_ProviderLabel = other.m_ProviderLabel;
+        m_AllocatorKind = other.m_AllocatorKind;
         return *this;
     }
 
@@ -337,6 +337,17 @@ namespace Savanna
     }
 
     template <typename T>
+    inline void dynamic_array<T>::clear_dealloc()
+    {
+        clear();
+
+        if (m_Buffer)
+        {
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
+        }
+    }
+
+    template <typename T>
     inline void dynamic_array<T>::resize_uninitialized(const size_t size)
     {
         if (size == m_Size)
@@ -382,7 +393,7 @@ namespace Savanna
         }
 
         T* newBuffer = reinterpret_cast<T*>(
-            SAVANNA_MALLOC_ALIGNED(m_ProviderLabel, sizeof(T) * newCapacity, alignof(T)));
+            SAVANNA_MALLOC_ALIGNED(m_AllocatorKind, sizeof(T) * newCapacity, alignof(T)));
         if (m_Buffer)
         {
             if constexpr (std::is_trivially_copyable_v<T>)
@@ -397,7 +408,7 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_FREE(m_ProviderLabel, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
 
         m_Buffer = newBuffer;

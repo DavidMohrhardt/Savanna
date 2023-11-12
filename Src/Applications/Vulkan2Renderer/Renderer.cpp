@@ -10,111 +10,12 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-#include <Concurrency/JobManager.h>
+#include <Concurrency/JobSystem.h>
 #include <IO/FileStream.h>
 #include <IO/VirtualFileSystem.h>
 
 namespace vk
 {
-    using namespace Concurrency;
-
-    // bool TryCreateShaders(fixed_array<se_GfxShaderHandle_t, 2>& outShaderHandles, se_AllocatorInterface_t* pAllocatorInterface)
-    bool TryCreateShaders(se_GfxShaderHandle_t* ppOutShaderHandles, const se_AllocatorInterface_t* pAllocatorInterface)
-    {
-        SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules);
-        const char* k_DefaultShaderPaths[2]
-        {
-            "Assets/SPIRV/SimpleTriangle.vert.spv",
-            "Assets/SPIRV/SimpleTriangle.frag.spv"
-        };
-
-        struct ShaderCreateJobInput
-        {
-            const char* m_ShaderPath;
-            se_GfxShaderCreateInfo_t m_CreateInfo;
-            se_GfxShaderHandle_t* m_pShaderHandle;
-            const se_AllocatorInterface_t* m_pAllocatorInterface;
-        };
-
-        ShaderCreateJobInput inputData[2]
-        {
-            ShaderCreateJobInput{k_DefaultShaderPaths[0], {}, &ppOutShaderHandles[0], pAllocatorInterface},
-            ShaderCreateJobInput{k_DefaultShaderPaths[1], {}, &ppOutShaderHandles[1], pAllocatorInterface}
-        };
-
-        auto& vertexCreateInfo = inputData[0].m_CreateInfo;
-        vertexCreateInfo.m_Stage = kSavannaGfxShaderStageVertex;
-        vertexCreateInfo.m_pAllocatorInterface = pAllocatorInterface;
-
-        auto& fragmentCreateInfo = inputData[1].m_CreateInfo;
-        fragmentCreateInfo.m_Stage = kSavannaGfxShaderStageFragment;
-        fragmentCreateInfo.m_pAllocatorInterface = pAllocatorInterface;
-
-        JobExecuteFunc shaderJobFunc = [](void* pUserData) -> JobResult
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules::ShaderCreateJob);
-            if (pUserData == nullptr)
-            {
-                SAVANNA_FATAL_LOG("Shader job data is null!");
-                return JobResult::k_SavannaJobResultError;
-            }
-
-            ShaderCreateJobInput* pShaderCreateJobInput = reinterpret_cast<ShaderCreateJobInput*>(pUserData);
-
-            auto& shaderPath = pShaderCreateJobInput->m_ShaderPath;
-            auto& shaderCreateInfo = pShaderCreateJobInput->m_CreateInfo;
-            se_GfxShaderHandle_t* pOutShaderHandle = pShaderCreateJobInput->m_pShaderHandle;
-
-            try
-            {
-                // Get full path to shader
-                IO::FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
-                std::vector<uint32_t> shaderBytes = stream.ReadFile<uint32_t>();
-
-                shaderCreateInfo.m_pData = shaderBytes.data();
-                shaderCreateInfo.m_Size = shaderBytes.size();
-
-                // Create shader module
-                // return renderer.GetShaderCache().TryCreateShader(shaderName, renderer.GetGfxDevice(), shaderBytes)
-                return SAVANNA_GFX_SUCCESS(SavannaGfxCreateShaderModule(shaderCreateInfo, *pOutShaderHandle))
-                    ? JobResult::k_SavannaJobResultSuccess
-                    : JobResult::k_SavannaJobResultError;
-            }
-            catch(const std::exception& e)
-            {
-                SAVANNA_FATAL_LOG("Failed to create shader module: {}", e.what());
-                return JobResult::k_SavannaJobResultError;
-            }
-        };
-
-        // Read shaders from disk
-        PrimitiveJob shaderCreateJobs[2]
-        {
-            PrimitiveJob{shaderJobFunc, &inputData[0]},
-            PrimitiveJob{shaderJobFunc, &inputData[1]}
-        };
-
-        JobHandle shaderCreateJobHandles[2]
-        {
-            JobManager::Get()->ScheduleJob(&shaderCreateJobs[0]),
-            JobManager::Get()->ScheduleJob(&shaderCreateJobs[1])
-        };
-
-        JobManager::Get()->AwaitCompletion(shaderCreateJobHandles, 2);
-
-        for (int i = 0; i < 2; ++i)
-        {
-            auto& shaderHandle = ppOutShaderHandles[i];
-            if (shaderHandle == k_SavannaGfxInvalidShaderModuleHandle)
-            {
-                SAVANNA_FATAL_LOG("Failed to create shader module.");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     Renderer::Renderer() {}
 
     Renderer::~Renderer()
@@ -125,7 +26,7 @@ namespace vk
     bool Renderer::TryInitialize(const se_GfxContextCreateInfo_t* pCreateInfo, void* pWindowHandle)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Application::TryInitGfx);
-        auto pDefaultAllocInterface = Savanna::MemoryManager::GetAllocatorInterfaceForLabelPtr(k_SavannaMemoryLabelGfx);
+        auto pDefaultAllocInterface = Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindGeneral);
         se_GfxContextCreateInfo_t gfxContextCreateInfo;
         if (pCreateInfo != nullptr)
         {
@@ -170,9 +71,9 @@ namespace vk
         vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex =
             -1;
 
-        dynamic_array<const char *> enabledDeviceExtensions{
-            1, k_SavannaMemoryArenaIdGfx};
-        if (vkDriverCreateInfo.m_RequestSurface) {
+        dynamic_array<const char *> enabledDeviceExtensions{1, kSavannaAllocatorKindTemp};
+        if (vkDriverCreateInfo.m_RequestSurface)
+        {
             enabledDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
         }
 
@@ -214,6 +115,6 @@ namespace vk
             return false;
         }
 
-        return TryCreateShaders(m_DefaultShaderHandles, pDefaultAllocInterface);
+        return true;
     }
 } // namespace vk

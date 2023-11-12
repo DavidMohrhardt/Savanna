@@ -21,7 +21,4 @@ public:
     ~Application();
 
     void Run();
-
-private:
-    bool TryInitGfx();
 };

@@ -1,7 +1,7 @@
 /**
  * @file AtomicAllocatorWrapper.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-21
  *
@@ -73,6 +73,37 @@ namespace Savanna
         {
             auto sentinel = m_Lock.Auto();
             return m_Allocator.realloc(ptr, newSize, alignment);
+        }
+
+        class AutoAllocatorGuard
+        {
+        private:
+            friend class AtomicAllocatorWrapper<TAlloc>;
+            TAlloc& m_AllocatorRef;
+            SpinLock& m_SpinLockRef;
+
+            AutoAllocatorGuard() = delete;
+            AutoAllocatorGuard(TAlloc& allocRef, SpinLock& lockRef)
+                : m_AllocatorRef{allocRef}
+                , m_SpinLockRef{lockRef}
+            {
+                m_SpinLockRef.Lock();
+            }
+
+        public:
+            ~AutoAllocatorGuard()
+            {
+                m_SpinLockRef.Unlock();
+            }
+
+            TAlloc& Get() { return m_AllocatorRef; }
+
+            operator TAlloc&() { return m_AllocatorRef; }
+        };
+
+        SAVANNA_NO_DISCARD AutoAllocatorGuard GetSafeAllocator()
+        {
+            return AutoAllocatorGuard(m_Allocator, m_Lock);
         }
     };
 } // namespace Savanna

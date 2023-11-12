@@ -1,7 +1,7 @@
 /**
  * @file VkAllocator.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-09-27
  *
@@ -31,6 +31,8 @@ namespace Savanna::Gfx::Vk2
         static void Free(void *pUserData, void *pMemory);
 
         static const VkAllocationCallbacks* const Get();
+
+        static const se_AllocatorInterface_t& GetAllocatorInterface();
 
     private:
         static VkAllocationCallbacks s_AllocationCallbacks;

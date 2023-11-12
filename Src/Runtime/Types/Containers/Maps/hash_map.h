@@ -1,7 +1,7 @@
 /**
  * @file hash_map.h
  * @author David Mohrhardt (https://github.com/DavidMohrhardt/Savanna)
- * @brief
+ * @brief TODO @David.Mohrhardt Document
  * @version 0.1
  * @date 2023-10-24
  *
@@ -13,7 +13,6 @@
 #include "Utilities/SavannaCoding.h"
 
 #include "Memory/Public/ISavannaMemory.h"
-#include "Memory/MemoryLabel.h"
 
 #include <initializer_list>
 
@@ -44,7 +43,7 @@ namespace Savanna
         size_t m_Size = 0;
         size_t m_Capacity = 0;
 
-        se_MemoryLabelBackingInt_t m_Label;
+        se_AllocatorKindBackingInt_t m_AllocatorKind;
 
         size_t m_Hash(const Key& key) const
         {
@@ -53,8 +52,8 @@ namespace Savanna
 
     public:
         hash_map() = default;
-        hash_map(const size_t& capacity, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelHeap);
-        hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_MemoryLabelBackingInt_t label = k_SavannaMemoryLabelHeap);
+        hash_map(const size_t& capacity, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindHeap);
+        hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindHeap);
         hash_map(const hash_map& other);
         hash_map(hash_map&& other) noexcept;
         ~hash_map();
@@ -88,22 +87,22 @@ namespace Savanna
     };
 
     template <typename Key, typename Value>
-    hash_map<Key, Value>::hash_map(const size_t& capacity, const se_MemoryLabelBackingInt_t label)
+    hash_map<Key, Value>::hash_map(const size_t& capacity, const se_AllocatorKindBackingInt_t allocatorKind)
         : m_Capacity(capacity)
         , m_Size(0)
-        , m_Label(label)
+        , m_AllocatorKind(allocatorKind)
     {
-        m_HashTable = static_cast<Node**>(MemoryManager::Get()->Allocate(sizeof(Node*) * m_Capacity, alignof(Node*), label));
+        m_HashTable = static_cast<Node**>(MemoryManager::Get()->Allocate(sizeof(Node*) * m_Capacity, alignof(Node*), allocatorKind));
         memset(m_HashTable, 0, sizeof(Node*) * m_Capacity);
     }
 
     template <typename Key, typename Value>
-    hash_map<Key, Value>::hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_MemoryLabelBackingInt_t label)
+    hash_map<Key, Value>::hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_AllocatorKindBackingInt_t allocatorKind)
         : m_Capacity(initList.size())
         , m_Size(0)
-        , m_Label(label)
+        , m_AllocatorKind(allocatorKind)
     {
-        m_HashTable = static_cast<Node**>(MemoryManager::Get()->Allocate(sizeof(Node*) * m_Capacity, alignof(Node*), label));
+        m_HashTable = static_cast<Node**>(MemoryManager::Get()->Allocate(sizeof(Node*) * m_Capacity, alignof(Node*), allocatorKind));
         memset(m_HashTable, 0, sizeof(Node*) * m_Capacity);
         insert(initList);
     }
@@ -194,7 +193,7 @@ namespace Savanna
             while (node != nullptr)
             {
                 Node* next = node->m_Next;
-                SAVANNA_DELETE(m_Label, node);
+                SAVANNA_DELETE(m_AllocatorKind, node);
                 node = next;
             }
             m_HashTable[i] = nullptr;
@@ -218,7 +217,7 @@ namespace Savanna
         }
 
         // If we get here, the key doesn't exist in the map yet.
-        Node* newNode = SAVANNA_NEW(m_Label, Node, key, value);
+        Node* newNode = SAVANNA_NEW(m_AllocatorKind, Node, key, value);
         newNode->m_Next = m_HashTable[hash];
         m_HashTable[hash] = newNode;
         ++m_Size;
@@ -257,7 +256,7 @@ namespace Savanna
                 {
                     prev->m_Next = node->m_Next;
                 }
-                SAVANNA_DELETE(m_Label, node);
+                SAVANNA_DELETE(m_AllocatorKind, node);
                 --m_Size;
                 return;
             }
@@ -310,7 +309,7 @@ namespace Savanna
     {
         if (capacity > m_Capacity)
         {
-            Node** newHashTable = static_cast<Node**>(MemoryManager::Get()->Allocate(sizeof(Node*) * capacity, alignof(Node*), m_Label));
+            Node** newHashTable = static_cast<Node**>(MemoryManager::Get()->Allocate(sizeof(Node*) * capacity, alignof(Node*), m_AllocatorKind));
             memcpy(newHashTable, m_HashTable, sizeof(Node*) * m_Capacity);
             memset(newHashTable + m_Capacity, 0, sizeof(Node*) * (capacity - m_Capacity));
             MemoryManager::Get()->Free(m_HashTable);
@@ -325,6 +324,6 @@ namespace Savanna
         std::swap(m_HashTable, other.m_HashTable);
         std::swap(m_Size, other.m_Size);
         std::swap(m_Capacity, other.m_Capacity);
-        std::swap(m_Label, other.m_Label);
+        std::swap(m_AllocatorKind, other.m_AllocatorKind);
     }
 } // namespace Savanna

@@ -2,7 +2,9 @@
 
 #include "VkAllocator.h"
 
-#include "Concurrency/JobManager.h"
+#include "Concurrency/AutoDisposeJob.h"
+#include "Concurrency/ThreadManager.h"
+#include "Concurrency/JobSystem.h"
 
 namespace Savanna::Gfx::Vk2
 {
@@ -21,19 +23,19 @@ namespace Savanna::Gfx::Vk2
     }
 
     using namespace Concurrency;
-    struct VkShaderModuleCreateJob final : public IJob
+    struct ShaderModuleCreateJob final : public AutoDisposeJobBase
     {
     private:
         DECLARE_SAVANNA_MEMORY_CLASS_FRIENDS();
-        friend class VkShaderModuleCache;
+        friend class ShaderModuleCache;
 
         void Dispose()
         {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::Dispose);
-            SAVANNA_DELETE(k_SavannaMemoryLabelGfx, this);
+            SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCreateJob::Dispose);
+            SAVANNA_DELETE(kSavannaAllocatorKindThreadSafeTemp, this);
         }
 
-        VkShaderModuleCache& m_ShaderModuleCache;
+        ShaderModuleCache& m_ShaderModuleCache;
         const VkGpu& m_Gpu;
 
         dynamic_array<se_GfxShaderCreateInfo_t> m_CreateInfos;
@@ -49,25 +51,25 @@ namespace Savanna::Gfx::Vk2
             Cancelled,
         };
 
-        VkShaderModuleCreateJob() = delete;
+        ShaderModuleCreateJob() = delete;
 
-        VkShaderModuleCreateJob(
-            VkShaderModuleCache& shaderModuleCache,
-            const VkGpu& gpu,
-            MemoryLabel providerLabel = k_SavannaMemoryLabelGfx)
-            : m_ShaderModuleCache(shaderModuleCache)
+        ShaderModuleCreateJob(
+            ShaderModuleCache& shaderModuleCache,
+            const VkGpu& gpu)
+            : AutoDisposeJobBase(kSavannaAllocatorKindThreadSafeTemp)
+            , m_ShaderModuleCache(shaderModuleCache)
             , m_Gpu(gpu)
-            , m_CreateInfos(1, providerLabel)
-            , m_ShaderModuleHandles(1, providerLabel)
+            , m_CreateInfos(1, kSavannaAllocatorKindThreadSafeTemp)
+            , m_ShaderModuleHandles(1, kSavannaAllocatorKindThreadSafeTemp)
         {
         }
 
     public:
-        ~VkShaderModuleCreateJob() override = default;
+        ~ShaderModuleCreateJob() override = default;
 
         JobResult Execute() override
         {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::Execute);
+            SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCreateJob::Execute);
             uint8 expectedState = State::Waiting;
             if (!m_State.compare_exchange_strong(expectedState, State::Executing))
             {
@@ -98,34 +100,9 @@ namespace Savanna::Gfx::Vk2
 
             return k_SavannaJobResultSuccess;
         }
-
-    protected:
-        bool TryCancel() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::TryCancel);
-            return true;
-        }
-
-        void OnComplete() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::OnComplete);
-            Dispose();
-        }
-
-        void OnCancel() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::OnCancel);
-            Dispose();
-        }
-
-        void OnError() override
-        {
-            SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCreateJob::OnError);
-            Dispose();
-        }
     };
 
-    inline void VkShaderModuleCache::RegisterShaderIdInternal(
+    inline void ShaderModuleCache::RegisterShaderIdInternal(
         const se_GfxShaderHandle_t& shaderModuleHandle,
         const VkShaderModule& shaderModule)
     {
@@ -135,7 +112,7 @@ namespace Savanna::Gfx::Vk2
         });
     }
 
-    inline void VkShaderModuleCache::UnregisterShaderIdInternal(
+    inline void ShaderModuleCache::UnregisterShaderIdInternal(
         const se_GfxShaderHandle_t& shaderModuleHandle)
     {
         SAVANNA_WRITE_CRITICAL_SECTION(m_ReadWriteLock,
@@ -144,19 +121,21 @@ namespace Savanna::Gfx::Vk2
         });
     }
 
-    JobHandle VkShaderModuleCache::CreateShaderModulesAsync(
+    JobHandle ShaderModuleCache::CreateShaderModulesAsync(
         const VkGpu &gpu,
         const se_GfxShaderCreateInfo_t *createInfos,
         const size_t createInfoCount,
         se_GfxShaderHandle_t **const ppOutShaderModuleHandles)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCache::CreateShaderModulesAsync);
-        if (createInfoCount == 0 || createInfos == nullptr)
+        SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCache::CreateShaderModulesAsync);
+        ThreadManager* pThreadManager = ThreadManager::Get();
+
+        if (pThreadManager == nullptr || createInfoCount == 0 || createInfos == nullptr)
         {
             return k_InvalidJobHandle;
         }
 
-        auto pJob = SAVANNA_NEW(k_SavannaMemoryLabelGfx, VkShaderModuleCreateJob, *this, gpu);
+        auto pJob = SAVANNA_NEW(kSavannaAllocatorKindThreadSafeTemp, ShaderModuleCreateJob, *this, gpu);
 
         // Critical section, registers the shader module handles before the job is scheduled.
         SAVANNA_WRITE_CRITICAL_SECTION(m_ReadWriteLock,
@@ -171,20 +150,20 @@ namespace Savanna::Gfx::Vk2
             }
         });
 
-        JobHandle jobHandle = JobManager::Get()->ScheduleJob(pJob, k_SavannaJobPriorityHigh);
+        JobHandle jobHandle = pThreadManager->GetJobSystem()->ScheduleJob(static_cast<IJob*>(pJob), k_SavannaJobPriorityHigh);
 
         // From here we combine the dependencies of the job we're about to schedule with the dependencies of the jobs that are already running. This way we can wait for all of them to finish before we continue.
         JobHandle handlesArray[2] { jobHandle, m_AllActiveShaderModulesJob };
-        m_AllActiveShaderModulesJob = JobManager::Get()->CombineDependencies(handlesArray, 2);
+        m_AllActiveShaderModulesJob = pThreadManager->GetJobSystem()->CombineDependencies(handlesArray, 2);
 
         return jobHandle;
     }
 
-    se_GfxShaderHandle_t VkShaderModuleCache::CreateShaderModuleSynchronized(
+    se_GfxShaderHandle_t ShaderModuleCache::CreateShaderModuleSynchronized(
         const VkGpu& gpu,
         const se_GfxShaderCreateInfo_t& createInfo)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCache::CreateShaderModule);
+        SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCache::CreateShaderModule);
         VkShaderModule shaderModule = VK_NULL_HANDLE;
         auto result = CreateVkShaderModule(gpu, createInfo, shaderModule);
         if (result != VK_SUCCESS)
@@ -199,9 +178,9 @@ namespace Savanna::Gfx::Vk2
         return handle;
     }
 
-    void VkShaderModuleCache::Clear(const VkGpu& gpu)
+    void ShaderModuleCache::Clear(const VkGpu& gpu)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(VkShaderModuleCache::Clear);
+        SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCache::Clear);
         SAVANNA_WRITE_CRITICAL_SECTION(m_ReadWriteLock,
         for (auto& [handle, shaderModule] : m_ShaderModules)
         {
@@ -210,7 +189,7 @@ namespace Savanna::Gfx::Vk2
         m_ShaderModules.clear();
     }
 
-    void VkShaderModuleCache::GetShaderModule(
+    void ShaderModuleCache::GetShaderModule(
         const VkGpu &gpu,
         const se_GfxShaderHandle_t &shaderModuleHandle,
         VkShaderModule& outShaderModule)
