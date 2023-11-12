@@ -1,4 +1,4 @@
-# Total TODOs - 210
+# Total TODOs - 226
 
 ## Src
 
@@ -183,7 +183,6 @@
 ### [../Src\Runtime\Gfx\GfxDriver.h](../Src/Runtime/Gfx/GfxDriver.h)
 
 - [L3 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/GfxDriver.h#L3)
-- [L31 :// TODO @DavidMohrhardt: Move this to public interface definition](../Src/Runtime/Gfx/GfxDriver.h#L31)
 
 ### [../Src\Runtime\Gfx\GfxProgram.h](../Src/Runtime/Gfx/GfxProgram.h)
 
@@ -225,10 +224,10 @@
 
 - [L3 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L3)
 - [L12 :// TODO @DavidMohrhardt: Need to update all the structs defined here to have type field so you can cast to the correct type](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L12)
-- [L619 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L619)
-- [L625 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L625)
-- [L690 :* @brief TODO](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L690)
-- [L696 :* @brief TODO](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L696)
+- [L626 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L626)
+- [L632 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L632)
+- [L697 :* @brief TODO](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L697)
+- [L703 :* @brief TODO](../Src/Runtime/Gfx/Public/ISavannaGfx.h#L703)
 
 ### [../Src\Runtime\Gfx\Public\ISavannaGfxFormat.h](../Src/Runtime/Gfx/Public/ISavannaGfxFormat.h)
 
@@ -236,15 +235,11 @@
 
 ### [../Src\Runtime\Gfx\Vk\SavannaVk2.h](../Src/Runtime/Gfx/Vk/SavannaVk2.h)
 
-- [L54 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Vk/SavannaVk2.h#L54)
+- [L57 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Vk/SavannaVk2.h#L57)
 
 ### [../Src\Runtime\Gfx\Vk\VkAllocator.h](../Src/Runtime/Gfx/Vk/VkAllocator.h)
 
 - [L3 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Vk/VkAllocator.h#L3)
-
-### [../Src\Runtime\Gfx\Vk\VkDriver.cpp](../Src/Runtime/Gfx/Vk/VkDriver.cpp)
-
-- [L41 :// TODO Refactor once we support using temporary allocators in the managed memory arenas](../Src/Runtime/Gfx/Vk/VkDriver.cpp#L41)
 
 ### [../Src\Runtime\Gfx\Vk\VkDriver.h](../Src/Runtime/Gfx/Vk/VkDriver.h)
 
@@ -261,8 +256,8 @@
 ### [../Src\Runtime\Gfx\Vk\VkSwapchain.cpp](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp)
 
 - [L3 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L3)
-- [L63 :// TODO @DavidMohrhardt: Submit the format requested by the user.](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L63)
-- [L152 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L152)
+- [L74 :// TODO @DavidMohrhardt: Submit the format requested by the user.](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L74)
+- [L175 :// TODO @DavidMohrhardt - Enable setting up stereoscopic image views for VR rendering.](../Src/Runtime/Gfx/Vk/VkSwapchain.cpp#L175)
 
 ### [../Src\Runtime\Gfx\Vk\VkSwapchain.h](../Src/Runtime/Gfx/Vk/VkSwapchain.h)
 
@@ -339,6 +334,24 @@
 
 - [L3 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L3)
 - [L70 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L70)
+- [L78 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L78)
+- [L87 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L87)
+- [L96 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L96)
+- [L106 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L106)
+- [L148 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L148)
+- [L155 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L155)
+- [L162 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L162)
+- [L184 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L184)
+- [L190 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L190)
+- [L205 :// TODO @David.Mohrhardt: Fill out to override the weird allocator interface idea that's used in Gfx. This will allow hot swapping of Management schemes](../Src/Runtime/Memory/Public/ISavannaMemory.h#L205)
+- [L209 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L209)
+- [L220 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L220)
+- [L226 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L226)
+- [L238 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L238)
+- [L245 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L245)
+- [L252 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L252)
+- [L259 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L259)
+- [L266 :* @brief TODO @David.Mohrhardt Document](../Src/Runtime/Memory/Public/ISavannaMemory.h#L266)
 
 ### [../Src\Runtime\Memory\Public\ISavannaMemory.hpp](../Src/Runtime/Memory/Public/ISavannaMemory.hpp)
 

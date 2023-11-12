@@ -16,7 +16,7 @@
 
 namespace Savanna::Gfx::Vk2
 {
-    class VkSwapchain
+    class Swapchain
     {
     private:
         friend class VkDriver;
@@ -33,11 +33,11 @@ namespace Savanna::Gfx::Vk2
         dynamic_array<VkImage> m_SwapchainImages;
         dynamic_array<VkImageView> m_SwapchainImageViews;
 
-        VkSwapchain() = default;
-        ~VkSwapchain() = default;
+        Swapchain();
+        ~Swapchain() = default;
 
-        VkSwapchain(const VkSwapchain&) = delete;
-        VkSwapchain(VkSwapchain&&) = delete;
+        Swapchain(const Swapchain&) = delete;
+        Swapchain(Swapchain&&) = delete;
 
         se_GfxErrorCode_t Initialize(
             const se_GfxSwapchainCreateInfo_t& createInfo,

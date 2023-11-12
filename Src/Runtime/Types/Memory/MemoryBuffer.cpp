@@ -6,14 +6,14 @@
 
 namespace Savanna
 {
-    MemoryBuffer::MemoryBuffer(AllocatorKind allocatorKind /*= k_SavannaAllocatorKindHeap*/)
+    MemoryBuffer::MemoryBuffer(AllocatorKind allocatorKind /*= kSavannaAllocatorKindHeap*/)
         : m_Buffer(nullptr)
         , m_Size(0)
         , m_AllocatorKind(allocatorKind)
     {
     }
 
-    MemoryBuffer::MemoryBuffer(size_t size, AllocatorKind allocatorKind /*= k_SavannaAllocatorKindHeap*/)
+    MemoryBuffer::MemoryBuffer(size_t size, AllocatorKind allocatorKind /*= kSavannaAllocatorKindHeap*/)
         : m_Buffer(nullptr)
         , m_Size(size)
         , m_AllocatorKind(allocatorKind)
@@ -30,7 +30,7 @@ namespace Savanna
     {
         other.m_Buffer = nullptr;
         other.m_Size = 0;
-        other.m_AllocatorKind = k_SavannaAllocatorKindNone;
+        other.m_AllocatorKind = kSavannaAllocatorKindNone;
     }
 
     MemoryBuffer::~MemoryBuffer()
@@ -58,4 +58,29 @@ namespace Savanna
 
         return *this;
     }
-}
+
+    void MemoryBuffer::Reset()
+    {
+        if (m_Buffer != nullptr)
+        {
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
+        }
+    }
+
+    void MemoryBuffer::Resize(const size_t size) {
+        if (m_Size == size) SAVANNA_BRANCH_UNLIKELY
+        {
+            return;
+        }
+        else if (size != 0)
+        {
+            m_Buffer = m_Buffer == nullptr
+                ? SAVANNA_MALLOC(m_AllocatorKind, size)
+                : SAVANNA_REALLOC(m_AllocatorKind, m_Buffer, size);
+        }
+        else
+        {
+            Reset();
+        }
+    }
+} // namespace Savanna

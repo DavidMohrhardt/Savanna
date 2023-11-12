@@ -60,13 +60,13 @@ namespace Savanna
     }
 
     FreeListAllocator::FreeListAllocator(
-        size_t size, AllocatorKind allocatorKind /*= k_SavannaAllocatorKindHeap*/)
+        size_t size, AllocatorKind allocatorKind /*= kSavannaAllocatorKindHeap*/)
         : m_AllocatorKind{allocatorKind}
         , m_Head{nullptr}
         , m_Size{size}
         , m_AllocatedBytes{0}
     {
-        SAVANNA_ASSERT(allocatorKind != k_SavannaAllocatorKindNone, "Invalid memory allocatorKind for memory owning allocator");
+        SAVANNA_ASSERT(allocatorKind != kSavannaAllocatorKindNone, "Invalid memory allocatorKind for memory owning allocator");
         SAVANNA_ASSERT(size > 0, "Invalid size for memory owning allocator");
 
         m_Head = SAVANNA_NEW(allocatorKind, MemoryChunkDescriptor, size);
@@ -75,7 +75,7 @@ namespace Savanna
 
     FreeListAllocator::FreeListAllocator(void* root, size_t size)
         : m_Root(root)
-        , m_AllocatorKind { k_SavannaAllocatorKindNone }
+        , m_AllocatorKind { kSavannaAllocatorKindNone }
         , m_Head(reinterpret_cast<MemoryChunkDescriptor*>(root))
         , m_Size(root != nullptr ? size : 0)
         , m_AllocatedBytes(0)
@@ -109,7 +109,7 @@ namespace Savanna
         }
 #endif // SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
 
-        if (m_AllocatorKind != k_SavannaAllocatorKindNone)
+        if (m_AllocatorKind != kSavannaAllocatorKindNone)
         {
             SAVANNA_DELETE(m_AllocatorKind, m_Head);
         }

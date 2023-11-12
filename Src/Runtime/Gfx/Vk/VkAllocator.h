@@ -32,6 +32,8 @@ namespace Savanna::Gfx::Vk2
 
         static const VkAllocationCallbacks* const Get();
 
+        static const se_AllocatorInterface_t& GetAllocatorInterface();
+
     private:
         static VkAllocationCallbacks s_AllocationCallbacks;
 

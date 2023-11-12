@@ -36,7 +36,7 @@ namespace Savanna::IO
 
     public:
         template<typename T>
-        dynamic_array<T> ReadFile(const AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+        dynamic_array<T> ReadFile(const AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
         {
             if (!m_FileStream.is_open())
             {

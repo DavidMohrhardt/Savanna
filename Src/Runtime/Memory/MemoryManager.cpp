@@ -44,7 +44,7 @@ namespace Savanna
     }
 
     template<>
-    consteval se_AllocatorInterface_t GetInterfaceForAllocatorKind<k_SavannaAllocatorKindHeap>()
+    consteval se_AllocatorInterface_t GetInterfaceForAllocatorKind<kSavannaAllocatorKindHeap>()
     {
         return k_HeapAllocatorInterface;
     }
@@ -58,12 +58,12 @@ namespace Savanna
         };
     }
 
-    static constexpr auto k_AllocatorKindAllocatorInterfaces = GenerateInterfaceArray(std::make_index_sequence<static_cast<size_t>(k_SavannaAllocatorKindCount)>());
+    static constexpr auto k_AllocatorKindAllocatorInterfaces = GenerateInterfaceArray(std::make_index_sequence<static_cast<size_t>(kSavannaAllocatorKindCount)>());
 
     const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForAllocatorKind(
         const AllocatorKind& allocatorKind)
     {
-        if (allocatorKind >= k_SavannaAllocatorKindCount)
+        if (allocatorKind >= kSavannaAllocatorKindCount)
         {
             throw BadAllocationException();
         }
@@ -72,7 +72,7 @@ namespace Savanna
 
     const se_AllocatorInterface_t* MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(const AllocatorKind &allocatorKind)
     {
-        if (allocatorKind >= k_SavannaAllocatorKindCount)
+        if (allocatorKind >= kSavannaAllocatorKindCount)
         {
             return nullptr;
         }
@@ -83,7 +83,7 @@ namespace Savanna
         const uint32& allocatorKind,
         se_AllocatorInterface_t& outAllocatorKindInterface)
     {
-        if (allocatorKind >= k_SavannaAllocatorKindCount)
+        if (allocatorKind >= kSavannaAllocatorKindCount)
         {
             return false;
         }
@@ -98,7 +98,7 @@ namespace Savanna
         , m_HeapAllocator{k_HeapAllocatorInterface}
         , m_pAllocators{}
     {
-        m_pAllocators[k_SavannaAllocatorKindHeap] = static_cast<Allocator*>(&m_HeapAllocator);
+        m_pAllocators[kSavannaAllocatorKindHeap] = static_cast<Allocator*>(&m_HeapAllocator);
     }
 
     MemoryManager::~MemoryManager() {}
@@ -160,7 +160,7 @@ namespace Savanna
         const se_AllocatorKindBackingInt_t allocatorKind,
         const DebugAllocationInfo *pDbgInfo)
     {
-        if (allocatorKind >= k_SavannaAllocatorKindCount)
+        if (allocatorKind >= kSavannaAllocatorKindCount)
             return nullptr;
 
         return m_pAllocators[allocatorKind]->realloc(ptr, newSize, alignof(byte));
@@ -168,25 +168,25 @@ namespace Savanna
 
     bool MemoryManager::InitializeInternal()
     {
-        m_RootMemoryAllocator = std::move(AtomicMultiListAllocator(4, sizeof(UnifiedPage4096KiB)));
-        m_pAllocators[k_SavannaAllocatorKindPersistent] = &m_RootMemoryAllocator;
-        for (int i = 0; i < k_SavannaAllocatorKindCount; ++i)
+        m_RootMemoryAllocator = std::move(AtomicMultiListAllocator(6, sizeof(UnifiedPage4096KiB)));
+        m_pAllocators[kSavannaAllocatorKindPersistent] = &m_RootMemoryAllocator;
+        for (int i = 0; i < kSavannaAllocatorKindCount; ++i)
         {
             Allocator* pAllocator = nullptr;
             switch(i)
             {
-                case k_SavannaAllocatorKindGeneral:
-                    pAllocator = m_RootMemoryAllocator.New<AtomicMultiListAllocator>(4, sizeof(UnifiedPage4096KiB), k_SavannaAllocatorKindPersistent);
+                case kSavannaAllocatorKindGeneral:
+                    pAllocator = m_RootMemoryAllocator.New<AtomicMultiListAllocator>(4, sizeof(UnifiedPage4096KiB), kSavannaAllocatorKindPersistent);
                     break;
-                case k_SavannaAllocatorKindTemp:
-                    pAllocator = m_RootMemoryAllocator.New<FixedAllocator>(sizeof(UnifiedPage16KiB), k_SavannaAllocatorKindGeneral);
+                case kSavannaAllocatorKindTemp:
+                    pAllocator = m_RootMemoryAllocator.New<FixedAllocator>(sizeof(UnifiedPage32KiB), kSavannaAllocatorKindGeneral);
                     break;
-                case k_SavannaAllocatorKindThreadSafeTemp:
+                case kSavannaAllocatorKindThreadSafeTemp:
                     // TODO @DavidMohrhardt: Make this an specialized atomic block allocator so we can count frame lifespan of allocations using a mask.
-                    pAllocator = m_RootMemoryAllocator.New<AtomicFixedAllocator>(sizeof(UnifiedPage128KiB), k_SavannaAllocatorKindGeneral);
+                    pAllocator = m_RootMemoryAllocator.New<AtomicFixedAllocator>(sizeof(UnifiedPage64KiB), kSavannaAllocatorKindGeneral);
                     break;
-                case k_SavannaAllocatorKindHeap:
-                case k_SavannaAllocatorKindPersistent:
+                case kSavannaAllocatorKindHeap:
+                case kSavannaAllocatorKindPersistent:
                 default:
                     continue;
             }
@@ -202,12 +202,12 @@ namespace Savanna
 
     void MemoryManager::ShutdownInternal()
     {
-        constexpr size_t k_FreeableAllocatorCount = k_SavannaAllocatorKindCount - 2;
-        constexpr se_AllocatorKind_t k_AllocatorDeletionOrder[k_SavannaAllocatorKindCount - 2]
+        constexpr size_t k_FreeableAllocatorCount = kSavannaAllocatorKindCount - 2;
+        constexpr se_AllocatorKind_t k_AllocatorDeletionOrder[kSavannaAllocatorKindCount - 2]
         {
-            k_SavannaAllocatorKindTemp,
-            k_SavannaAllocatorKindThreadSafeTemp,
-            k_SavannaAllocatorKindGeneral
+            kSavannaAllocatorKindTemp,
+            kSavannaAllocatorKindThreadSafeTemp,
+            kSavannaAllocatorKindGeneral
         };
         for (int i = 0; i < k_FreeableAllocatorCount; ++i)
         {
@@ -215,17 +215,17 @@ namespace Savanna
             m_pAllocators[k_AllocatorDeletionOrder[i]] = nullptr;
         }
 
-        m_pAllocators[k_SavannaAllocatorKindPersistent] = nullptr;
+        m_pAllocators[kSavannaAllocatorKindPersistent] = nullptr;
         m_RootMemoryAllocator = std::move(AtomicMultiListAllocator());
     }
 
     void MemoryManager::OnFrameEnd()
     {
-        if (auto pTempAllocator = static_cast<FixedAllocator*>(m_pAllocators[k_SavannaAllocatorKindTemp]))
+        if (auto pTempAllocator = static_cast<FixedAllocator*>(m_pAllocators[kSavannaAllocatorKindTemp]))
         {
             pTempAllocator->Reset();
         }
-        if (auto pThreadTempAllocator = static_cast<AtomicFixedAllocator*>(m_pAllocators[k_SavannaAllocatorKindThreadSafeTemp]))
+        if (auto pThreadTempAllocator = static_cast<AtomicFixedAllocator*>(m_pAllocators[kSavannaAllocatorKindThreadSafeTemp]))
         {
             pThreadTempAllocator->GetSafeAllocator().Get().Reset();
         }
@@ -240,7 +240,7 @@ SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetAllocatorIn
 
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
-    return Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKind(k_SavannaAllocatorKindGeneral);
+    return Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKind(kSavannaAllocatorKindGeneral);
 }
 
 SAVANNA_EXPORT(bool) SavannaMemoryManagerTryGetAllocatorInterfaceForAllocatorKind(const se_uint32& allocatorKind, se_AllocatorInterface_t& outAllocatorKindInterface)

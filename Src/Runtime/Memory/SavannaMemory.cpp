@@ -57,7 +57,7 @@ extern "C"
     }
 }
 
-SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryGetHeapAllocatorInterface()
+SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetHeapAllocatorInterface()
 {
     return Savanna::k_HeapAllocatorInterface;
 }

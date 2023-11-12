@@ -52,8 +52,8 @@ namespace Savanna
 
     public:
         hash_map() = default;
-        hash_map(const size_t& capacity, const se_AllocatorKindBackingInt_t allocatorKind = k_SavannaAllocatorKindHeap);
-        hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_AllocatorKindBackingInt_t allocatorKind = k_SavannaAllocatorKindHeap);
+        hash_map(const size_t& capacity, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindHeap);
+        hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindHeap);
         hash_map(const hash_map& other);
         hash_map(hash_map&& other) noexcept;
         ~hash_map();

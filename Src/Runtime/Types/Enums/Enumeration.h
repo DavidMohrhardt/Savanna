@@ -76,10 +76,13 @@ namespace Savanna
      * @tparam enum_type The C enumeration type to wrap.
      * @tparam value_type The value type to use for the backing value. IE uint32_t
      */
-    template <typename enum_type, typename value_type>
-    requires EnumReq<enum_type> && EnumBackingTypeReq<value_type>
+    template <typename TEnum, typename TValue>
+    requires EnumReq<TEnum> && EnumBackingTypeReq<TValue>
     struct Enumeration
     {
+        using enum_type = TEnum;
+        using value_type = TValue;
+
         // Insists that the backing type is trivially convertible to the enum type
         static_assert(std::is_convertible<enum_type, value_type>());
 

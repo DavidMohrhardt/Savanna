@@ -58,7 +58,7 @@ class TriangleShaderCreateJob final : public IJob
 private:
     ShaderCreateJobInput m_Input;
 
-    void Dispose() { SAVANNA_DELETE(k_SavannaAllocatorKindGeneral, this); }
+    void Dispose() { SAVANNA_DELETE(kSavannaAllocatorKindGeneral, this); }
 
 public:
     TriangleShaderCreateJob(ShaderCreateJobInput& input)
@@ -80,7 +80,7 @@ public:
         {
             // Get full path to shader
             FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
-            dynamic_array<se_byte> shaderBytes(std::move(stream.ReadFile<se_byte>(k_SavannaAllocatorKindThreadSafeTemp)));
+            dynamic_array<se_byte> shaderBytes(std::move(stream.ReadFile<se_byte>(kSavannaAllocatorKindThreadSafeTemp)));
 
             shaderCreateInfo.m_pData = shaderBytes.data();
             shaderCreateInfo.m_Size = shaderBytes.size();
@@ -118,7 +118,7 @@ inline TriangleShaderCreateJob* TriangleMesh::CreateShaderJob(
 
     input.m_CreateInfo.m_Stage = stage;
 
-    return SAVANNA_NEW(k_SavannaAllocatorKindGeneral, TriangleShaderCreateJob, input);
+    return SAVANNA_NEW(kSavannaAllocatorKindGeneral, TriangleShaderCreateJob, input);
 }
 
 bool TriangleMesh::TryCreateDefaultShader(const se_AllocatorInterface_t* pAllocatorInterface)
@@ -167,7 +167,7 @@ TriangleMesh &TriangleMesh::GetDefaultMesh()
 {
     static TriangleMesh defaultMesh = []()->TriangleMesh
     {
-        if (TryCreateDefaultShader(Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(k_SavannaAllocatorKindTemp)))
+        if (TryCreateDefaultShader(Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindTemp)))
         {
             SAVANNA_LOG("Successfully created default triangle shader.");
         }

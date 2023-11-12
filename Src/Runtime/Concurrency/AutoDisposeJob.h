@@ -27,7 +27,7 @@ namespace Savanna::Concurrency
         AllocatorKind m_AllocatorKind;
 
     public:
-        AutoDisposeJobBase(AllocatorKind allocatorKind = k_SavannaAllocatorKindGeneral);
+        AutoDisposeJobBase(AllocatorKind allocatorKind = kSavannaAllocatorKindGeneral);
 
         AutoDisposeJobBase() = delete;
         virtual ~AutoDisposeJobBase() = default;

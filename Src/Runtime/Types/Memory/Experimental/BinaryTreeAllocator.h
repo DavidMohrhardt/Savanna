@@ -41,7 +41,7 @@ namespace Savanna
 
     public:
 
-        BinaryTreeAllocator(size_t size, const AllocatorKind providerAllocatorKind = k_SavannaAllocatorKindHeap);
+        BinaryTreeAllocator(size_t size, const AllocatorKind providerAllocatorKind = kSavannaAllocatorKindHeap);
         ~BinaryTreeAllocator();
 
         void* Allocate(const size_t size, const size_t alignment);

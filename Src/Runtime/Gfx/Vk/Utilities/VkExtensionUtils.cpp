@@ -59,7 +59,7 @@ namespace Savanna::Gfx::Vk2::Utils
     {
         uint32 supportedExtensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, nullptr);
-        dynamic_array<VkExtensionProperties> supportedExtensions(supportedExtensionCount, k_SavannaAllocatorKindTemp);
+        dynamic_array<VkExtensionProperties> supportedExtensions(supportedExtensionCount, kSavannaAllocatorKindTemp);
         supportedExtensions.resize_uninitialized(supportedExtensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensions.data());
 
@@ -91,7 +91,7 @@ namespace Savanna::Gfx::Vk2::Utils
     {
         uint32 supportedExtensionCount = 0;
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &supportedExtensionCount, nullptr);
-        dynamic_array<VkExtensionProperties> supportedExtensions(supportedExtensionCount, k_SavannaAllocatorKindTemp);
+        dynamic_array<VkExtensionProperties> supportedExtensions(supportedExtensionCount, kSavannaAllocatorKindTemp);
         supportedExtensions.resize_uninitialized(supportedExtensionCount);
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &supportedExtensionCount, supportedExtensions.data());
 

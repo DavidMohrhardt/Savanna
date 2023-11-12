@@ -24,15 +24,17 @@ namespace Savanna
     class dynamic_array
     {
     private:
+        static constexpr AllocatorKind k_DefaultAllocatorKind = kSavannaAllocatorKindHeap;
+
         T* m_Buffer = nullptr;
         size_t m_Size = 0;
         size_t m_Capacity = 0;
-        AllocatorKind m_ProviderAllocatorKind = k_SavannaAllocatorKindHeap;
+        AllocatorKind m_AllocatorKind = k_DefaultAllocatorKind;
 
     public:
         dynamic_array() = default;
-        dynamic_array(const size_t size, const AllocatorKind providerAllocatorKind = k_SavannaAllocatorKindHeap);
-        dynamic_array(const std::initializer_list<T>& list, const AllocatorKind providerAllocatorKind = k_SavannaAllocatorKindHeap);
+        dynamic_array(const size_t size, const AllocatorKind providerAllocatorKind = k_DefaultAllocatorKind);
+        dynamic_array(const std::initializer_list<T>& list, const AllocatorKind providerAllocatorKind = k_DefaultAllocatorKind);
         dynamic_array(const dynamic_array& other);
         dynamic_array(dynamic_array&& other) noexcept;
         ~dynamic_array();
@@ -79,7 +81,7 @@ namespace Savanna
     inline dynamic_array<T>::dynamic_array(const size_t size, const AllocatorKind providerAllocatorKind)
         : m_Capacity(size)
         , m_Size(0)
-        , m_ProviderAllocatorKind(providerAllocatorKind)
+        , m_AllocatorKind(providerAllocatorKind)
     {
         if (size == 0)
         {
@@ -94,7 +96,7 @@ namespace Savanna
     inline dynamic_array<T>::dynamic_array(const std::initializer_list<T>& list, const AllocatorKind providerAllocatorKind)
         : m_Capacity(list.size())
         , m_Size(0)
-        , m_ProviderAllocatorKind(providerAllocatorKind)
+        , m_AllocatorKind(providerAllocatorKind)
     {
         if (list.size() == 0)
         {
@@ -127,14 +129,14 @@ namespace Savanna
     inline dynamic_array<T>::dynamic_array(const dynamic_array &other)
         : m_Capacity(other.m_Capacity)
         , m_Size(other.m_Size)
-        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
+        , m_AllocatorKind(other.m_AllocatorKind)
     {
         if (other.m_Size == 0)
         {
             return;
         }
 
-        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(m_ProviderAllocatorKind, m_Capacity * sizeof(T), alignof(T)));
+        m_Buffer = reinterpret_cast<T*>(SAVANNA_MALLOC_ALIGNED(m_AllocatorKind, m_Capacity * sizeof(T), alignof(T)));
 
         if constexpr (std::is_trivially_copyable_v<T>)
         {
@@ -154,7 +156,7 @@ namespace Savanna
         : m_Buffer(other.m_Buffer)
         , m_Size(other.m_Size)
         , m_Capacity(other.m_Capacity)
-        , m_ProviderAllocatorKind(other.m_ProviderAllocatorKind)
+        , m_AllocatorKind(other.m_AllocatorKind)
     {
         other.m_Buffer = nullptr;
         other.m_Size = 0;
@@ -174,7 +176,7 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_FREE(m_ProviderAllocatorKind, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
     }
 
@@ -186,9 +188,9 @@ namespace Savanna
             return *this;
         }
 
-        if (m_ProviderAllocatorKind == k_SavannaAllocatorKindNone)
+        if (m_AllocatorKind == kSavannaAllocatorKindNone)
         {
-            m_ProviderAllocatorKind = other.m_ProviderAllocatorKind;
+            m_AllocatorKind = other.m_AllocatorKind;
         }
 
         this->Reserve(other.m_Capacity);
@@ -225,7 +227,7 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_FREE(m_ProviderAllocatorKind, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
 
         SAVANNA_MOVE_ASSIGN(m_Buffer, other.m_Buffer);
@@ -233,7 +235,7 @@ namespace Savanna
         SAVANNA_MOVE_ASSIGN(m_Capacity, other.m_Capacity);
         // Do not overwrite the other's provider allocatorKind, as it's possible the object may be
         // used again and we don't want to change it's provider.
-        m_ProviderAllocatorKind = other.m_ProviderAllocatorKind;
+        m_AllocatorKind = other.m_AllocatorKind;
         return *this;
     }
 
@@ -341,7 +343,7 @@ namespace Savanna
 
         if (m_Buffer)
         {
-            SAVANNA_FREE(m_ProviderAllocatorKind, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
     }
 
@@ -391,7 +393,7 @@ namespace Savanna
         }
 
         T* newBuffer = reinterpret_cast<T*>(
-            SAVANNA_MALLOC_ALIGNED(m_ProviderAllocatorKind, sizeof(T) * newCapacity, alignof(T)));
+            SAVANNA_MALLOC_ALIGNED(m_AllocatorKind, sizeof(T) * newCapacity, alignof(T)));
         if (m_Buffer)
         {
             if constexpr (std::is_trivially_copyable_v<T>)
@@ -406,7 +408,7 @@ namespace Savanna
                 }
             }
 
-            SAVANNA_FREE(m_ProviderAllocatorKind, m_Buffer);
+            SAVANNA_FREE(m_AllocatorKind, m_Buffer);
         }
 
         m_Buffer = newBuffer;

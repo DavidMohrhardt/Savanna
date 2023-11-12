@@ -22,8 +22,8 @@ namespace Savanna
         AllocatorKind m_AllocatorKind;
 
     public:
-        MemoryBuffer(AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
-        MemoryBuffer(size_t size, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
+        MemoryBuffer(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
+        MemoryBuffer(size_t size, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
         MemoryBuffer(MemoryBuffer&& other);
         ~MemoryBuffer();
 
@@ -34,5 +34,8 @@ namespace Savanna
 
         SAVANNA_NO_DISCARD bool IsValid() const { return m_Buffer != nullptr; }
         SAVANNA_NO_DISCARD bool PointerIsInBuffer(void* const ptr) const { return ptr >= m_Buffer && ptr < Add(m_Buffer, m_Size); }
+
+        void Reset();
+        void Resize(const size_t size);
     };
 } // namespace Savanna::Memory

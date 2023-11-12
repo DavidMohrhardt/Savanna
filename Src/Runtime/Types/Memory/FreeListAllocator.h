@@ -50,7 +50,7 @@ namespace Savanna
             const size_t& size, const size_t& alignment, AllocationDescriptor& outAllocationDescriptor, MemoryChunkDescriptor*& pPrevious);
 
     public:
-        FreeListAllocator(size_t size, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
+        FreeListAllocator(size_t size, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
         FreeListAllocator(void* root, size_t size);
         FreeListAllocator(FreeListAllocator&& other);
 

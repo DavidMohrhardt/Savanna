@@ -16,7 +16,7 @@ namespace Savanna
     }
 
     FixedAllocator::FixedAllocator(void *root, size_t size)
-        : m_AllocatorKind{k_SavannaAllocatorKindNone}
+        : m_AllocatorKind{kSavannaAllocatorKindNone}
         , m_Root{root}
         , m_Size{size}
         , m_AllocatedBytes{0}
@@ -31,7 +31,7 @@ namespace Savanna
     {
         if (this != &other)
         {
-            if (m_Root != nullptr && m_AllocatorKind != k_SavannaAllocatorKindNone)
+            if (m_Root != nullptr && m_AllocatorKind != kSavannaAllocatorKindNone)
             {
                 SAVANNA_FREE(m_AllocatorKind, m_Root);
             }
@@ -45,13 +45,13 @@ namespace Savanna
 
     FixedAllocator::~FixedAllocator()
     {
-        if (m_Root != nullptr && m_AllocatorKind != k_SavannaAllocatorKindNone)
+        if (m_Root != nullptr && m_AllocatorKind != kSavannaAllocatorKindNone)
         {
             SAVANNA_FREE(m_AllocatorKind, m_Root);
         }
 
         m_Root = nullptr;
-        m_AllocatorKind = k_SavannaAllocatorKindNone;
+        m_AllocatorKind = kSavannaAllocatorKindNone;
         m_Size = 0;
         m_AllocatedBytes = 0;
     }
@@ -84,7 +84,7 @@ namespace Savanna
             return pBuffer;
         }
 
-        return nullptr;
+        throw std::bad_alloc();
     }
 
 } // namespace Savanna

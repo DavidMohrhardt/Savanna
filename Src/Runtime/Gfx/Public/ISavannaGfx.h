@@ -83,16 +83,17 @@ typedef enum se_GfxErrorCode_t : se_uint32
     kSavannaGfxErrorCodeOutOfMemory,
 
     /**
+     * @brief There was not enough memory on the device to
+     * complete the operation.
+    */
+    kSavannaGfxErrorCodeOutOfDeviceMemory,
+
+    /**
      * @brief The allocator interface provided was invalid.
      *        To avoid this error, acquire the default allocator interface
      *       using @SavannaMemoryManagerTryGetAllocatorInterfaceForAllocatorKind.
      */
     kSavannaGfxErrorCodeInvalidAllocatorInterface,
-
-    /**
-     * @brief The function threw an exception.
-     */
-    kSavannaGfxErrorCodeException,
 
     /**
      * @brief The function was provided an invalid argument.
@@ -125,6 +126,12 @@ typedef enum se_GfxErrorCode_t : se_uint32
      * @note This error code may not always be considered an error.
      */
     kSavannaGfxErrorCodeGfxDriverAlreadyCreated,
+
+    /**
+     * @brief Indicates a platform specific error.
+     *
+     */
+    kSavannaGfxErrorCodePlatformSpecificError,
 } se_GfxErrorCode_t;
 
 /**

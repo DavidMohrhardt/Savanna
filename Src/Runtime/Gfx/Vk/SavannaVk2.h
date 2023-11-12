@@ -22,19 +22,23 @@
 #include "Public/ISavannaGfx.h"
 #include "Public/ISavannaGfxVk2.h"
 
+#define VK_SUCCEEDED(__vkResult) __vkResult == VK_SUCCESS
+#define VK_FAILED(__vkResult) __vkResult != VK_SUCCESS
+
 #define VK_MUST_SUCCEED(__input, __message) \
     { \
-        VkResult __vk_result = __input; \
-        if (__vk_result != VK_SUCCESS) \
+        VkResult __vkResult__ = __input; \
+        if (VK_FAILED(__vkResult__)) \
         { \
-            throw Savanna::RuntimeErrorException("[Vulkan] " __message); \
+            SAVANNA_FATAL_LOG("[Vulkan] {}", __message); \
+            return; \
         } \
     }
 
 #define VK_MUST_SUCCEED_RETURN(__input, __message, __returnValue) \
     { \
-        auto __vk_result = __input; \
-        if (__vk_result != VK_SUCCESS) \
+        auto __vkResult__ = __input; \
+        if (VK_FAILED(__vkResult__)) \
         { \
             SAVANNA_FATAL_LOG("[Vulkan] {}", __message); \
             return __returnValue; \
@@ -45,7 +49,6 @@ namespace Savanna::Gfx::Vk2
 {
     // Using Declarations for ISavannaGfxVk2.h types
     using VkGraphicsCapabilities = se_VkGraphicsCapabilities_t;
-
     using VkQueueKind = Enumeration<se_VkQueueKind_t, uint8_t>;
     using VkQueueFlags = FlagEnumeration<se_VkQueueFlags_t, uint8_t>;
 
@@ -61,6 +64,8 @@ namespace Savanna::Gfx::Vk2
      * @return se_GfxErrorCode_t
      */
     se_GfxErrorCode_t GetDriverInterface(se_GfxDriverInterface_t& outDriverInterface);
+
+    inline se_GfxErrorCode_t GetErrorCode(VkResult result);
 }
 
 #endif // !SAVANNA_GFX_VK2_H

@@ -181,7 +181,7 @@ namespace Savanna::Concurrency
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::ScheduleJob(const se_JobDefinition_t&, JobPriority, JobHandle));
         JobHandle handle = reinterpret_cast<JobHandle>(
-            SAVANNA_NEW(k_SavannaAllocatorKindGeneral, AutoDisposePrimitiveJob, jobDefinition, k_SavannaAllocatorKindGeneral));
+            SAVANNA_NEW(kSavannaAllocatorKindGeneral, AutoDisposePrimitiveJob, jobDefinition, kSavannaAllocatorKindGeneral));
 
         ScheduleJobInternal(handle, priority);
         return handle;
@@ -281,7 +281,7 @@ namespace Savanna::Concurrency
             return k_InvalidJobHandle;
         }
 
-        return ScheduleJob(SAVANNA_NEW(k_SavannaAllocatorKindGeneral, DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
+        return ScheduleJob(SAVANNA_NEW(kSavannaAllocatorKindGeneral, DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
     }
 
     JobResult JobSystem::AwaitJobOrExecuteImmediateInternal(se_JobHandle_t dependency)

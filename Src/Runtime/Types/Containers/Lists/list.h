@@ -56,14 +56,14 @@ namespace Savanna
         void RemoveNode(Node* node);
 
     public:
-        list(AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+        list(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
             : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {}
 
         list(const list& other);
         list(list&& other) noexcept;
 
-        list(std::initializer_list<T> init, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+        list(std::initializer_list<T> init, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
             : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {
             for (const auto& item : init)

@@ -37,7 +37,7 @@ namespace Savanna
         void EnqueueNode(Node* node);
 
     public:
-        atomic_queue(AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap) : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr) {}
+        atomic_queue(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap) : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr) {}
         ~atomic_queue() = default;
 
         atomic_queue(const atomic_queue&) = delete;

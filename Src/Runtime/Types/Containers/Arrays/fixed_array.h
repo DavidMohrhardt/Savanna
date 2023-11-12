@@ -28,11 +28,11 @@ namespace Savanna
         void* m_Buffer = nullptr;
         size_t m_Size = 0;
         size_t m_Capacity = 0;
-        const AllocatorKind m_ProviderAllocatorKind = k_SavannaAllocatorKindHeap;
+        const AllocatorKind m_ProviderAllocatorKind = kSavannaAllocatorKindHeap;
 
     public:
         fixed_array() = default;
-        fixed_array(const size_t size, const AllocatorKind providerAllocatorKind = k_SavannaAllocatorKindHeap);
+        fixed_array(const size_t size, const AllocatorKind providerAllocatorKind = kSavannaAllocatorKindHeap);
         fixed_array(const std::initializer_list<T>& list);
         fixed_array(const fixed_array& other);
         fixed_array(const dynamic_array<T>& other);
@@ -64,7 +64,7 @@ namespace Savanna
     inline fixed_array<T>::fixed_array(const size_t size, const AllocatorKind providerAllocatorKind)
         : m_Capacity(size)
         , m_Size(size)
-        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
+        , m_ProviderAllocatorKind(kSavannaAllocatorKindHeap)
     {
         SAVANNA_DEBUG_ASSERT(m_Capacity, "Can't create empty fixed array");
 
@@ -92,7 +92,7 @@ namespace Savanna
     inline fixed_array<T>::fixed_array(const std::initializer_list<T>& list)
         : m_Capacity(list.size())
         , m_Size(list.size())
-        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
+        , m_ProviderAllocatorKind(kSavannaAllocatorKindHeap)
     {
         SAVANNA_DEBUG_ASSERT(m_Capacity > 0, "Can't create empty fixed array");
 
@@ -111,7 +111,7 @@ namespace Savanna
     inline fixed_array<T>::fixed_array(const fixed_array &other)
         : m_Capacity(other.m_Capacity)
         , m_Size(other.m_Size)
-        , m_ProviderAllocatorKind(k_SavannaAllocatorKindHeap)
+        , m_ProviderAllocatorKind(kSavannaAllocatorKindHeap)
     {
         SAVANNA_DEBUG_ASSERT(m_Capacity > 0, "This shouldn't even be possible! Can't create empty fixed array");
 

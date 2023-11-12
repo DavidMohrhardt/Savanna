@@ -4,10 +4,9 @@
 
 using namespace Savanna;
 
-class Mesh
+class GpuMesh
 {
 public:
     se_GpuBufferHandle_t m_VertexBuffer;
     se_GpuBufferHandle_t m_IndexBuffer_t;
-
 };

@@ -71,8 +71,8 @@ namespace Savanna
 #endif
 
     public:
-        MultiListAllocator(const AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
-        MultiListAllocator(size_t initialBufferCount, size_t bufferBlockSize, const AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
+        MultiListAllocator(const AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
+        MultiListAllocator(size_t initialBufferCount, size_t bufferBlockSize, const AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
 
         virtual ~MultiListAllocator() = default;
 

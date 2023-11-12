@@ -41,7 +41,7 @@ namespace Savanna
             m_Size = other.m_Size;
             m_Pools = std::move(other.m_Pools);
 
-            other.m_AllocatorKind = k_SavannaAllocatorKindNone;
+            other.m_AllocatorKind = kSavannaAllocatorKindNone;
             other.m_BufferBlockSize = 0;
             other.m_AllocatedBytes = 0;
             other.m_Size = 0;

@@ -15,7 +15,7 @@
 
 #include "Types/Containers/Arrays/dynamic_array.h"
 
-#include "Gfx/GfxDriver.h"
+#include <Gfx/GfxDriver.h>
 
 #include "VkGpu.h"
 #include "VkShaderModuleCache.h"
@@ -43,11 +43,11 @@ namespace Savanna::Gfx::Vk2
         VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 
         // Helper classes
-        VkSwapchain m_Swapchain;
+        Swapchain m_Swapchain;
         VkGpu m_Gpu;
-        VkShaderModuleCache m_ShaderModuleCache;
+        ShaderModuleCache m_ShaderModuleCache;
 
-        VkDriver(const se_GfxDriverCreateInfo_t& createInfo);
+        VkDriver(const se_GfxDriverCreateInfo_t& createInfo, GfxErrorCode& outResult);
         ~VkDriver();
 
         VkDriver() = delete;
@@ -58,6 +58,10 @@ namespace Savanna::Gfx::Vk2
 
         // Declares the interface functions for the GfxDriver
         DECL_GFX_DRIVER_INTERFACE_FUNCS();
+
+        GfxErrorCode CreateInstance(
+            const se_GfxDriverCreateInfo_t& createInfo,
+            se_VkDriverCreateInfo_t& driverCreateInfo);
 
     public:
         static void PopulateDriverInterface(se_GfxDriverInterface_t& outDriverInterface);

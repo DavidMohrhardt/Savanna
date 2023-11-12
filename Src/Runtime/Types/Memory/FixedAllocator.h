@@ -31,7 +31,7 @@ namespace Savanna
         size_t m_AllocatedBytes;
 
     public:
-        FixedAllocator(size_t size, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap);
+        FixedAllocator(size_t size, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap);
         FixedAllocator(void* root, size_t size);
         FixedAllocator(FixedAllocator&& other);
 

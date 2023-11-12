@@ -51,12 +51,23 @@ namespace Savanna::Gfx::Vk2
             }
         };
 
-    se_GfxErrorCode_t VkSwapchain::Initialize(
+    Swapchain::Swapchain()
+        : m_Swapchain{ VK_NULL_HANDLE }
+        , m_SurfaceFormat {}
+        , m_PresentMode {}
+        , m_Extent {}
+        , m_Device {}
+        , m_Surface {}
+        , m_SwapchainImages {kSavannaAllocatorKindPersistent}
+        , m_SwapchainImageViews {kSavannaAllocatorKindPersistent}
+    {}
+
+    se_GfxErrorCode_t Swapchain::Initialize(
         const se_GfxSwapchainCreateInfo_t& createInfo,
         const VkGpu& gpu,
         const VkSurfaceKHR& surface)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(VkSwapchain::Initialize);
+        SAVANNA_INSERT_SCOPED_PROFILER(Swapchain::Initialize);
 
         Utils::SwapchainSupportDetails supportDetails;
         Utils::PopulateSwapchainSupportDetails(supportDetails, gpu, surface);
@@ -115,14 +126,14 @@ namespace Savanna::Gfx::Vk2
         return kSavannaGfxErrorCodeSuccess;
     }
 
-    void VkSwapchain::Reset(const VkGpu& gpu)
+    void Swapchain::Reset(const VkGpu& gpu)
     {
 
     }
 
-    void VkSwapchain::Destroy(const VkGpu &gpu)
+    void Swapchain::Destroy(const VkGpu &gpu)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(VkSwapchain::Destroy())
+        SAVANNA_INSERT_SCOPED_PROFILER(Swapchain::Destroy())
         const VkDevice& device = gpu;
 
         ReleaseImageViews(device);
@@ -134,9 +145,21 @@ namespace Savanna::Gfx::Vk2
         }
     }
 
-    void VkSwapchain::ConfigureSwapchainImageViews(const VkGpu& gpu)
+    void Swapchain::Present(
+        const VkQueue &queue,
+        const VkSemaphore &waitSemaphore)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(VkSwapchain::ConfigureSwapchainImageViews())
+
+    }
+
+    void Swapchain::AwaitPresentableImage(
+        const VkDevice &device,
+        const VkSemaphore &waitSemaphore)
+    {}
+
+    void Swapchain::ConfigureSwapchainImageViews(const VkGpu& gpu)
+    {
+        SAVANNA_INSERT_SCOPED_PROFILER(Swapchain::ConfigureSwapchainImageViews())
         const VkDevice& device = gpu;
 
         ReleaseImageViews(device);
@@ -160,7 +183,7 @@ namespace Savanna::Gfx::Vk2
         }
     }
 
-    inline void VkSwapchain::ReleaseImageViews(const VkDevice& device)
+    inline void Swapchain::ReleaseImageViews(const VkDevice& device)
     {
         if (device != VK_NULL_HANDLE)
         {

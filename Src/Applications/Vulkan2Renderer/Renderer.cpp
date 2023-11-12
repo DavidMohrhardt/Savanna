@@ -26,7 +26,7 @@ namespace vk
     bool Renderer::TryInitialize(const se_GfxContextCreateInfo_t* pCreateInfo, void* pWindowHandle)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Application::TryInitGfx);
-        auto pDefaultAllocInterface = Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(k_SavannaAllocatorKindGeneral);
+        auto pDefaultAllocInterface = Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindGeneral);
         se_GfxContextCreateInfo_t gfxContextCreateInfo;
         if (pCreateInfo != nullptr)
         {
@@ -71,7 +71,7 @@ namespace vk
         vkDriverCreateInfo.m_PhysicalDeviceCreateArgs.m_PreferredGraphicsDeviceIndex =
             -1;
 
-        dynamic_array<const char *> enabledDeviceExtensions{1, k_SavannaAllocatorKindTemp};
+        dynamic_array<const char *> enabledDeviceExtensions{1, kSavannaAllocatorKindTemp};
         if (vkDriverCreateInfo.m_RequestSurface)
         {
             enabledDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);

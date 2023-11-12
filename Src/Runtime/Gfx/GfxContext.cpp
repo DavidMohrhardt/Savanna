@@ -11,10 +11,10 @@ namespace Savanna::Gfx
     GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
         : m_Allocator(pCreateInfo != nullptr
             ? *pCreateInfo->m_pAllocatorInterface
-            : MemoryManager::GetAllocatorInterfaceForAllocatorKind(k_SavannaAllocatorKindPersistent))
+            : MemoryManager::GetAllocatorInterfaceForAllocatorKind(kSavannaAllocatorKindPersistent))
         , m_Driver {pCreateInfo != nullptr
             ? *pCreateInfo->m_pAllocatorInterface
-            : MemoryManager::GetAllocatorInterfaceForAllocatorKind(k_SavannaAllocatorKindPersistent)}
+            : MemoryManager::GetAllocatorInterfaceForAllocatorKind(kSavannaAllocatorKindPersistent)}
     {
     }
 

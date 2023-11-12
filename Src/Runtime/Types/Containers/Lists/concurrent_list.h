@@ -57,14 +57,14 @@ namespace Savanna
         se_size m_Size;
 
     public:
-        concurrent_list(AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+        concurrent_list(AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
             : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {}
 
         concurrent_list(const concurrent_list<T>& other);
         concurrent_list(concurrent_list&& other) noexcept;
 
-        concurrent_list(std::initializer_list<T> init, AllocatorKind allocatorKind = k_SavannaAllocatorKindHeap)
+        concurrent_list(std::initializer_list<T> init, AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
             : m_AllocatorKind(allocatorKind), m_Head(nullptr), m_Tail(nullptr)
         {
             for (const auto& item : init)

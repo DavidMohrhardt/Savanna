@@ -4,7 +4,7 @@
 #include <SavannaEngine.h>
 #include <Utilities/SavannaCoding.h>
 
-#include <Public/ISavannaGfx.h>
+#include <Public/ISavannaGfx.hpp>
 
 #define SAVANNA_GFX_RETURN_ERROR_CODE(__Operation) \
     {                                              \

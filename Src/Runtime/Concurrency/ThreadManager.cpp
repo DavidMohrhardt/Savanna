@@ -54,9 +54,9 @@ namespace Savanna::Concurrency
     }
 
     ThreadManager::ThreadManager()
-        : m_ThreadScratchBuffer{k_SavannaAllocatorKindGeneral}
-        , m_ThreadPool{0, k_SavannaAllocatorKindGeneral}
-        , m_ReservationStates{0, k_SavannaAllocatorKindGeneral}
+        : m_ThreadScratchBuffer{kSavannaAllocatorKindGeneral}
+        , m_ThreadPool{0, kSavannaAllocatorKindGeneral}
+        , m_ReservationStates{0, kSavannaAllocatorKindGeneral}
         , m_ReservedThreadCount(0)
     {}
 
@@ -209,7 +209,7 @@ namespace Savanna::Concurrency
     bool ThreadManager::InitializeInternal()
     {
         Info::Initialize();
-        m_ThreadScratchBuffer = MemoryBuffer{sizeof(std::thread) * k_MaxThreadCount, k_SavannaAllocatorKindGeneral};
+        m_ThreadScratchBuffer = MemoryBuffer{sizeof(std::thread) * k_MaxThreadCount, kSavannaAllocatorKindGeneral};
         m_ThreadPool.resize_initialized(k_MaxThreadCount);
         m_ReservationStates.resize_initialized(k_MaxThreadCount);
 
@@ -238,7 +238,7 @@ namespace Savanna::Concurrency
         StopInternal();
         m_ThreadPool.clear();
         m_ReservationStates.clear();
-        m_ThreadScratchBuffer = MemoryBuffer{k_SavannaAllocatorKindGeneral};
+        m_ThreadScratchBuffer = MemoryBuffer{kSavannaAllocatorKindGeneral};
     }
 } // namespace Savanna::Concurrency
 

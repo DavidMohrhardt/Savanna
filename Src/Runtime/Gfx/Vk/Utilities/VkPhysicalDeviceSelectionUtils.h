@@ -45,7 +45,7 @@ namespace Savanna::Gfx::Vk2::Utils
         }
         else
         {
-            dynamic_array<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, k_SavannaAllocatorKindTemp };
+            dynamic_array<VkPhysicalDevice> physicalDevices{ physicalDeviceCount, kSavannaAllocatorKindTemp };
             physicalDevices.resize(physicalDeviceCount);
 
             // TODO @DavidMohrhardt: Use a scratch allocator to allocate this array since it's short lived

@@ -26,8 +26,8 @@ namespace Savanna::Concurrency
 
     public:
         DependencyAwaiterJob(const JobHandle* dependencies, const se_size dependencyCount)
-            : AutoDisposeJobBase(k_SavannaAllocatorKindGeneral)
-            , m_Dependencies(dependencyCount, k_SavannaAllocatorKindGeneral)
+            : AutoDisposeJobBase(kSavannaAllocatorKindGeneral)
+            , m_Dependencies(dependencyCount, kSavannaAllocatorKindGeneral)
         {
             m_Dependencies.resize_uninitialized(dependencyCount);
             ::memcpy(m_Dependencies.data(), dependencies, dependencyCount * sizeof(JobHandle));
@@ -57,7 +57,7 @@ namespace Savanna::Concurrency
         DependentJobWrapper() = delete;
 
         DependentJobWrapper(JobHandle dependency, IJob* job)
-            : AutoDisposeJobBase(k_SavannaAllocatorKindGeneral)
+            : AutoDisposeJobBase(kSavannaAllocatorKindGeneral)
             , m_Job(job)
             , m_Dependency(dependency)
         {}
