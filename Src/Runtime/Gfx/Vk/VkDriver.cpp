@@ -6,6 +6,7 @@
 #include "Utilities/VkDebugMessenger.h"
 #include "Utilities/VkInfoCreateUtils.h"
 #include "Utilities/VkExtensionUtils.h"
+#include "Utilities/VkLibrary.h"
 #include "Utilities/VkPhysicalDeviceSelectionUtils.h"
 #include "Utilities/VkResultUtils.h"
 #include "Utilities/VkSurfaceCreateUtils.h"
@@ -69,6 +70,11 @@ namespace Savanna::Gfx::Vk2
             return kSavannaGfxErrorCodeInvalidAllocatorInterface;
         }
 
+        if (!Utils::TryLoadVulkanLibrary())
+        {
+            return kSavannaGfxErrorCodeUnknownError;
+        }
+
         VkAllocator::SetVkAllocationInterfacePtr(createInfo.m_pAllocationInterface);
 
         InterfaceAllocator allocator{ VkAllocator::GetAllocatorInterface() };
@@ -93,6 +99,8 @@ namespace Savanna::Gfx::Vk2
             allocator.Delete(g_pVulkanDriver);
             g_pVulkanDriver = nullptr;
             VkAllocator::SetVkAllocationInterfacePtr(nullptr);
+
+            Utils::UnloadVulkanLibrary();
             return kSavannaGfxErrorCodeSuccess;
         }
 
