@@ -63,6 +63,8 @@ typedef union se_quadword
 
 typedef union se_float16
 {
+    // No C++ float representation for 16 bit floats
+
     se_uint8   m_UBytes[2];
     se_uint16  m_UInt16;
     se_int8    m_Bytes[2];

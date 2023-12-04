@@ -6,6 +6,8 @@
 #include "Concurrency/ThreadManager.h"
 #include "Concurrency/JobSystem.h"
 
+// TODO @DavidMohrhardt: Move up a level. It's the GFX system's responsibility to manage the shader resources.
+
 namespace Savanna::Gfx::Vk2
 {
     inline VkResult CreateVkShaderModule(

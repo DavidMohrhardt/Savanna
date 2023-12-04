@@ -16,6 +16,9 @@
 
 #include <new>
 
+#define NO_NEW_DELETE_OVERRIDE 1
+#if NO_NEW_DELETE_OVERRIDE
+
 #undef SAVANNA_NEW
 #define SAVANNA_NEW(__allocatorKind, __type, ...) \
     new (SAVANNA_MALLOC_ALIGNED(__allocatorKind, sizeof(__type), alignof(__type))) __type(__VA_ARGS__)
@@ -43,5 +46,34 @@ namespace Savanna
         SAVANNA_FREE(allocatorKind, ptr);
     }
 }
+#else
+inline void* operator new(
+    size_t size,
+    const se_AllocatorKind_t allocatorKind,
+    const char* fileName = nullptr, int lineNo = -1)
+{
+    return SavannaMemoryManagerAllocateAligned(
+        size, alignof(se_byte), allocatorKind,
+        fileName, lineNo);
+}
+
+inline void* operator new(
+    size_t size,
+    size_t alignment,
+    const se_AllocatorKind_t allocatorKind,
+    const char* fileName = nullptr, int lineNo = -1)
+{
+    return SavannaMemoryManagerAllocateAligned(
+        size, alignof(alignment), allocatorKind,
+        fileName, lineNo);
+}
+
+inline void operator delete(
+    void* ptr,
+    const se_AllocatorKind_t allocatorKind)
+{
+    SavannaMemoryManagerFree(ptr, allocatorKind);
+}
+#endif
 
 #endif // ifndef I_SAVANNA_MEMORY_HPP

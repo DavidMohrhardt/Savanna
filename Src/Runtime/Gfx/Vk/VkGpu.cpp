@@ -12,7 +12,7 @@
 
 namespace Savanna::Gfx::Vk2
 {
-    bool VkGpu::InitializeLogicalDevice(
+    bool VkGpu::TryInitializeLogicalDevice(
         const se_VkDriverCreateInfo_t &createInfo,
         VkInstance& instance,
         VkSurfaceKHR& surface,
@@ -62,7 +62,7 @@ namespace Savanna::Gfx::Vk2
 
         vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_PhysicalDeviceProperties);
 
-        if (!InitializeLogicalDevice(createInfo, instance, surface, pAllocationCallbacks))
+        if (!TryInitializeLogicalDevice(createInfo, instance, surface, pAllocationCallbacks))
         {
             SAVANNA_LOG("Failed to initialize logical device.");
             return false;

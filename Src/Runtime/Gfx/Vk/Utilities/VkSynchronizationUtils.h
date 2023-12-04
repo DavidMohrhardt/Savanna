@@ -20,18 +20,17 @@ namespace Savanna::Gfx::Vk2::Utils
 
     struct VkSynchronizationCapabilities
     {
-        bool m_UsingSynchronization2;
-        bool m_UsingTimelineSemaphores;
+        bool m_Synchronization2Supported;
+        bool m_TimelineSemaphoresSupported;
     };
 
     class VkSynchronizationInfo
     {
     private:
-        static VkSynchronizationCapabilities m_Capabilities;
+        static VkSynchronizationCapabilities s_Capabilities;
 
     public:
-        static void Initialize(const VkGpu& gpu, const char** availableDeviceExt);
-
+        static void Initialize(const VkGpu& gpu, const char** availableDeviceExt, const size_t &extCount);
         static const VkSynchronizationCapabilities& GetCapabilities();
     };
 

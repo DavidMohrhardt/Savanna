@@ -47,6 +47,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../build/bin")
 
 # Editor Project
 
+# Helper Locations
+set(SAVANNA_EXTERNAL_FOLDER ${CMAKE_CURRENT_LIST_DIR}/External)
+
 # Runtime Library
 set(SAVANNA_CORE_LIBRARY_TYPE STATIC)
 add_subdirectory(Runtime)

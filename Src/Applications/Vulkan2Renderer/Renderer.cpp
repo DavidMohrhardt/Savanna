@@ -77,6 +77,11 @@ namespace vk
             enabledDeviceExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
         }
 
+        // Some synchonization extensions that may be useful
+        enabledDeviceExtensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
+        enabledDeviceExtensions.push_back(VK_KHR_TIMELINE_SEMAPHORE_EXTENSION_NAME);
+        // enabledDeviceExtensions.push_back(VK_NV_RAY_TRACING_EXTENSION_NAME);
+
         vkDriverCreateInfo.m_LogicalDeviceCreateArgs.m_ppEnabledDeviceExtensions =
             enabledDeviceExtensions.data();
         vkDriverCreateInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount =

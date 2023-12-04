@@ -31,7 +31,7 @@ namespace Savanna::Gfx::Vk2
         VkGpu(const VkGpu&) = delete;
         VkGpu(VkGpu&&) = delete;
 
-        bool InitializeLogicalDevice(
+        bool TryInitializeLogicalDevice(
             const se_VkDriverCreateInfo_t &createInfo,
             VkInstance &instance,
             VkSurfaceKHR& surface,
