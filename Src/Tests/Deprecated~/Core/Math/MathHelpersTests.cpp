@@ -18,7 +18,7 @@
 // #define MATH_HELPERS_TEST_F(__name) \
 //     DECLARE_MATH_TEST_F(MathHelpers, __name)
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     /**
      * @brief Tests if IsPowerOfTwo will properly return false on non-power-of-two values.
@@ -108,4 +108,4 @@ namespace Savanna::Core::Tests
             }, ".*");
     }
 
-} // namespace Savanna::Tests::Core::Math
+} // namespace savanna::Tests::Core::Math

@@ -29,7 +29,7 @@
 
 #include <atomic>
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     // TODO @David.Mohrhardt (2023/11/06): Make this a feature on the ThreadManager instead of it's own global manager.
     class JobSystem
@@ -94,4 +94,4 @@ namespace Savanna::Concurrency
 
         JobResult AwaitJobOrExecuteImmediateInternal(se_JobHandle_t dependency);
     };
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency

@@ -2,9 +2,7 @@
 
 #include "SavannaVk2.h"
 
-#include <vulkan/vulkan.h>
-
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     class DebugMessenger
     {
@@ -31,4 +29,4 @@ namespace Savanna::Gfx::Vk2::Utils
 
         ~DebugMessenger();
     };
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

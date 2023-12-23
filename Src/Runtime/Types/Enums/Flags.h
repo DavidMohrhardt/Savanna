@@ -50,7 +50,7 @@
  * @code{.cpp}
  * DECLARE_CPP_FLAG_ENUMERATION(GfxApi, se_GfxBackend_t, se_uint32);
  * // Becomes:
- * // using GfxApi = Savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>;
+ * // using GfxApi = savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>;
  * @endcode
  *
  * @arg __cppName The name of the C++ enumeration.
@@ -62,7 +62,7 @@
  */
 #undef DECLARE_CPP_FLAG_ENUMERATION
 #define DECLARE_CPP_FLAG_ENUMERATION(__cppName, __cName, __value_type) \
-    using __cppName = Savanna::FlagEnumeration<__cName, __value_type>
+    using __cppName = savanna::FlagEnumeration<__cName, __value_type>
 
 /**
  * @brief Declares a namespaced C++ flag enumeration wrapper for a C enumeration.
@@ -70,9 +70,9 @@
  *
  * Example:
  * @code{.cpp}
- * DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(Savanna::Gfx, GfxApi, se_GfxBackend_t, se_uint32);
+ * DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(savanna::Gfx, GfxApi, se_GfxBackend_t, se_uint32);
  * // Becomes:
- * // namespace Savanna::Gfx { using GfxApi = Savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>; }
+ * // namespace savanna::Gfx { using GfxApi = savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>; }
  * @endcode
  *
  * @arg __nameSpace The namespace to declare the enumeration in.
@@ -95,9 +95,9 @@
  *
  * Example:
  * @code{.cpp}
- * DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(Savanna::Gfx, GfxApi, se_GfxBackend_t, se_GfxBackend_t, se_uint32);
+ * DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(savanna::Gfx, GfxApi, se_GfxBackend_t, se_GfxBackend_t, se_uint32);
  * // Becomes:
- * // namespace Savanna::Gfx { using GfxApi = Savanna::ExternalFlagEnumeration<se_GfxBackend_t, se_GfxBackend_t, se_uint32>; }
+ * // namespace savanna::Gfx { using GfxApi = savanna::ExternalFlagEnumeration<se_GfxBackend_t, se_GfxBackend_t, se_uint32>; }
  * @endcode
  *
  * @arg __nameSpace The namespace to declare the enumeration in.
@@ -109,7 +109,7 @@
  */
 #undef DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION
 #define DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __external_enum, __value_type) \
-    namespace __nameSpace { using __cppName = Savanna::ExternalFlagEnumeration<__cName, __external_enum, __value_type>; }
+    namespace __nameSpace { using __cppName = savanna::ExternalFlagEnumeration<__cName, __external_enum, __value_type>; }
 
 #endif // defined(__cplusplus)
 
@@ -119,7 +119,7 @@
 
 #define DEFINE_SAVANNA_FLAG_ENUMERATION(__cppName, __cName, __value_type, ...) \
     DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
-    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(Savanna, __cppName, __cName, __value_type)
+    DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(savanna, __cppName, __cName, __value_type)
 
 #define DEFINE_NAMESPACED_FLAG_ENUMERATION(__nameSpace, __cppName, __cName, __value_type, ...) \
     DEFINE_C_FLAG_ENUMERATION(__cName, __value_type, __VA_ARGS__) \
@@ -131,7 +131,7 @@
 
 #if defined(__cplusplus)
 
-namespace Savanna
+namespace savanna
 {
     template <typename enum_type, typename value_type>
     struct FlagEnumeration : public Enumeration<enum_type, value_type>

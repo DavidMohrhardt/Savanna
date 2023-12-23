@@ -18,7 +18,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace Savanna
+namespace savanna
 {
     // Specialize IHashString for std string and char*
     class StdHashString : public IHashString

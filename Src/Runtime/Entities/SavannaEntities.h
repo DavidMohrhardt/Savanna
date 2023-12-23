@@ -13,8 +13,8 @@
 
 #include "ComponentParadigm.h"
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     using Entity = se_Entity_t;
     using ComponentKey = se_ComponentKey_t;
-} // namespace Savanna::Entities
+} // namespace savanna::Entities

@@ -19,7 +19,7 @@
 
 #include <atomic>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     class EntitiesManager final : public GlobalManager<EntitiesManager>
     {
@@ -44,4 +44,4 @@ namespace Savanna::Entities
     public:
         static void Update();
     };
-} // namespace Savanna::Entities
+} // namespace savanna::Entities

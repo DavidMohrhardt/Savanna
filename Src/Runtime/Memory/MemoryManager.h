@@ -15,7 +15,7 @@
 
 #include "Types/Memory/Allocators.h"
 
-namespace Savanna
+namespace savanna
 {
     class MemoryManager final : public GlobalManager<MemoryManager>
     {

@@ -2,7 +2,7 @@
 #include <concept>
 #include <type_traits>
 
-namespace Savanna
+namespace savanna
 {
     template <int COUNT>
     class LoopUnroller

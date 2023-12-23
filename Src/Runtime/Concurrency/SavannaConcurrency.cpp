@@ -14,7 +14,7 @@
 
 #include <thread>
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     static std::thread::id s_MainThreadId;
 
@@ -26,11 +26,11 @@ namespace Savanna::Concurrency
             return true;
         }();
     }
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency
 
 #include "ThreadManager.h"
 
-using namespace Savanna::Concurrency;
+using namespace savanna::Concurrency;
 
 SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread()
 {

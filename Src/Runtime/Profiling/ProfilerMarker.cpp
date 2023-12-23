@@ -7,7 +7,7 @@
 #include "Utilities/Console.h"
 #include "Utilities/SavannaCoding.h"
 
-namespace Savanna
+namespace savanna
 {
     // Forward declarations
     class SavannaProfilingManager;

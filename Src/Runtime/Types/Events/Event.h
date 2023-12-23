@@ -4,7 +4,7 @@
 #include <mutex>
 #include <vector>
 
-namespace Savanna
+namespace savanna
 {
     template <typename... Args>
     struct Delegate

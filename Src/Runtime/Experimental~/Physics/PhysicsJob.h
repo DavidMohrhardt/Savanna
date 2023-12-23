@@ -17,7 +17,7 @@
 
 #include "PhysicsInstance.h"
 
-namespace Savanna::Physics
+namespace savanna::Physics
 {
 
     struct PhysicsJob

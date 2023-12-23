@@ -1,6 +1,6 @@
 #include "AutoDisposeJob.h"
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     inline void AutoDisposeJobBase::Dispose()
     {
@@ -31,4 +31,4 @@ namespace Savanna::Concurrency
 
         return JobResult::k_SavannaJobResultInvalid;
     }
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency

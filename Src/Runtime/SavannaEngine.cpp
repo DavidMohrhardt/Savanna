@@ -5,7 +5,7 @@
 #include <Concurrency/ThreadManager.h>
 #include <Concurrency/JobSystem.h>
 
-using namespace Savanna;
+using namespace savanna;
 
 struct GlobalManagerFunctionTable
 {

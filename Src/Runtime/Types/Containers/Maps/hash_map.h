@@ -16,7 +16,7 @@
 
 #include <initializer_list>
 
-namespace Savanna
+namespace savanna
 {
     class MemoryManager;
 

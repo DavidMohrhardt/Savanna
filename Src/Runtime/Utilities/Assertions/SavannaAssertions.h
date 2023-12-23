@@ -14,7 +14,7 @@
 #if __cplusplus
 
 #include <assert.h>
-#include "Types/Exceptions/SavannaException.h"
+
 
 #else // __cplusplus
 #include <cassert>

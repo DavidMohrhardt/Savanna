@@ -5,7 +5,7 @@
 #include <IO/FileStream.h>
 #include <IO/VirtualFileSystem.h>
 
-namespace Savanna::Gfx::Vk
+namespace savanna::Gfx::Vk
 {
     const char* k_DefaultShaderPaths[] = {
         "Assets/SPIRV/SimpleTriangle.vert.spv",
@@ -87,4 +87,4 @@ namespace Savanna::Gfx::Vk
         // JobSystem::Get()->AwaitCompletion(JobSystem::Get()->ScheduleJobBatch(shaderCreateJobPtrs, 2));
     }
 
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

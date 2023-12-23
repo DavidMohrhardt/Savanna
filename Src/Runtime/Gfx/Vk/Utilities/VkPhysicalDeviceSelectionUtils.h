@@ -14,7 +14,7 @@
 
 #include "VkPhysicalDeviceScoringUtils.h"
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     // TODO needs a refactor
     inline bool TrySelectPhysicalDevice(
@@ -22,7 +22,7 @@ namespace Savanna::Gfx::Vk2::Utils
         VkPhysicalDevice& outPhysicalDevice,
         const se_VkPhysicalDeviceCreateArgs_t& physicalDeviceCreateArgs)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(Savanna::Gfx::Vk2::Utils::TrySelectPhysicalDevice);
+        SAVANNA_INSERT_SCOPED_PROFILER(savanna::Gfx::Vk2::Utils::TrySelectPhysicalDevice);
         uint32 physicalDeviceCount = 0;
         VK_MUST_SUCCEED_RETURN(vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr),
             "Failed to enumerate physical devices.",
@@ -72,4 +72,4 @@ namespace Savanna::Gfx::Vk2::Utils
 
         return outPhysicalDevice != VK_NULL_HANDLE;
     }
-} // namespace Savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::Vk2::Utils

@@ -83,7 +83,7 @@
     }
 
 #define IMPLEMENT_SAVANNA_EXTENDED_NAMESPACED_CPP_CLASS_WRAPPER(__namespace, __cName, __cppName) \
-    namespace Savanna::__namespace \
+    namespace savanna::__namespace \
     { \
         __GEN_WRAPPER_CLASS(__cName, __cppName) \
     }

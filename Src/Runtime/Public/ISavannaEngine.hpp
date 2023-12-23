@@ -13,7 +13,7 @@
 #define I_SAVANNA_ENGINE_HPP
 #include "ISavannaEngine.h"
 
-namespace Savanna
+namespace savanna
 {
     using byte = se_byte;
     using ubyte = se_ubyte;

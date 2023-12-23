@@ -8,10 +8,10 @@
 #define DECLARE_COMPONENT_REGISTRY_TEST(__name) \
     DECLARE_ENTITIES_TEST(ComponentRegistry, __name)
 
-namespace Savanna::Entities::Tests
+namespace savanna::Entities::Tests
 {
     // using namespace Savanna;
-    using namespace Savanna::Entities;
+    using namespace savanna::Entities;
 
     DECLARE_COMPONENT_REGISTRY_TEST(TestCustomComponentDataGetsRegistered)
     {

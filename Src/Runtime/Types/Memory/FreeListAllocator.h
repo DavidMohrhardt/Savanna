@@ -20,7 +20,7 @@
 #include <unordered_map>
 #endif // SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
 
-namespace Savanna
+namespace savanna
 {
     struct MemoryChunkDescriptor;
 

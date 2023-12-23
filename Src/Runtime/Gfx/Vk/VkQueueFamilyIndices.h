@@ -7,7 +7,7 @@
 
 #include <optional>
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     struct VkQueueFamilyIndices
     {
@@ -93,4 +93,4 @@ namespace Savanna::Gfx::Vk2
                 || HasSparseBindingQueueFamilyIndex();
         }
     };
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

@@ -1,6 +1,6 @@
 #include "VkDebugMessenger.h"
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     static DebugMessenger* g_DebugMessenger = nullptr;
 
@@ -77,7 +77,7 @@ namespace Savanna::Gfx::Vk2::Utils
         auto result = CreateDebugUtilsMessengerEXT(m_CreatorInstance, pDebugCreateInfo, m_AllocationCallbacks, &m_DebugMessenger);
         if (result != VK_SUCCESS)
         {
-            throw Savanna::RuntimeErrorException("Unable to create debug messenger.");
+            // TODO @davidmo refactor to not be a class constructor but a factory function
         }
     }
 
@@ -89,4 +89,4 @@ namespace Savanna::Gfx::Vk2::Utils
             func(m_CreatorInstance, m_DebugMessenger, m_AllocationCallbacks);
         }
     }
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

@@ -12,7 +12,7 @@
 #include "SavannaConfiguration.gen.h"
 #include "ProfilerMarker.h"
 
-namespace Savanna
+namespace savanna
 {
     class ProfilerManager
     {

@@ -22,7 +22,7 @@
 #include "PhysicsJob.h"
 #include "TriggerVolume.h"
 
-namespace Savanna::Physics
+namespace savanna::Physics
 {
 
     struct PhysicsManager

@@ -17,7 +17,7 @@
 
 #include <atomic>
 
-namespace Savanna
+namespace savanna
 {
     template <typename T>
     class LocklessStack

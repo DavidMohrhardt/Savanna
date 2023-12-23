@@ -2,7 +2,7 @@
 
 #include "SavannaConcurrency.h"
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     static const uint8 k_MaxThreadCount = std::thread::hardware_concurrency() - 1;
 
@@ -240,10 +240,10 @@ namespace Savanna::Concurrency
         m_ReservationStates.clear();
         m_ThreadScratchBuffer = MemoryBuffer{kSavannaAllocatorKindGeneral};
     }
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency
 
 // PUBLIC API
-using namespace Savanna::Concurrency;
+using namespace savanna::Concurrency;
 
 SAVANNA_EXPORT(se_bool) SavannaConcurrencyThreadManagerTryAcquireThreads(
     se_uint8 requestedThreads,

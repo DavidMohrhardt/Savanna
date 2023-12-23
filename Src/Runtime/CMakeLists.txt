@@ -23,7 +23,8 @@ set(subdir_list
     Entities
     Gfx
     IO
-    OS)
+    OS
+    Scripting)
 
 foreach(subdir IN ITEMS ${subdir_list})
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/${subdir})

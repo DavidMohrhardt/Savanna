@@ -12,7 +12,7 @@
 
 #include "Concurrency/SavannaConcurrency.h"
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     static consteval size_t GetGfxDriverInterfaceSizeInPtrs()
     {
@@ -111,4 +111,4 @@ namespace Savanna::Gfx
 
         return (*m_pInterface).m_pfnCreateShaderModulesAsync(pCreateInfos, createInfoCount, ppOutShaderModuleHandles);
     }
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx

@@ -5,7 +5,7 @@
 #include <concepts>
 #include <type_traits>
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief Moves the contents of b into a and sets b to its default value. Must be a POD type.
@@ -52,8 +52,8 @@ namespace Savanna
         b = decltype(b)();
     }
 
-#   define SAVANNA_MOVE(a, b) Savanna::Move(a, b)
-#   define SAVANNA_MOVE_ASSIGN(a, b) Savanna::MoveAndAssign(a, b)
+#   define SAVANNA_MOVE(a, b) savanna::Move(a, b)
+#   define SAVANNA_MOVE_ASSIGN(a, b) savanna::MoveAndAssign(a, b)
 
 #   define SAVANNA_MOVE_MEMBER(__name, __other) SAVANNA_MOVE(this->__name, __other.__name)
 #   define SAVANNA_MOVE_MEMBER_ASSIGN(__name, __other) SAVANNA_MOVE_ASSIGN(this->__name, __other.__name)

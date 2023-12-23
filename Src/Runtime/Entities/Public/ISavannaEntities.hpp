@@ -24,7 +24,7 @@
 
 #endif
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     /**
      * @brief Represents an invalid component key.
@@ -102,7 +102,7 @@ namespace Savanna::Entities
     };
 
 
-} // namespace Savanna::Entities
+} // namespace savanna::Entities
 
 SAVANNA_EXPORT(void) SavannaEntitiesRegisterComponent(void* pComponent);
 

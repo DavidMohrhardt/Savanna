@@ -10,7 +10,7 @@
 
 #include "Public/ISavannaEntities.hpp"
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     /**
      * @brief Describes the information needed to calculate the layout of a component paradigm.

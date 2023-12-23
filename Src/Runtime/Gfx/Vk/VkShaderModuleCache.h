@@ -21,7 +21,7 @@
 
 #include <unordered_map>
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     using namespace Concurrency;
     class ShaderModuleCache
@@ -69,4 +69,4 @@ namespace Savanna::Gfx::Vk2
             const se_GfxShaderHandle_t& shaderModuleHandle,
             VkShaderModule& outShaderModule);
     };
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

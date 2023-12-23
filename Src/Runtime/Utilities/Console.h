@@ -25,13 +25,13 @@
 
 #define SAVANNA_FATAL_LOG(...) \
 { \
-    Savanna::Console::Print("[FATAL]: " __VA_ARGS__); \
+    savanna::Console::Print("[FATAL]: " __VA_ARGS__); \
 }
 
 #if SAVANNA_LOG_LEVEL > 0
 #define SAVANNA_WARNING_LOG(...) \
     { \
-        Savanna::Console::Print("[WARNING]: " __VA_ARGS__); \
+        savanna::Console::Print("[WARNING]: " __VA_ARGS__); \
     }
 #else
     #define SAVANNA_WARNING_LOG(...)
@@ -40,7 +40,7 @@
 #if SAVANNA_LOG_LEVEL >= SAVANNA_LOG_LEVEL_DEBUG
     #define SAVANNA_DEBUG_LOG(...) \
     { \
-        Savanna::Console::Print("[DEBUG]: " __VA_ARGS__); \
+        savanna::Console::Print("[DEBUG]: " __VA_ARGS__); \
     }
 #else
     #define SAVANNA_DEBUG_LOG(...)
@@ -48,10 +48,10 @@
 
 #define SAVANNA_LOG(...) \
     { \
-        Savanna::Console::Print(__VA_ARGS__); \
+        savanna::Console::Print(__VA_ARGS__); \
     }
 
-namespace Savanna
+namespace savanna
 {
     // Forward declare log
     class ConsoleLogger;

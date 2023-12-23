@@ -11,19 +11,17 @@
 #pragma once
 
 #include <SavannaEngine.h>
-#include <Types/Singleton/Singleton.h>
-
-#include "Types/Containers/Arrays/dynamic_array.h"
-
 #include <Gfx/GfxDriver.h>
+#include "SavannaVk2.h"
 
 #include "VkGpu.h"
 #include "VkShaderModuleCache.h"
 #include "VkSwapchain.h"
 
-#include <vulkan/vulkan.h>
+#include <Types/Singleton/Singleton.h>
+#include <Types/Containers/Arrays/dynamic_array.h>
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     /**
      * @brief Provides the acquisition interface for the Vulkan api.
@@ -34,7 +32,7 @@ namespace Savanna::Gfx::Vk2
     {
     private:
         // For access to Allocator::New<VkDriver> and Allocator::Delete<VkDriver>
-        friend class Savanna::Allocator;
+        friend class savanna::Allocator;
         friend class VkAllocator;
 
         static se_AllocatorInterface_t s_AllocatorInterface;
@@ -68,4 +66,4 @@ namespace Savanna::Gfx::Vk2
 
         void Teardown();
     };
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx

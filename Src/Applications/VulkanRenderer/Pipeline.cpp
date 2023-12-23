@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace Savanna::Gfx::Vk
+namespace savanna::Gfx::Vk
 {
     void Pipeline::Create(
         const VkDevice& device,
@@ -22,4 +22,4 @@ namespace Savanna::Gfx::Vk
         vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
     }
 
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

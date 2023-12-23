@@ -12,7 +12,7 @@
 
 #include "Public/ISavannaEngine.hpp"
 
-namespace Savanna
+namespace savanna
 {
     template<typename T>
     class Optional

@@ -12,7 +12,7 @@
 
 #include "Public/ISavannaEngine.h"
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief A base class for all Hashables.

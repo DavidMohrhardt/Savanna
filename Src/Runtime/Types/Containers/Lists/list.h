@@ -19,7 +19,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace Savanna
+namespace savanna
 {
     // Implements the same interface as std::list except it accepts a AllocatorKind
     template <typename T>
@@ -277,7 +277,7 @@ namespace Savanna
     }
 
     template<typename T>
-    inline void Savanna::list<T>::push_back(const T & value)
+    inline void savanna::list<T>::push_back(const T & value)
     {
         Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, value };
@@ -297,7 +297,7 @@ namespace Savanna
     }
 
     template<typename T>
-    inline void Savanna::list<T>::push_back(T && value)
+    inline void savanna::list<T>::push_back(T && value)
     {
         Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::move(value) };
@@ -317,7 +317,7 @@ namespace Savanna
     }
 
     template<typename T>
-    inline void Savanna::list<T>::push_front(const T & value)
+    inline void savanna::list<T>::push_front(const T & value)
     {
         Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, value };
@@ -337,7 +337,7 @@ namespace Savanna
     }
 
     template<typename T>
-    inline void Savanna::list<T>::push_front(T && value)
+    inline void savanna::list<T>::push_front(T && value)
     {
         Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::move(value) };
@@ -358,7 +358,7 @@ namespace Savanna
 
     template<typename T>
     template<typename ...Args>
-    inline T & Savanna::list<T>::emplace_back(Args && ...args)
+    inline T & savanna::list<T>::emplace_back(Args && ...args)
     {
         Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::forward<Args>(args)... };
@@ -381,7 +381,7 @@ namespace Savanna
 
     template<typename T>
     template<typename ...Args>
-    inline T & Savanna::list<T>::emplace_front(Args && ...args)
+    inline T & savanna::list<T>::emplace_front(Args && ...args)
     {
         Node* node = SAVANNA_NEW(m_AllocatorKind, Node);
         *node = { nullptr, nullptr, std::forward<Args>(args)... };

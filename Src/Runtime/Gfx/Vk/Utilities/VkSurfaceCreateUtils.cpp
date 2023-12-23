@@ -25,7 +25,7 @@
 
 #endif
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     VkSurfaceKHR CreateSurface(const VkInstance& instance, void* pWindowHandle, const VkAllocationCallbacks* pAllocCallbacks)
     {
@@ -38,7 +38,8 @@ namespace Savanna::Gfx::Vk2::Utils
         createInfo.hinstance = GetModuleHandle(nullptr);
         createInfo.hwnd = windowHandle;
 
-        if (vkCreateWin32SurfaceKHR(instance, &createInfo, pAllocCallbacks, &surface) != VK_SUCCESS)
+        auto vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)vkGetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR");
+        if (vkCreateWin32SurfaceKHR == nullptr || vkCreateWin32SurfaceKHR(instance, &createInfo, pAllocCallbacks, &surface) != VK_SUCCESS)
         {
             return VK_NULL_HANDLE;
         }
@@ -48,4 +49,4 @@ namespace Savanna::Gfx::Vk2::Utils
 
         return surface;
     }
-} // namespace Savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::Vk2::Utils

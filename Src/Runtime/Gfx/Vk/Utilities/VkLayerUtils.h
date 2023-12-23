@@ -3,7 +3,7 @@
 #include "SavannaVk2.h"
 #include "Types/Containers/Arrays/dynamic_array.h"
 
-namespace Savanna::Gfx::Vk::Utils
+namespace savanna::Gfx::Vk::Utils
 {
     const char* k_DefaultValidationLayerName = "VK_LAYER_KHRONOS_validation";
 
@@ -30,8 +30,8 @@ namespace Savanna::Gfx::Vk::Utils
         {
             if (!IsLayerSupported(ppLayers[i], supportedLayers))
             {
-                throw Savanna::RuntimeErrorException("Layer requested layer is not supported");
+                throw savanna::RuntimeErrorException("Layer requested layer is not supported");
             }
         }
     }
-} // namespace Savanna::Gfx::Vk::Utils
+} // namespace savanna::Gfx::Vk::Utils

@@ -18,7 +18,7 @@
 
 struct se_GfxShader_t;
 
-DECLARE_NAMESPACED_ENUMERATION(Savanna::Gfx, GfxProgramType, GfxProgramType, uint8_t,
+DECLARE_NAMESPACED_ENUMERATION(savanna::Gfx, GfxProgramType, GfxProgramType, uint8_t,
     k_SavannaGfxProgramTypeUnknown = 0,
 
     k_SavannaGfxProgramTypeVertex,
@@ -54,7 +54,7 @@ typedef se_uint64_t se_GfxProgramHandle_t;
 
 #if defined(__cplusplus)
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     class GpuProgram
     {
@@ -71,7 +71,7 @@ namespace Savanna::Gfx
         GfxProgramType GetType() const { return m_Type; }
         const GfxShader* GetShader() const { return m_pShader; }
     };
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx
 
 
 #endif // defined(__cplusplus)

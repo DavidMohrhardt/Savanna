@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     template <typename T>
     class ListUnitTestAdaptor
@@ -195,4 +195,4 @@ public:
             return m_List != other.m_List;
         }
     };
-} // namespace Savanna::Core::Tests
+} // namespace savanna::Core::Tests

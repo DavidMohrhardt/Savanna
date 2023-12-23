@@ -1,7 +1,7 @@
 #ifndef __TRIGGER_VOLUME_H__
 #define __TRIGGER_VOLUME_H__
 
-namespace Savanna::Reference
+namespace savanna::Reference
 {
     namespace Components
     {

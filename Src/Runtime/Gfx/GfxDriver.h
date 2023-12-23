@@ -17,7 +17,7 @@
 
 #include <Concurrency/SavannaConcurrency.h>
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     class GfxDriver
     {
@@ -27,7 +27,7 @@ namespace Savanna::Gfx
         se_GfxDriverInterface_t* m_pInterface = nullptr;
         InterfaceAllocator m_Allocator;
 
-        void SetInterface(se_GfxDriverInterface_t& interface);
+        void SetInterface(se_GfxDriverInterface_t& driverInterface);
         void ClearInterface();
 
     public:
@@ -64,6 +64,6 @@ namespace Savanna::Gfx
             const size_t createInfoCount,
             se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
     };
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx
 
 #endif // !SAVANNA_GFX_DRIVER_H

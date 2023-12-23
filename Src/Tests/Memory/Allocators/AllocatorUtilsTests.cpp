@@ -14,7 +14,7 @@
 #define DECLARE_ALLOCATOR_UTILS_TEST(__name) \
     DECLARE_ALLOCATOR_TEST(UtilsTest, __name)
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     DECLARE_ALLOCATOR_UTILS_TEST(GetForwardAlignmentProducesTheCorrectResult)
     {
@@ -40,4 +40,4 @@ namespace Savanna::Core::Tests
         uintptr forwardAlignedPtr = reinterpret_cast<uintptr>(GetForwardAlignedPtr<void, void>(reinterpret_cast<void*>(ptr), alignment));
         EXPECT_EQ(forwardAlignedPtr, 8);
     }
-} // namespace Savanna::Testing::Core::Memory::Allocators
+} // namespace savanna::Testing::Core::Memory::Allocators

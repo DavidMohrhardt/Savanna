@@ -14,7 +14,7 @@
 
 #include "Utilities/VkSwapchainUtils.h"
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     inline static constexpr VkImageViewCreateInfo k_DefaultSwapchainImageViewCreateInfo {
             // VkStructureType            sType;
@@ -196,4 +196,4 @@ namespace Savanna::Gfx::Vk2
             }
         }
     }
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

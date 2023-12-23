@@ -10,7 +10,7 @@
 
 #include <unordered_set>
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     bool VkGpu::TryInitializeLogicalDevice(
         const se_VkDriverCreateInfo_t &createInfo,
@@ -62,11 +62,15 @@ namespace Savanna::Gfx::Vk2
 
         vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_PhysicalDeviceProperties);
 
+        LoadLibraryPhase2();
+
         if (!TryInitializeLogicalDevice(createInfo, instance, surface, pAllocationCallbacks))
         {
             SAVANNA_LOG("Failed to initialize logical device.");
             return false;
         }
+
+        LoadLibraryPhase3();
 
         return true;
     }
@@ -83,4 +87,4 @@ namespace Savanna::Gfx::Vk2
         m_PhysicalDevice = VK_NULL_HANDLE;
         m_PhysicalDeviceProperties = {};
     }
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

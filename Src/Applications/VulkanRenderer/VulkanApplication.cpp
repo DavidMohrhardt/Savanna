@@ -32,9 +32,9 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 using namespace Savanna;
-using namespace Savanna::Concurrency;
+using namespace savanna::Concurrency;
 
-using namespace Savanna::Gfx::Vk;
+using namespace savanna::Gfx::Vk;
 
 const char* k_ApplicationName = "Savanna";
 const char* k_EngineName = "No Engine";

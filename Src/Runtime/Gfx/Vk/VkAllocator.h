@@ -12,11 +12,11 @@
 
 #include <SavannaEngine.h>
 
-#include <vulkan/vulkan.h>
+#include "SavannaVk2.h"
 
 #define SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING 1
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     class VkAllocator
     {

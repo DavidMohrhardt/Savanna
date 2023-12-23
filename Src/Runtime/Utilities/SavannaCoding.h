@@ -35,7 +35,7 @@
 // For headers that explicitly only work in C++
 #include "Types/Classes/Immovable.h"
 #include "Types/Classes/NonCopyable.h"
-#include "Types/Exceptions/SavannaException.h"
+
 
 #include "Utilities/Semantics/Move.h"
 #include "Utilities/Semantics/SizeOf.h"

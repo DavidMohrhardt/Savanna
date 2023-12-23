@@ -16,7 +16,7 @@
 #include <Utilities/SavannaCoding.h>
 
 // Vulkan Includes
-#include <vulkan/vulkan.h>
+#include "VkIncludes.h"
 
 // Savanna Vulkan Includes
 #include "Public/ISavannaGfx.h"
@@ -45,27 +45,27 @@
         } \
     }
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     // Using Declarations for ISavannaGfxVk2.h types
     using VkGraphicsCapabilities = se_VkGraphicsCapabilities_t;
     using VkQueueKind = Enumeration<se_VkQueueKind_t, uint8_t>;
     using VkQueueFlags = FlagEnumeration<se_VkQueueFlags_t, uint8_t>;
 
-    inline static VkAllocationCallbacks* g_VkAllocationCallbacks = nullptr;
-
-    /**
-     * @brief TODO @David.Mohrhardt Document
-     *
-     * @param pCreateInfo
-     * @param ppDriver
-     * @param pUserData
-     * @param allocatorInterface
-     * @return se_GfxErrorCode_t
-     */
-    se_GfxErrorCode_t GetDriverInterface(se_GfxDriverInterface_t& outDriverInterface);
+    // inline static VkAllocationCallbacks* g_VkAllocationCallbacks = nullptr;
 
     inline se_GfxErrorCode_t GetErrorCode(VkResult result);
 }
+
+/**
+ * @brief TODO @David.Mohrhardt Document
+ *
+ * @param pCreateInfo
+ * @param ppDriver
+ * @param pUserData
+ * @param allocatorInterface
+ * @return se_GfxErrorCode_t
+ */
+se_GfxErrorCode_t GetDriverInterfaceVulkan(se_GfxDriverInterface_t& outDriverInterface);
 
 #endif // !SAVANNA_GFX_VK2_H

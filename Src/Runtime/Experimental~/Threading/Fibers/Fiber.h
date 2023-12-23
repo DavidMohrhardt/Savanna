@@ -24,7 +24,7 @@ namespace Savanna
 #include "FiberAsmMacros.h"
 
 // Use portable fibers
-namespace Savanna
+namespace savanna
 {
     struct alignas(8) FiberAllocationInfo
     {

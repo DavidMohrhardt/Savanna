@@ -1,4 +1,4 @@
-message(STATUS "[${SAVANNA_ACTIVE_TARGET}] Processing Module [Savanna::Entities]")
+message(STATUS "[${SAVANNA_ACTIVE_TARGET}] Processing Module [savanna::Entities]")
 
 collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
 

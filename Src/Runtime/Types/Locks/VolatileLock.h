@@ -14,7 +14,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief A lock that leverages the properties of the volatile keyword to ensure that the compiler

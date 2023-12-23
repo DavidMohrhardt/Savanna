@@ -12,7 +12,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-namespace Savanna
+namespace savanna
 {
     struct MemoryBuffer : public NonCopyable
     {
@@ -38,4 +38,4 @@ namespace Savanna
         void Reset();
         void Resize(const size_t size);
     };
-} // namespace Savanna::Memory
+} // namespace savanna::Memory

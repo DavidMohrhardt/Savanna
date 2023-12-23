@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace Savanna
+namespace savanna
 {
     template <typename T>
     struct MemoryManagerDeleter

@@ -17,7 +17,7 @@
 #include <mutex>
 #include <thread>
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     class ConcurrencyTestFramework : public ::testing::Test
     {

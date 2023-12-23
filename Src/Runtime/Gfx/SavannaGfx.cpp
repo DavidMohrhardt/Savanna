@@ -13,7 +13,7 @@
 
 #include "Concurrency/JobSystem.h"
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     inline GfxErrorCode Initialize(const se_GfxContextCreateInfo_t *const pCreateInfo)
     {
@@ -116,52 +116,52 @@ namespace Savanna::Gfx
         }
         return kSavannaGfxErrorCodeNotInitialized;
     }
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx
 
 // Public API
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxInit(const se_GfxContextCreateInfo_t* const pCreateInfo)
 {
-    return Savanna::Gfx::Initialize(pCreateInfo);
+    return savanna::Gfx::Initialize(pCreateInfo);
 }
 
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxShutdown()
 {
-    return Savanna::Gfx::Shutdown();
+    return savanna::Gfx::Shutdown();
 }
 
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxContextCreateDriver(
     const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
 {
-    return Savanna::Gfx::CreateDriver(pCreateInfoList);
+    return savanna::Gfx::CreateDriver(pCreateInfoList);
 }
 
 SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends()
 {
-    return Savanna::Gfx::GetSupportedGfxBackends();
+    return savanna::Gfx::GetSupportedGfxBackends();
 }
 
 SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend()
 {
-    return Savanna::Gfx::GetActiveGfxBackend();
+    return savanna::Gfx::GetActiveGfxBackend();
 }
 
 SAVANNA_EXPORT(se_GfxHandle_t) SavannaGfxGetDriverHandle()
 {
-    return Savanna::Gfx::GetDriverHandle();
+    return savanna::Gfx::GetDriverHandle();
 }
 
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
     const se_GfxSwapchainCreateInfo_t* const pCreateInfo,
     se_GfxHandle_t* const pOutSwapchainHandle)
 {
-    return Savanna::Gfx::CreateSwapchain(pCreateInfo, pOutSwapchainHandle);
+    return savanna::Gfx::CreateSwapchain(pCreateInfo, pOutSwapchainHandle);
 }
 
 SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateShaderModule(
     const se_GfxShaderCreateInfo_t& createInfo,
     se_GfxShaderHandle_t& outShaderModuleHandle)
 {
-    return Savanna::Gfx::CreateShaderModule(createInfo, outShaderModuleHandle);
+    return savanna::Gfx::CreateShaderModule(createInfo, outShaderModuleHandle);
 }
 
 SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
@@ -169,5 +169,5 @@ SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
     const size_t createInfoCount,
     se_GfxShaderHandle_t** const ppOutShaderModuleHandles)
 {
-    return Savanna::Gfx::CreateShaderModulesAsync(pCreateInfos, createInfoCount, ppOutShaderModuleHandles);
+    return savanna::Gfx::CreateShaderModulesAsync(pCreateInfos, createInfoCount, ppOutShaderModuleHandles);
 }

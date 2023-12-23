@@ -6,7 +6,7 @@
 #define GETMAX(a, b) (a > b ? a : b)
 #define GETMIN(a, b) (a < b ? a : b)
 
-namespace Savanna::Reference
+namespace savanna::Reference
 {
 namespace Components
 {
@@ -51,7 +51,7 @@ Handle PhysicsManager::generateTriggerFromRawData(TriggerVolume * pVolume, const
     }
     else
     {
-        Savanna::Handle hPC(asset, sizeof(PhysicsComponent));
+        savanna::Handle hPC(asset, sizeof(PhysicsComponent));
         PhysicsComponent *pPhysicsComponent = new (hPC) PhysicsComponent(*m_pContext, m_arena, hPC);
 
         Vector3 vecMid, vec;
@@ -79,7 +79,7 @@ Handle PhysicsManager::generateLofiFromRawColliderData(const char * asset, const
     }
     else
     {
-        Savanna::Handle hPC(asset, sizeof(PhysicsComponent));
+        savanna::Handle hPC(asset, sizeof(PhysicsComponent));
         PhysicsComponent *pPhysicsComponent = new (hPC) PhysicsComponent(*m_pContext, m_arena, hPC);
 
         Vector3 vecMid, vec;
@@ -155,7 +155,7 @@ Handle PhysicsManager::readLoFiColliderFromFile(
             vec *= 0.5f;
             // Vec = midpoint
 
-            Savanna::Handle hPC(asset, sizeof(PhysicsComponent));
+            savanna::Handle hPC(asset, sizeof(PhysicsComponent));
             PhysicsComponent *pPhysicsComponent = new (hPC) PhysicsComponent(*m_pContext, m_arena, hPC);
             switch (collisionMask)
             {

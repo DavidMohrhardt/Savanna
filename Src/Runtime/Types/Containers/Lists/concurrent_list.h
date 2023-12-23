@@ -21,7 +21,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace Savanna
+namespace savanna
 {
 
     // Implements the same interface as std::list except it accepts a AllocatorKind

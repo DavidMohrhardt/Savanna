@@ -1,6 +1,6 @@
 #include "EngineThread.h"
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     EngineThread::EngineThread()
         : m_pThread(nullptr)
@@ -79,4 +79,4 @@ namespace Savanna::Concurrency
         }
     }
 
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency

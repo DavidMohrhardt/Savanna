@@ -1,6 +1,6 @@
 #include "TriggerVolume.h"
 
-namespace Savanna::Physics
+namespace savanna::Physics
 {
 
 TriggerVolume::TriggerVolume()

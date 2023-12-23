@@ -1,6 +1,6 @@
 #include "VirtualFileSystem.h"
 
-namespace Savanna::IO
+namespace savanna::io
 {
     static std::filesystem::path FixupPath(const std::filesystem::path &path)
     {
@@ -35,11 +35,7 @@ namespace Savanna::IO
 
     void VirtualFileSystem::ParseFileSystem()
     {
-        if (!std::filesystem::exists(m_RealRootPath))
-        {
-            // SAVANNA_ERROR("The specified root path does not exist!");
-            throw Savanna::RuntimeErrorException("The specified root path does not exist!");
-        }
+        SAVANNA_ASSERT(std::filesystem::exists(m_RealRootPath), "The specified root path does not exist!");
 
         // for (const auto &entry : std::filesystem::recursive_directory_iterator(m_RealRootPath))
         // {
@@ -66,14 +62,13 @@ namespace Savanna::IO
     dynamic_array<std::string> VirtualFileSystem::GetAllFilesAtPath(
         const std::filesystem::path &relativePath, const char *filter) const
     {
+        dynamic_array<std::string> files { kSavannaAllocatorKindGeneral };
         std::filesystem::path fullPath = GetFullPath(relativePath);
         if (!std::filesystem::exists(fullPath))
         {
-            // SAVANNA_ERROR("The specified path does not exist!");
-            throw Savanna::RuntimeErrorException("The specified path does not exist!");
+            return files;
         }
 
-        dynamic_array<std::string> files;
         for (const auto &entry : std::filesystem::directory_iterator(fullPath))
         {
             if (filter != nullptr && entry.path().extension() != filter)
@@ -85,4 +80,4 @@ namespace Savanna::IO
         return files;
     }
 
-} // namespace Savanna::IO
+} // namespace savanna::IO

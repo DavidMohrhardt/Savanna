@@ -13,7 +13,7 @@
 #include "AllocatorUtils.h"
 #include "IAllocator.h"
 
-namespace Savanna
+namespace savanna
 {
     class Allocator : public IAllocator, NonCopyable
     {

@@ -30,12 +30,12 @@
 
 /// ExampleClass.h - Header file for the ExampleClass class.
 
-/// - Namespaces follows the following format: Savanna::<ModuleName>::<OptionalSubModuleName>
+/// - Namespaces follows the following format: savanna::<ModuleName>::<OptionalSubModuleName>
 ///     Examples:
 ///     - Savanna (This is the root namespace and only used within the Core Library)
-///     - Savanna::Gfx (This is the Gfx namespace for the generalized graphics API)
-///     - Savanna::Gfx::Vk2 (This is the namespace for the Vulkan graphics implementation of the Savanna::Gfx namespace)
-namespace Savanna::CodingStandard
+///     - savanna::Gfx (This is the Gfx namespace for the generalized graphics API)
+///     - savanna::Gfx::Vk2 (This is the namespace for the Vulkan graphics implementation of the savanna::Gfx namespace)
+namespace savanna::CodingStandard
 {
     // Enumerations should be defined as 'enum class' in C++
     // Enumeration members should use the form
@@ -131,5 +131,5 @@ namespace Savanna::CodingStandard
          */
         return input;
     }
-} // namespace Savanna::CodingStandard
+} // namespace savanna::CodingStandard
 

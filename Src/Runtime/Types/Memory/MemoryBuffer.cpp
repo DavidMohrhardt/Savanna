@@ -4,7 +4,7 @@
 
 #include "Memory/MemoryManager.h"
 
-namespace Savanna
+namespace savanna
 {
     MemoryBuffer::MemoryBuffer(AllocatorKind allocatorKind /*= kSavannaAllocatorKindHeap*/)
         : m_Buffer(nullptr)

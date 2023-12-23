@@ -13,8 +13,8 @@
 #include "Public/ISavannaMemory.hpp"
 
 #define DECLARE_SAVANNA_MEMORY_CLASS_FRIENDS() \
-    friend class Savanna::MemoryManager; \
-    friend class Savanna::Allocator;
+    friend class savanna::MemoryManager; \
+    friend class savanna::Allocator;
 
 extern "C"
 {
@@ -25,7 +25,7 @@ extern "C"
     void SavannaHeapAllocatorFree(void* ptr, void* pUserData);
 }
 
-namespace Savanna
+namespace savanna
 {
     constexpr se_AllocatorInterface_t k_HeapAllocatorInterface
     {
@@ -38,7 +38,7 @@ namespace Savanna
 
     bool IsAllocatorInterfaceValid(const se_AllocatorInterface_t& allocatorInterface);
     bool IsAllocatorInterfaceValid(const se_AllocatorInterface_t* pAllocatorInterface);
-} // namespace Savanna::Memory
+} // namespace savanna::Memory
 
 #define SAVANNA_ASSERT_VALID_ALLOCATOR_INTERFACE(allocatorInterface) \
-    SAVANNA_ASSERT(Savanna::IsAllocatorInterfaceValid(allocatorInterface), "Invalid allocator interface!")
+    SAVANNA_ASSERT(savanna::IsAllocatorInterfaceValid(allocatorInterface), "Invalid allocator interface!")

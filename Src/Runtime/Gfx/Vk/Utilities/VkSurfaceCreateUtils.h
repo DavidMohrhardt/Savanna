@@ -12,7 +12,7 @@
 
 #include "SavannaVk2.h"
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     VkSurfaceKHR CreateSurface(const VkInstance& instance, void* pWindowHandle, const VkAllocationCallbacks* pAllocCallbacks);
-} // namespace Savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::Vk2::Utils

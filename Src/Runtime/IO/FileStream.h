@@ -18,7 +18,7 @@
 #include <fstream>
 #include <string>
 
-namespace Savanna::IO
+namespace savanna::io
 {
     class FileStream : public NonCopyable
     {
@@ -38,13 +38,13 @@ namespace Savanna::IO
         template<typename T>
         dynamic_array<T> ReadFile(const AllocatorKind allocatorKind = kSavannaAllocatorKindHeap)
         {
+            dynamic_array<T> buffer(0, allocatorKind);
             if (!m_FileStream.is_open())
             {
-                throw Savanna::RuntimeErrorException("File is not open!");
+                return buffer;
             }
 
             m_FileStream.seekg(0, std::ios::beg);
-            dynamic_array<T> buffer(0, allocatorKind);
             m_FileStream.seekg(0, std::ios::end);
             buffer.resize(m_FileStream.tellg() / sizeof(T));
             m_FileStream.seekg(0, std::ios::beg);
@@ -56,4 +56,4 @@ namespace Savanna::IO
     public:
         inline bool IsOpen() const { return m_FileStream.is_open(); }
     };
-} // namespace Savanna::IO
+} // namespace savanna::IO

@@ -29,13 +29,13 @@
 
 #undef SAVANNA_DELETE
 #define SAVANNA_DELETE(__allocatorKind, __ptr) \
-    Savanna::Delete(__ptr, __allocatorKind);
+    savanna::Delete(__ptr, __allocatorKind);
 
 #undef SAVANNA_DELETE_ARRAY
 #define SAVANNA_DELETE_ARRAY(__allocatorKind, __ptr) \
-    Savanna::Delete(__ptr, __allocatorKind);
+    savanna::Delete(__ptr, __allocatorKind);
 
-namespace Savanna
+namespace savanna
 {
     using AllocatorKind = se_AllocatorKind_t;
 

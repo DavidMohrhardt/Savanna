@@ -13,7 +13,7 @@
 #include "Public/ISavannaEngine.h"
 #include "Types/Hashables/IHashable.h"
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief A base class for all HashStrings.
@@ -30,18 +30,18 @@ namespace Savanna
 namespace std
 {
     template<>
-    struct hash<Savanna::IHashable>
+    struct hash<savanna::IHashable>
     {
-        size_t operator()(const Savanna::IHashable* pHashable) const
+        size_t operator()(const savanna::IHashable* pHashable) const
         {
             return pHashable->GetHash();
         }
     };
 
     template<>
-    struct hash<Savanna::IHashString>
+    struct hash<savanna::IHashString>
     {
-        size_t operator()(const Savanna::IHashString* pHashString) const
+        size_t operator()(const savanna::IHashString* pHashString) const
         {
             return pHashString->GetHash();
         }

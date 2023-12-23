@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     template <typename TAllocator>
     requires std::is_base_of_v<Allocator, TAllocator>
@@ -163,4 +163,4 @@ namespace Savanna::Core::Tests
             Release_UnitTest<T>(ptr, expectFailure);
         }
     };
-} // namespace Savanna::Testing
+} // namespace savanna::Testing

@@ -17,7 +17,7 @@
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     class AutoDisposeJobBase : public IJob
     {
@@ -50,5 +50,5 @@ namespace Savanna::Concurrency
 
         JobResult Execute() override;
     };
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency
 

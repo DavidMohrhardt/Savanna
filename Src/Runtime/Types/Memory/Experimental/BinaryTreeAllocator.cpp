@@ -2,7 +2,7 @@
 
 #include "Memory/MemoryManager.h"
 
-namespace Savanna
+namespace savanna
 {
     inline size_t AlignForwardAdjust(void* ptr, const size_t alignment)
     {

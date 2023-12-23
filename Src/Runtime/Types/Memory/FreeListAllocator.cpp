@@ -17,7 +17,7 @@
 
 #include "Utilities/Semantics/Move.h"
 
-namespace Savanna
+namespace savanna
 {
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
     inline bool IsLinkedListCyclic(const MemoryChunkDescriptor* pHead)

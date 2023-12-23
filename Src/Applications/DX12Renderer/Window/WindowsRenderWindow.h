@@ -17,7 +17,7 @@ namespace SavannaDX12
     class WindowsRenderWindow
     {
     public:
-        WindowsRenderWindow(Savanna::uint16 width, Savanna::uint16 height, std::string title, HINSTANCE hInstance, int nWndCmd);
+        WindowsRenderWindow(savanna::uint16 width, savanna::uint16 height, std::string title, HINSTANCE hInstance, int nWndCmd);
         ~WindowsRenderWindow();
 
         void DisplayWindow() const;
@@ -78,8 +78,8 @@ namespace SavannaDX12
         void OnDisplayChanged() {}
 
     private:
-        Savanna::int64 m_Width;
-        Savanna::int64 m_Height;
+        savanna::int64 m_Width;
+        savanna::int64 m_Height;
         RECT m_WindowRect;
 
         bool m_FullscreenMode;

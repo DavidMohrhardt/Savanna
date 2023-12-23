@@ -4,7 +4,7 @@
 
 #include <atomic>
 
-namespace Savanna
+namespace savanna
 {
     class SpinLock
     {

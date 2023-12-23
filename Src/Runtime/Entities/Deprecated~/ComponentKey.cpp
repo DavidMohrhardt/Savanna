@@ -24,7 +24,7 @@ bool SavannaCompareKeys(const ComponentKeyData& entityKey, const ComponentKeyDat
     return entityKey.m_FullComponentKey == systemLock.m_FullComponentKey;
 }
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     bool ComponentKey::CompareKey(const ComponentKey& componentKey) const
     {

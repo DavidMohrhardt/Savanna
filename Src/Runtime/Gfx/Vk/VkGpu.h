@@ -13,7 +13,7 @@
 #include "SavannaVk2.h"
 #include "VkQueueFamilyIndices.h"
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     class VkGpu
     {
@@ -22,8 +22,8 @@ namespace Savanna::Gfx::Vk2
 
         VkPhysicalDevice m_PhysicalDevice;
         VkDevice m_LogicalDevice;
-        VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
         VkQueueFamilyIndices m_QueueFamilyIndices;
+        VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
 
         VkGpu() = default;
         ~VkGpu() = default;
@@ -58,4 +58,4 @@ namespace Savanna::Gfx::Vk2
 
         const VkQueueFamilyIndices& GetQueueFamilyIndices() const { return m_QueueFamilyIndices; }
     };
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

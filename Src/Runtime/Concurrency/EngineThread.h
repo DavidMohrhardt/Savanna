@@ -16,7 +16,7 @@
 
 #include <thread>
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     typedef void (*se_pfnThreadFunction_t)(void* pArgs);
 
@@ -55,4 +55,4 @@ namespace Savanna::Concurrency
         void Stop();
     };
 
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency

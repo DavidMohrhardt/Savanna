@@ -1,5 +1,5 @@
 import argparse
-import SavannaLogging, SavannaPlatform, SavannaArtifacts, SavannaCMake, SavannaSubprocess
+import SavannaLogging, SavannaPlatform, SavannaArtifacts, SavannaCMake, SavannaSubprocess, SavannaCodegen
 
 def ProcessArguments():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -29,6 +29,7 @@ def ProcessArguments():
     parser.add_argument('--db', '--debug', action="store_true", help="Enable Debug Logging. Implicitly enables Verbose, Warning, and Error logging", dest="debug")
     parser.add_argument('--dbo', '--debug_only', action="store_true", help="Enable Debug Only Logging. Disables all other logging", dest="debugonly")
     parser.add_argument('--s', '--silent', action="store_true", help="Disables all Logging.", dest="silent")
+    parser.add_argument('--cg', '--scriptCodeGen', action="store_true", help="Executes scripting code generation.", dest="scriptCodegen")
     return parser.parse_args()
 
 #TODO @david.mohrhardt: Update this to be in submodules instead of one monster python script
@@ -54,6 +55,12 @@ def main():
     SavannaLogging.LogUI("Preparing Artifacts...")
     SavannaArtifacts.PrepareArtifactsIfNeeded(currentBuildPlatform)
     SavannaLogging.LogUI("Done\n")
+
+    # Run Basic Codegen
+    if (args.scriptCodegen):
+        SavannaLogging.LogUI("Generating Scripting API List...")
+        SavannaCodegen.GenerateScriptingBindings('./Src/Runtime')
+        SavannaLogging.LogUI("Done\n")
 
     # Cease Cmake invocation here.
     if (args.dryrun):

@@ -20,7 +20,7 @@
 
 #include <vector>
 
-using namespace Savanna::Gfx::Vk;
+using namespace savanna::Gfx::Vk;
 
 class VulkanApplication
 {

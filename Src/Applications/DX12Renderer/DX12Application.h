@@ -14,7 +14,7 @@
 
 namespace SavannaDX12
 {
-    class DX12Application : public Savanna::IApplication
+    class DX12Application : public savanna::IApplication
     {
     public:
         DX12Application(HINSTANCE hInstance, int nWndCmd);

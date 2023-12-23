@@ -1,6 +1,6 @@
 #include "VolatileLock.h"
 
-namespace Savanna
+namespace savanna
 {
     void VolatileLock::Acquire() SAVANNA_NOEXCEPT
     {

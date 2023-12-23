@@ -76,7 +76,7 @@ Write-Host "Extracting Artifacts..."
 
 $pythonInstallPath = Get-ChildItem -Path $PythonExtractionDir -Include python.exe -Recurse | Resolve-Path
 $buildScriptPath = "$scriptDir/BuildMain.py" | Resolve-Path
-& $pythonInstallPath $buildScriptPath --u
+& $pythonInstallPath $buildScriptPath --u --cg
 
 Write-Host "Finished preparing Savanna Development Environment"
 Write-Host ""

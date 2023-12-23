@@ -13,7 +13,7 @@
 
 namespace SavannaDX12
 {
-    WindowsRenderWindow::WindowsRenderWindow(Savanna::uint16 width, Savanna::uint16 height, std::string title, HINSTANCE hInstance, int nWndCmd)
+    WindowsRenderWindow::WindowsRenderWindow(savanna::uint16 width, savanna::uint16 height, std::string title, HINSTANCE hInstance, int nWndCmd)
         : m_Width(width)
         , m_Height(height)
         , m_FullscreenMode(false)

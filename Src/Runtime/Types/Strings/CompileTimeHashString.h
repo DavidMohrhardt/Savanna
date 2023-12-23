@@ -15,9 +15,9 @@
 // Idea taken from https://stackoverflow.com/questions/2111667/compile-time-string-hashing
 
 #define SAVANNA_HASH_STRING( str ) \
-    Savanna::HashString( Savanna::evaluate_crc32_consteval(str) )
+    savanna::HashString( savanna::evaluate_crc32_consteval(str) )
 
-namespace Savanna
+namespace savanna
 {
     // CRC32 Table
     // https://docs.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxrtfcp/2500f63e-a1ec-4605-a80d-d41ab63e80e9
@@ -199,9 +199,9 @@ namespace Savanna
 namespace std
 {
     template<>
-    struct hash<Savanna::CompileTimeHashString>
+    struct hash<savanna::CompileTimeHashString>
     {
-        size_t operator()(const Savanna::CompileTimeHashString& pHashString) const
+        size_t operator()(const savanna::CompileTimeHashString& pHashString) const
         {
             return pHashString.GetHash();
         }

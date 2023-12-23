@@ -17,7 +17,7 @@
 #include "AtomicAllocatorWrapper.h"
 #include "MemoryBuffer.h"
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief TODO @David.Mohrhardt Document

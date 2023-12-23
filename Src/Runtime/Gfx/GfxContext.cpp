@@ -1,12 +1,8 @@
 #include "GfxContext.h"
 
-#include "Vk/SavannaVk2.h"
+extern se_GfxErrorCode_t GetDriverInterfaceVulkan(se_GfxDriverInterface_t& outDriverInterface);
 
-#if SAVANNA_WINDOWS
-// #include "DX12/SavannaDX12.h"
-#endif
-
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
         : m_Allocator(pCreateInfo != nullptr
@@ -49,7 +45,7 @@ namespace Savanna::Gfx
             switch (driverCreateInfo.m_RequestedBackendType)
             {
             case kSavannaGfxApiVulkan:
-                outResult = Vk2::GetDriverInterface(driverInterface);
+                outResult = GetDriverInterfaceVulkan(driverInterface);
                 break;
 
             default:
@@ -71,4 +67,4 @@ namespace Savanna::Gfx
     {
         return kSavannaSupportedGfxApiVulkan;
     }
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx

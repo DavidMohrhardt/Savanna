@@ -13,7 +13,7 @@
 #include "SavannaVk2.h"
 #include "VkGpu.h"
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
 
     class VkGpuBuffer
@@ -40,4 +40,4 @@ namespace Savanna::Gfx::Vk2
         void Update(void* pData, size_t sizeInBytes);
         void FlushToGpu();
     };
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

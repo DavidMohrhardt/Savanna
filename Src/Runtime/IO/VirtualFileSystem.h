@@ -18,7 +18,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-namespace Savanna::IO
+namespace savanna::io
 {
     class VirtualFileSystem : public Singleton<VirtualFileSystem>
     {
@@ -48,4 +48,4 @@ namespace Savanna::IO
             const std::filesystem::path &relativePath,
             const char* filter = nullptr) const;
     };
-} // namespace Savanna::IO
+} // namespace savanna::IO

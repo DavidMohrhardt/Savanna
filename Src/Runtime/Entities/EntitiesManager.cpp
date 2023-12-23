@@ -2,7 +2,7 @@
 
 #include <Public/ISavannaEngine.h>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     EntitiesManager::EntitiesManager() {}
     EntitiesManager::~EntitiesManager() {}
@@ -20,4 +20,4 @@ namespace Savanna::Entities
     }
 
     void EntitiesManager::ShutdownInternal() {}
-} // namespace Savanna::Entities
+} // namespace savanna::Entities

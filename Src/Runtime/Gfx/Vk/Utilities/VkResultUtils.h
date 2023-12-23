@@ -2,7 +2,7 @@
 
 #include "SavannaVk2.h"
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
 #undef ERROR_CODE_ENTRY
 #define ERROR_CODE_ENTRY(x, y) case x: return #y
@@ -247,6 +247,10 @@ namespace Savanna::Gfx::Vk2
                 // VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT, PlatformSpecificError);
             ERROR_CODE_ENTRY(
                 VK_RESULT_MAX_ENUM, Failure);
+            ERROR_CODE_ENTRY(
+                VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT, PlatformSpecificError);
+            default:
+                return kSavannaGfxErrorCodeUnknownError;
         }
     }
 } // namespace Vk

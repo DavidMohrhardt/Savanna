@@ -14,7 +14,7 @@
 #define DECLARE_FREE_LIST_TEST_F(__name) \
     TEST_F(FreeListAllocatorTest, __name)
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     class FreeListAllocatorTest : public ::testing::Test
     {
@@ -216,4 +216,4 @@ namespace Savanna::Core::Tests
         EXPECT_EQ(m_WrappedAllocator->GetAllocatedBytes(), sizeof(MemoryChunkDescriptor));
         EXPECT_EQ(GetRootAsUIntPtr() + sizeof(MemoryChunkDescriptor), reinterpret_cast<uintptr_t>(result));
     }
-} // namespace Savanna::Tests::Memory::Allocators
+} // namespace savanna::Tests::Memory::Allocators

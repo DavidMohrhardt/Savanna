@@ -21,7 +21,7 @@
 #include <type_traits>
 
 #define DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type) \
-    using __cppName = Savanna::Enumeration<__cName, __type>
+    using __cppName = savanna::Enumeration<__cName, __type>
 
 #define DECLARE_NAMESPACED_ENUM_WRAPPER(__nameSpace, __cName, __cppName, __type) \
     namespace __nameSpace { DECL_CPP_LEVEL_ENUM(__cName, __cppName, __type); }
@@ -42,7 +42,7 @@
 #endif // end __cplusplus
 
 #if defined(__cplusplus)
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief This concept checks if the given type is an enum.

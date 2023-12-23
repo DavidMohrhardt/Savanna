@@ -5,7 +5,7 @@
 #define DECLARE_CACHE_LINE_TEST(__name) \
     DECLARE_MEMORY_TEST(CacheLineTest, __name)
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     using namespace Savanna;
 
@@ -77,4 +77,4 @@ namespace Savanna::Core::Tests
         EXPECT_EQ(sizeof(CacheWidthTestUnion), sizeof(L1CacheWidthContainer<TestStruct>));
     }
 
-} // namespace Savanna::Tests::Core::Memory
+} // namespace savanna::Tests::Core::Memory

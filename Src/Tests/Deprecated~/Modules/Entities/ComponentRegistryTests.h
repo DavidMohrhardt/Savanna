@@ -3,10 +3,10 @@
 #define DECLARE_COMPONENT_REGISTRY_TEST(__name) \
     DECLARE_ENTITIES_TEST(ComponentRegistry, __name)
 
-namespace Savanna::Entities::Tests
+namespace savanna::Entities::Tests
 {
     // using namespace Savanna;
-    using namespace Savanna::Entities;
+    using namespace savanna::Entities;
 
     // Generate 64 arbitrary types to test the component registry
     struct ArbitraryType : public IComponentData<ArbitraryType> {};

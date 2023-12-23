@@ -16,7 +16,7 @@
 #define DECLARE_LOCKLESS_LIST_TEST_F(__name) \
     TEST_F(LocklessListTests, __name)
 
-namespace Savanna::Core::Tests
+namespace savanna::Core::Tests
 {
     class LocklessListTests : public ConcurrencyTestFramework
     {

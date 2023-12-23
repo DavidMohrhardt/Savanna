@@ -12,8 +12,8 @@
 
 #include <Concurrency/JobSystem.h>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
 
-} // namespace Savanna::Entities
+} // namespace savanna::Entities
 

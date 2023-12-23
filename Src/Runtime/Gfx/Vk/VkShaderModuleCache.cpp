@@ -8,7 +8,7 @@
 
 // TODO @DavidMohrhardt: Move up a level. It's the GFX system's responsibility to manage the shader resources.
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     inline VkResult CreateVkShaderModule(
         const VkGpu& gpu,
@@ -207,4 +207,4 @@ namespace Savanna::Gfx::Vk2
             outShaderModule = it->second;
         });
     }
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

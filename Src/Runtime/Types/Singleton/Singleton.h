@@ -19,7 +19,7 @@
     friend class Singleton<__className>; \
     /*friend class std::shared_ptr<__className>;*/
 
-namespace Savanna
+namespace savanna
 {
     template <typename T>
     class Singleton : public NonCopyable, public Immovable
@@ -41,10 +41,11 @@ namespace Savanna
     template <typename T> inline
     Singleton<T>::TYPE *Singleton<T>::Get()
     {
-        if (s_pInstance == nullptr)
+        static auto _ = [=]() -> bool
         {
-            throw RuntimeErrorException("[Singleton] Not yet constructed!");
-        }
+            SAVANNA_ASSERT(s_pInstance != nullptr, "Attempted to get singleton prior to construction!");
+            return true;
+        }();
         return s_pInstance;
     }
 

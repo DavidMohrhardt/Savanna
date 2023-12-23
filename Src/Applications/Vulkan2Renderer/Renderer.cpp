@@ -4,7 +4,6 @@
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 
-#include <vulkan/vulkan.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -26,7 +25,7 @@ namespace vk
     bool Renderer::TryInitialize(const se_GfxContextCreateInfo_t* pCreateInfo, void* pWindowHandle)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Application::TryInitGfx);
-        auto pDefaultAllocInterface = Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindGeneral);
+        auto pDefaultAllocInterface = savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindGeneral);
         se_GfxContextCreateInfo_t gfxContextCreateInfo;
         if (pCreateInfo != nullptr)
         {

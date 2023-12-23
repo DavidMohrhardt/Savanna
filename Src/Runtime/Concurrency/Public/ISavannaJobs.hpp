@@ -17,7 +17,7 @@
 #include <atomic>
 #include <tuple>
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     using JobHandle = se_JobHandle_t;
     using JobPriority = se_JobPriority_t;
@@ -99,6 +99,6 @@ namespace Savanna::Concurrency
         virtual void OnError() {};
     };
 
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency
 
 #endif // I_SAVANNA_JOBS_HPP

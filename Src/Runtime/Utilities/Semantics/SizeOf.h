@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief Returns the total size of the types passed in.

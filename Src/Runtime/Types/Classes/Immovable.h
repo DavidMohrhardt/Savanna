@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace Savanna
+namespace savanna
 {
     class Immovable
     {

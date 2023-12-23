@@ -43,7 +43,7 @@ typedef se_uint8 se_ComponentKeyMask_T;
 // that's still 1024 / 64 = 16 cache lines to read.
 
 #if defined(__cplusplus)
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     class ComponentKey
     {

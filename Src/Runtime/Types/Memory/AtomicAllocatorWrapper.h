@@ -18,7 +18,7 @@
 #include "Types/Memory/IAllocator.h"
 #include "Types/Memory/Allocator.h"
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief Provides a naive atomic wrapper for an allocator.

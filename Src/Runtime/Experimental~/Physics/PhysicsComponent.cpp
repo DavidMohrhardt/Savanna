@@ -2,7 +2,7 @@
 
 #define MINMAXVECCOMP(x, y)
 
-namespace Savanna::Physics
+namespace savanna::Physics
 {
 
     PhysicsComponent::PhysicsComponent()

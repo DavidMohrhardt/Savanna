@@ -31,7 +31,7 @@ inline size_t SavannaPtrSub(const void* const ptr, const size_t byteOffset)
 
 #if __cplusplus
 
-namespace Savanna
+namespace savanna
 {
     inline size_t GetPointerDifference(const void* const lhs, const void* const rhs)
     {

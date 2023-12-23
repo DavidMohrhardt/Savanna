@@ -15,7 +15,7 @@
 #include "AtomicCounter.h"
 #include "SpinLock.h"
 
-namespace Savanna
+namespace savanna
 {
     class MultiReadSingleWriteLock
     {

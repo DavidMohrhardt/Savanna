@@ -19,7 +19,7 @@
 #include "Types/Containers/Arrays/dynamic_array.h"
 #include "Types/Memory/MemoryBuffer.h"
 
-namespace Savanna
+namespace savanna
 {
     class MultiListAllocator final : public Allocator
     {

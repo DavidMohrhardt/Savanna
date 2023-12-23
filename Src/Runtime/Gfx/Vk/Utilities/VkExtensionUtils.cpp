@@ -2,7 +2,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     inline bool IsExtensionSupported(const char *extensionName, const dynamic_array<VkExtensionProperties>& supportedExtensions)
     {
@@ -81,10 +81,7 @@ namespace Savanna::Gfx::Vk2::Utils
             }
         }
 
-        if (!result)
-        {
-            throw Savanna::RuntimeErrorException("Extension requested extension is not supported");
-        }
+        SAVANNA_DEBUG_ASSERT(result, "Requested extension is unsupported!");
     }
 
     void ValidateDeviceExtensions(const VkPhysicalDevice& physicalDevice, const char* const* ppExtensions, uint32 extensionCount)
@@ -105,10 +102,9 @@ namespace Savanna::Gfx::Vk2::Utils
 
         for (uint32 i = 0; i < extensionCount; ++i)
         {
-            if (!IsExtensionSupported(ppExtensions[i], supportedExtensions))
-            {
-                throw Savanna::RuntimeErrorException("Extension requested extension is not supported");
-            }
+            bool result = IsExtensionSupported(ppExtensions[i], supportedExtensions);
+
+            SAVANNA_DEBUG_ASSERT(result , "Extension requested extension is not supported");
         }
     }
 
@@ -130,4 +126,4 @@ namespace Savanna::Gfx::Vk2::Utils
         PopulateExtensionBuffer(outExtensions, ppExtensions, extensionCount);
         ValidateDeviceExtensions(physicalDevice, outExtensions.data(), outExtensions.size());
     }
-} // namespace Savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::Vk2::Utils

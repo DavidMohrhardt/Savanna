@@ -59,17 +59,17 @@ extern "C"
 
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetHeapAllocatorInterface()
 {
-    return Savanna::k_HeapAllocatorInterface;
+    return savanna::k_HeapAllocatorInterface;
 }
 
-bool Savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t &allocatorInterface)
+bool savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t &allocatorInterface)
 {
     return allocatorInterface.m_AllocAlignedFunc != nullptr
         && allocatorInterface.m_FreeFunc != nullptr
         && allocatorInterface.m_ReallocAlignedFunc != nullptr;
 }
 
-bool Savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t *pAllocatorInterface)
+bool savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t *pAllocatorInterface)
 {
     return pAllocatorInterface != nullptr
         && IsAllocatorInterfaceValid(*pAllocatorInterface);

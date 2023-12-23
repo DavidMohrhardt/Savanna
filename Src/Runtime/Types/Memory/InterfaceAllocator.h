@@ -13,7 +13,7 @@
 #include "IAllocator.h"
 #include "Allocator.h"
 
-namespace Savanna
+namespace savanna
 {
     class InterfaceAllocator final : public Allocator
     {

@@ -9,7 +9,7 @@
 
 #define ENABLE_MEMORY_MANAGEMENT 1
 
-namespace Savanna
+namespace savanna
 {
     template <se_AllocatorKindBackingInt_t LABEL>
     consteval se_AllocatorInterface_t GetInterfaceForAllocatorKind()
@@ -63,10 +63,7 @@ namespace Savanna
     const se_AllocatorInterface_t MemoryManager::GetAllocatorInterfaceForAllocatorKind(
         const AllocatorKind& allocatorKind)
     {
-        if (allocatorKind >= kSavannaAllocatorKindCount)
-        {
-            throw BadAllocationException();
-        }
+        SAVANNA_DEBUG_ASSERT(allocatorKind < kSavannaAllocatorKindCount, "Invalid Allocation Kind!");
         return k_AllocatorKindAllocatorInterfaces[allocatorKind];
     }
 
@@ -161,7 +158,9 @@ namespace Savanna
         const DebugAllocationInfo *pDbgInfo)
     {
         if (allocatorKind >= kSavannaAllocatorKindCount)
+        {
             return nullptr;
+        }
 
         return m_pAllocators[allocatorKind]->realloc(ptr, newSize, alignof(byte));
     }
@@ -235,17 +234,17 @@ namespace Savanna
 // C-Api
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetAllocatorInterfaceForAllocatorKind(const se_AllocatorKindBackingInt_t& allocatorKind)
 {
-    return Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKind((se_AllocatorKind_t)allocatorKind);
+    return savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKind((se_AllocatorKind_t)allocatorKind);
 }
 
 SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetDefaultAllocatorInterface()
 {
-    return Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKind(kSavannaAllocatorKindGeneral);
+    return savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKind(kSavannaAllocatorKindGeneral);
 }
 
 SAVANNA_EXPORT(bool) SavannaMemoryManagerTryGetAllocatorInterfaceForAllocatorKind(const se_uint32& allocatorKind, se_AllocatorInterface_t& outAllocatorKindInterface)
 {
-    return Savanna::MemoryManager::TryGetAllocatorInterfaceForAllocatorKind(allocatorKind, outAllocatorKindInterface);
+    return savanna::MemoryManager::TryGetAllocatorInterfaceForAllocatorKind(allocatorKind, outAllocatorKindInterface);
 }
 
 SAVANNA_EXPORT(void*) SavannaMemoryManagerAllocateAligned(
@@ -256,16 +255,16 @@ SAVANNA_EXPORT(void*) SavannaMemoryManagerAllocateAligned(
     const int lineNo)
 {
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-    Savanna::MemoryManager::DebugAllocationInfo info{fileName, lineNo};
-    return Savanna::MemoryManager::Get()->AllocateAligned(size, alignment, allocatorKind, &info);
+    savanna::MemoryManager::DebugAllocationInfo info{fileName, lineNo};
+    return savanna::MemoryManager::Get()->AllocateAligned(size, alignment, allocatorKind, &info);
 #else
-    return Savanna::MemoryManager::Get()->AllocateAligned(size, alignment, allocatorKind, nullptr);
+    return savanna::MemoryManager::Get()->AllocateAligned(size, alignment, allocatorKind, nullptr);
 #endif
 }
 
 SAVANNA_EXPORT(void) SavannaMemoryManagerFree(void* ptr, se_AllocatorKind_t allocatorKind)
 {
-    return Savanna::MemoryManager::Get()->Free(ptr, allocatorKind);
+    return savanna::MemoryManager::Get()->Free(ptr, allocatorKind);
 }
 
 SAVANNA_EXPORT(void *)
@@ -275,9 +274,9 @@ SavannaMemoryManagerReallocateAligned(
     const char *fileName, const int lineNo)
 {
 #if SAVANNA_ENABLE_RUNTIME_MEMORY_VALIDATION
-    Savanna::MemoryManager::DebugAllocationInfo info{fileName, lineNo};
-    return Savanna::MemoryManager::Get()->ReallocateAligned(ptr, size, alignment, allocatorKind, &info);
+    savanna::MemoryManager::DebugAllocationInfo info{fileName, lineNo};
+    return savanna::MemoryManager::Get()->ReallocateAligned(ptr, size, alignment, allocatorKind, &info);
 #else
-    return Savanna::MemoryManager::Get()->ReallocateAligned(ptr, size, alignment, allocatorKind, nullptr);
+    return savanna::MemoryManager::Get()->ReallocateAligned(ptr, size, alignment, allocatorKind, nullptr);
 #endif
 }

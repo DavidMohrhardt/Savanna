@@ -5,7 +5,7 @@
 
 #include <set>
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     VkQueueFamilyIndices::VkQueueFamilyIndices(
         const VkPhysicalDevice physicalDevice,
@@ -99,4 +99,4 @@ namespace Savanna::Gfx::Vk2
             queueCreateInfos[index++] = queueCreateInfo;
         }
     }
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

@@ -12,7 +12,7 @@
 
 #include "SavannaVk2.h"
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     uint32 ScoreDeviceType(const VkPhysicalDeviceType& deviceType);
     uint32 ScoreDeviceFeatures(const VkPhysicalDeviceFeatures& deviceFeatures);
@@ -36,4 +36,4 @@ namespace Savanna::Gfx::Vk2::Utils
             ScoreDeviceFeatures,
             ScoreDeviceLimits
         });
-} // namespace Savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::Vk2::Utils

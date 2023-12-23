@@ -14,7 +14,7 @@
 #include "Public/ISavannaEngine.h"
 #include "Utilities/Macros/CppCommonDefs.h"
 
-namespace Savanna
+namespace savanna
 {
     template<size_t N>
     SAVANNA_CONSTEXPR_FUNCTION(char) (&StringLengthHelper(const char (&str)[N]))[N]

@@ -1,6 +1,6 @@
 #include "ProfilerManager.h"
 
-namespace Savanna
+namespace savanna
 {
     ProfilerManager::ProfilerManager(/* args */)
     {

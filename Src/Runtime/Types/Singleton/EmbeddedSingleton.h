@@ -8,7 +8,7 @@
  */
 #pragma once
 
-namespace Savanna
+namespace savanna
 {
     template <typename T>
     class EmbeddedSingleton

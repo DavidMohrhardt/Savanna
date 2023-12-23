@@ -16,7 +16,7 @@ enum SHAPES
     TRIGGER
 };
 
-namespace Savanna::Physics
+namespace savanna::Physics
 {
 
     struct Sphere
@@ -57,7 +57,7 @@ namespace Savanna::Physics
             // Programmatically Figure out capsule size
             for (int i = 0; i < 2; i++)
             {
-                Savanna::Handle hSphere("CapsuleSphere", sizeof(Sphere));
+                savanna::Handle hSphere("CapsuleSphere", sizeof(Sphere));
                 Sphere *pSphere = new (hSphere) Sphere(context, arena, hSphere, Vector3(0.f, 0.f, 0.f), smallestXZ);
                 m_capsuleEnds.add(hSphere);
                 if (i == 0)

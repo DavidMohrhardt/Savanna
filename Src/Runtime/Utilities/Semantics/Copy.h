@@ -13,7 +13,7 @@
 #include <concepts>
 #include <type_traits>
 
-namespace Savanna
+namespace savanna
 {
     // POD types are trivially copyable
     template <typename T>
@@ -36,6 +36,6 @@ namespace Savanna
             destination[i] = source[i];
     }
 
-#   define SAVANNA_COPY(a, b) Savanna::Copy(a, b)
+#   define SAVANNA_COPY(a, b) savanna::Copy(a, b)
 
 } // namespace Savanna

@@ -15,7 +15,7 @@
 
 #if __cplusplus
 
-namespace Savanna
+namespace savanna
 {
     /**
      * @brief Aligns a pointer to the next nearest address with the given alignment.

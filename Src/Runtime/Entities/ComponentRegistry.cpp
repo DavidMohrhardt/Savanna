@@ -16,7 +16,7 @@
 
 #include <Utilities/Console.h>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
 
     inline const uint32 ComponentRegistry::GetTotalNumberOfRegisteredComponentsInternal()
@@ -48,4 +48,4 @@ namespace Savanna::Entities
 
         return 0;
     }
-} // namespace  Savanna::Entities
+} // namespace  savanna::Entities

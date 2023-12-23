@@ -79,7 +79,7 @@ typedef struct alignas(L1CacheLineLength()) se_L1CacheLine
     se_L1CacheLine m_EnsureCacheAligned[]
 
 #if __cplusplus
-namespace Savanna
+namespace savanna
 {
     typedef se_L1CacheLine L1CacheLine;
 

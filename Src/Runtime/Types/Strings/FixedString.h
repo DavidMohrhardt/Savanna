@@ -18,7 +18,7 @@
 #if __cplusplus
 
 #define DECLARE_SAVANNA_CPP_FIXED_STRING_WITH_LENGTH(__strlen__) \
-namespace Savanna \
+namespace savanna \
 { \
     class FixedString##__strlen__ \
     { \
@@ -157,9 +157,9 @@ namespace Savanna \
 namespace std \
 { \
     template<> \
-    struct hash<Savanna::FixedString##__strlen__> \
+    struct hash<savanna::FixedString##__strlen__> \
     { \
-        size_t operator()(const Savanna::FixedString##__strlen__ &str) const \
+        size_t operator()(const savanna::FixedString##__strlen__ &str) const \
         { \
             size_t result = 2166136261; \
             for (size_t i = 0; i < str.GetStringLength(); ++i) \

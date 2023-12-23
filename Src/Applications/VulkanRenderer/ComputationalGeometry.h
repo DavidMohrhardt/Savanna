@@ -18,7 +18,7 @@
 
 #include <Types/Strings/FixedString.h>
 
-namespace Savanna::Gfx::Vk
+namespace savanna::Gfx::Vk
 {
     namespace Shapes
     {
@@ -64,4 +64,4 @@ namespace Savanna::Gfx::Vk
 
         void Draw();
     };
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

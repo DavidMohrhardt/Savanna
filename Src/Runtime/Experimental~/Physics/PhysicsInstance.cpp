@@ -1,6 +1,6 @@
 #include "PhysicsInstance.h"
 
-namespace Savanna::Reference
+namespace savanna::Reference
 {
 namespace Components
 {

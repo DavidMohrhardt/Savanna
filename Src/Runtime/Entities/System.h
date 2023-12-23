@@ -15,7 +15,7 @@
 
 // #include
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     class System final
     {

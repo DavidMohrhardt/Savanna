@@ -6,7 +6,6 @@
 #include "Utilities/VkDebugMessenger.h"
 #include "Utilities/VkInfoCreateUtils.h"
 #include "Utilities/VkExtensionUtils.h"
-#include "Utilities/VkLibrary.h"
 #include "Utilities/VkPhysicalDeviceSelectionUtils.h"
 #include "Utilities/VkResultUtils.h"
 #include "Utilities/VkSurfaceCreateUtils.h"
@@ -20,7 +19,7 @@
         return;                                     \
     }
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     static VkDriver* g_pVulkanDriver = nullptr;
 
@@ -40,6 +39,8 @@ namespace Savanna::Gfx::Vk2
         {
             return;
         }
+
+        LoadLibraryPhase1();
 
         if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
         {
@@ -70,7 +71,7 @@ namespace Savanna::Gfx::Vk2
             return kSavannaGfxErrorCodeInvalidAllocatorInterface;
         }
 
-        if (!Utils::TryLoadVulkanLibrary())
+        if (!TryLoadVulkanLibrary())
         {
             return kSavannaGfxErrorCodeUnknownError;
         }
@@ -100,7 +101,7 @@ namespace Savanna::Gfx::Vk2
             g_pVulkanDriver = nullptr;
             VkAllocator::SetVkAllocationInterfacePtr(nullptr);
 
-            Utils::UnloadVulkanLibrary();
+            UnloadVulkanLibrary();
             return kSavannaGfxErrorCodeSuccess;
         }
 
@@ -195,6 +196,9 @@ namespace Savanna::Gfx::Vk2
             enabledInstanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
         }
 
+        // Load create instance, get proc addr, and enumerate extensions
+        LoadLibraryPhase0();
+
         Utils::PopulateInstanceExtensions(enabledInstanceExtensions,
             instanceCreateArgs.m_ppEnabledInstanceExtensions,
             instanceCreateArgs.m_EnabledInstanceExtensionCount);
@@ -266,4 +270,4 @@ namespace Savanna::Gfx::Vk2
         }
     }
 
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

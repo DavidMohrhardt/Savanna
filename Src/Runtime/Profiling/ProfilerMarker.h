@@ -15,12 +15,12 @@
  * @brief Inserts a scoped profiler into the code and begins profiling.
  */
 #define SAVANNA_INSERT_SCOPED_PROFILER( functionName ) \
-    Savanna::ProfilerMarker __savanna_ProfilerMarker_funcName = Savanna::ProfilerMarker( Savanna::FixedString256( #functionName ) ); \
+    savanna::ProfilerMarker __savanna_ProfilerMarker_funcName = savanna::ProfilerMarker( savanna::FixedString256( #functionName ) ); \
     __savanna_ProfilerMarker_funcName.BeginSample();
 
 #endif
 
-namespace Savanna
+namespace savanna
 {
     class HashString;
 

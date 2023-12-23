@@ -3,7 +3,7 @@
 #include "PhysicsComponent.h"
 #include "PhysicsManager.h"
 
-namespace Savanna::Reference
+namespace savanna::Reference
 {
     namespace Components
     {
@@ -42,7 +42,7 @@ namespace Savanna::Reference
             SceneNode * getSavedSceneNodePtr() { return m_hSceneNode.getObject<SceneNode>(); }
             SceneNode * getSceneNodePtr()
             {
-                Savanna::Handle hParent = getFirstParentByType<Component>();
+                savanna::Handle hParent = getFirstParentByType<Component>();
                 if (hParent.isValid())
                 {
                     // see if parent has scene node component
@@ -53,7 +53,7 @@ namespace Savanna::Reference
             }
             Matrix4x4 *getMatrix()
             {
-                Savanna::Handle hParent = getFirstParentByType<Component>();
+                savanna::Handle hParent = getFirstParentByType<Component>();
                 if (hParent.isValid())
                 {
                     // see if parent has scene node component

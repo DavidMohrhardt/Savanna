@@ -8,8 +8,8 @@
 #include <IO/VirtualFileSystem.h>
 #include <IO/FileStream.h>
 
-using namespace Savanna;
-using namespace Savanna::Concurrency;
+using namespace savanna;
+using namespace savanna::Concurrency;
 
 const char* k_DefaultTriangleShaderPaths[2]
 {
@@ -69,7 +69,7 @@ public:
 
     JobResult Execute() override
     {
-        using namespace IO;
+        using namespace io;
         SAVANNA_INSERT_SCOPED_PROFILER(TriangleShaderCreateJob::Execute);
 
         auto& shaderPath = m_Input.m_ShaderPath;
@@ -79,7 +79,7 @@ public:
         try
         {
             // Get full path to shader
-            FileStream stream(IO::VirtualFileSystem::Get()->GetFullPath(shaderPath));
+            FileStream stream(io::VirtualFileSystem::Get()->GetFullPath(shaderPath));
             dynamic_array<se_byte> shaderBytes(std::move(stream.ReadFile<se_byte>(kSavannaAllocatorKindThreadSafeTemp)));
 
             shaderCreateInfo.m_pData = shaderBytes.data();
@@ -167,7 +167,7 @@ TriangleMesh &TriangleMesh::GetDefaultMesh()
 {
     static TriangleMesh defaultMesh = []()->TriangleMesh
     {
-        if (TryCreateDefaultShader(Savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindTemp)))
+        if (TryCreateDefaultShader(savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindTemp)))
         {
             SAVANNA_LOG("Successfully created default triangle shader.");
         }

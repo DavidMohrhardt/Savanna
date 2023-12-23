@@ -30,7 +30,7 @@
             alignas( L1CacheLineLength() ) se_L1CacheLine m_##__kibLength##CacheLines[ GetL1CacheLineCount( KibiBytesToBytes(__kibLength) ) ]; \
         }; \
     } se_Page##__kibLength##KiB_t; \
-    namespace Savanna { using Page##__kibLength##KiB = se_Page##__kibLength##KiB_t; }
+    namespace savanna { using Page##__kibLength##KiB = se_Page##__kibLength##KiB_t; }
 
 /**
  * @brief returns the conversion from KiB to B.
@@ -121,7 +121,7 @@ DECLARE_SAVANNA_KIB_PAGE(4096);
             __unionMembers \
         }; \
     } se_UnifiedPage##__memoryBlockSize##KiB_t; \
-    namespace Savanna { using UnifiedPage##__memoryBlockSize##KiB = se_UnifiedPage##__memoryBlockSize##KiB_t; }
+    namespace savanna { using UnifiedPage##__memoryBlockSize##KiB = se_UnifiedPage##__memoryBlockSize##KiB_t; }
 
 /**
  * @brief Creates an array of se_UnifiedPages that will fit to the size of the union of the given integer size in KiB.
@@ -138,7 +138,7 @@ typedef struct se_UnifiedPage1KiB_t
     };
 } se_UnifiedPage1KiB_t;
 
-namespace Savanna
+namespace savanna
 {
     using UnifiedPage1KiB = se_UnifiedPage1KiB_t;
 }
@@ -315,7 +315,7 @@ DECLARE_UNIFIED_PAGE_STRUCT(
 );
 
 typedef void* (*se_PageAllocFunc_t)(size_t count);
-namespace Savanna
+namespace savanna
 {
     using PageAllocFunc = se_PageAllocFunc_t;
 } // namespace Savanna

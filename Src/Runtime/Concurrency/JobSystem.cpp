@@ -7,7 +7,7 @@
 
 #include "Types/Containers/Arrays/dynamic_array.h"
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     inline JobResult JobSystem::ExecuteJobInternal(se_JobHandle_t handle)
     {
@@ -309,4 +309,4 @@ namespace Savanna::Concurrency
             return k_SavannaJobResultSuccess;
         }
     }
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency

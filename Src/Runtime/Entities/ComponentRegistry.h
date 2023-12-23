@@ -22,7 +22,7 @@
 #include <typeindex>
 #include <unordered_map>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     class ComponentRegistry : public Singleton<ComponentRegistry>
     {
@@ -45,4 +45,4 @@ namespace Savanna::Entities
         static const uint32 GetTotalNumberOfRegisteredComponents();
         // static const se_ComponentKey_t RegisterComponent(const IComponent);
     };
-} // namespace Savanna::Entities
+} // namespace savanna::Entities

@@ -4,7 +4,7 @@
 #include <Concurrency/ThreadManager.h>
 #include <Concurrency/JobSystem.h>
 
-using namespace Savanna;
+using namespace savanna;
 
 Application::Application(const char *rootPath)
     : m_Window(1920, 1080)
@@ -13,7 +13,7 @@ Application::Application(const char *rootPath)
     SavannaInitialize();
     SavannaStart();
 
-    IO::VirtualFileSystem::Construct(rootPath);
+    io::VirtualFileSystem::Construct(rootPath);
     Concurrency::ThreadManager::Get()->StartJobSystem();
 
     m_pRenderer = new vk::Renderer();
@@ -24,7 +24,7 @@ Application::Application(const char *rootPath)
     }
     else
     {
-        // throw Savanna::RuntimeErrorException("Failed to initialize renderer.");
+        // throw savanna::RuntimeErrorException("Failed to initialize renderer.");
         SAVANNA_LOG("Failed to initialize renderer.");
     }
 
@@ -37,9 +37,9 @@ Application::~Application()
 
     delete m_pRenderer;
 
-    Savanna::Gfx::Shutdown();
+    savanna::Gfx::Shutdown();
 
-    Savanna::IO::VirtualFileSystem::Destroy();
+    savanna::io::VirtualFileSystem::Destroy();
 
     SavannaStop();
     SavannaShutdown();

@@ -4,7 +4,7 @@
 #include "Memory/MemoryManager.h"
 #include "Profiling/Profiler.h"
 
-namespace Savanna
+namespace savanna
 {
     MultiListAllocator::MultiListAllocator(const AllocatorKind allocatorKind)
         : Allocator()
@@ -149,7 +149,7 @@ namespace Savanna
             }
         }
 
-        throw BadAllocationException();
+        assert(false);
     }
 
 } // namespace Savanna

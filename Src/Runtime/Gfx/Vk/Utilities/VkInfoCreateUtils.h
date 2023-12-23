@@ -4,14 +4,14 @@
 
 #include "Public/ISavannaGfxVk2.h"
 
-#include <vulkan/vulkan.h>
+#include "SavannaVk2.h"
 
 #define SAVANNA_VK_APPLICATION_NAME "Savanna"
 #define SAVANNA_VK_ENGINE_NAME "Savanna Engine"
 #define SAVANNA_VK_API_VERSION VK_API_VERSION_1_3
 #define SAVANNA_VK_APPLICATION_VERSION VK_MAKE_VERSION(0, 1, 0)
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     constexpr VkApplicationInfo k_SavannaDefaultVulkanAppInfo
     {
@@ -40,4 +40,4 @@ namespace Savanna::Gfx::Vk2::Utils
         const VkDeviceQueueCreateInfo* pQueueCreateInfo,
         const uint32 queueCreateInfoCount,
         VkDeviceCreateInfo& deviceCreateInfo);
-} // namespace Savanna::Gfx::Vk
+} // namespace savanna::Gfx::Vk

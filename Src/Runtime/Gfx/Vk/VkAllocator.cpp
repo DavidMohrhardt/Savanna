@@ -1,6 +1,6 @@
 #include "VkAllocator.h"
 
-namespace Savanna::Gfx::Vk2
+namespace savanna::Gfx::Vk2
 {
     static se_AllocatorInterface_t s_AllocationInterface {};
     static VkAllocationCallbacks* s_pAllocationCallbacks = nullptr;
@@ -84,4 +84,4 @@ namespace Savanna::Gfx::Vk2
             s_pAllocationCallbacks = nullptr;
         }
     }
-} // namespace Savanna::Gfx::Vk2
+} // namespace savanna::Gfx::Vk2

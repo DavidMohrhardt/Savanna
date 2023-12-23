@@ -16,7 +16,7 @@
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     class UpdateLoop
     {
@@ -65,4 +65,4 @@ namespace Savanna::Entities
             }
         }
     };
-} // namespace Savanna::Entities
+} // namespace savanna::Entities

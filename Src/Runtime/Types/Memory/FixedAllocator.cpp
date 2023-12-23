@@ -2,7 +2,7 @@
 
 #include "Memory/MemoryManager.h"
 
-namespace Savanna
+namespace savanna
 {
     FixedAllocator::FixedAllocator(
         size_t size,
@@ -84,7 +84,10 @@ namespace Savanna
             return pBuffer;
         }
 
-        throw std::bad_alloc();
+        SAVANNA_ASSERT(false, "Failed to find a sufficient block");
+
+        // Unreachable
+        return nullptr;
     }
 
 } // namespace Savanna

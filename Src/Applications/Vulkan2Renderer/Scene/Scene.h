@@ -14,7 +14,7 @@
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 
-using namespace Savanna;
+using namespace savanna;
 
 struct MaterialRenderingData
 {

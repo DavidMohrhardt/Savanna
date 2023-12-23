@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package Savanna.Gfx;
 
-// option cc_enable_arenas = "Savanna::Gfx";
+// option cc_enable_arenas = "savanna::Gfx";
 option optimize_for = LITE_RUNTIME;
 
 message HashString

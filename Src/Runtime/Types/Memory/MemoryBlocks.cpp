@@ -4,7 +4,7 @@
 
 #if defined(__cplusplus)
 
-namespace Savanna
+namespace savanna
 {
     template <typename T>
     static void* AllocatePages(size_t count)
@@ -36,8 +36,8 @@ namespace Savanna
 
 se_PageAllocFunc_t GetPageAllocFuncForSize(size_t size)
 {
-    auto it = Savanna::k_PageAllocFuncs.find(size);
-    if (it != Savanna::k_PageAllocFuncs.end())
+    auto it = savanna::k_PageAllocFuncs.find(size);
+    if (it != savanna::k_PageAllocFuncs.end())
     {
         return it->second;
     }

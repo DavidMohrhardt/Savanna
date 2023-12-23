@@ -12,7 +12,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-namespace Savanna
+namespace savanna
 {
     template<typename T>
     class array_view

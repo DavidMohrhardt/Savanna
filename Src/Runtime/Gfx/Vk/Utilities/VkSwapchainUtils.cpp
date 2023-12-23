@@ -12,7 +12,7 @@
 
 #include <algorithm>
 
-namespace Savanna::Gfx::Vk2::Utils
+namespace savanna::Gfx::Vk2::Utils
 {
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const dynamic_array<VkSurfaceFormatKHR>& availableFormats)
     {

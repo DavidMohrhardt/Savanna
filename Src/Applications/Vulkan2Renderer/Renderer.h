@@ -6,7 +6,7 @@
 
 namespace vk
 {
-    using namespace Savanna;
+    using namespace savanna;
 
     class Renderer
     {

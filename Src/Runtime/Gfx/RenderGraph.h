@@ -26,7 +26,7 @@ typedef enum se_GpuNodeType_t
     se_GpuNodeType_Count // Must always be last
 } se_GpuNodeType;
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     using GpuNodeType = se_GpuNodeType_t;
 
@@ -179,4 +179,4 @@ namespace Savanna::Gfx
         dynamic_array<RenderGraphNode> m_GraphNodes;
         dynamic_array<dynamic_array<RenderGraphNode>> m_RenderTiers;
     };
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx

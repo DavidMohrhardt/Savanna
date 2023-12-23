@@ -38,7 +38,7 @@ constexpr uintptr_t k_PoisonFooter = 0x4245454642454546;
     POISON_CHK_FOOTER
 
 
-namespace Savanna
+namespace savanna
 {
     struct alignas(8) MemoryChunkDescriptor
     {

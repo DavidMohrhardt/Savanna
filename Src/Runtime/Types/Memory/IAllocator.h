@@ -10,7 +10,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-namespace Savanna
+namespace savanna
 {
     struct IAllocator
     {

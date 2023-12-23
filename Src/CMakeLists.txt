@@ -11,6 +11,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
+# Ensure that exports are output to a JSON file
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Specify clang as the compiler to ensure supported language standards
 set(CMAKE_C_COMPILER "llvm" CACHE STRING "Set the C compiler to use")
 set(CMAKE_CXX_COMPILER "llvm++" CACHE STRING "Set the C++ compiler to use")
@@ -50,12 +53,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../build/bin")
 # Helper Locations
 set(SAVANNA_EXTERNAL_FOLDER ${CMAKE_CURRENT_LIST_DIR}/External)
 
+# External Libraries
+add_subdirectory(${SAVANNA_EXTERNAL_FOLDER}/luau)
+
 # Runtime Library
-set(SAVANNA_CORE_LIBRARY_TYPE STATIC)
+set(SAVANNA_CORE_LIBRARY_TYPE SHARED)
 add_subdirectory(Runtime)
 
-# Outside Application Testing Projects
-# add_subdirectory(Applications/VulkanRenderer)
+# Application Testing Projects
 add_subdirectory(Applications/Vulkan2Renderer)
 
 # Tests

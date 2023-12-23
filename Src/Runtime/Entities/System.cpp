@@ -1,6 +1,6 @@
 #include "System.h"
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
     se_EntitySystemErrorCode_t System::Initialize(
         const se_EntitySystemInterface_t *pInterface) noexcept
@@ -19,5 +19,5 @@ namespace Savanna::Entities
 
         return kSavannaSystemSuccess;
     }
-} // namespace Savanna::Entities
+} // namespace savanna::Entities
 

@@ -20,7 +20,7 @@
 
 #include <Types/Singleton/Singleton.h>
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     class GfxContext : public Singleton<GfxContext>
     {
@@ -41,6 +41,6 @@ namespace Savanna::Gfx
 
         se_GfxSupportedBackend_t GetSupportedGfxBackends() const;
     };
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx
 
 #endif // !SAVANNA_GFX_CONTEXT_H

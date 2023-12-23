@@ -1,7 +1,7 @@
 #include "InterfaceAllocator.h"
 #include "Memory/SavannaMemory.h"
 
-namespace Savanna
+namespace savanna
 {
     InterfaceAllocator::InterfaceAllocator(se_AllocatorInterface_t allocatorInterface)
         : m_AllocatorInterface(allocatorInterface)

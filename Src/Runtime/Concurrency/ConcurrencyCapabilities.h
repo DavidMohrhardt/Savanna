@@ -14,7 +14,7 @@
 #include "Utilities/SavannaCoding.h"
 #include <Types/Singleton/EmbeddedSingleton.h>
 
-namespace Savanna::Concurrency
+namespace savanna::Concurrency
 {
     struct Capabilities : public EmbeddedSingleton<Capabilities>
     {
@@ -61,4 +61,4 @@ namespace Savanna::Concurrency
         m_MaxHardwareThreadCount = std::thread::hardware_concurrency();
     }
 
-} // namespace Savanna::Concurrency
+} // namespace savanna::Concurrency

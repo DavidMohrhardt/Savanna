@@ -12,7 +12,7 @@
 
 #include "Memory/Public/ISavannaMemory.hpp"
 
-namespace Savanna
+namespace savanna
 {
 
     struct FreeBlock

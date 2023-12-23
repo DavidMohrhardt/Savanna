@@ -15,7 +15,7 @@
 
 #include "Types/Memory/MemoryBuffer.h"
 
-namespace Savanna::Gfx
+namespace savanna::Gfx
 {
     class Buffer
     {
@@ -33,4 +33,4 @@ namespace Savanna::Gfx
         MemoryBuffer m_CpuBuffer;
         void* m_GpuBufferHandle;
     };
-} // namespace Savanna::Gfx
+} // namespace savanna::Gfx

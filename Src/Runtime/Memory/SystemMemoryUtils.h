@@ -2,7 +2,7 @@
 
 #include <Utilities/SavannaCoding.h>
 
-namespace Savanna
+namespace savanna
 {
     size_t GetPageSize();
 

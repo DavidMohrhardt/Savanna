@@ -25,7 +25,7 @@
 #include <Types/Memory/MemoryBlocks.h>
 #include <Types/Memory/MemoryBuffer.h>
 
-namespace Savanna::Entities
+namespace savanna::Entities
 {
 #if !DEPRECATED_PARADIGM
     class Paradigm;
@@ -198,4 +198,4 @@ namespace Savanna::Entities
         }
     };
 #endif
-} // namespace Savanna::Entities
+} // namespace savanna::Entities

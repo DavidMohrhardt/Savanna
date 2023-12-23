@@ -4,3 +4,6 @@
 [submodule "Src/External/glslang"]
 	path = Src/External/glslang
 	url = git@github.com:KhronosGroup/glslang.git
+[submodule "Src/External/luau"]
+	path = Src/External/luau
+	url = git@github.com:luau-lang/luau.git

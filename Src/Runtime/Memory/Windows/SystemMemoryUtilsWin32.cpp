@@ -7,7 +7,7 @@
 #define WIN_32_LEAN_AND_MEAN
 #include <windows.h>
 
-namespace Savanna
+namespace savanna
 {
     size_t GetPageSize()
     {
@@ -30,6 +30,6 @@ namespace Savanna
         GlobalMemoryStatusEx(&memoryStatus);
         return memoryStatus.ullTotalPhys;
     }
-} // namespace Savanna::Windows
+} // namespace savanna::Windows
 
 #endif // SAVANNA_PLATFORM_WINDOWS

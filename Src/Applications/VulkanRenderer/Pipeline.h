@@ -2,9 +2,9 @@
 
 #include "Types/Enums/Flags.h"
 
-#include <vulkan/vulkan.h>
+#include "SavannaVk2.h"
 
-namespace Savanna::Gfx::Vk
+namespace savanna::Gfx::Vk
 {
     class Pipeline
     {

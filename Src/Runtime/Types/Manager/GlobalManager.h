@@ -8,7 +8,7 @@
     friend class GlobalManager<__className>; \
     friend class Singleton<__className>;
 
-namespace Savanna
+namespace savanna
 {
     class IGlobalManager
     {

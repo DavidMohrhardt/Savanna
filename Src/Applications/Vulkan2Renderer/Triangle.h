@@ -27,3 +27,17 @@ public:
     uint32_t m_IndexCount;
     uint32_t m_UvCoordCount;
 };
+
+namespace gpu
+{
+    struct triangle
+    {
+        se_GfxHandle_t vertexBufferHandle;
+        se_GfxHandle_t indexBufferHandle;
+    };
+
+    // triangle CreateTriangle(TriangleMesh& mesh)
+    // {
+    //     se_
+    // }
+}

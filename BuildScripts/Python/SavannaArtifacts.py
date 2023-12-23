@@ -28,7 +28,6 @@ def PrepareArtifactsIfNeeded(buildPlatform: SavannaPlatform.SavannaBuildPlatform
     archiveTools = SavannaPathUtils.FindPathToFiles(toolsRoot, unzipperRegex)
 
     for artifact in artifactFiles:
-
         name = artifact.split('/')[-1].split('.zip')[0].split('.7z')[0].split('.tar')[0]
         # TODO @david.mohrhardt: For now we just skip existing folders but We may want to look into doing something else
         SavannaLogging.Log([str(archiveTools), "x", artifact, "-o./External/" + name])
