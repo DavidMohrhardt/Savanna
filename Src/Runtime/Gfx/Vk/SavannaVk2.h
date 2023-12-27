@@ -45,7 +45,7 @@
         } \
     }
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     // Using Declarations for ISavannaGfxVk2.h types
     using VkGraphicsCapabilities = se_VkGraphicsCapabilities_t;

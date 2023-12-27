@@ -2,7 +2,7 @@
 
 #include "VkDriver.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     se_VkGraphicsCapabilities_t g_GraphicsCapabilities {};
 
@@ -10,11 +10,20 @@ namespace savanna::Gfx::Vk2
     {
         // g_GraphicsCapabilities.m_IsSupported = true;
     }
-} // namespace savanna::Gfx::Vk2
+
+    se_GfxErrorCode_t GetErrorCode(VkResult result)
+    {
+        switch (result)
+        {
+            default:
+                return kSavannaGfxErrorCodeUnknownError;
+        }
+    }
+} // namespace savanna::gfx::vk
 
 se_GfxErrorCode_t GetDriverInterfaceVulkan(se_GfxDriverInterface_t& outDriverInterface)
 {
-    using namespace savanna::Gfx::Vk2;
+    using namespace savanna::gfx::vk;
     VkDriver::PopulateDriverInterface(outDriverInterface);
     return kSavannaGfxErrorCodeSuccess;
 }

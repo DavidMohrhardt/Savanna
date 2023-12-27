@@ -5,7 +5,7 @@
 
 #include <set>
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     VkQueueFamilyIndices::VkQueueFamilyIndices(
         const VkPhysicalDevice physicalDevice,

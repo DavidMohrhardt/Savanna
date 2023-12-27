@@ -13,7 +13,7 @@
 #include "SavannaVk2.h"
 #include "VkQueueFamilyIndices.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     class VkGpu
     {
@@ -58,4 +58,4 @@ namespace savanna::Gfx::Vk2
 
         const VkQueueFamilyIndices& GetQueueFamilyIndices() const { return m_QueueFamilyIndices; }
     };
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

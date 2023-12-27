@@ -15,7 +15,7 @@
         }                                          \
     }
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
     using GfxErrorCode = Enumeration<se_GfxErrorCode_t, se_uint32>;
     using GfxBackend = Enumeration<se_GfxBackend_t, se_uint32>;

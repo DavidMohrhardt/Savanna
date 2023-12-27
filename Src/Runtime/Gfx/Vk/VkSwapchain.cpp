@@ -14,7 +14,7 @@
 
 #include "Utilities/VkSwapchainUtils.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     inline static constexpr VkImageViewCreateInfo k_DefaultSwapchainImageViewCreateInfo {
             // VkStructureType            sType;
@@ -69,13 +69,13 @@ namespace savanna::Gfx::Vk2
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Swapchain::Initialize);
 
-        Utils::SwapchainSupportDetails supportDetails;
-        Utils::PopulateSwapchainSupportDetails(supportDetails, gpu, surface);
+        utils::SwapchainSupportDetails supportDetails;
+        utils::PopulateSwapchainSupportDetails(supportDetails, gpu, surface);
 
         // TODO @DavidMohrhardt: Submit the format requested by the user.
-        m_SurfaceFormat = Utils::ChooseSwapSurfaceFormat(supportDetails.m_Formats);
-        m_PresentMode = Utils::ChooseSwapPresentMode(supportDetails.m_PresentModes);
-        m_Extent = Utils::ChooseSwapExtent(supportDetails.m_Capabilities, createInfo.m_Width, createInfo.m_Height);
+        m_SurfaceFormat = utils::ChooseSwapSurfaceFormat(supportDetails.m_Formats);
+        m_PresentMode = utils::ChooseSwapPresentMode(supportDetails.m_PresentModes);
+        m_Extent = utils::ChooseSwapExtent(supportDetails.m_Capabilities, createInfo.m_Width, createInfo.m_Height);
 
         VkSwapchainCreateInfoKHR swapchainCreateInfo{};
         swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -196,4 +196,4 @@ namespace savanna::Gfx::Vk2
             }
         }
     }
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

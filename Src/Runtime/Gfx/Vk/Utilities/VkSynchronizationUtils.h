@@ -15,7 +15,7 @@
 #include "VkGpu.h"
 #include "VkAllocator.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
 
     struct VkSynchronizationCapabilities
@@ -41,7 +41,7 @@ namespace savanna::Gfx::Vk2::Utils
         return vkCreateSemaphore(gpu, &createInfo, VkAllocator::Get(), &outSemaphore);
     }
 
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk
 
 
 // using VulkanSemaphore = VkSem

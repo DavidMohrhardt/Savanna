@@ -1,7 +1,7 @@
 #include "Scripting/SavannaScripting.h"
 #include "JobSystem.h"
 
-using namespace savanna::Concurrency;
+using namespace savanna::concurrency;
 
 DECLARE_SCRIPTING_FUNCTION(int) seSubmitScriptingJobContext(lua_CFunction executeFunc)
 {

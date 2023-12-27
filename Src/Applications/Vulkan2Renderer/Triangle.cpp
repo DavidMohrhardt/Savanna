@@ -9,7 +9,7 @@
 #include <IO/FileStream.h>
 
 using namespace savanna;
-using namespace savanna::Concurrency;
+using namespace savanna::concurrency;
 
 const char* k_DefaultTriangleShaderPaths[2]
 {
@@ -125,7 +125,7 @@ bool TriangleMesh::TryCreateDefaultShader(const se_AllocatorInterface_t* pAlloca
 {
     static auto didCreateShaders = [=]() -> bool
     {
-        using namespace Concurrency;
+        using namespace concurrency;
         SAVANNA_INSERT_SCOPED_PROFILER(VulkanApplication::CreateShaderModules);
 
         JobHandle shaderJobHandles[2]
@@ -167,7 +167,7 @@ TriangleMesh &TriangleMesh::GetDefaultMesh()
 {
     static TriangleMesh defaultMesh = []()->TriangleMesh
     {
-        if (TryCreateDefaultShader(savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindTemp)))
+        if (TryCreateDefaultShader(savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindThreadSafeTemp)))
         {
             SAVANNA_LOG("Successfully created default triangle shader.");
         }

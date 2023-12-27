@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     VkSynchronizationCapabilities VkSynchronizationInfo::s_Capabilities {};
 
@@ -29,4 +29,4 @@ namespace savanna::Gfx::Vk2::Utils
             }
         }
     }
-} // namespace savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::vk::Utils

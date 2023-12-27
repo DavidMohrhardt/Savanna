@@ -11,7 +11,7 @@
 #define SAVANNA_VK_API_VERSION VK_API_VERSION_1_3
 #define SAVANNA_VK_APPLICATION_VERSION VK_MAKE_VERSION(0, 1, 0)
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     constexpr VkApplicationInfo k_SavannaDefaultVulkanAppInfo
     {

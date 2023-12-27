@@ -12,7 +12,7 @@
 
 #include "Concurrency/SavannaConcurrency.h"
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
     static consteval size_t GetGfxDriverInterfaceSizeInPtrs()
     {

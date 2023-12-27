@@ -2,7 +2,7 @@
 
 #include "VkExtensionUtils.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     void PopulateInstanceCreateInfo(
         VkInstanceCreateInfo& outCreateInfo,
@@ -41,4 +41,4 @@ namespace savanna::Gfx::Vk2::Utils
 
         deviceCreateInfo.pEnabledFeatures = nullptr;
     }
-} // namespace savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::vk::Utils

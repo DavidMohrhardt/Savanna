@@ -17,7 +17,7 @@
 #include <atomic>
 #include <tuple>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     using JobHandle = se_JobHandle_t;
     using JobPriority = se_JobPriority_t;

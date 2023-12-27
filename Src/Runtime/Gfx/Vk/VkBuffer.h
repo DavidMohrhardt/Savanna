@@ -13,7 +13,7 @@
 #include "SavannaVk2.h"
 #include "VkGpu.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
 
     class VkGpuBuffer

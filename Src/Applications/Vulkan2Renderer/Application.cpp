@@ -14,7 +14,7 @@ Application::Application(const char *rootPath)
     SavannaStart();
 
     io::VirtualFileSystem::Construct(rootPath);
-    Concurrency::ThreadManager::Get()->StartJobSystem();
+    concurrency::ThreadManager::Get()->StartJobSystem();
 
     m_pRenderer = new vk::Renderer();
     if (m_pRenderer->TryInitialize(nullptr, m_Window.GetWindowPtr()))
@@ -37,7 +37,7 @@ Application::~Application()
 
     delete m_pRenderer;
 
-    savanna::Gfx::Shutdown();
+    savanna::gfx::Shutdown();
 
     savanna::io::VirtualFileSystem::Destroy();
 

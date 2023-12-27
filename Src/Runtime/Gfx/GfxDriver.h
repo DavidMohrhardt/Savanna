@@ -17,7 +17,7 @@
 
 #include <Concurrency/SavannaConcurrency.h>
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
     class GfxDriver
     {

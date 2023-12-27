@@ -4,7 +4,7 @@
 
 #include "Types/Containers/Arrays/dynamic_array.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     void PopulateInstanceExtensions(dynamic_array<const char*>& outExtensions, const char* const* ppExtensions, uint32 extensionCount);
 

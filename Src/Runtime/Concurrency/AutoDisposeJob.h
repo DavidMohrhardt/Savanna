@@ -17,7 +17,7 @@
 
 #include <Types/Containers/Arrays/dynamic_array.h>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     class AutoDisposeJobBase : public IJob
     {

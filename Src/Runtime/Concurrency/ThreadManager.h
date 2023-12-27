@@ -26,7 +26,7 @@
 
 #include <atomic>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     class ThreadManager final : public GlobalManager<ThreadManager>
     {

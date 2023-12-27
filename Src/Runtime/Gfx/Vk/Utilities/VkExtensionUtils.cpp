@@ -2,7 +2,7 @@
 
 #include "Utilities/SavannaCoding.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     inline bool IsExtensionSupported(const char *extensionName, const dynamic_array<VkExtensionProperties>& supportedExtensions)
     {
@@ -126,4 +126,4 @@ namespace savanna::Gfx::Vk2::Utils
         PopulateExtensionBuffer(outExtensions, ppExtensions, extensionCount);
         ValidateDeviceExtensions(physicalDevice, outExtensions.data(), outExtensions.size());
     }
-} // namespace savanna::Gfx::Vk2::Utils
+} // namespace savanna::Gfx::vk::Utils

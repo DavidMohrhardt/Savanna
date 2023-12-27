@@ -10,7 +10,7 @@
 
 #include <unordered_set>
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     bool VkGpu::TryInitializeLogicalDevice(
         const se_VkDriverCreateInfo_t &createInfo,
@@ -31,14 +31,14 @@ namespace savanna::Gfx::Vk2
             createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount,
             kSavannaAllocatorKindTemp
         };
-        Utils::PopulateDeviceExtensions(
+        utils::PopulateDeviceExtensions(
             enabledDeviceExtensions,
             m_PhysicalDevice,
             createInfo.m_LogicalDeviceCreateArgs.m_ppEnabledDeviceExtensions,
             createInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount);
 
         VkDeviceCreateInfo deviceCreateInfo {};
-        Utils::PopulateVkDeviceCreateInfo(
+        utils::PopulateVkDeviceCreateInfo(
             createInfo,
             queueCreateInfos.data(),
             queueCreateInfos.size(),
@@ -54,7 +54,7 @@ namespace savanna::Gfx::Vk2
         VkSurfaceKHR& surface,
         const VkAllocationCallbacks* pAllocationCallbacks)
     {
-        if (!Utils::TrySelectPhysicalDevice(instance, m_PhysicalDevice, createInfo.m_PhysicalDeviceCreateArgs))
+        if (!utils::TrySelectPhysicalDevice(instance, m_PhysicalDevice, createInfo.m_PhysicalDeviceCreateArgs))
         {
             SAVANNA_LOG("Failed to select physical device.");
             return false;
@@ -87,4 +87,4 @@ namespace savanna::Gfx::Vk2
         m_PhysicalDevice = VK_NULL_HANDLE;
         m_PhysicalDeviceProperties = {};
     }
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

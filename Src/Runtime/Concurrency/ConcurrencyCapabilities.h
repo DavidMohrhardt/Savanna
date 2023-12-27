@@ -14,7 +14,7 @@
 #include "Utilities/SavannaCoding.h"
 #include <Types/Singleton/EmbeddedSingleton.h>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     struct Capabilities : public EmbeddedSingleton<Capabilities>
     {

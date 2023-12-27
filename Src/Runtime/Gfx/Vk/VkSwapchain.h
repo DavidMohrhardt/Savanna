@@ -14,7 +14,7 @@
 
 #include "VkGpu.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     class Swapchain
     {
@@ -78,4 +78,4 @@ namespace savanna::Gfx::Vk2
             };
         }
     };
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

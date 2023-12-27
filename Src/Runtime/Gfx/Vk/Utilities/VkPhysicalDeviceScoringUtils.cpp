@@ -1,6 +1,6 @@
 #include "VkPhysicalDeviceScoringUtils.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     struct PhysicalDeviceDescriptor
     {
@@ -12,7 +12,7 @@ namespace savanna::Gfx::Vk2::Utils
 
     inline PhysicalDeviceDescriptor GetPhysicalDeviceDescriptor(VkPhysicalDevice physicalDevice)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(savanna::Gfx::Vk::GetPhysicalDeviceDescriptor);
+        SAVANNA_INSERT_SCOPED_PROFILER(savanna::gfx::Vk::GetPhysicalDeviceDescriptor);
         PhysicalDeviceDescriptor deviceDescriptor = {};
         deviceDescriptor.physicalDevice = physicalDevice;
         vkGetPhysicalDeviceProperties(physicalDevice, &deviceDescriptor.properties);
@@ -222,7 +222,7 @@ namespace savanna::Gfx::Vk2::Utils
         VkPhysicalDevice physicalDevice,
         const VulkanDeviceScoringFuncs& scoringFunctionPtrs)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(savanna::Gfx::Vk::ScoreDevice);
+        SAVANNA_INSERT_SCOPED_PROFILER(savanna::gfx::Vk::ScoreDevice);
         PhysicalDeviceDescriptor deviceDescriptor = GetPhysicalDeviceDescriptor(physicalDevice);
 
         auto score = 0;
@@ -240,4 +240,4 @@ namespace savanna::Gfx::Vk2::Utils
 
         return score;
     }
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

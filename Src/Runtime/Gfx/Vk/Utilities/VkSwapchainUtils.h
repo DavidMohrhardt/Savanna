@@ -12,7 +12,7 @@
 
 #include "SavannaVk2.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     struct SwapchainSupportDetails
     {

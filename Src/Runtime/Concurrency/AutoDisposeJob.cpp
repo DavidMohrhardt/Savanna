@@ -1,6 +1,6 @@
 #include "AutoDisposeJob.h"
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     inline void AutoDisposeJobBase::Dispose()
     {

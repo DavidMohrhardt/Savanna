@@ -20,7 +20,7 @@
 
 #include <Types/Singleton/Singleton.h>
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
     class GfxContext : public Singleton<GfxContext>
     {

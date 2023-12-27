@@ -235,6 +235,10 @@ namespace savanna
         SAVANNA_ASSERT(!IsLinkedListCyclic(m_Head), "Linked list is cyclic, there is a bug in the allocator");
         SAVANNA_ASSERT(!IsPointerInList(m_Head, pBestFit), "Pointer was still in the header list!");
 #endif
+        if (allocationDescriptor.m_Size == 496)
+        {
+            volatile bool breaker = true;
+        }
 
         return pAllocation;
     }

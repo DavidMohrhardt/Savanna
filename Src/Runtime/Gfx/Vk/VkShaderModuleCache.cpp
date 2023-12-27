@@ -8,7 +8,7 @@
 
 // TODO @DavidMohrhardt: Move up a level. It's the GFX system's responsibility to manage the shader resources.
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     inline VkResult CreateVkShaderModule(
         const VkGpu& gpu,
@@ -24,7 +24,7 @@ namespace savanna::Gfx::Vk2
         return vkCreateShaderModule(gpu, &shaderModuleCreateInfo, VkAllocator::Get(), &outShaderModule);
     }
 
-    using namespace Concurrency;
+    using namespace concurrency;
     struct ShaderModuleCreateJob final : public AutoDisposeJobBase
     {
     private:
@@ -207,4 +207,4 @@ namespace savanna::Gfx::Vk2
             outShaderModule = it->second;
         });
     }
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

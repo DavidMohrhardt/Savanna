@@ -53,7 +53,7 @@ static constexpr GlobalManagerFunctionTable k_DefaultManagerOrder[] = {
     SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(MemoryManager),
 
     // Put other managers here
-    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(Concurrency::ThreadManager)
+    SAVANNA_GLOBAL_MANAGER_FUNCTION_TABLE_ENTRY(concurrency::ThreadManager)
 };
 
 // Ensure that the memory manager is the first entry in the table

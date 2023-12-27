@@ -1,6 +1,6 @@
 #include "VkDebugMessenger.h"
 
-namespace savanna::Gfx::Vk2::Utils
+namespace savanna::gfx::vk::utils
 {
     static DebugMessenger* g_DebugMessenger = nullptr;
 

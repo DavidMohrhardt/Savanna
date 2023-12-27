@@ -16,7 +16,7 @@
 
 #define SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING 1
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     class VkAllocator
     {

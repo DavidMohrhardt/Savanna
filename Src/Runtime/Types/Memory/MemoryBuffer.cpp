@@ -49,6 +49,11 @@ namespace savanna
     {
         if (this != &other)
         {
+            if (m_Buffer != nullptr)
+            {
+                SAVANNA_FREE(m_AllocatorKind, m_Buffer);
+            }
+
             m_Buffer = other.m_Buffer;
             m_Size = other.m_Size;
 

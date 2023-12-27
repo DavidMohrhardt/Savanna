@@ -16,7 +16,7 @@
 
 #include <thread>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     typedef void (*se_pfnThreadFunction_t)(void* pArgs);
 

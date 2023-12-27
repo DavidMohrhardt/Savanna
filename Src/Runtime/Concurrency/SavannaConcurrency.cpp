@@ -14,7 +14,7 @@
 
 #include <thread>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     static std::thread::id s_MainThreadId;
 
@@ -30,7 +30,7 @@ namespace savanna::Concurrency
 
 #include "ThreadManager.h"
 
-using namespace savanna::Concurrency;
+using namespace savanna::concurrency;
 
 SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread()
 {

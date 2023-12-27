@@ -30,7 +30,7 @@
         const size_t createInfoCount, \
         se_GfxShaderHandle_t** const ppOutShaderModuleHandles)
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
 
 } // namespace savanna::Gfx

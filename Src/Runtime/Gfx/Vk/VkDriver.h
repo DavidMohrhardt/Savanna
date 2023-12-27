@@ -21,7 +21,7 @@
 #include <Types/Singleton/Singleton.h>
 #include <Types/Containers/Arrays/dynamic_array.h>
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     /**
      * @brief Provides the acquisition interface for the Vulkan api.

@@ -29,7 +29,7 @@
 
 #include <atomic>
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     // TODO @David.Mohrhardt (2023/11/06): Make this a feature on the ThreadManager instead of it's own global manager.
     class JobSystem

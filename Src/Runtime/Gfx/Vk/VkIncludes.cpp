@@ -10,7 +10,7 @@
 #   endif
 #endif
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     using namespace OS;
 

@@ -2,7 +2,7 @@
 
 #include "SavannaVk2.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
 #undef ERROR_CODE_ENTRY
 #define ERROR_CODE_ENTRY(x, y) case x: return #y

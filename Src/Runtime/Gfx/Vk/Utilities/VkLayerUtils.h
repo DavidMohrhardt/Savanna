@@ -3,7 +3,7 @@
 #include "SavannaVk2.h"
 #include "Types/Containers/Arrays/dynamic_array.h"
 
-namespace savanna::Gfx::Vk::Utils
+namespace savanna::gfx::Vk::Utils
 {
     const char* k_DefaultValidationLayerName = "VK_LAYER_KHRONOS_validation";
 

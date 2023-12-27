@@ -2,7 +2,7 @@
 
 extern se_GfxErrorCode_t GetDriverInterfaceVulkan(se_GfxDriverInterface_t& outDriverInterface);
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
     GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
         : m_Allocator(pCreateInfo != nullptr

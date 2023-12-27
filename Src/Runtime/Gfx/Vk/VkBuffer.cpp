@@ -1,6 +1,6 @@
 #include "VkBuffer.h"
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     void VkGpuBuffer::Update(void* pData, size_t sizeInBytes)
     {
@@ -17,4 +17,4 @@ namespace savanna::Gfx::Vk2
         //     // VkBufferCreateInfo
         // }
     }
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

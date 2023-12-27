@@ -26,7 +26,7 @@ typedef enum se_GpuNodeType_t
     se_GpuNodeType_Count // Must always be last
 } se_GpuNodeType;
 
-namespace savanna::Gfx
+namespace savanna::gfx
 {
     using GpuNodeType = se_GpuNodeType_t;
 

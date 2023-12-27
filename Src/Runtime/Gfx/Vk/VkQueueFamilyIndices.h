@@ -7,7 +7,7 @@
 
 #include <optional>
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     struct VkQueueFamilyIndices
     {

@@ -19,7 +19,7 @@
         return;                                     \
     }
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
     static VkDriver* g_pVulkanDriver = nullptr;
 
@@ -44,7 +44,7 @@ namespace savanna::Gfx::Vk2
 
         if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
         {
-            m_Surface = Utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, VkAllocator::Get());
+            m_Surface = utils::CreateSurface(m_Instance, driverCreateInfo.m_pWindowHandle, VkAllocator::Get());
             VK_DRIVER_SUCCESS_OR_TEARDOWN(
                 m_Surface != VK_NULL_HANDLE,
                 kSavannaGfxErrorCodeUnableToCreateGfxDriver,
@@ -169,7 +169,7 @@ namespace savanna::Gfx::Vk2
         const se_GfxDriverCreateInfo_t& createInfo,
         se_VkDriverCreateInfo_t& driverCreateInfo)
     {
-        VkApplicationInfo appInfo = Utils::k_SavannaDefaultVulkanAppInfo;
+        VkApplicationInfo appInfo = utils::k_SavannaDefaultVulkanAppInfo;
         appInfo.pApplicationName = createInfo.m_pApplicationName == nullptr
             ? "Savanna"
             : createInfo.m_pApplicationName;
@@ -199,7 +199,7 @@ namespace savanna::Gfx::Vk2
         // Load create instance, get proc addr, and enumerate extensions
         LoadLibraryPhase0();
 
-        Utils::PopulateInstanceExtensions(enabledInstanceExtensions,
+        utils::PopulateInstanceExtensions(enabledInstanceExtensions,
             instanceCreateArgs.m_ppEnabledInstanceExtensions,
             instanceCreateArgs.m_EnabledInstanceExtensionCount);
 
@@ -209,7 +209,7 @@ namespace savanna::Gfx::Vk2
         }
 
         VkInstanceCreateInfo instanceCreateInfo {};
-        Utils::PopulateInstanceCreateInfo(instanceCreateInfo,
+        utils::PopulateInstanceCreateInfo(instanceCreateInfo,
             enabledInstanceExtensions.data(), enabledInstanceExtensions.size(),
             enabledInstanceLayers.data(), enabledInstanceLayers.size());
         instanceCreateInfo.pApplicationInfo = &appInfo;
@@ -218,7 +218,7 @@ namespace savanna::Gfx::Vk2
 
         if (VK_SUCCEEDED(result) && driverCreateInfo.m_EnableValidationLayers)
         {
-            Utils::DebugMessenger::Initialize(m_Instance, VkAllocator::Get());
+            utils::DebugMessenger::Initialize(m_Instance, VkAllocator::Get());
         }
 
         return ResultToErrorCode(result);
@@ -261,7 +261,7 @@ namespace savanna::Gfx::Vk2
         }
 
         // Okay to call even if the debug utils messenger was never created
-        Utils::DebugMessenger::Destroy();
+        utils::DebugMessenger::Destroy();
 
         if (m_Instance != VK_NULL_HANDLE)
         {
@@ -270,4 +270,4 @@ namespace savanna::Gfx::Vk2
         }
     }
 
-} // namespace savanna::Gfx::Vk2
+} // namespace savanna::Gfx::vk

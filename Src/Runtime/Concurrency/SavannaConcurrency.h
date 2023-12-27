@@ -18,7 +18,7 @@
         SavannaConcurrencyIsMainThread(), \
         "This function must be called from the main thread");
 
-namespace savanna::Concurrency
+namespace savanna::concurrency
 {
     class Info
     {

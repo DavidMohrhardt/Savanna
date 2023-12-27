@@ -66,7 +66,7 @@
     SVK_PHASE_2(MACRO) \
     SVK_PHASE_3(MACRO) \
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
 #ifdef VK_NO_PROTOTYPES
     OS::LibraryHandle GetLibraryHandle();
@@ -90,7 +90,7 @@ namespace svk
     SVK_ALL_PHASES(DECL_SVK_FUNC);
 } // namespace svk
 
-namespace savanna::Gfx::Vk2
+namespace savanna::gfx::vk
 {
 #ifdef VK_NO_PROTOTYPES
     void LoadLibraryPhase0();
