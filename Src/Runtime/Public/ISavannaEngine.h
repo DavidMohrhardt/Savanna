@@ -17,11 +17,12 @@
 #include "ISavannaDefinitions.h"
 #include <stdint.h>
 
+#if !__cplusplus
 // Use C99 bool type
 #include <stdbool.h>
+#endif // !__cplusplus
 
 // Global namespace typedefs
-typedef bool                se_bool;
 typedef char                se_byte;
 typedef unsigned char       se_ubyte;
 

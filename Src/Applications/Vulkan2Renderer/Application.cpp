@@ -16,7 +16,7 @@ Application::Application(const char *rootPath)
     io::VirtualFileSystem::Construct(rootPath);
     concurrency::ThreadManager::Get()->StartJobSystem();
 
-    m_pRenderer = new vk::Renderer();
+    m_pRenderer = SAVANNA_NEW(kSavannaAllocatorKindGeneral, vk::Renderer);
     if (m_pRenderer->TryInitialize(nullptr, m_Window.GetWindowPtr()))
     {
         SAVANNA_LOG("Renderer initialized.");
@@ -35,10 +35,8 @@ Application::~Application()
 {
     SAVANNA_INSERT_SCOPED_PROFILER(Application::~Application);
 
-    delete m_pRenderer;
-
+    SAVANNA_DELETE(kSavannaAllocatorKindGeneral, m_pRenderer);
     savanna::gfx::Shutdown();
-
     savanna::io::VirtualFileSystem::Destroy();
 
     SavannaStop();

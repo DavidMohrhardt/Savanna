@@ -69,10 +69,12 @@ namespace savanna
         if (m_Buffer != nullptr)
         {
             SAVANNA_FREE(m_AllocatorKind, m_Buffer);
+            m_Buffer = nullptr;
         }
     }
 
-    void MemoryBuffer::Resize(const size_t size) {
+    void MemoryBuffer::Resize(const size_t size)
+    {
         if (m_Size == size) SAVANNA_BRANCH_UNLIKELY
         {
             return;

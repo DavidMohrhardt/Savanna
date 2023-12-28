@@ -28,7 +28,8 @@ namespace savanna
     {
         SAVANNA_ASSERT(m_BufferBlockSize != 0, "Buffer block size must be greater than 0.");
         size_t bufferSize = m_BufferBlockSize;
-        AllocateAdditionalMemoryBuffer(bufferSize * initialBufferCount);
+
+        m_Pools.resize_initialized(1, bufferSize * initialBufferCount + sizeof(MemoryChunkDescriptor), m_AllocatorKind);
     }
 
     MultiListAllocator& MultiListAllocator::operator=(MultiListAllocator &&other)
@@ -137,7 +138,7 @@ namespace savanna
         m_Size += bufferSize;
     }
 
-    inline FreeListAllocator &MultiListAllocator::FindPointerInPools(void *const ptr)
+    inline FreeListAllocator& MultiListAllocator::FindPointerInPools(void *const ptr)
     {
         for (auto& pool : m_Pools)
         {

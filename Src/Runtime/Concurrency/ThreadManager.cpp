@@ -209,7 +209,7 @@ namespace savanna::concurrency
     bool ThreadManager::InitializeInternal()
     {
         Info::Initialize();
-        m_ThreadScratchBuffer = MemoryBuffer{sizeof(std::thread) * k_MaxThreadCount, kSavannaAllocatorKindGeneral};
+        m_ThreadScratchBuffer.Resize(sizeof(std::thread) * k_MaxThreadCount);
         m_ThreadPool.resize_initialized(k_MaxThreadCount);
         m_ReservationStates.resize_initialized(k_MaxThreadCount);
 
@@ -238,14 +238,14 @@ namespace savanna::concurrency
         StopInternal();
         m_ThreadPool.clear();
         m_ReservationStates.clear();
-        m_ThreadScratchBuffer = MemoryBuffer{kSavannaAllocatorKindGeneral};
+        m_ThreadScratchBuffer.Reset();
     }
 } // namespace savanna::Concurrency
 
 // PUBLIC API
 using namespace savanna::concurrency;
 
-SAVANNA_EXPORT(se_bool) SavannaConcurrencyThreadManagerTryAcquireThreads(
+SAVANNA_EXPORT(bool) SavannaConcurrencyThreadManagerTryAcquireThreads(
     se_uint8 requestedThreads,
     se_ThreadHandle_t* acquiredThreadHandles)
 {

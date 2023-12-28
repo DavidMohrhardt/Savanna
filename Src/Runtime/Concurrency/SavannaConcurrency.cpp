@@ -32,7 +32,7 @@ namespace savanna::concurrency
 
 using namespace savanna::concurrency;
 
-SAVANNA_EXPORT(se_bool) SavannaConcurrencyIsMainThread()
+SAVANNA_EXPORT(bool) SavannaConcurrencyIsMainThread()
 {
     return s_MainThreadId == std::this_thread::get_id();
 }

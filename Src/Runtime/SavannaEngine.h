@@ -23,19 +23,13 @@
 #ifndef __SAVANNA_ENGINE_H_MINIMAL__
 #define __SAVANNA_ENGINE_H_MINIMAL__
 
-    #include "Public/ISavannaEngine.hpp"
-
     // Required
+    #include "Public/ISavannaEngine.hpp"
     #include "Memory/MemoryManager.h"
 
 #endif // ifndef __SAVANNA_ENGINE_H_MINIMAL__
 
-#if SE_LEAN_AND_MEAN_DEFINED
-
-    // Common Utilities
-    #include "Utilities/Console.h"
-
-#else // !SE_LEAN_AND_MEAN_DEFINED
+#if !SE_LEAN_AND_MEAN_DEFINED
 
     #ifndef SAVANNA_ENGINE_H_EXTRA__
     #define SAVANNA_ENGINE_H_EXTRA__
@@ -45,6 +39,8 @@
 
         // Profiling
         #include "Profiling/Profiler.h"
+
+        // Console
         #include "Utilities/Console.h"
 
     #endif // end SAVANNA_ENGINE_H_EXTRA__
