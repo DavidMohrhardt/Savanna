@@ -12,13 +12,14 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/glfw/glfw
 )
 
-message (STATUS "Fetching glm")
-FetchContent_Declare(
-    glm
-    GIT_REPOSITORY https://github.com/g-truc/glm
-)
+# message (STATUS "Fetching glm")
+# FetchContent_Declare(
+#     glm
+#     GIT_REPOSITORY https://github.com/g-truc/glm
+# )
 
-FetchContent_MakeAvailable(glfw glm)
+# FetchContent_MakeAvailable(glfw glm)
+FetchContent_MakeAvailable(glfw)
 
 collect_native_sources_in_current_dir(src RECURSIVE_LIMITED)
 
@@ -46,7 +47,7 @@ target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
 
 target_link_libraries(  ${SAVANNA_ACTIVE_TARGET}
                         glfw
-                        glm
+                        # glm
                         Vulkan::Vulkan)
                         # protobuf::libprotobuf)
 

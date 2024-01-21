@@ -56,7 +56,7 @@ namespace savanna
         if (s_pInstance == nullptr)
         {
             // Singletons are one time constructs, so we can use new here
-            // over SAVANNA_NEW or an se_AllocatorInterface_t.
+            // over SAVANNA_NEW or an seAllocatorInterface.
             s_pInstance = ::new TYPE(std::forward<Args>(args)...);
         }
         return Get();

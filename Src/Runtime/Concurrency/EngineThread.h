@@ -18,11 +18,11 @@
 
 namespace savanna::concurrency
 {
-    typedef void (*se_pfnThreadFunction_t)(void* pArgs);
+    typedef void (*pfn_seThreadTask)(void* pArgs);
 
     struct ThreadExecutionInterface
     {
-        se_pfnThreadFunction_t m_pFunction;
+        pfn_seThreadTask m_pFunction;
         void* m_pData;
     };
 

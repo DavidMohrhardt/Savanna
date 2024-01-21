@@ -35,7 +35,7 @@ namespace savanna::gfx::vk
         friend class savanna::Allocator;
         friend class VkAllocator;
 
-        static se_AllocatorInterface_t s_AllocatorInterface;
+        static seAllocatorInterface s_AllocatorInterface;
 
         VkInstance m_Instance = VK_NULL_HANDLE;
         VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
@@ -45,7 +45,7 @@ namespace savanna::gfx::vk
         VkGpu m_Gpu;
         ShaderModuleCache m_ShaderModuleCache;
 
-        VkDriver(const se_GfxDriverCreateInfo_t& createInfo, GfxErrorCode& outResult);
+        VkDriver(const seGfxDriverCreateInfo& createInfo, GfxErrorCode& outResult);
         ~VkDriver();
 
         VkDriver() = delete;
@@ -58,11 +58,11 @@ namespace savanna::gfx::vk
         DECL_GFX_DRIVER_INTERFACE_FUNCS();
 
         GfxErrorCode CreateInstance(
-            const se_GfxDriverCreateInfo_t& createInfo,
-            se_VkDriverCreateInfo_t& driverCreateInfo);
+            const seGfxDriverCreateInfo& createInfo,
+            seVkDriverCreateInfo& driverCreateInfo);
 
     public:
-        static void PopulateDriverInterface(se_GfxDriverInterface_t& outDriverInterface);
+        static void PopulateDriverInterface(seGfxDriverInterface& outDriverInterface);
 
         void Teardown();
     };

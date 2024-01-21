@@ -18,8 +18,8 @@ using namespace savanna;
 
 struct MaterialRenderingData
 {
-    se_GfxShaderHandle_t m_VertexShaderModuleHandle;
-    se_GfxShaderHandle_t m_FragmentShaderModuleHandle;
+    seGfxShaderHandle m_VertexShaderModuleHandle;
+    seGfxShaderHandle m_FragmentShaderModuleHandle;
 };
 
 class Material
@@ -35,7 +35,7 @@ public:
 class Mesh
 {
 private:
-    se_GfxBufferHandle_t m_VertexBufferHandle;
-    se_GfxBufferHandle_t m_IndexBufferHandle;
+    seGfxBufferHandle m_VertexBufferHandle;
+    seGfxBufferHandle m_IndexBufferHandle;
     Material m_Material;
 };

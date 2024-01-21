@@ -12,7 +12,7 @@ namespace savanna::gfx::vk
 {
     inline VkResult CreateVkShaderModule(
         const VkGpu& gpu,
-        const se_GfxShaderCreateInfo_t& createInfo,
+        const seGfxShaderCreateInfo& createInfo,
         VkShaderModule& outShaderModule)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(CreateVkShaderModule);
@@ -40,8 +40,8 @@ namespace savanna::gfx::vk
         ShaderModuleCache& m_ShaderModuleCache;
         const VkGpu& m_Gpu;
 
-        dynamic_array<se_GfxShaderCreateInfo_t> m_CreateInfos;
-        dynamic_array<se_GfxShaderHandle_t> m_ShaderModuleHandles;
+        dynamic_array<seGfxShaderCreateInfo> m_CreateInfos;
+        dynamic_array<seGfxShaderHandle> m_ShaderModuleHandles;
 
         std::atomic_uint8_t m_State = Waiting;
 
@@ -105,7 +105,7 @@ namespace savanna::gfx::vk
     };
 
     inline void ShaderModuleCache::RegisterShaderIdInternal(
-        const se_GfxShaderHandle_t& shaderModuleHandle,
+        const seGfxShaderHandle& shaderModuleHandle,
         const VkShaderModule& shaderModule)
     {
         SAVANNA_WRITE_CRITICAL_SECTION(m_ReadWriteLock,
@@ -115,7 +115,7 @@ namespace savanna::gfx::vk
     }
 
     inline void ShaderModuleCache::UnregisterShaderIdInternal(
-        const se_GfxShaderHandle_t& shaderModuleHandle)
+        const seGfxShaderHandle& shaderModuleHandle)
     {
         SAVANNA_WRITE_CRITICAL_SECTION(m_ReadWriteLock,
         {
@@ -125,9 +125,9 @@ namespace savanna::gfx::vk
 
     JobHandle ShaderModuleCache::CreateShaderModulesAsync(
         const VkGpu &gpu,
-        const se_GfxShaderCreateInfo_t *createInfos,
+        const seGfxShaderCreateInfo *createInfos,
         const size_t createInfoCount,
-        se_GfxShaderHandle_t **const ppOutShaderModuleHandles)
+        seGfxShaderHandle **const ppOutShaderModuleHandles)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCache::CreateShaderModulesAsync);
         ThreadManager* pThreadManager = ThreadManager::Get();
@@ -144,7 +144,7 @@ namespace savanna::gfx::vk
         {
             for (size_t i = 0; i < createInfoCount; ++i)
             {
-                se_GfxShaderHandle_t handle = m_NextHandle.fetch_add(1, std::memory_order_relaxed);
+                seGfxShaderHandle handle = m_NextHandle.fetch_add(1, std::memory_order_relaxed);
                 // Register the handle even though the shader module hasn't been created yet.
                 m_ShaderModules[handle] = VK_NULL_HANDLE;
                 pJob->m_CreateInfos.push_back(createInfos[i]);
@@ -161,9 +161,9 @@ namespace savanna::gfx::vk
         return jobHandle;
     }
 
-    se_GfxShaderHandle_t ShaderModuleCache::CreateShaderModuleSynchronized(
+    seGfxShaderHandle ShaderModuleCache::CreateShaderModuleSynchronized(
         const VkGpu& gpu,
-        const se_GfxShaderCreateInfo_t& createInfo)
+        const seGfxShaderCreateInfo& createInfo)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(ShaderModuleCache::CreateShaderModule);
         VkShaderModule shaderModule = VK_NULL_HANDLE;
@@ -174,7 +174,7 @@ namespace savanna::gfx::vk
             return k_SavannaGfxInvalidShaderModuleHandle;
         }
 
-        se_GfxShaderHandle_t handle = m_NextHandle.fetch_add(1, std::memory_order_relaxed);
+        seGfxShaderHandle handle = m_NextHandle.fetch_add(1, std::memory_order_relaxed);
         RegisterShaderIdInternal(handle, shaderModule);
 
         return handle;
@@ -193,7 +193,7 @@ namespace savanna::gfx::vk
 
     void ShaderModuleCache::GetShaderModule(
         const VkGpu &gpu,
-        const se_GfxShaderHandle_t &shaderModuleHandle,
+        const seGfxShaderHandle &shaderModuleHandle,
         VkShaderModule& outShaderModule)
     {
         SAVANNA_READ_CRITICAL_SECTION(m_ReadWriteLock,

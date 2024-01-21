@@ -17,7 +17,7 @@ namespace savanna::concurrency
 
     void AutoDisposeJobBase::OnCancel() { Dispose(); }
 
-    AutoDisposePrimitiveJob::AutoDisposePrimitiveJob(const se_JobDefinition_t &jobDefinition, AllocatorKind allocatorKind)
+    AutoDisposePrimitiveJob::AutoDisposePrimitiveJob(const seJobDefinition &jobDefinition, AllocatorKind allocatorKind)
         : AutoDisposeJobBase(allocatorKind)
         , m_JobDefinition{jobDefinition}
     {}

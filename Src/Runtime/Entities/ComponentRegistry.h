@@ -29,20 +29,20 @@ namespace savanna::Entities
     private:
         DECLARE_FRIENDS_FOR_SINGLETON(ComponentRegistry);
 
-        std::atomic<se_ComponentKey_t> m_NextAvailableComponentKey;
+        std::atomic<seComponentKey> m_NextAvailableComponentKey;
         MultiReadSingleWriteLock m_ComponentTypeMapLock;
-        std::unordered_map<intptr, se_ComponentKey_t> m_ComponentTypeMap;
+        std::unordered_map<intptr, seComponentKey> m_ComponentTypeMap;
 
         ComponentRegistry() = default;
         ~ComponentRegistry() = default;
 
     private:
         const uint32 GetTotalNumberOfRegisteredComponentsInternal();
-        // const se_ComponentKey_t RegisterComponent(const std::type_index& typeIndex);
+        // const seComponentKey RegisterComponent(const std::type_index& typeIndex);
 
     public:
         static const uint8 GetNumberOfComponentKeySets();
         static const uint32 GetTotalNumberOfRegisteredComponents();
-        // static const se_ComponentKey_t RegisterComponent(const IComponent);
+        // static const seComponentKey RegisterComponent(const IComponent);
     };
 } // namespace savanna::Entities

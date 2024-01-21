@@ -37,7 +37,7 @@
 
 namespace savanna
 {
-    using AllocatorKind = se_AllocatorKind_t;
+    using AllocatorKind = seAllocatorKind;
 
     template <class T>
     inline void Delete(T* ptr, AllocatorKind allocatorKind)
@@ -49,7 +49,7 @@ namespace savanna
 #else
 inline void* operator new(
     size_t size,
-    const se_AllocatorKind_t allocatorKind,
+    const seAllocatorKind allocatorKind,
     const char* fileName = nullptr, int lineNo = -1)
 {
     return SavannaMemoryManagerAllocateAligned(
@@ -60,7 +60,7 @@ inline void* operator new(
 inline void* operator new(
     size_t size,
     size_t alignment,
-    const se_AllocatorKind_t allocatorKind,
+    const seAllocatorKind allocatorKind,
     const char* fileName = nullptr, int lineNo = -1)
 {
     return SavannaMemoryManagerAllocateAligned(
@@ -70,7 +70,7 @@ inline void* operator new(
 
 inline void operator delete(
     void* ptr,
-    const se_AllocatorKind_t allocatorKind)
+    const seAllocatorKind allocatorKind)
 {
     SavannaMemoryManagerFree(ptr, allocatorKind);
 }

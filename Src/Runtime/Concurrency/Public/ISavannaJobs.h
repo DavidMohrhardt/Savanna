@@ -16,14 +16,14 @@
  * @brief An opaque handle to a scheduled job.
  *
  */
-typedef se_int64 se_JobHandle_t;
+typedef se_int64 seJobHandle;
 
 /**
  * @brief An invalid job handle. Is equal to 0LL.
  */
-const se_JobHandle_t k_InvalidJobHandle = 0LL;
+const seJobHandle k_InvalidJobHandle = 0LL;
 
-typedef enum se_JobResult_t : se_uint32
+typedef enum seJobResult : se_uint32
 {
     k_SavannaJobResultInvalid = 0,
 
@@ -31,12 +31,12 @@ typedef enum se_JobResult_t : se_uint32
     k_SavannaJobResultError,
     k_SavannaJobResultCancelled,
     k_SavannaJobResultCount
-} se_JobResult_t;
+} seJobResult;
 
 /**
  * @brief Defines the state of a job.
  */
-typedef enum se_JobState_t
+typedef enum seJobState
 {
     /**
      * @brief The job is invalid.
@@ -62,7 +62,7 @@ typedef enum se_JobState_t
      * @brief The total number of states.
      */
     k_SavannaJobStateCount
-} se_JobState_t;
+} seJobState;
 
 /**
  * @brief An enumeration defining the priority of jobs.
@@ -72,7 +72,7 @@ typedef enum se_JobState_t
  *
  * TODO @david.mohrhardt: Rework priority to instead use a work stealing queue.
  */
-typedef enum se_JobPriority_t
+typedef enum seJobPriority
 {
 
     k_SavannaJobPriorityLow,
@@ -87,51 +87,51 @@ typedef enum se_JobPriority_t
      * @brief The total number of priorities.
      */
     k_SavannaJobPriorityCount
-} se_JobPriority_t;
+} seJobPriority;
 
 /**
  * @brief Defines the accepted functor type for a given IJob in the C-Api
  */
-typedef se_JobResult_t (*se_JobExecuteFunc_t)(void*);
+typedef seJobResult (*pfn_seJobExecute)(void*);
 
 /**
  * @brief Defines the accepted functor type for a given IJob in the C-Api
  */
-typedef void(*se_JobResultCallbackFunc_t)(void*);
+typedef void(*pfn_seJobResultCallback)(void*);
 
 /**
  * @brief Defines a struct containing the function pointers for a given IJob in the C-Api.
  */
-typedef struct se_IJobInterface_t
+typedef struct seIJobInterface
 {
     /**
      * @brief The function pointer to the execute function of the job.
     */
-    se_JobExecuteFunc_t executeFunc;
+    pfn_seJobExecute executeFunc;
 
     /**
      * @brief The function pointer to the on complete function of the job.
     */
-    se_JobResultCallbackFunc_t onCompleteFunc;
+    pfn_seJobResultCallback onCompleteFunc;
 
     /**
      * @brief The function pointer to the on cancel function of the job.
     */
-    se_JobResultCallbackFunc_t onCancelFunc;
+    pfn_seJobResultCallback onCancelFunc;
 
     /**
      * @brief The function pointer to the on error function of the job.
     */
-    se_JobResultCallbackFunc_t onErrorFunc;
-} se_IJobInterface_t;
+    pfn_seJobResultCallback onErrorFunc;
+} seIJobInterface;
 
-typedef struct se_JobDefinition_t
+typedef struct seJobDefinition
 {
     /**
      * @brief A pointer to the interface the job should be using. Must remain
      * valid for the duration of the job.
      */
-    se_IJobInterface_t* m_pInterface;
+    seIJobInterface* m_pInterface;
 
     /**
      * @brief A pointer to the job input data. Must be valid for the
@@ -139,13 +139,13 @@ typedef struct se_JobDefinition_t
      *
      */
     void* m_pJobInputData;
-} se_JobDefinition_t;
+} seJobDefinition;
 
-SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobSystemScheduleJob(
-    se_JobDefinition_t& jobInterface,
-    se_JobPriority_t priority,
-    se_JobHandle_t dependency);
+SAVANNA_EXPORT(seJobHandle) SavannaConcurrencyJobSystemScheduleJob(
+    seJobDefinition& jobInterface,
+    seJobPriority priority,
+    seJobHandle dependency);
 
-SAVANNA_EXPORT(void) SavannaConcurrencyJobSystemAwaitJob(se_JobHandle_t jobHandle);
+SAVANNA_EXPORT(void) SavannaConcurrencyJobSystemAwaitJob(seJobHandle jobHandle);
 
 

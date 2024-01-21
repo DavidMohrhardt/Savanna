@@ -62,8 +62,8 @@ namespace savanna::gfx::vk
         , m_SwapchainImageViews {kSavannaAllocatorKindPersistent}
     {}
 
-    se_GfxErrorCode_t Swapchain::Initialize(
-        const se_GfxSwapchainCreateInfo_t& createInfo,
+    seGfxErrorCode Swapchain::Initialize(
+        const seGfxSwapchainCreateInfo& createInfo,
         const VkGpu& gpu,
         const VkSurfaceKHR& surface)
     {

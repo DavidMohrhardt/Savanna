@@ -13,7 +13,7 @@
 namespace savanna::gfx::vk
 {
     bool VkGpu::TryInitializeLogicalDevice(
-        const se_VkDriverCreateInfo_t &createInfo,
+        const seVkDriverCreateInfo &createInfo,
         VkInstance& instance,
         VkSurfaceKHR& surface,
         const VkAllocationCallbacks* pAllocationCallbacks)
@@ -49,7 +49,7 @@ namespace savanna::gfx::vk
     }
 
     bool VkGpu::TryInitialize(
-        const se_VkDriverCreateInfo_t &createInfo,
+        const seVkDriverCreateInfo &createInfo,
         VkInstance& instance,
         VkSurfaceKHR& surface,
         const VkAllocationCallbacks* pAllocationCallbacks)

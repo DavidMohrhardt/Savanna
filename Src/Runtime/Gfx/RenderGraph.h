@@ -14,7 +14,7 @@
 #include <SavannaEngine.h>
 
 
-typedef enum se_GpuNodeType_t
+typedef enum seGpuNodeType
 {
     se_GpuNodeType_Invalid = 0,
 
@@ -28,7 +28,7 @@ typedef enum se_GpuNodeType_t
 
 namespace savanna::gfx
 {
-    using GpuNodeType = se_GpuNodeType_t;
+    using GpuNodeType = seGpuNodeType;
 
     /**
      * @brief A common interface for all nodes that can be used in a render graph

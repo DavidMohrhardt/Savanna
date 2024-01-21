@@ -18,7 +18,7 @@
 
 // Potentially external headers
 #ifndef I_SAVANNA_CONCURRENCY_H
-    typedef se_intptr se_JobHandle_t;
+    typedef se_intptr seJobHandle;
 #endif
 
 #undef SAVANNA_GFX_SUCCESS
@@ -37,7 +37,7 @@
  * @brief A list of error codes for the graphics system.
  *
  */
-typedef enum se_GfxErrorCode_t : se_uint32
+typedef enum seGfxErrorCode : se_uint32
 {
     /**
      * @brief Operation was successful.
@@ -132,13 +132,13 @@ typedef enum se_GfxErrorCode_t : se_uint32
      *
      */
     kSavannaGfxErrorCodePlatformSpecificError,
-} se_GfxErrorCode_t;
+} seGfxErrorCode;
 
 /**
  * @brief The type of graphics backend.
  *
  */
-typedef enum se_GfxBackend_t : se_uint32
+typedef enum seGfxBackend : se_uint32
 {
     kSavannaGfxApiNone = 0,
     kSavannaGfxApiVulkan,
@@ -154,13 +154,13 @@ typedef enum se_GfxBackend_t : se_uint32
     kSavannaGfxExternalBackend,
 
     kSavannaGfxApiCount,
-} se_GfxBackend_t;
+} seGfxBackend;
 
 /**
  * @brief The supported graphics backends.
  *
  */
-typedef enum se_GfxSupportedBackend_t : se_uint8
+typedef enum seGfxSupportedBackend : se_uint8
 {
     kSavannaSupportedGfxApiNone = kSavannaGfxApiNone,
     kSavannaSupportedGfxApiAll = (se_uint8)(~0),
@@ -171,26 +171,26 @@ typedef enum se_GfxSupportedBackend_t : se_uint8
     // kSavannaSupportedGfxApiOpenGL = 1 << kSavannaGfxApiOpenGL,
     // kSavannaSupportedGfxApiOpenGLES = 1 << kSavannaGfxApiOpenGLES,
     // kSavannaSupportedGfxApiMetal = 1 << kSavannaGfxApiMetal,
-} se_GfxSupportedBackend_t;
+} seGfxSupportedBackend;
 
 /**
  * @brief A handle to a graphics object.
  *
  */
-typedef intptr_t se_GfxHandle_t;
+typedef intptr_t seGfxHandle;
 
 /**
  * @brief Defines the invalid handle for a graphics object.
  *
  */
-#define SE_GFX_INVALID_HANDLE (se_GfxHandle_t)(0)
+#define SE_GFX_INVALID_HANDLE (seGfxHandle)(0)
 
 /**
  * @brief A helper macro for typedefing the graphics handles.
  *
  */
 #define SE_GFX_HANDLE_TYPEDEF(__handleType) \
-    typedef se_GfxHandle_t se_##__handleType##Handle_t;
+    typedef seGfxHandle se##__handleType##Handle;
 
 /**
  * @brief A handle to a graphics context. There can only be zero or one graphics context.
@@ -226,17 +226,17 @@ SE_GFX_HANDLE_TYPEDEF(GfxShader);
 
 #undef SE_GFX_HANDLE_TYPEDEF
 
-typedef struct se_GfxContextCreateInfo_t
+typedef struct seGfxContextCreateInfo
 {
     const char* m_pApplicationName;
 
-    const se_AllocatorInterface_t* m_pAllocatorInterface;
+    const seAllocatorInterface* m_pAllocatorInterface;
 
     void* m_pUserData;
-} se_GfxContextCreateInfo_t;
+} seGfxContextCreateInfo;
 
 /// Graphics Driver Section
-typedef struct se_GfxDriverCreateInfo_t
+typedef struct seGfxDriverCreateInfo
 {
     /**
      * @brief The name of the application.
@@ -247,12 +247,12 @@ typedef struct se_GfxDriverCreateInfo_t
     /**
      * @brief The type of backend to create.
      */
-    se_GfxBackend_t m_RequestedBackendType;
+    seGfxBackend m_RequestedBackendType;
 
     /**
      * @brief The allocator the driver should use.
      */
-    const se_AllocatorInterface_t* m_pAllocationInterface;
+    const seAllocatorInterface* m_pAllocationInterface;
 
     /**
      * @brief A pointer to potential extension structs to modify
@@ -268,19 +268,19 @@ typedef struct se_GfxDriverCreateInfo_t
      * Savanna will never overwrite this field.
      */
     void* m_pUserData;
-} se_GfxDriverCreateInfo_t;
+} seGfxDriverCreateInfo;
 
 /**
  * @brief A list of create infos for the graphics drivers.
  * This is used to allow for multiple drivers to be created.
  *
  */
-typedef struct se_GfxDriverCreateInfoList_t
+typedef struct seGfxDriverCreateInfoList
 {
     /**
      * @brief A pointer to the list of create infos.
      */
-    se_GfxDriverCreateInfo_t* m_pDriverCreateInfos;
+    seGfxDriverCreateInfo* m_pDriverCreateInfos;
 
     /**
      * @brief The number of create infos in the list.
@@ -292,10 +292,10 @@ typedef struct se_GfxDriverCreateInfoList_t
      * it allows for the user to pass in additional data to the driver.
      */
     void* m_pUserData;
-} se_GfxDriverCreateInfoList_t;
+} seGfxDriverCreateInfoList;
 
 // Swapchain Section
-typedef struct se_GfxSwapchainCreateInfo_t
+typedef struct seGfxSwapchainCreateInfo
 {
     /**
      * @brief The width of the swapchain.
@@ -315,28 +315,28 @@ typedef struct se_GfxSwapchainCreateInfo_t
     /**
      * @brief The format of the swapchain images.
      */
-    se_GfxTextureFormat_t m_Format;
-} se_GfxSwapchainCreateInfo_t;
+    seGfxTextureFormat m_Format;
+} seGfxSwapchainCreateInfo;
 
 /**
  * @brief A function pointer defining the function signature for creating a graphics driver.
  */
-typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreate_t)(const se_GfxDriverCreateInfo_t& pCreateInfo);
+typedef seGfxErrorCode (*sepfnGfxDriverCreate)(const seGfxDriverCreateInfo& pCreateInfo);
 
 /**
  * @brief A function pointer defining the function signature for destroying a graphics driver.
  */
-typedef se_GfxErrorCode_t (*se_pfnGfxDriverDestroy_t)();
+typedef seGfxErrorCode (*sepfnGfxDriverDestroy)();
 
 /**
  * @brief A function pointer defining the function signature for retrieving the real, underlying driver handle.
  */
-typedef se_GfxDriverHandle_t (*se_pfnGfxDriverGetDriverHandle_t)();
+typedef seGfxDriverHandle (*sepfnGfxDriverGetDriverHandle)();
 
 /**
  * @brief A function pointer defining the function signature for requesting a swapchain.
  */
-typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateSwapchain_t)(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
+typedef seGfxErrorCode (*sepfnGfxDriverCreateSwapchain)(const seGfxSwapchainCreateInfo& createInfo, seGfxHandle* const pOutSwapchainHandle);
 
 
 /// Shaders Section
@@ -347,7 +347,7 @@ typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateSwapchain_t)(const se_GfxSwapch
  * @brief The stage of the shader module.
  *
  */
-typedef enum se_GfxShaderStage_t : se_uint32
+typedef enum seGfxShaderStage : se_uint32
 {
     kSavannaGfxShaderStageVertex = 0,
     kSavannaGfxShaderStageFragment,
@@ -364,13 +364,13 @@ typedef enum se_GfxShaderStage_t : se_uint32
     kSavannaGfxShaderStageTask,
     kSavannaGfxShaderStageMesh,
     kSavannaGfxShaderStageCount,
-} se_GfxShaderStage_t;
+} seGfxShaderStage;
 
 /**
  * @brief The type of shader module.
  *
  */
-typedef enum se_GfxShaderType_t : se_uint32
+typedef enum seGfxShaderType : se_uint32
 {
     kSavannaGfxShaderTypeUnknown = 0,
     kSavannaGfxShaderTypeSpirv,
@@ -380,25 +380,25 @@ typedef enum se_GfxShaderType_t : se_uint32
     // kSavannaGfxShaderTypeHlsl,
 
     kSavannaGfxShaderTypeCount,
-} se_GfxShaderType_t;
+} seGfxShaderType;
 
 /**
  * @brief The create info for a shader module.
  *
  */
-typedef struct se_GfxShaderCreateInfo_t
+typedef struct seGfxShaderCreateInfo
 {
     /**
      * @brief The type of shader module.
      *
      */
-    se_GfxShaderType_t m_Type;
+    seGfxShaderType m_Type;
 
     /**
      * @brief The stage of the shader module.
      *
      */
-    se_GfxShaderStage_t m_Stage;
+    seGfxShaderStage m_Stage;
 
     /**
      * @brief The size of the shader module data.
@@ -416,26 +416,26 @@ typedef struct se_GfxShaderCreateInfo_t
      * @brief The allocator interface to use for the shader module.
      *
      */
-    const se_AllocatorInterface_t* m_pAllocatorInterface;
+    const seAllocatorInterface* m_pAllocatorInterface;
 
     /**
      * @brief The user data to pass to the shader module.
      *
      */
     void* m_pUserData;
-} se_GfxShaderCreateInfo_t;
+} seGfxShaderCreateInfo;
 
 /**
  * @brief A list of shader module create infos.
  *
  */
-typedef struct se_GfxShaderCreateInfoList_t
+typedef struct seGfxShaderCreateInfoList
 {
     /**
      * @brief The list of shader module create infos.
      *
      */
-    se_GfxShaderCreateInfo_t* m_pCreateInfos;
+    seGfxShaderCreateInfo* m_pCreateInfos;
 
     /**
      * @brief The number of shader module create infos.
@@ -447,21 +447,21 @@ typedef struct se_GfxShaderCreateInfoList_t
      * @brief The allocator interface to use for the shader module.
      *
      */
-    const se_AllocatorInterface_t* m_pAllocatorInterface;
+    const seAllocatorInterface* m_pAllocatorInterface;
 
     /**
      * @brief The user data to pass to the shader module.
      *
      */
     void* m_pUserData;
-} se_GfxShaderCreateInfoList_t;
+} seGfxShaderCreateInfoList;
 
 /**
  * @brief A function pointer defining the function signature for requesting shader module creation.
  */
-typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateShaderModule_t)(
-    const se_GfxShaderCreateInfo_t& createInfo,
-    se_GfxShaderHandle_t& outShaderModuleHandle);
+typedef seGfxErrorCode (*sepfnGfxDriverCreateShaderModule)(
+    const seGfxShaderCreateInfo& createInfo,
+    seGfxShaderHandle& outShaderModuleHandle);
 
 /**
  * @brief A function pointer defining the function signature for requesting shader module creation
@@ -470,10 +470,10 @@ typedef se_GfxErrorCode_t (*se_pfnGfxDriverCreateShaderModule_t)(
  * @note This function is not required to be implemented and can return
  * kSavannaGfxErrorCodeNotImplemented or be nullptr.
  */
-typedef se_JobHandle_t (*se_pfnGfxDriverCreateShaderModulesAsync_t)(
-    const se_GfxShaderCreateInfo_t* pCreateInfos,
+typedef seJobHandle (*sepfnGfxDriverCreateShaderModulesAsync)(
+    const seGfxShaderCreateInfo* pCreateInfos,
     const size_t createInfoCount,
-    se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
+    seGfxShaderHandle** const ppOutShaderModuleHandles);
 
 /// Pipelines
 
@@ -481,19 +481,19 @@ typedef se_JobHandle_t (*se_pfnGfxDriverCreateShaderModulesAsync_t)(
  * @brief The type of pipeline.
  *
  */
-typedef enum se_GfxPipelineType_t : se_uint32
+typedef enum seGfxPipelineType : se_uint32
 {
     kSavannaGfxPipelineTypeGraphics = 0,
     kSavannaGfxPipelineTypeCompute,
     kSavannaGfxPipelineTypeRayTracing,
     kSavannaGfxPipelineTypeCount,
-} se_GfxPipelineType_t;
+} seGfxPipelineType;
 
 /**
  * @brief The flags for the graphics shader stages.
  *
  */
-typedef enum se_GfxGraphicsShaderStageFlags_t : se_uint32
+typedef enum seGfxGraphicsShaderStageFlags : se_uint32
 {
     /**
      * @brief Indicates that no shader stages are enabled.
@@ -524,95 +524,95 @@ typedef enum se_GfxGraphicsShaderStageFlags_t : se_uint32
     kSavannaGfxGeometryShaderStage = 1 << kSavannaGfxShaderStageGeometry,
     kSavannaGfxTessellationControlShaderStage = 1 << kSavannaGfxShaderStageTessellationControl,
     kSavannaGfxTessellationEvaluationShaderStage = 1 << kSavannaGfxShaderStageTessellationEvaluation,
-} se_GfxGraphicsShaderStageFlags_t;
+} seGfxGraphicsShaderStageFlags;
 
-typedef struct se_GfxShaderStageCreateInfo_t
+typedef struct seGfxShaderStageCreateInfo
 {
-    se_GfxShaderHandle_t m_ShaderModule;
+    seGfxShaderHandle m_ShaderModule;
     const char* m_pEntryPoint;
-    se_GfxShaderStage_t m_Stage;
+    seGfxShaderStage m_Stage;
     void* pNext;
-} se_GfxShaderStageCreateInfo_t;
+} seGfxShaderStageCreateInfo;
 
-typedef struct se_GfxGraphicsPipelineCreateInfo_t
+typedef struct seGfxGraphicsPipelineCreateInfo
 {
     /**
      * @brief A linked list of shader stages. Must have at least a vertex and fragment shader.
      *
      * @decl_spec_rule Must have at least a vertex and fragment shader.
      */
-    se_GfxShaderStageCreateInfo_t* m_pShaderStages;
+    seGfxShaderStageCreateInfo* m_pShaderStages;
 
     // Vertex input state
     // Input assembly state
     // Tessellation state
 
     // Fixed function pipeline inputs
-    // se_GfxGraphicsViewportStateCreateInfo_t m_ViewportState;
-    // se_GfxGraphicsRasterizationStateCreateInfo_t m_RasterizationState;
-    // se_GfxGraphicsMultisampleStateCreateInfo_t m_MultisampleState;
-    // se_GfxGraphicsDepthStencilStateCreateInfo_t m_DepthStencilState;
-    // se_GfxGraphicsColorBlendStateCreateInfo_t m_ColorBlendState;
-    // se_GfxGraphicsDynamicStateCreateInfo_t m_DynamicState;
+    // seGfxGraphicsViewportStateCreateInfo m_ViewportState;
+    // seGfxGraphicsRasterizationStateCreateInfo m_RasterizationState;
+    // seGfxGraphicsMultisampleStateCreateInfo m_MultisampleState;
+    // seGfxGraphicsDepthStencilStateCreateInfo m_DepthStencilState;
+    // seGfxGraphicsColorBlendStateCreateInfo m_ColorBlendState;
+    // seGfxGraphicsDynamicStateCreateInfo m_DynamicState;
 
     void* pNext;
-} se_GfxGraphicsPipelineCreateInfo_t;
+} seGfxGraphicsPipelineCreateInfo;
 
-typedef struct se_GfxComputePipelineCreateInfo_t
+typedef struct seGfxComputePipelineCreateInfo
 {
     // Required
-    se_GfxShaderHandle_t m_ComputeShader;
+    seGfxShaderHandle m_ComputeShader;
 
     void* pNext;
-} se_GfxComputePipelineCreateInfo_t;
+} seGfxComputePipelineCreateInfo;
 
-typedef struct se_GfxRayTracingPipelineCreateInfo_t
+typedef struct seGfxRayTracingPipelineCreateInfo
 {
     // Required
-    se_GfxShaderHandle_t m_RayGenerationShader;
+    seGfxShaderHandle m_RayGenerationShader;
 
     void* pNext;
-} se_GfxRayTracingPipelineCreateInfo_t;
+} seGfxRayTracingPipelineCreateInfo;
 
 /**
  * @brief Retrieves the type of backend the driver represents.
  *
  */
-typedef se_GfxBackend_t (*se_pfnGfxDriverGetBackend_t)();
+typedef seGfxBackend (*sepfnGfxDriverGetBackend)();
 
 /**
  * @brief a struct containing the function pointers for the graphics driver interface.
  * This is used to implement an external graphics driver interface for Savanna to use.
  *
  */
-typedef struct se_GfxDriverInterface_t
+typedef struct seGfxDriverInterface
 {
     /**
      * @brief A pointer to the function for creating a graphics driver.
      */
-    se_pfnGfxDriverCreate_t m_pfnInitialize;
+    sepfnGfxDriverCreate m_pfnInitialize;
 
     /**
      * @brief A pointer to the function for destroying a graphics driver.
      */
-    se_pfnGfxDriverDestroy_t m_pfnDestroy;
+    sepfnGfxDriverDestroy m_pfnDestroy;
 
     /**
      * @brief A pointer to the function for retrieving the real, underlying driver handle.
      */
-    se_pfnGfxDriverGetDriverHandle_t m_pfnGetDriverHandle;
+    sepfnGfxDriverGetDriverHandle m_pfnGetDriverHandle;
 
     /**
      * @brief A pointer to the function for requesting a initialization of a swapchain.
      *
      */
-    se_pfnGfxDriverCreateSwapchain_t m_pfnCreateSwapchain;
+    sepfnGfxDriverCreateSwapchain m_pfnCreateSwapchain;
 
     /**
      * @brief A pointer to the function for requesting a shader module.
      *
      */
-    se_pfnGfxDriverCreateShaderModule_t m_pfnCreateShaderModule;
+    sepfnGfxDriverCreateShaderModule m_pfnCreateShaderModule;
 
     /**
      * @brief A pointer to the function for requesting multiple shader modules be created
@@ -621,31 +621,31 @@ typedef struct se_GfxDriverInterface_t
      * @note This function is not required to be implemented and can be nullptr.
      *
      */
-    se_pfnGfxDriverCreateShaderModulesAsync_t m_pfnCreateShaderModulesAsync;
+    sepfnGfxDriverCreateShaderModulesAsync m_pfnCreateShaderModulesAsync;
 
     /**
      * @brief TODO @David.Mohrhardt Document
      *
      */
-    se_pfnGfxDriverGetBackend_t m_pfnGetBackend;
+    sepfnGfxDriverGetBackend m_pfnGetBackend;
 
     /**
      * @brief TODO @David.Mohrhardt Document
      */
     void* m_pUserData;
-} se_GfxDriverInterface_t;
+} seGfxDriverInterface;
 
 /**
  * @brief Provides the set of capabilities for the graphics system.
  *
  */
-typedef struct se_GfxCapabilities_t
+typedef struct seGfxCapabilities
 {
-    se_GfxSupportedBackend_t m_SupportedGfxApi;
-    se_GfxBackend_t m_ActiveGfxApi;
+    seGfxSupportedBackend m_SupportedGfxApi;
+    seGfxBackend m_ActiveGfxApi;
 
     void* m_pPlatformCapabilities;
-} se_GfxCapabilities_t;
+} seGfxCapabilities;
 
 /// API Section
 
@@ -653,69 +653,69 @@ typedef struct se_GfxCapabilities_t
  * @brief Initializes the graphics context. This must be called before any other
  *       graphics functions are called.
  * @param pCreateInfo The create info for the graphics context.
- * @return se_GfxErrorCode_t The error code for the operation.
+ * @return seGfxErrorCode The error code for the operation.
  * @note This function is not thread safe.
  */
-SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxInit(const se_GfxContextCreateInfo_t* const pCreateInfo);
+SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxInit(const seGfxContextCreateInfo* const pCreateInfo);
 
 /**
  * @brief Shuts the graphics context down. This must be called to ensure disposal
  *       of all graphics resources.
  *
- * @return se_GfxErrorCode_t The error code for the operation.
+ * @return seGfxErrorCode The error code for the operation.
  * @note This function is not thread safe and must be called on the same thread that
  *      called SavannaGfxInit.
  */
-SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxShutdown();
+SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxShutdown();
 
 /**
  * @brief Creates a graphics driver for the specified backend.
  * @param pCreateInfo The list of create infos for the graphics drivers.
  * The list will be iterated over until a driver is successfully created.
- * @return se_GfxErrorCode_t The error code for the operation.
+ * @return seGfxErrorCode The error code for the operation.
  *
  * @note This function is not thread safe and must be called on
  *      the same thread that called SavannaGfxInit.
  */
-SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxContextCreateDriver(
-    const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
+SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxContextCreateDriver(
+    const seGfxDriverCreateInfoList* const pCreateInfoList);
 
 /**
  * @brief Acquires the supported graphics backends for the current platform.
- * @return se_GfxSupportedBackend_t The supported graphics backends.
+ * @return seGfxSupportedBackend The supported graphics backends.
  *
  * @note This function can be called prior to SavannaGfxInit.
  */
-SAVANNA_EXPORT(se_GfxSupportedBackend_t) SavannaGfxGetSupportedGraphicsBackends();
+SAVANNA_EXPORT(seGfxSupportedBackend) SavannaGfxGetSupportedGraphicsBackends();
 
 /**
  * @brief Gets the active graphics backend.
- * @return se_GfxBackend_t The active graphics backend.
+ * @return seGfxBackend The active graphics backend.
  */
-SAVANNA_EXPORT(se_GfxBackend_t) SavannaGfxGetActiveGraphicsBackend();
+SAVANNA_EXPORT(seGfxBackend) SavannaGfxGetActiveGraphicsBackend();
 
 /**
  * @brief TODO
  *
  */
-SAVANNA_EXPORT(se_GfxHandle_t) SavannaGfxGetDriverHandle();
+SAVANNA_EXPORT(seGfxHandle) SavannaGfxGetDriverHandle();
 
 /**
  * @brief TODO
  *
  */
-SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateSwapchain(
-    const se_GfxSwapchainCreateInfo_t* const pCreateInfo,
-    se_GfxHandle_t* const pOutSwapchainHandle);
+SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxCreateSwapchain(
+    const seGfxSwapchainCreateInfo* const pCreateInfo,
+    seGfxHandle* const pOutSwapchainHandle);
 
-SAVANNA_EXPORT(se_GfxErrorCode_t) SavannaGfxCreateShaderModule(
-    const se_GfxShaderCreateInfo_t& createInfo,
-    se_GfxShaderHandle_t& outShaderModuleHandle);
+SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxCreateShaderModule(
+    const seGfxShaderCreateInfo& createInfo,
+    seGfxShaderHandle& outShaderModuleHandle);
 
-SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
-    const se_GfxShaderCreateInfo_t* pCreateInfos,
+SAVANNA_EXPORT(seJobHandle) SavannaGfxCreateShaderModulesAsync(
+    const seGfxShaderCreateInfo* pCreateInfos,
     const size_t createInfoCount,
-    se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
+    seGfxShaderHandle** const ppOutShaderModuleHandles);
 
 /**
  * @brief Gets the capabilities of the graphics system. Is valid even before
@@ -723,6 +723,6 @@ SAVANNA_EXPORT(se_JobHandle_t) SavannaGfxCreateShaderModulesAsync(
  *      not be completely filled out until after SavannaGfxContextCreateDriver
  *      has been called.
  */
-SAVANNA_EXPORT(const se_GfxCapabilities_t) SavannaGfxGetCapabilities();
+SAVANNA_EXPORT(const seGfxCapabilities) SavannaGfxGetCapabilities();
 
 #endif // !I_SAVANNA_GFX_H

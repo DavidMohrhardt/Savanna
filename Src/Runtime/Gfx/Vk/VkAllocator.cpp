@@ -2,7 +2,7 @@
 
 namespace savanna::gfx::vk
 {
-    static se_AllocatorInterface_t s_AllocationInterface {};
+    static seAllocatorInterface s_AllocationInterface {};
     static VkAllocationCallbacks* s_pAllocationCallbacks = nullptr;
 
     VkAllocationCallbacks VkAllocator::s_AllocationCallbacks {
@@ -59,12 +59,12 @@ namespace savanna::gfx::vk
         return s_pAllocationCallbacks;
     }
 
-    const se_AllocatorInterface_t &VkAllocator::GetAllocatorInterface()
+    const seAllocatorInterface &VkAllocator::GetAllocatorInterface()
     {
         return s_AllocationInterface;
     }
 
-    void VkAllocator::SetVkAllocationInterfacePtr(const se_AllocatorInterface_t* pInterface)
+    void VkAllocator::SetVkAllocationInterfacePtr(const seAllocatorInterface* pInterface)
     {
         if (pInterface != nullptr)
         {

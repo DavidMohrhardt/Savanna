@@ -18,7 +18,7 @@ namespace savanna
     class InterfaceAllocator final : public Allocator
     {
     public:
-        InterfaceAllocator(se_AllocatorInterface_t allocatorInterface = SavannaMemoryManagerGetHeapAllocatorInterface());
+        InterfaceAllocator(seAllocatorInterface allocatorInterface = SavannaMemoryManagerGetHeapAllocatorInterface());
 
         // These allocators are allowed to move and copy
         InterfaceAllocator(const InterfaceAllocator& other);
@@ -38,9 +38,9 @@ namespace savanna
         void* ReallocateAligned(void* pMemory, size_t newSize, size_t alignment);
         void Free(void* pMemory);
 
-        const se_AllocatorInterface_t& GetInterface() const { return m_AllocatorInterface; }
+        const seAllocatorInterface& GetInterface() const { return m_AllocatorInterface; }
 
     private:
-        se_AllocatorInterface_t m_AllocatorInterface;
+        seAllocatorInterface m_AllocatorInterface;
     };
 } // namespace Savanna

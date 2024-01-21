@@ -22,15 +22,15 @@
  * @brief TODO @David.Mohrhardt Document
  */
 #define DECLARE_SAVANNA_KIB_PAGE(__kibLength) \
-    typedef struct alignas( L1CacheLineLength() ) se_Page##__kibLength##KiB_t \
+    typedef struct alignas( L1CacheLineLength() ) sePage##__kibLength##KiB \
     { \
         union \
         { \
             alignas( L1CacheLineLength() ) se_byte m_##__kibLength##Block[KibiBytesToBytes(__kibLength)]; \
             alignas( L1CacheLineLength() ) se_L1CacheLine m_##__kibLength##CacheLines[ GetL1CacheLineCount( KibiBytesToBytes(__kibLength) ) ]; \
         }; \
-    } se_Page##__kibLength##KiB_t; \
-    namespace savanna { using Page##__kibLength##KiB = se_Page##__kibLength##KiB_t; }
+    } sePage##__kibLength##KiB; \
+    namespace savanna { using Page##__kibLength##KiB = sePage##__kibLength##KiB; }
 
 /**
  * @brief returns the conversion from KiB to B.
@@ -112,35 +112,35 @@ DECLARE_SAVANNA_KIB_PAGE(4096);
  * @brief TODO @David.Mohrhardt Document
  */
 #define DECLARE_UNIFIED_PAGE_STRUCT(__memoryBlockSize, __unionMembers) \
-    typedef struct se_UnifiedPage##__memoryBlockSize##KiB_t \
+    typedef struct seUnifiedPage##__memoryBlockSize##KiB \
     { \
         const static size_t k_BlockSize = __memoryBlockSize; \
         union \
         { \
-            se_Page##__memoryBlockSize##KiB_t m_##__memoryBlockSize##KiBBlock; \
+            sePage##__memoryBlockSize##KiB m_##__memoryBlockSize##KiBBlock; \
             __unionMembers \
         }; \
-    } se_UnifiedPage##__memoryBlockSize##KiB_t; \
-    namespace savanna { using UnifiedPage##__memoryBlockSize##KiB = se_UnifiedPage##__memoryBlockSize##KiB_t; }
+    } seUnifiedPage##__memoryBlockSize##KiB; \
+    namespace savanna { using UnifiedPage##__memoryBlockSize##KiB = seUnifiedPage##__memoryBlockSize##KiB; }
 
 /**
  * @brief Creates an array of se_UnifiedPages that will fit to the size of the union of the given integer size in KiB.
  */
 #define DECLARE_UNIFIED_SUB_PAGE_ARRAY(__memoryBlockSize) \
-    se_Page##__memoryBlockSize##KiB_t m_##__memoryBlockSize##KiBBlocks[ GetRequiredLengthToFillUnion(k_BlockSize, __memoryBlockSize) ]
+    sePage##__memoryBlockSize##KiB m_##__memoryBlockSize##KiBBlocks[ GetRequiredLengthToFillUnion(k_BlockSize, __memoryBlockSize) ]
 
-typedef struct se_UnifiedPage1KiB_t
+typedef struct seUnifiedPage1KiB
 {
     const static size_t k_BlockSize = 1;
     union
     {
-        se_Page1KiB_t m_1KiBBlock;
+        sePage1KiB m_1KiBBlock;
     };
-} se_UnifiedPage1KiB_t;
+} seUnifiedPage1KiB;
 
 namespace savanna
 {
-    using UnifiedPage1KiB = se_UnifiedPage1KiB_t;
+    using UnifiedPage1KiB = seUnifiedPage1KiB;
 }
 
 // /**
@@ -314,13 +314,9 @@ DECLARE_UNIFIED_PAGE_STRUCT(
     DECLARE_UNIFIED_SUB_PAGE_ARRAY(1);
 );
 
-typedef void* (*se_PageAllocFunc_t)(size_t count);
-namespace savanna
-{
-    using PageAllocFunc = se_PageAllocFunc_t;
-} // namespace Savanna
+typedef void* (*pfn_sePageAlloc)(size_t count);
 
-se_PageAllocFunc_t GetPageAllocFuncForSize(size_t size);
+pfn_sePageAlloc GetPageAllocForSize(size_t size);
 
 #undef DECLARE_UNIFIED_SUB_PAGE_ARRAY
 #undef DECLARE_UNIFIED_PAGE_STRUCT

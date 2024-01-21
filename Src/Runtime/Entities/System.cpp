@@ -2,8 +2,8 @@
 
 namespace savanna::Entities
 {
-    se_EntitySystemErrorCode_t System::Initialize(
-        const se_EntitySystemInterface_t *pInterface) noexcept
+    seEntitySystemErrorCode System::Initialize(
+        const seEntitySystemInterface *pInterface) noexcept
     {
         if (pInterface == nullptr)
         {
@@ -15,7 +15,7 @@ namespace savanna::Entities
             return kSavannaSystemAlreadyInitialized;
         }
 
-        m_pInterface = const_cast<se_EntitySystemInterface_t*>(pInterface);
+        m_pInterface = const_cast<seEntitySystemInterface*>(pInterface);
 
         return kSavannaSystemSuccess;
     }

@@ -52,13 +52,13 @@ namespace savanna::concurrency
         ThreadManager();
         ~ThreadManager();
 
-        bool TryAcquireThreads(const uint8 requestedThreads, se_ThreadHandle_t* pOutThreadHandles);
-        void ReleaseThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
+        bool TryAcquireThreads(const uint8 requestedThreads, seThreadHandle* pOutThreadHandles);
+        void ReleaseThreads(const uint8 threadCount, const seThreadHandle* pThreadHandles);
 
-        void SetThreadExecutionInterface(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles, ThreadExecutionInterface* pExecutionInterface);
+        void SetThreadExecutionInterface(const uint8 threadCount, const seThreadHandle* pThreadHandles, ThreadExecutionInterface* pExecutionInterface);
 
-        void StartThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
-        void StopThreads(const uint8 threadCount, const se_ThreadHandle_t* pThreadHandles);
+        void StartThreads(const uint8 threadCount, const seThreadHandle* pThreadHandles);
+        void StopThreads(const uint8 threadCount, const seThreadHandle* pThreadHandles);
 
         bool StartJobSystem();
         void StopJobSystem();

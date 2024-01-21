@@ -23,7 +23,7 @@ namespace savanna::gfx::vk::utils
     }
 
     void PopulateVkDeviceCreateInfo(
-        const se_VkDriverCreateInfo_t &createInfo,
+        const seVkDriverCreateInfo &createInfo,
         const VkDeviceQueueCreateInfo *pQueueCreateInfo,
         const uint32 queueCreateInfoCount,
         VkDeviceCreateInfo &deviceCreateInfo)

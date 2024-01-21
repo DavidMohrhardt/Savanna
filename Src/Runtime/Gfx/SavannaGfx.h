@@ -8,7 +8,7 @@
 
 #define SAVANNA_GFX_RETURN_ERROR_CODE(__Operation) \
     {                                              \
-        const se_GfxErrorCode_t __result = __Operation; \
+        const seGfxErrorCode __result = __Operation; \
         if (SAVANNA_GFX_FAILURE(__result))         \
         {                                          \
             return __result;                       \
@@ -17,20 +17,20 @@
 
 namespace savanna::gfx
 {
-    using GfxErrorCode = Enumeration<se_GfxErrorCode_t, se_uint32>;
-    using GfxBackend = Enumeration<se_GfxBackend_t, se_uint32>;
-    using GfxSupportedBackend = FlagEnumeration<se_GfxSupportedBackend_t, se_uint8>;
+    using GfxErrorCode = Enumeration<seGfxErrorCode, se_uint32>;
+    using GfxBackend = Enumeration<seGfxBackend, se_uint32>;
+    using GfxSupportedBackend = FlagEnumeration<seGfxSupportedBackend, se_uint8>;
 
-    const se_AllocatorInterface_t GetDefaultAllocatorInterface();
+    const seAllocatorInterface GetDefaultAllocatorInterface();
 
-    GfxErrorCode Initialize(const se_GfxContextCreateInfo_t* const pCreateInfo);
+    GfxErrorCode Initialize(const seGfxContextCreateInfo* const pCreateInfo);
     GfxErrorCode Shutdown();
 
-    GfxErrorCode CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
+    GfxErrorCode CreateDriver(const seGfxDriverCreateInfoList* const pCreateInfoList);
     GfxSupportedBackend GetSupportedGfxBackends();
     const GfxBackend GetActiveGfxBackend();
 
-    GfxErrorCode CreateSwapchain(const se_GfxSwapchainCreateInfo_t* const pCreateInfo, se_GfxHandle_t* const pOutSwapchainHandle);
+    GfxErrorCode CreateSwapchain(const seGfxSwapchainCreateInfo* const pCreateInfo, seGfxHandle* const pOutSwapchainHandle);
 }
 
 #endif // !SAVANNA_GFX_H

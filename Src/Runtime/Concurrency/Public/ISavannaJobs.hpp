@@ -19,13 +19,13 @@
 
 namespace savanna::concurrency
 {
-    using JobHandle = se_JobHandle_t;
-    using JobPriority = se_JobPriority_t;
-    using JobResult = se_JobResult_t;
-    using JobState = se_JobState_t;
-    using JobExecuteFunc = se_JobExecuteFunc_t;
-    using JobResultCallbackFunc = se_JobResultCallbackFunc_t;
-    using IJobInterface = se_IJobInterface_t;
+    using JobHandle = seJobHandle;
+    using JobPriority = seJobPriority;
+    using JobResult = seJobResult;
+    using JobState = seJobState;
+    using JobExecuteFunc = pfn_seJobExecute;
+    using JobResultCallbackFunc = pfn_seJobResultCallback;
+    using IJobInterface = seIJobInterface;
 
     class JobSystem;
 

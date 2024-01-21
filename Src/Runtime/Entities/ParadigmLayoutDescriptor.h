@@ -21,7 +21,7 @@ namespace savanna::Entities
      */
     struct ParadigmLayoutDescriptor
     {
-        const se_ComponentKey_t m_ParadigmComponentKey;
+        const seComponentKey m_ParadigmComponentKey;
         size_t m_TotalSize;
         size_t m_NumberOfComponents;
         const size_t* m_pComponentSizes;

@@ -48,13 +48,13 @@
 namespace savanna::gfx::vk
 {
     // Using Declarations for ISavannaGfxVk2.h types
-    using VkGraphicsCapabilities = se_VkGraphicsCapabilities_t;
-    using VkQueueKind = Enumeration<se_VkQueueKind_t, uint8_t>;
-    using VkQueueFlags = FlagEnumeration<se_VkQueueFlags_t, uint8_t>;
+    using VkGraphicsCapabilities = seVkGraphicsCapabilities;
+    using VkQueueKind = Enumeration<seVkQueueKind, uint8_t>;
+    using VkQueueFlags = FlagEnumeration<seVkQueueFlags, uint8_t>;
 
     // inline static VkAllocationCallbacks* g_VkAllocationCallbacks = nullptr;
 
-    inline se_GfxErrorCode_t GetErrorCode(VkResult result);
+    inline seGfxErrorCode GetErrorCode(VkResult result);
 }
 
 /**
@@ -64,8 +64,8 @@ namespace savanna::gfx::vk
  * @param ppDriver
  * @param pUserData
  * @param allocatorInterface
- * @return se_GfxErrorCode_t
+ * @return seGfxErrorCode
  */
-se_GfxErrorCode_t GetDriverInterfaceVulkan(se_GfxDriverInterface_t& outDriverInterface);
+seGfxErrorCode GetDriverInterfaceVulkan(seGfxDriverInterface& outDriverInterface);
 
 #endif // !SAVANNA_GFX_VK2_H

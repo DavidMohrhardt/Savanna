@@ -32,12 +32,12 @@ namespace savanna::gfx::vk
         VkGpu(VkGpu&&) = delete;
 
         bool TryInitializeLogicalDevice(
-            const se_VkDriverCreateInfo_t &createInfo,
+            const seVkDriverCreateInfo &createInfo,
             VkInstance &instance,
             VkSurfaceKHR& surface,
             const VkAllocationCallbacks* pAllocationCallbacks);
 
-        bool TryInitialize(const se_VkDriverCreateInfo_t &createInfo,
+        bool TryInitialize(const seVkDriverCreateInfo &createInfo,
                             VkInstance &instance,
                             VkSurfaceKHR& surface,
                             const VkAllocationCallbacks* pAllocationCallbacks);

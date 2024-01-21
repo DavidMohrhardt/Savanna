@@ -16,16 +16,16 @@ namespace savanna::gfx
 {
     static consteval size_t GetGfxDriverInterfaceSizeInPtrs()
     {
-        return sizeof(se_GfxDriverInterface_t) / sizeof(void*);
+        return sizeof(seGfxDriverInterface) / sizeof(void*);
     }
 
-    void GfxDriver::SetInterface(se_GfxDriverInterface_t& interface)
+    void GfxDriver::SetInterface(seGfxDriverInterface& interface)
     {
         ClearInterface();
-        m_pInterface = m_Allocator.New<se_GfxDriverInterface_t>();
+        m_pInterface = m_Allocator.New<seGfxDriverInterface>();
         if (m_pInterface != nullptr)
         {
-            memcpy(m_pInterface, &interface, sizeof(se_GfxDriverInterface_t));
+            memcpy(m_pInterface, &interface, sizeof(seGfxDriverInterface));
         }
     }
 
@@ -43,7 +43,7 @@ namespace savanna::gfx
         return m_pInterface != nullptr;
     }
 
-    se_GfxErrorCode_t GfxDriver::Create(const se_GfxDriverCreateInfo_t& createInfo)
+    seGfxErrorCode GfxDriver::Create(const seGfxDriverCreateInfo& createInfo)
     {
         if (m_pInterface == nullptr)
         {
@@ -52,7 +52,7 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnInitialize(createInfo);
     }
 
-    se_GfxErrorCode_t GfxDriver::Destroy()
+    seGfxErrorCode GfxDriver::Destroy()
     {
         if (m_pInterface == nullptr)
         {
@@ -61,7 +61,7 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnDestroy();
     }
 
-    se_GfxDriverHandle_t GfxDriver::GetDriverHandle()
+    seGfxDriverHandle GfxDriver::GetDriverHandle()
     {
         if (m_pInterface == nullptr)
         {
@@ -70,7 +70,7 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnGetDriverHandle();
     }
 
-    se_GfxErrorCode_t GfxDriver::CreateSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle)
+    seGfxErrorCode GfxDriver::CreateSwapchain(const seGfxSwapchainCreateInfo& createInfo, seGfxHandle* const pOutSwapchainHandle)
     {
         if (m_pInterface == nullptr)
         {
@@ -79,7 +79,7 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnCreateSwapchain(createInfo, pOutSwapchainHandle);
     }
 
-    const se_GfxBackend_t GfxDriver::GetBackendType() const
+    const seGfxBackend GfxDriver::GetBackendType() const
     {
         if (m_pInterface == nullptr)
         {
@@ -88,9 +88,9 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnGetBackend();
     }
 
-    se_GfxErrorCode_t GfxDriver::CreateShaderModule(
-        const se_GfxShaderCreateInfo_t& createInfo,
-        se_GfxShaderHandle_t& outShaderModuleHandle)
+    seGfxErrorCode GfxDriver::CreateShaderModule(
+        const seGfxShaderCreateInfo& createInfo,
+        seGfxShaderHandle& outShaderModuleHandle)
     {
         if (m_pInterface == nullptr)
         {
@@ -99,10 +99,10 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnCreateShaderModule(createInfo, outShaderModuleHandle);
     }
 
-    se_JobHandle_t GfxDriver::CreateShaderModulesAsync(
-        const se_GfxShaderCreateInfo_t* pCreateInfos,
+    seJobHandle GfxDriver::CreateShaderModulesAsync(
+        const seGfxShaderCreateInfo* pCreateInfos,
         const size_t createInfoCount,
-        se_GfxShaderHandle_t** const ppOutShaderModuleHandles)
+        seGfxShaderHandle** const ppOutShaderModuleHandles)
     {
         if (m_pInterface == nullptr || (*m_pInterface).m_pfnCreateShaderModulesAsync == nullptr)
         {

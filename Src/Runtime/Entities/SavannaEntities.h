@@ -15,6 +15,6 @@
 
 namespace savanna::Entities
 {
-    using Entity = se_Entity_t;
-    using ComponentKey = se_ComponentKey_t;
+    using Entity = seEntity;
+    using ComponentKey = seComponentKey;
 } // namespace savanna::Entities

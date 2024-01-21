@@ -29,9 +29,9 @@ namespace savanna
             const int m_LineNo;
         };
 
-        static const se_AllocatorInterface_t GetAllocatorInterfaceForAllocatorKind(const AllocatorKind& allocatorKind);
-        static const se_AllocatorInterface_t* GetAllocatorInterfaceForAllocatorKindPtr(const AllocatorKind& allocatorKind);
-        static bool TryGetAllocatorInterfaceForAllocatorKind(const uint32& allocatorKind, se_AllocatorInterface_t& outAllocatorKindInterface);
+        static const seAllocatorInterface GetAllocatorInterfaceForAllocatorKind(const AllocatorKind& allocatorKind);
+        static const seAllocatorInterface* GetAllocatorInterfaceForAllocatorKindPtr(const AllocatorKind& allocatorKind);
+        static bool TryGetAllocatorInterfaceForAllocatorKind(const uint32& allocatorKind, seAllocatorInterface& outAllocatorKindInterface);
 
     private:
         AtomicMultiListAllocator m_RootMemoryAllocator;
@@ -44,29 +44,29 @@ namespace savanna
     public:
         void* Allocate(
             const size_t& size,
-            const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindGeneral,
+            const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindGeneral,
             const DebugAllocationInfo* pDbgInfo = nullptr);
 
         void* AllocateAligned(
             const size_t& size,
             const size_t& alignment,
-            const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindGeneral,
+            const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindGeneral,
             const DebugAllocationInfo* pDbgInfo = nullptr);
 
         void* Reallocate(
             void* ptr,
             const size_t& newSize,
-            const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindGeneral,
+            const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindGeneral,
             const DebugAllocationInfo* pDbgInfo = nullptr);
 
         void* ReallocateAligned(
             void* ptr,
             const size_t& newSize,
             const size_t& alignment,
-            const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindGeneral,
+            const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindGeneral,
             const DebugAllocationInfo* pDbgInfo = nullptr);
 
-        void Free(void* ptr, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindGeneral);
+        void Free(void* ptr, const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindGeneral);
 
         void OnFrameEnd();
 
@@ -74,14 +74,14 @@ namespace savanna
         void* AllocateInternal(
             const size_t& size,
             const size_t& alignment,
-            const se_AllocatorKindBackingInt_t allocatorKind,
+            const seAllocatorKindBackingInt allocatorKind,
             const DebugAllocationInfo* pDbgInfo = nullptr);
 
         void* ReallocateInternal(
             void* ptr,
             const size_t& newSize,
             const size_t& alignment,
-            const se_AllocatorKindBackingInt_t allocatorKind,
+            const seAllocatorKindBackingInt allocatorKind,
             const DebugAllocationInfo* pDbgInfo = nullptr);
 
         bool InitializeInternal() override;

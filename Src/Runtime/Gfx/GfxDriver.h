@@ -24,14 +24,14 @@ namespace savanna::gfx
     private:
         friend class GfxContext;
 
-        se_GfxDriverInterface_t* m_pInterface = nullptr;
+        seGfxDriverInterface* m_pInterface = nullptr;
         InterfaceAllocator m_Allocator;
 
-        void SetInterface(se_GfxDriverInterface_t& driverInterface);
+        void SetInterface(seGfxDriverInterface& driverInterface);
         void ClearInterface();
 
     public:
-        GfxDriver(const se_AllocatorInterface_t& allocatorInterface)
+        GfxDriver(const seAllocatorInterface& allocatorInterface)
             : m_Allocator(allocatorInterface)
         {}
 
@@ -45,24 +45,24 @@ namespace savanna::gfx
 
         bool IsValid();
 
-        se_GfxErrorCode_t Create(const se_GfxDriverCreateInfo_t& createInfo);
+        seGfxErrorCode Create(const seGfxDriverCreateInfo& createInfo);
 
-        se_GfxErrorCode_t Destroy();
+        seGfxErrorCode Destroy();
 
-        se_GfxDriverHandle_t GetDriverHandle();
+        seGfxDriverHandle GetDriverHandle();
 
-        se_GfxErrorCode_t CreateSwapchain(const se_GfxSwapchainCreateInfo_t& createInfo, se_GfxHandle_t* const pOutSwapchainHandle);
+        seGfxErrorCode CreateSwapchain(const seGfxSwapchainCreateInfo& createInfo, seGfxHandle* const pOutSwapchainHandle);
 
-        const se_GfxBackend_t GetBackendType() const;
+        const seGfxBackend GetBackendType() const;
 
-        se_GfxErrorCode_t CreateShaderModule(
-            const se_GfxShaderCreateInfo_t& createInfo,
-            se_GfxShaderHandle_t& outShaderModuleHandle);
+        seGfxErrorCode CreateShaderModule(
+            const seGfxShaderCreateInfo& createInfo,
+            seGfxShaderHandle& outShaderModuleHandle);
 
-        se_JobHandle_t CreateShaderModulesAsync(
-            const se_GfxShaderCreateInfo_t* pCreateInfos,
+        seJobHandle CreateShaderModulesAsync(
+            const seGfxShaderCreateInfo* pCreateInfos,
             const size_t createInfoCount,
-            se_GfxShaderHandle_t** const ppOutShaderModuleHandles);
+            seGfxShaderHandle** const ppOutShaderModuleHandles);
     };
 } // namespace savanna::Gfx
 

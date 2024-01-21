@@ -47,11 +47,11 @@ namespace savanna::Entities
         MemoryBuffer m_ParadigmBuffer;
         Paradigm* m_NextParadigm;
 
-        const se_ComponentKey_t m_ComponentParadigmKey;
+        const seComponentKey m_ComponentParadigmKey;
         ParadigmLayoutDescriptor m_ParadigmLayoutDescriptor;
 
     public:
-        Paradigm(const se_ComponentKey_t& componentParadigmKey, const size_t& componentCount);
+        Paradigm(const seComponentKey& componentParadigmKey, const size_t& componentCount);
 
         Paradigm(const Paradigm& other) = delete;
 
@@ -62,7 +62,7 @@ namespace savanna::Entities
 #else
     struct CompoundComponentKey
     {
-        se_ComponentKey_t m_ComponentKeys[4];
+        seComponentKey m_ComponentKeys[4];
 
         inline bool operator==(const CompoundComponentKey& other) const
         {
@@ -121,14 +121,14 @@ namespace savanna::Entities
             /**
              * @brief The component keys that define this paradigm.
              */
-            se_ComponentKey_t m_ParadigmKeyChain[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
+            seComponentKey m_ParadigmKeyChain[SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS];
 
             /**
              * @brief The component keys that define this paradigm.
              */
             CompoundComponentKey m_CompoundParadigmKeyChain[
                 GetRequiredLengthToFillUnion(
-                    sizeof(se_ComponentKey_t) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS,
+                    sizeof(seComponentKey) * SAVANNA_ECS_MAX_COMPONENT_PARADIGM_KEYS,
                     sizeof(CompoundComponentKey)
                 )
             ];
@@ -147,7 +147,7 @@ namespace savanna::Entities
         void AddComponentToParadigmInternal(
             const size_t& size,
             const size_t& alignment,
-            const se_ComponentKey_t& componentKey);
+            const seComponentKey& componentKey);
 
         /**
          * @brief Allocate memory for the paradigm.
@@ -158,13 +158,13 @@ namespace savanna::Entities
         SAVANNA_NO_DISCARD void* GetComponentData(
             const size_t& stride,
             const size_t& alignment,
-            se_ComponentKey_t componentKey,
+            seComponentKey componentKey,
             size_t* outArrayLength);
 
         void UpdateParadigmLayout();
 
     public:
-        array_view<se_ComponentKey_t> GetKeyChain() const;
+        array_view<seComponentKey> GetKeyChain() const;
 
     public:
         template <typename T>
@@ -175,7 +175,7 @@ namespace savanna::Entities
                 return nullptr;
             }
 
-            se_ComponentKey_t componentKey = IComponentData<T>::GetKey();
+            seComponentKey componentKey = IComponentData<T>::GetKey();
             if (!SavannaCompareKeys(
                     componentKey,
                     m_ParadigmKeyChain[componentKey.GetRingIndex()]))
@@ -192,7 +192,7 @@ namespace savanna::Entities
         {
             size_t dataSize = sizeof(T);
             size_t dataAlignment = alignof(T);
-            se_ComponentKey_t key = IComponentData<T>::GetKey();
+            seComponentKey key = IComponentData<T>::GetKey();
 
             AddComponentToParadigmInternal(dataSize, dataAlignment, key);
         }

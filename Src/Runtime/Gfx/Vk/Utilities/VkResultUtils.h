@@ -130,7 +130,7 @@ namespace savanna::gfx::vk
 #define ERROR_CODE_ENTRY(__vkResult, __seErrorCode) \
     case __vkResult: return kSavannaGfxErrorCode##__seErrorCode
 
-    inline constexpr se_GfxErrorCode_t ResultToErrorCode(VkResult result)
+    inline constexpr seGfxErrorCode ResultToErrorCode(VkResult result)
     {
         switch (result)
         {

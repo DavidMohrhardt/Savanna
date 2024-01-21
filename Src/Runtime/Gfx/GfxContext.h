@@ -32,14 +32,14 @@ namespace savanna::gfx
 
         GfxContext() = delete;
 
-        GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo);
+        GfxContext(const seGfxContextCreateInfo* const pCreateInfo);
         ~GfxContext();
 
     public:
-        se_GfxErrorCode_t CreateDriver(const se_GfxDriverCreateInfoList_t* const pCreateInfoList);
+        seGfxErrorCode CreateDriver(const seGfxDriverCreateInfoList* const pCreateInfoList);
         GfxDriver* GetDriver() { return &m_Driver; }
 
-        se_GfxSupportedBackend_t GetSupportedGfxBackends() const;
+        seGfxSupportedBackend GetSupportedGfxBackends() const;
     };
 } // namespace savanna::Gfx
 

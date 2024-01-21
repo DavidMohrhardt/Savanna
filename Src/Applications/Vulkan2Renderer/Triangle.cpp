@@ -40,7 +40,7 @@ constexpr uint32_t k_TriangleUvCoords[6]
 };
 constexpr uint32_t k_TriangleUvCoordCount = 6;
 
-se_GfxShaderHandle_t TriangleMesh::s_DefaultTriangleShaderHandles[2]
+seGfxShaderHandle TriangleMesh::s_DefaultTriangleShaderHandles[2]
 {
     k_SavannaGfxInvalidShaderModuleHandle,
     k_SavannaGfxInvalidShaderModuleHandle
@@ -49,8 +49,8 @@ se_GfxShaderHandle_t TriangleMesh::s_DefaultTriangleShaderHandles[2]
 struct ShaderCreateJobInput
 {
     const char* m_ShaderPath;
-    se_GfxShaderCreateInfo_t m_CreateInfo;
-    se_GfxShaderHandle_t* m_pShaderHandle;
+    seGfxShaderCreateInfo m_CreateInfo;
+    seGfxShaderHandle* m_pShaderHandle;
 };
 
 class TriangleShaderCreateJob final : public IJob
@@ -74,7 +74,7 @@ public:
 
         auto& shaderPath = m_Input.m_ShaderPath;
         auto& shaderCreateInfo = m_Input.m_CreateInfo;
-        se_GfxShaderHandle_t* pOutShaderHandle = m_Input.m_pShaderHandle;
+        seGfxShaderHandle* pOutShaderHandle = m_Input.m_pShaderHandle;
 
         try
         {
@@ -107,8 +107,8 @@ public:
 
 inline TriangleShaderCreateJob* TriangleMesh::CreateShaderJob(
     se_uint8 index,
-    se_GfxShaderStage_t stage,
-    const se_AllocatorInterface_t* pAllocatorInterface)
+    seGfxShaderStage stage,
+    const seAllocatorInterface* pAllocatorInterface)
 {
     ShaderCreateJobInput input {
         k_DefaultTriangleShaderPaths[index],
@@ -121,7 +121,7 @@ inline TriangleShaderCreateJob* TriangleMesh::CreateShaderJob(
     return SAVANNA_NEW(kSavannaAllocatorKindGeneral, TriangleShaderCreateJob, input);
 }
 
-bool TriangleMesh::TryCreateDefaultShader(const se_AllocatorInterface_t* pAllocatorInterface)
+bool TriangleMesh::TryCreateDefaultShader(const seAllocatorInterface* pAllocatorInterface)
 {
     static auto didCreateShaders = [=]() -> bool
     {

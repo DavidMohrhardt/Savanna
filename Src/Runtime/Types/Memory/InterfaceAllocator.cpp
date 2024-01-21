@@ -3,7 +3,7 @@
 
 namespace savanna
 {
-    InterfaceAllocator::InterfaceAllocator(se_AllocatorInterface_t allocatorInterface)
+    InterfaceAllocator::InterfaceAllocator(seAllocatorInterface allocatorInterface)
         : m_AllocatorInterface(allocatorInterface)
     {
         SAVANNA_ASSERT_VALID_ALLOCATOR_INTERFACE(m_AllocatorInterface);

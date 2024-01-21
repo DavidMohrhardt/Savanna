@@ -17,11 +17,11 @@
  * @brief The entity handle type.
  *
  */
-typedef struct se_Entity_t
+typedef struct seEntity
 {
     se_uint32 m_Index;
     se_uint32 m_Version;
-} se_Entity_t;
+} seEntity;
 
 #undef SAVANNA_ECS_KEY_TEETH_BIT_COUNT
 #define SAVANNA_ECS_KEY_TEETH_BIT_COUNT 24
@@ -36,7 +36,7 @@ typedef struct se_Entity_t
 #define SAVANNA_COMPONENT_KEY_MAX_VALUE ( 0x1 << (SAVANNA_ECS_KEY_TEETH_BIT_COUNT - 1) )
 
 #undef SE_INVALID_COMPONENT_KEY
-#define SE_INVALID_COMPONENT_KEY ((se_ComponentKey_t)0x0)
+#define SE_INVALID_COMPONENT_KEY ((seComponentKey)0x0)
 
 #undef SE_INVALID_COMPONENT_KEY_TEETH
 #define SE_INVALID_COMPONENT_KEY_TEETH (SE_INVALID_COMPONENT_KEY).m_KeyTeeth
@@ -45,7 +45,7 @@ typedef struct se_Entity_t
  * @brief Error codes returned by a given entity system.
  *
  */
-typedef enum se_EntitySystemErrorCode_t
+typedef enum seEntitySystemErrorCode
 {
     kSavannaSystemSuccess,
     kSavannaSystemFailure,
@@ -55,7 +55,7 @@ typedef enum se_EntitySystemErrorCode_t
     kSavannaSystemAlreadyInitialized,
 
     kSavannaSystemEnsure32Bits = 0xFFFFFFFF
-} se_EntitySystemErrorCode_t;
+} seEntitySystemErrorCode;
 
 /**
  * @brief The component key union type. Is a 32-bit bitset with a reserved 8 bits for the component registration index
@@ -70,7 +70,7 @@ typedef enum se_EntitySystemErrorCode_t
  * that's still 1024 / 64 = 16 cache lines to read.
  *
  */
-typedef union se_ComponentKey_t
+typedef union seComponentKey
 {
     /**
      * @brief The full component key.
@@ -89,44 +89,44 @@ typedef union se_ComponentKey_t
          */
         se_uint32 m_RingIndex : SAVANNA_ECS_KEY_RING_INDEX_BIT_COUNT;
     };
-} se_ComponentKey_t;
+} seComponentKey;
 
 
 /**
  * @brief The entity system interface.
  *
  */
-typedef struct se_EntitySystemInterface_t
+typedef struct seEntitySystemInterface
 {
     /**
      * @brief The system lock used to determine if the
      * system can operate on a given entity.
      *
      */
-    se_ComponentKey_t m_SystemLock;
+    seComponentKey m_SystemLock;
 
     /**
      * @brief Runs the system.
      *
      * @param pComponentBatch The component batch the system should operator on.
-     * @return se_EntitySystemErrorCode_t The error code.
+     * @return seEntitySystemErrorCode The error code.
      */
-    se_EntitySystemErrorCode_t (*se_pfnRunSystem)(void* pSystemBatch);
-} se_EntitySystemInterface_t;
+    seEntitySystemErrorCode (*se_pfnRunSystem)(void* pSystemBatch);
+} seEntitySystemInterface;
 
-typedef struct se_EntitySystemCreateInfo_t
+typedef struct seEntitySystemCreateInfo
 {
     /**
      * @brief The system interface.
      *
      */
-    se_EntitySystemInterface_t* m_pSystemInterface;
-} se_EntitySystemCreateInfo_t;
+    seEntitySystemInterface* m_pSystemInterface;
+} seEntitySystemCreateInfo;
 
 // API
 
-SAVANNA_EXPORT(bool) SavannaEntitiesIsValidComponentKey(const se_ComponentKey_t& componentId);
+SAVANNA_EXPORT(bool) SavannaEntitiesIsValidComponentKey(const seComponentKey& componentId);
 
-SAVANNA_EXPORT(bool) SavannaEntitiesCompareKeys(const se_ComponentKey_t& entityKey, const se_ComponentKey_t& systemLock);
+SAVANNA_EXPORT(bool) SavannaEntitiesCompareKeys(const seComponentKey& entityKey, const seComponentKey& systemLock);
 
 #endif // I_SAVANNA_ENTITIES_H

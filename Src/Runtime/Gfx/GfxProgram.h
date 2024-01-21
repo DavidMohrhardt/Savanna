@@ -16,7 +16,7 @@
 
 // #include "GfxShader.h"
 
-struct se_GfxShader_t;
+struct seGfxShader;
 
 DECLARE_NAMESPACED_ENUMERATION(savanna::gfx, GfxProgramType, GfxProgramType, uint8_t,
     k_SavannaGfxProgramTypeUnknown = 0,
@@ -38,19 +38,19 @@ DECLARE_NAMESPACED_ENUMERATION(savanna::gfx, GfxProgramType, GfxProgramType, uin
     k_SavannaGfxProgramTypeCount
 );
 
-typedef struct se_GfxProgramCreateInfo_t
+typedef struct seGfxProgramCreateInfo
 {
     GfxProgramType type;
-    const se_GfxShader_t* pShader;
-} se_GfxProgramCreateInfo_t;
+    const seGfxShader* pShader;
+} seGfxProgramCreateInfo;
 
-typedef struct se_GfxProgram_t
+typedef struct seGfxProgram
 {
     GfxProgramType type;
-    const se_GfxShader_t* pShader;
-} se_GfxProgram_t;
+    const seGfxShader* pShader;
+} seGfxProgram;
 
-typedef se_uint64_t se_GfxProgramHandle_t;
+typedef seuint64 seGfxProgramHandle;
 
 #if defined(__cplusplus)
 

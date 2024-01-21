@@ -40,9 +40,9 @@ namespace savanna::concurrency
     class AutoDisposePrimitiveJob final : public AutoDisposeJobBase
     {
     private:
-        const se_JobDefinition_t m_JobDefinition;
+        const seJobDefinition m_JobDefinition;
     public:
-        AutoDisposePrimitiveJob(const se_JobDefinition_t &jobDefinition, AllocatorKind allocatorKind);
+        AutoDisposePrimitiveJob(const seJobDefinition &jobDefinition, AllocatorKind allocatorKind);
 
         AutoDisposePrimitiveJob() = delete;
 

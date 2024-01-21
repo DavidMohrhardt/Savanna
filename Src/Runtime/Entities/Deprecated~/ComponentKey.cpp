@@ -36,7 +36,7 @@ namespace savanna::Entities
         return m_ComponentKey;
     }
 
-    se_ComponentKey_t ComponentKey::GetKeyValue() const
+    seComponentKey ComponentKey::GetKeyValue() const
     {
         return m_ComponentKey.m_KeyTeeth;
     }
@@ -51,7 +51,7 @@ namespace savanna::Entities
         m_ComponentKey = componentKey;
     }
 
-    void ComponentKey::SetKey(const se_ComponentKey_t& componentKey)
+    void ComponentKey::SetKey(const seComponentKey& componentKey)
     {
         m_ComponentKey.m_FullComponentKey = componentKey;
     }
@@ -63,7 +63,7 @@ namespace savanna::Entities
         m_ComponentKey.m_RingIndex = componentKeyRingIndex;
     }
 
-    void ComponentKey::SetKeyValue(const se_ComponentKey_t& componentKeyValue)
+    void ComponentKey::SetKeyValue(const seComponentKey& componentKeyValue)
     {
         SAVANNA_ASSERT(componentKeyValue <= k_MaxKeyValue, "Component key value is too large");
         m_ComponentKey.m_KeyTeeth = componentKeyValue;

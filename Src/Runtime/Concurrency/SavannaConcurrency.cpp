@@ -37,10 +37,10 @@ SAVANNA_EXPORT(bool) SavannaConcurrencyIsMainThread()
     return s_MainThreadId == std::this_thread::get_id();
 }
 
-SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobSystemScheduleJob(
-    se_JobDefinition_t& jobDefinition,
-    se_JobPriority_t priority,
-    se_JobHandle_t dependency)
+SAVANNA_EXPORT(seJobHandle) SavannaConcurrencyJobSystemScheduleJob(
+    seJobDefinition& jobDefinition,
+    seJobPriority priority,
+    seJobHandle dependency)
 {
     if (auto manager = ThreadManager::Get())
     {
@@ -49,7 +49,7 @@ SAVANNA_EXPORT(se_JobHandle_t) SavannaConcurrencyJobSystemScheduleJob(
     return k_InvalidJobHandle;
 }
 
-SAVANNA_EXPORT(void) SavannaConcurrencyJobSystemAwaitJob(se_JobHandle_t jobHandle)
+SAVANNA_EXPORT(void) SavannaConcurrencyJobSystemAwaitJob(seJobHandle jobHandle)
 {
     if (auto manager = ThreadManager::Get())
         manager->GetJobSystem()->AwaitCompletion(jobHandle);

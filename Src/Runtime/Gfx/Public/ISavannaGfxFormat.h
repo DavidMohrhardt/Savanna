@@ -15,7 +15,7 @@
 
 #define SE_DECL_TEXTURE_FORMAT(__format) k_SavannaGfxTextureFormat_##__format
 
-typedef enum se_GfxTextureFormat_t : uint32_t
+typedef enum seGfxTextureFormat : uint32_t
 {
     // Copied from VkFormat
     SE_DECL_TEXTURE_FORMAT(UNKNOWN),
@@ -146,7 +146,7 @@ typedef enum se_GfxTextureFormat_t : uint32_t
     SE_DECL_TEXTURE_FORMAT(X8_D24_UNORM_PACK32),
     SE_DECL_TEXTURE_FORMAT(D32_SFLOAT),
     SE_DECL_TEXTURE_FORMAT(S8_UINT),
-} se_GfxTextureFormat_t;
+} seGfxTextureFormat;
 
 #undef SE_DECL_TEXTURE_FORMAT
 

@@ -27,7 +27,7 @@ extern "C"
 
 namespace savanna
 {
-    constexpr se_AllocatorInterface_t k_HeapAllocatorInterface
+    constexpr seAllocatorInterface k_HeapAllocatorInterface
     {
         .m_AllocFunc            = SavannaHeapAllocatorAllocate,
         .m_AllocAlignedFunc     = SavannaHeapAllocatorAllocateAligned,
@@ -36,8 +36,8 @@ namespace savanna
         .m_FreeFunc             = SavannaHeapAllocatorFree
     };
 
-    bool IsAllocatorInterfaceValid(const se_AllocatorInterface_t& allocatorInterface);
-    bool IsAllocatorInterfaceValid(const se_AllocatorInterface_t* pAllocatorInterface);
+    bool IsAllocatorInterfaceValid(const seAllocatorInterface& allocatorInterface);
+    bool IsAllocatorInterfaceValid(const seAllocatorInterface* pAllocatorInterface);
 } // namespace savanna::Memory
 
 #define SAVANNA_ASSERT_VALID_ALLOCATOR_INTERFACE(allocatorInterface) \

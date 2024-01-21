@@ -13,10 +13,10 @@
 
 #include "Public/ISavannaEngine.h"
 
-typedef se_intptr se_ThreadHandle_t;
+typedef se_intptr seThreadHandle;
 
 #undef k_SavannaInvalidThreadHandle
-#define k_SavannaInvalidThreadHandle ((se_ThreadHandle_t)NULL)
+#define k_SavannaInvalidThreadHandle ((seThreadHandle)NULL)
 
 SAVANNA_EXPORT(bool) SavannaConcurrencyIsMainThread();
 
@@ -26,8 +26,8 @@ SAVANNA_EXPORT(bool) SavannaConcurrencyIsMainThread();
  * function to execute. Must be released via SavannaConcurrencyThreadManagerReleaseThreads.
  *
  */
-SAVANNA_EXPORT(bool) SavannaConcurrencyThreadManagerTryAcquireThreads(se_uint8 requestedThreads, se_ThreadHandle_t* acquiredThreadHandles);
+SAVANNA_EXPORT(bool) SavannaConcurrencyThreadManagerTryAcquireThreads(se_uint8 requestedThreads, seThreadHandle* acquiredThreadHandles);
 
-SAVANNA_EXPORT(void) SavannaConcurrencyThreadManagerReleaseThreads(se_uint8 handleCount, se_ThreadHandle_t* pThreadHandles);
+SAVANNA_EXPORT(void) SavannaConcurrencyThreadManagerReleaseThreads(se_uint8 handleCount, seThreadHandle* pThreadHandles);
 
 #endif

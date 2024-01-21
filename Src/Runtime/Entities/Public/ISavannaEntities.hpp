@@ -29,40 +29,40 @@ namespace savanna::Entities
     /**
      * @brief Represents an invalid component key.
      */
-    constexpr se_ComponentKey_t k_InvalidComponentKey = { 0x0 };
+    constexpr seComponentKey k_InvalidComponentKey = { 0x0 };
 
     /**
      * @brief Represents the maximum value a component key can have.
      */
-    constexpr se_ComponentKey_t k_MaxKeyValue = (se_ComponentKey_t)(0x1 << (SAVANNA_ECS_KEY_TEETH_BIT_COUNT - 1));
+    constexpr seComponentKey k_MaxKeyValue = (seComponentKey)(0x1 << (SAVANNA_ECS_KEY_TEETH_BIT_COUNT - 1));
 
     /**
      * @brief Represents the maximum value the ring index can have.
      */
-    constexpr se_ComponentKey_t k_ComponentKeyDataRingIndexMask = { 0xFF000000u };
+    constexpr seComponentKey k_ComponentKeyDataRingIndexMask = { 0xFF000000u };
 
     /**
      * @brief Represents the maximum value the teeth can have.
      */
-    constexpr se_ComponentKey_t k_ComponentKeyDataTeethMask = { 0x00FFFFFFu };
+    constexpr seComponentKey k_ComponentKeyDataTeethMask = { 0x00FFFFFFu };
 
-    inline bool operator==(const se_ComponentKey_t& lhs, const se_ComponentKey_t& rhs)
+    inline bool operator==(const seComponentKey& lhs, const seComponentKey& rhs)
     {
         return lhs.m_FullComponentKey == rhs.m_FullComponentKey;
     }
 
-    inline bool operator!=(const se_ComponentKey_t& lhs, const se_ComponentKey_t& rhs)
+    inline bool operator!=(const seComponentKey& lhs, const seComponentKey& rhs)
     {
         return !(lhs == rhs);
     }
 
-    inline se_ComponentKey_t& operator|=(se_ComponentKey_t& lhs, const se_ComponentKey_t& rhs)
+    inline seComponentKey& operator|=(seComponentKey& lhs, const seComponentKey& rhs)
     {
         lhs.m_FullComponentKey |= rhs.m_FullComponentKey;
         return lhs;
     }
 
-    inline se_ComponentKey_t& operator&=(se_ComponentKey_t& lhs, const se_ComponentKey_t& rhs)
+    inline seComponentKey& operator&=(seComponentKey& lhs, const seComponentKey& rhs)
     {
         lhs.m_FullComponentKey &= rhs.m_FullComponentKey;
         return lhs;
@@ -88,9 +88,9 @@ namespace savanna::Entities
         IComponentData() = default;
         virtual ~IComponentData() = default;
 
-        inline static const se_ComponentKey_t& GetKey()
+        inline static const seComponentKey& GetKey()
         {
-            static auto key = [=]() -> se_ComponentKey_t
+            static auto key = [=]() -> seComponentKey
             {
                 return ComponentRegistry::RegisterComponent();
             }();

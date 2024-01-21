@@ -1,10 +1,10 @@
 #include "GfxContext.h"
 
-extern se_GfxErrorCode_t GetDriverInterfaceVulkan(se_GfxDriverInterface_t& outDriverInterface);
+extern seGfxErrorCode GetDriverInterfaceVulkan(seGfxDriverInterface& outDriverInterface);
 
 namespace savanna::gfx
 {
-    GfxContext::GfxContext(const se_GfxContextCreateInfo_t* const pCreateInfo)
+    GfxContext::GfxContext(const seGfxContextCreateInfo* const pCreateInfo)
         : m_Allocator(pCreateInfo != nullptr
             ? *pCreateInfo->m_pAllocatorInterface
             : MemoryManager::GetAllocatorInterfaceForAllocatorKind(kSavannaAllocatorKindPersistent))
@@ -23,8 +23,8 @@ namespace savanna::gfx
         }
     }
 
-    se_GfxErrorCode_t GfxContext::CreateDriver(
-        const se_GfxDriverCreateInfoList_t* const pCreateInfoList)
+    seGfxErrorCode GfxContext::CreateDriver(
+        const seGfxDriverCreateInfoList* const pCreateInfoList)
     {
         if (m_Driver.IsValid())
         {
@@ -40,8 +40,8 @@ namespace savanna::gfx
         outResult = kSavannaGfxErrorCodeUnknownError;
         for (int i = 0; i < pCreateInfoList->m_CreateInfoCount; ++i)
         {
-            const se_GfxDriverCreateInfo_t& driverCreateInfo = pCreateInfoList->m_pDriverCreateInfos[i];
-            se_GfxDriverInterface_t driverInterface{};
+            const seGfxDriverCreateInfo& driverCreateInfo = pCreateInfoList->m_pDriverCreateInfos[i];
+            seGfxDriverInterface driverInterface{};
             switch (driverCreateInfo.m_RequestedBackendType)
             {
             case kSavannaGfxApiVulkan:
@@ -63,7 +63,7 @@ namespace savanna::gfx
         return kSavannaGfxErrorCodeUnableToCreateGfxDriver;
     }
 
-    se_GfxSupportedBackend_t GfxContext::GetSupportedGfxBackends() const
+    seGfxSupportedBackend GfxContext::GetSupportedGfxBackends() const
     {
         return kSavannaSupportedGfxApiVulkan;
     }

@@ -57,19 +57,19 @@ extern "C"
     }
 }
 
-SAVANNA_EXPORT(const se_AllocatorInterface_t) SavannaMemoryManagerGetHeapAllocatorInterface()
+SAVANNA_EXPORT(const seAllocatorInterface) SavannaMemoryManagerGetHeapAllocatorInterface()
 {
     return savanna::k_HeapAllocatorInterface;
 }
 
-bool savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t &allocatorInterface)
+bool savanna::IsAllocatorInterfaceValid(const seAllocatorInterface &allocatorInterface)
 {
     return allocatorInterface.m_AllocAlignedFunc != nullptr
         && allocatorInterface.m_FreeFunc != nullptr
         && allocatorInterface.m_ReallocAlignedFunc != nullptr;
 }
 
-bool savanna::IsAllocatorInterfaceValid(const se_AllocatorInterface_t *pAllocatorInterface)
+bool savanna::IsAllocatorInterfaceValid(const seAllocatorInterface *pAllocatorInterface)
 {
     return pAllocatorInterface != nullptr
         && IsAllocatorInterfaceValid(*pAllocatorInterface);

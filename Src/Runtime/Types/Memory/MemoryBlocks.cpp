@@ -13,9 +13,9 @@ namespace savanna
     }
 
     // Create functions for allocating unified page memory
-    const std::map<size_t, PageAllocFunc> k_PageAllocFuncs {
+    const std::map<size_t, pfn_sePageAlloc> k_PageAllocFuncs {
         #define PAGE_ALLOC_FUNC_ENTRY(pageSize) { pageSize, AllocatePages<UnifiedPage##pageSize##KiB> }
-        { 1, AllocatePages<se_Page1KiB_t> },
+        { 1, AllocatePages<sePage1KiB> },
         PAGE_ALLOC_FUNC_ENTRY(2),
         PAGE_ALLOC_FUNC_ENTRY(4),
         PAGE_ALLOC_FUNC_ENTRY(8),
@@ -34,7 +34,7 @@ namespace savanna
 
 #endif // __cplusplus
 
-se_PageAllocFunc_t GetPageAllocFuncForSize(size_t size)
+pfn_sePageAlloc GetPageAllocForSize(size_t size)
 {
     auto it = savanna::k_PageAllocFuncs.find(size);
     if (it != savanna::k_PageAllocFuncs.end())

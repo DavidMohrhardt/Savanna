@@ -39,8 +39,8 @@ namespace savanna::gfx::vk
         Swapchain(const Swapchain&) = delete;
         Swapchain(Swapchain&&) = delete;
 
-        se_GfxErrorCode_t Initialize(
-            const se_GfxSwapchainCreateInfo_t& createInfo,
+        seGfxErrorCode Initialize(
+            const seGfxSwapchainCreateInfo& createInfo,
             const VkGpu& gpu,
             const VkSurfaceKHR& surface);
 

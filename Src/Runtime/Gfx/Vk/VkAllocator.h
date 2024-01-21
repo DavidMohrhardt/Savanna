@@ -32,7 +32,7 @@ namespace savanna::gfx::vk
 
         static const VkAllocationCallbacks* const Get();
 
-        static const se_AllocatorInterface_t& GetAllocatorInterface();
+        static const seAllocatorInterface& GetAllocatorInterface();
 
     private:
         static VkAllocationCallbacks s_AllocationCallbacks;
@@ -42,6 +42,6 @@ namespace savanna::gfx::vk
         inline static int64 s_AllocationsMax = 0;
 #endif // SAVANNA_ENABLE_VK_ALLOCATOR_TRACKING
 
-        static void SetVkAllocationInterfacePtr(const se_AllocatorInterface_t* pInterface);
+        static void SetVkAllocationInterfacePtr(const seAllocatorInterface* pInterface);
     };
 }

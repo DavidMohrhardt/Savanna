@@ -7,14 +7,14 @@ class TriangleShaderCreateJob;
 struct TriangleMesh
 {
 private:
-    static se_GfxShaderHandle_t s_DefaultTriangleShaderHandles[2];
+    static seGfxShaderHandle s_DefaultTriangleShaderHandles[2];
 
     static TriangleShaderCreateJob* CreateShaderJob(
         se_uint8 index,
-        se_GfxShaderStage_t stage,
-        const se_AllocatorInterface_t* pAllocatorInterface);
+        seGfxShaderStage stage,
+        const seAllocatorInterface* pAllocatorInterface);
 
-    static bool TryCreateDefaultShader(const se_AllocatorInterface_t* pAllocatorInterface);
+    static bool TryCreateDefaultShader(const seAllocatorInterface* pAllocatorInterface);
 
 public:
 
@@ -32,8 +32,8 @@ namespace gpu
 {
     struct triangle
     {
-        se_GfxHandle_t vertexBufferHandle;
-        se_GfxHandle_t indexBufferHandle;
+        seGfxHandle vertexBufferHandle;
+        seGfxHandle indexBufferHandle;
     };
 
     // triangle CreateTriangle(TriangleMesh& mesh)

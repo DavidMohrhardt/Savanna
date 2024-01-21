@@ -8,7 +8,7 @@ namespace savanna::concurrency
 
     ThreadExecutionInterface* ThreadManager::s_pDefaultUnreservedThreadInterface = nullptr;
 
-    DEFINE_ENUM(se_ReservationState_t, ReservationState, uint8_t,
+    DEFINE_ENUM(seReservationState, ReservationState, uint8_t,
         Unreserved,
         Awaiting,
         Reserved);
@@ -64,7 +64,7 @@ namespace savanna::concurrency
     {
     }
 
-    bool ThreadManager::TryAcquireThreads(const uint8 requestedThreads, se_ThreadHandle_t *pOutThreadHandles)
+    bool ThreadManager::TryAcquireThreads(const uint8 requestedThreads, seThreadHandle *pOutThreadHandles)
     {
         SAVANNA_ASSERT_MAIN_THREAD();
         if (requestedThreads > k_MaxThreadCount)
@@ -87,7 +87,7 @@ namespace savanna::concurrency
             if (reservationState.compare_exchange_strong(expected, Awaiting))
             {
                 thread.Stop();
-                pOutThreadHandles[reservedThreads++] = (se_ThreadHandle_t)i;
+                pOutThreadHandles[reservedThreads++] = (seThreadHandle)i;
                 reservationState.store(Reserved, std::memory_order_release);
             }
 
@@ -100,7 +100,7 @@ namespace savanna::concurrency
         return true;
     }
 
-    void ThreadManager::ReleaseThreads(const uint8 threadCount, const se_ThreadHandle_t *pThreadHandles)
+    void ThreadManager::ReleaseThreads(const uint8 threadCount, const seThreadHandle *pThreadHandles)
     {
         SAVANNA_ASSERT_MAIN_THREAD();
         for (int i = 0; i < threadCount; ++i)
@@ -117,7 +117,7 @@ namespace savanna::concurrency
     }
 
     void ThreadManager::SetThreadExecutionInterface(
-        const uint8 threadCount, const se_ThreadHandle_t *pThreadHandles,
+        const uint8 threadCount, const seThreadHandle *pThreadHandles,
         ThreadExecutionInterface *pExecutionInterface)
     {
         SAVANNA_ASSERT_MAIN_THREAD();
@@ -137,7 +137,7 @@ namespace savanna::concurrency
         }
     }
 
-    void ThreadManager::StartThreads(const uint8 threadCount, const se_ThreadHandle_t *pThreadHandles)
+    void ThreadManager::StartThreads(const uint8 threadCount, const seThreadHandle *pThreadHandles)
     {
         SAVANNA_ASSERT_MAIN_THREAD();
         if (pThreadHandles == nullptr)
@@ -165,7 +165,7 @@ namespace savanna::concurrency
 
     void ThreadManager::StopThreads(
         const uint8 threadCount,
-        const se_ThreadHandle_t *pThreadHandles)
+        const seThreadHandle *pThreadHandles)
     {
         SAVANNA_ASSERT_MAIN_THREAD();
         if (pThreadHandles == nullptr)
@@ -191,7 +191,7 @@ namespace savanna::concurrency
 
     bool ThreadManager::StartJobSystem()
     {
-        se_ThreadHandle_t threadHandle;
+        seThreadHandle threadHandle;
         if (!TryAcquireThreads(1, &threadHandle))
         {
             return false;
@@ -247,7 +247,7 @@ using namespace savanna::concurrency;
 
 SAVANNA_EXPORT(bool) SavannaConcurrencyThreadManagerTryAcquireThreads(
     se_uint8 requestedThreads,
-    se_ThreadHandle_t* acquiredThreadHandles)
+    seThreadHandle* acquiredThreadHandles)
 {
     if (ThreadManager::Get() != nullptr)
     {
@@ -259,7 +259,7 @@ SAVANNA_EXPORT(bool) SavannaConcurrencyThreadManagerTryAcquireThreads(
 
 SAVANNA_EXPORT(void) SavannaConcurrencyThreadManagerReleaseThreads(
     se_uint8 handleCount,
-    se_ThreadHandle_t* pThreadHandles)
+    seThreadHandle* pThreadHandles)
 {
     if (ThreadManager::Get() != nullptr)
     {

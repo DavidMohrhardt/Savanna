@@ -32,41 +32,41 @@ namespace savanna::gfx::vk
 
         std::atomic_int64_t m_NextHandle = 1;
 
-        std::unordered_map<se_GfxShaderHandle_t, VkShaderModule> m_ShaderModules;
+        std::unordered_map<seGfxShaderHandle, VkShaderModule> m_ShaderModules;
         MultiReadSingleWriteLock m_ReadWriteLock;
 
         JobHandle m_AllActiveShaderModulesJob = k_InvalidJobHandle;
 
         void RegisterShaderIdInternal(
-            const se_GfxShaderHandle_t& shaderModuleHandle,
+            const seGfxShaderHandle& shaderModuleHandle,
             const VkShaderModule& shaderModule);
 
         void UnregisterShaderIdInternal(
-            const se_GfxShaderHandle_t& shaderModuleHandle);
+            const seGfxShaderHandle& shaderModuleHandle);
 
         ShaderModuleCache() = default;
         ~ShaderModuleCache() = default;
 
         JobHandle CreateShaderModulesAsync(
             const VkGpu &gpu,
-            const se_GfxShaderCreateInfo_t *createInfos,
+            const seGfxShaderCreateInfo *createInfos,
             const size_t createInfoCount,
-            se_GfxShaderHandle_t **const ppOutShaderModuleHandles);
+            seGfxShaderHandle **const ppOutShaderModuleHandles);
 
-        se_GfxShaderHandle_t CreateShaderModuleSynchronized(
+        seGfxShaderHandle CreateShaderModuleSynchronized(
             const VkGpu& gpu,
-            const se_GfxShaderCreateInfo_t& createInfo);
+            const seGfxShaderCreateInfo& createInfo);
 
         void DestroyShaderModules(
             const VkGpu& gpu,
-            const se_GfxShaderHandle_t* shaderModuleHandles,
+            const seGfxShaderHandle* shaderModuleHandles,
             size_t shaderModuleHandleCount);
 
         void Clear(const VkGpu& gpu);
 
         void GetShaderModule(
             const VkGpu& gpu,
-            const se_GfxShaderHandle_t& shaderModuleHandle,
+            const seGfxShaderHandle& shaderModuleHandle,
             VkShaderModule& outShaderModule);
     };
 } // namespace savanna::Gfx::vk

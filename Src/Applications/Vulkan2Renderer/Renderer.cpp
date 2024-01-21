@@ -22,11 +22,11 @@ namespace vk
         SAVANNA_INSERT_SCOPED_PROFILER(Renderer::~Renderer);
     }
 
-    bool Renderer::TryInitialize(const se_GfxContextCreateInfo_t* pCreateInfo, void* pWindowHandle)
+    bool Renderer::TryInitialize(const seGfxContextCreateInfo* pCreateInfo, void* pWindowHandle)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(Application::TryInitGfx);
         auto pDefaultAllocInterface = savanna::MemoryManager::GetAllocatorInterfaceForAllocatorKindPtr(kSavannaAllocatorKindGeneral);
-        se_GfxContextCreateInfo_t gfxContextCreateInfo;
+        seGfxContextCreateInfo gfxContextCreateInfo;
         if (pCreateInfo != nullptr)
         {
             gfxContextCreateInfo = *pCreateInfo;
@@ -50,7 +50,7 @@ namespace vk
         const char **glfwExtensions =
             glfwGetRequiredInstanceExtensions(&instanceExtensionCount);
 
-        se_VkDriverCreateInfo_t vkDriverCreateInfo{};
+        seVkDriverCreateInfo vkDriverCreateInfo{};
         vkDriverCreateInfo.m_pNext = nullptr;
         vkDriverCreateInfo.m_pUserData = nullptr;
         vkDriverCreateInfo.m_EnableValidationLayers = true;
@@ -86,14 +86,14 @@ namespace vk
         vkDriverCreateInfo.m_LogicalDeviceCreateArgs.m_EnabledDeviceExtensionCount =
             enabledDeviceExtensions.size();
 
-        se_GfxDriverCreateInfo_t gfxDriverCreateInfo{
+        seGfxDriverCreateInfo gfxDriverCreateInfo{
             .m_RequestedBackendType = kSavannaGfxApiVulkan,
             .m_pAllocationInterface = pDefaultAllocInterface,
             .m_pNext = &vkDriverCreateInfo,
             .m_pUserData = nullptr,
         };
 
-        se_GfxDriverCreateInfoList_t gfxDriverCreateInfoList{
+        seGfxDriverCreateInfoList gfxDriverCreateInfoList{
             .m_pDriverCreateInfos = &gfxDriverCreateInfo,
             .m_CreateInfoCount = 1,
             .m_pUserData = nullptr,
@@ -105,14 +105,14 @@ namespace vk
             return false;
         }
 
-        se_GfxSwapchainCreateInfo_t gfxSwapchainCreateInfo{};
+        seGfxSwapchainCreateInfo gfxSwapchainCreateInfo{};
         gfxSwapchainCreateInfo.m_ImageCount = 3;
         gfxSwapchainCreateInfo.m_Format = k_SavannaGfxTextureFormat_B8G8R8A8_UNORM;
         glfwGetWindowSize((GLFWwindow*)pWindowHandle,
                             (int *)&gfxSwapchainCreateInfo.m_Width,
                             (int *)&gfxSwapchainCreateInfo.m_Height);
 
-        se_GfxHandle_t swapchainHandle;
+        seGfxHandle swapchainHandle;
         if (SAVANNA_GFX_FAILURE(SavannaGfxCreateSwapchain(&gfxSwapchainCreateInfo, &swapchainHandle)))
         {
             SAVANNA_LOG("Failed to request swapchain.");

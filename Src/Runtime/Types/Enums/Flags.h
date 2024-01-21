@@ -21,12 +21,12 @@
  *
  * Example:
  * @code{.c}
- * DEFINE_C_FLAG_ENUMERATION(se_GfxBackend_t, se_uint32,
+ * DEFINE_C_FLAG_ENUMERATION(seGfxBackend, se_uint32,
  *    kSavannaGfxApiNone = 0,
  *    kSavannaGfxApiVulkan,
  * );
  * // Becomes:
- * // typedef enum se_GfxBackend_t : se_uint32 { kSavannaGfxApiNone = 0, kSavannaGfxApiVulkan } se_GfxBackend_t;
+ * // typedef enum seGfxBackend : se_uint32 { kSavannaGfxApiNone = 0, kSavannaGfxApiVulkan } seGfxBackend;
  * @endcode
  *
  * @arg __cName The name of the C enumeration.
@@ -48,9 +48,9 @@
  *
  * Example:
  * @code{.cpp}
- * DECLARE_CPP_FLAG_ENUMERATION(GfxApi, se_GfxBackend_t, se_uint32);
+ * DECLARE_CPP_FLAG_ENUMERATION(GfxApi, seGfxBackend, se_uint32);
  * // Becomes:
- * // using GfxApi = savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>;
+ * // using GfxApi = savanna::FlagEnumeration<seGfxBackend, se_uint32>;
  * @endcode
  *
  * @arg __cppName The name of the C++ enumeration.
@@ -70,9 +70,9 @@
  *
  * Example:
  * @code{.cpp}
- * DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(savanna::Gfx, GfxApi, se_GfxBackend_t, se_uint32);
+ * DECLARE_NAMESPACED_CPP_FLAG_ENUMERATION(savanna::Gfx, GfxApi, seGfxBackend, se_uint32);
  * // Becomes:
- * // namespace savanna::Gfx { using GfxApi = savanna::FlagEnumeration<se_GfxBackend_t, se_uint32>; }
+ * // namespace savanna::Gfx { using GfxApi = savanna::FlagEnumeration<seGfxBackend, se_uint32>; }
  * @endcode
  *
  * @arg __nameSpace The namespace to declare the enumeration in.
@@ -95,9 +95,9 @@
  *
  * Example:
  * @code{.cpp}
- * DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(savanna::Gfx, GfxApi, se_GfxBackend_t, se_GfxBackend_t, se_uint32);
+ * DECLARE_NAMESPACED_EXTERNAL_CPP_FLAG_ENUMERATION(savanna::Gfx, GfxApi, seGfxBackend, seGfxBackend, se_uint32);
  * // Becomes:
- * // namespace savanna::Gfx { using GfxApi = savanna::ExternalFlagEnumeration<se_GfxBackend_t, se_GfxBackend_t, se_uint32>; }
+ * // namespace savanna::Gfx { using GfxApi = savanna::ExternalFlagEnumeration<seGfxBackend, seGfxBackend, se_uint32>; }
  * @endcode
  *
  * @arg __nameSpace The namespace to declare the enumeration in.

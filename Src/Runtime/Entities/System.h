@@ -20,7 +20,7 @@ namespace savanna::Entities
     class System final
     {
     private:
-        const se_EntitySystemInterface_t* m_pInterface { nullptr };
+        const seEntitySystemInterface* m_pInterface { nullptr };
         void* m_pComponentBufferSpace { nullptr };
 
     public:
@@ -33,6 +33,6 @@ namespace savanna::Entities
         System(System&&) = delete;
         System& operator=(System&&) = delete;
 
-        se_EntitySystemErrorCode_t Initialize(const se_EntitySystemInterface_t* pInterface) noexcept;
+        seEntitySystemErrorCode Initialize(const seEntitySystemInterface* pInterface) noexcept;
     };
 }

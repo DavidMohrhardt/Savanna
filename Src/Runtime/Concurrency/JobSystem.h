@@ -45,7 +45,7 @@ namespace savanna::concurrency
         static void ProcessJobsInternalWithReturn(void* pArgs);
         static uint8 s_ThreadPoolSize;
 
-        se_ThreadHandle_t m_PrimaryJobThreadHandle;
+        seThreadHandle m_PrimaryJobThreadHandle;
 
         std::atomic_bool m_ProcessingJobs;
 
@@ -56,9 +56,9 @@ namespace savanna::concurrency
         JobSystem();
         ~JobSystem();
 
-        JobResult ExecuteJobInternal(se_JobHandle_t handle);
+        JobResult ExecuteJobInternal(seJobHandle handle);
 
-        void Start(const se_ThreadHandle_t primaryThreadHandle);
+        void Start(const seThreadHandle primaryThreadHandle);
         void Stop();
 
     public:
@@ -67,8 +67,8 @@ namespace savanna::concurrency
             JobPriority priority = JobPriority::k_SavannaJobPriorityNormal,
             JobHandle dependency = k_InvalidJobHandle);
 
-        se_JobHandle_t ScheduleJob(
-            const se_JobDefinition_t& jobDefinition,
+        seJobHandle ScheduleJob(
+            const seJobDefinition& jobDefinition,
             JobPriority priority = JobPriority::k_SavannaJobPriorityNormal,
             JobHandle dependency = k_InvalidJobHandle);
 
@@ -76,12 +76,12 @@ namespace savanna::concurrency
         // for who owns the memory of a batch job.
         // JobHandle ScheduleJobBatch(IJob** pJobs, const size& jobCount, JobPriority priority = JobPriority::k_SavannaJobPriorityNormal, JobHandle dependency = k_InvalidJobHandle);
 
-        void AwaitCompletion(se_JobHandle_t jobHandle);
-        void AwaitCompletion(se_JobHandle_t* pJobHandles, size_t jobCount);
+        void AwaitCompletion(seJobHandle jobHandle);
+        void AwaitCompletion(seJobHandle* pJobHandles, size_t jobCount);
 
-        bool TryCancelJob(se_JobHandle_t jobHandle) SAVANNA_NOEXCEPT;
+        bool TryCancelJob(seJobHandle jobHandle) SAVANNA_NOEXCEPT;
 
-        SAVANNA_NO_DISCARD JobState GetJobState(se_JobHandle_t jobHandle);
+        SAVANNA_NO_DISCARD JobState GetJobState(seJobHandle jobHandle);
 
         JobHandle CombineDependencies(const JobHandle* handles, size_t jobCount);
 
@@ -92,6 +92,6 @@ namespace savanna::concurrency
             JobHandle& handle,
             JobPriority priority);
 
-        JobResult AwaitJobOrExecuteImmediateInternal(se_JobHandle_t dependency);
+        JobResult AwaitJobOrExecuteImmediateInternal(seJobHandle dependency);
     };
 } // namespace savanna::Concurrency

@@ -150,7 +150,7 @@ namespace savanna
             }
         }
 
-        assert(false);
+        abort();
     }
 
 } // namespace Savanna

@@ -20,7 +20,7 @@ namespace savanna::gfx::vk::utils
     inline bool TrySelectPhysicalDevice(
         VkInstance instance,
         VkPhysicalDevice& outPhysicalDevice,
-        const se_VkPhysicalDeviceCreateArgs_t& physicalDeviceCreateArgs)
+        const seVkPhysicalDeviceCreateArgs& physicalDeviceCreateArgs)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(savanna::gfx::vk::utils::TrySelectPhysicalDevice);
         uint32 physicalDeviceCount = 0;

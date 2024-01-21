@@ -15,7 +15,7 @@ namespace vk
         ~Renderer();
 
         bool TryInitialize(
-            const se_GfxContextCreateInfo_t* pCreateInfo,
+            const seGfxContextCreateInfo* pCreateInfo,
             // TODO change this to a create info for the window
             void* pWindowHandle);
 

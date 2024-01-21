@@ -43,7 +43,7 @@ namespace savanna
         size_t m_Size = 0;
         size_t m_Capacity = 0;
 
-        se_AllocatorKindBackingInt_t m_AllocatorKind;
+        seAllocatorKindBackingInt m_AllocatorKind;
 
         size_t m_Hash(const Key& key) const
         {
@@ -52,8 +52,8 @@ namespace savanna
 
     public:
         hash_map() = default;
-        hash_map(const size_t& capacity, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindHeap);
-        hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_AllocatorKindBackingInt_t allocatorKind = kSavannaAllocatorKindHeap);
+        hash_map(const size_t& capacity, const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindHeap);
+        hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const seAllocatorKindBackingInt allocatorKind = kSavannaAllocatorKindHeap);
         hash_map(const hash_map& other);
         hash_map(hash_map&& other) noexcept;
         ~hash_map();
@@ -87,7 +87,7 @@ namespace savanna
     };
 
     template <typename Key, typename Value>
-    hash_map<Key, Value>::hash_map(const size_t& capacity, const se_AllocatorKindBackingInt_t allocatorKind)
+    hash_map<Key, Value>::hash_map(const size_t& capacity, const seAllocatorKindBackingInt allocatorKind)
         : m_Capacity(capacity)
         , m_Size(0)
         , m_AllocatorKind(allocatorKind)
@@ -97,7 +97,7 @@ namespace savanna
     }
 
     template <typename Key, typename Value>
-    hash_map<Key, Value>::hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const se_AllocatorKindBackingInt_t allocatorKind)
+    hash_map<Key, Value>::hash_map(const std::initializer_list<std::pair<const Key, Value>>& initList, const seAllocatorKindBackingInt allocatorKind)
         : m_Capacity(initList.size())
         , m_Size(0)
         , m_AllocatorKind(allocatorKind)

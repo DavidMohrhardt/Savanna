@@ -9,7 +9,7 @@
 
 namespace savanna::concurrency
 {
-    inline JobResult JobSystem::ExecuteJobInternal(se_JobHandle_t handle)
+    inline JobResult JobSystem::ExecuteJobInternal(seJobHandle handle)
     {
         if (handle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return k_SavannaJobResultError;
@@ -99,14 +99,14 @@ namespace savanna::concurrency
 
     JobSystem::~JobSystem() {}
 
-    void JobSystem::Start(const se_ThreadHandle_t primaryThreadHandle)
+    void JobSystem::Start(const seThreadHandle primaryThreadHandle)
     {
         SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::StartInternal());
 
         // This is the interface for the primary job thread. It will loop until the atomic bool is set to false.
         static ThreadExecutionInterface k_PrimaryThreadJobProcessingInterface =
         {
-            reinterpret_cast<se_pfnThreadFunction_t>(ProcessJobsInternal),
+            reinterpret_cast<pfn_seThreadTask>(ProcessJobsInternal),
             this
         };
 
@@ -114,7 +114,7 @@ namespace savanna::concurrency
         // while they await reservation.
         static ThreadExecutionInterface k_UnreservedThreadJobProcessingInterface =
         {
-            reinterpret_cast<se_pfnThreadFunction_t>(ProcessJobsInternalWithReturn),
+            reinterpret_cast<pfn_seThreadTask>(ProcessJobsInternalWithReturn),
             this
         };
 
@@ -174,12 +174,12 @@ namespace savanna::concurrency
         return handle;
     }
 
-    se_JobHandle_t JobSystem::ScheduleJob(
-        const se_JobDefinition_t &jobDefinition,
+    seJobHandle JobSystem::ScheduleJob(
+        const seJobDefinition &jobDefinition,
         JobPriority priority,
         JobHandle dependency)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::ScheduleJob(const se_JobDefinition_t&, JobPriority, JobHandle));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::ScheduleJob(const seJobDefinition&, JobPriority, JobHandle));
         JobHandle handle = reinterpret_cast<JobHandle>(
             SAVANNA_NEW(kSavannaAllocatorKindGeneral, AutoDisposePrimitiveJob, jobDefinition, kSavannaAllocatorKindGeneral));
 
@@ -187,12 +187,12 @@ namespace savanna::concurrency
         return handle;
     }
 
-    inline void JobSystem::ScheduleJobInternal(se_JobHandle_t &handle, JobPriority priority)
+    inline void JobSystem::ScheduleJobInternal(JobHandle& handle, JobPriority priority)
     {
         if (handle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return;
 
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::ScheduleJob(se_JobHandle_t &handle, JobPriority priority));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::ScheduleJob(seJobHandle &handle, JobPriority priority));
 
         uint32 expectedState = k_SavannaJobStateInvalid;
         uint32 desiredState = k_SavannaJobStateReady;
@@ -227,12 +227,12 @@ namespace savanna::concurrency
     //     return ScheduleJob(SAVANNA_NEW(DependencyAwaiterJob, handles.data(), handles.Size()), priority);
     // }
 
-    void JobSystem::AwaitCompletion(se_JobHandle_t jobHandle)
+    void JobSystem::AwaitCompletion(seJobHandle jobHandle)
     {
         if (jobHandle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return;
 
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::AwaitCompletion(se_JobHandle_t jobHandle));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::AwaitCompletion(seJobHandle jobHandle));
 
         while (true)
         {
@@ -246,27 +246,27 @@ namespace savanna::concurrency
         }
     }
 
-    void JobSystem::AwaitCompletion(se_JobHandle_t* pJobHandles, size_t jobCount)
+    void JobSystem::AwaitCompletion(seJobHandle* pJobHandles, size_t jobCount)
     {
         JobHandle combinedJobHandles = CombineDependencies(pJobHandles, jobCount);
         AwaitCompletion(combinedJobHandles);
     }
 
-    bool JobSystem::TryCancelJob(se_JobHandle_t jobHandle) noexcept
+    bool JobSystem::TryCancelJob(seJobHandle jobHandle) noexcept
     {
         if (jobHandle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return false;
 
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::TryCancelJob(se_JobHandle_t jobHandle));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::TryCancelJob(seJobHandle jobHandle));
         return reinterpret_cast<IJob*>(jobHandle)->TryCancel();
     }
 
-    JobState JobSystem::GetJobState(se_JobHandle_t jobHandle)
+    JobState JobSystem::GetJobState(seJobHandle jobHandle)
     {
         if (jobHandle == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return k_SavannaJobStateInvalid;
 
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::GetJobState(se_JobHandle_t jobHandle));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::GetJobState(seJobHandle jobHandle));
 
         return reinterpret_cast<IJob*>(jobHandle)->GetState();
     }
@@ -275,7 +275,7 @@ namespace savanna::concurrency
         const JobHandle *handles,
         size_t jobCount)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::CombineDependencies(se_JobHandle_t *handles, size_t jobCount));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::CombineDependencies(seJobHandle *handles, size_t jobCount));
         if (jobCount == 0 || handles == nullptr)
         {
             return k_InvalidJobHandle;
@@ -284,9 +284,9 @@ namespace savanna::concurrency
         return ScheduleJob(SAVANNA_NEW(kSavannaAllocatorKindGeneral, DependencyAwaiterJob, handles, jobCount), k_SavannaJobPriorityHigh);
     }
 
-    JobResult JobSystem::AwaitJobOrExecuteImmediateInternal(se_JobHandle_t dependency)
+    JobResult JobSystem::AwaitJobOrExecuteImmediateInternal(seJobHandle dependency)
     {
-        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::AwaitJobOrExecuteImmediateInternal(se_JobHandle_t dependency));
+        SAVANNA_INSERT_SCOPED_PROFILER(JobSystem::AwaitJobOrExecuteImmediateInternal(seJobHandle dependency));
         if (dependency == k_InvalidJobHandle) SAVANNA_BRANCH_UNLIKELY
             return k_SavannaJobResultError;
 

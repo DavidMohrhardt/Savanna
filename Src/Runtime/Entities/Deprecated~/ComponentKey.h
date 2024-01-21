@@ -31,7 +31,7 @@
 #undef SE_INVALID_ID
 #define SE_INVALID_ID k_InvalidComponentKey.m_KeyTeeth
 
-typedef se_uint32 se_ComponentKey_t;
+typedef se_uint32 seComponentKey;
 typedef se_uint8 se_ComponentKeyMask_T;
 
 // Mask the most significant 8 bits of the component ID to represent additional sets of components.
@@ -55,7 +55,7 @@ namespace savanna::Entities
         ComponentKey() : m_ComponentKey({ 0 }) {}
         ComponentKey(const ComponentKeyData& componentKey) : m_ComponentKey(componentKey) {}
         ComponentKey(const ComponentKey& componentKey) : m_ComponentKey(componentKey.m_ComponentKey) {}
-        ComponentKey(const se_ComponentKey_t& componentKey) : m_ComponentKey({ componentKey }) {}
+        ComponentKey(const seComponentKey& componentKey) : m_ComponentKey({ componentKey }) {}
 
         ~ComponentKey() = default;
 
@@ -63,13 +63,13 @@ namespace savanna::Entities
         bool CompareKey(const ComponentKey& componentKey) const;
 
         ComponentKeyData GetKey() const;
-        se_ComponentKey_t GetKeyValue() const;
+        seComponentKey GetKeyValue() const;
         se_ComponentKeyMask_T GetRingIndex() const;
 
         void SetKey(const ComponentKeyData& componentKey);
-        void SetKey(const se_ComponentKey_t& componentKey);
+        void SetKey(const seComponentKey& componentKey);
         void SetRingIndex(const se_ComponentKeyMask_T& componentKeyRingIndex);
-        void SetKeyValue(const se_ComponentKey_t& componentKeyValue);
+        void SetKeyValue(const seComponentKey& componentKeyValue);
 
         void Invalidate();
 
@@ -77,7 +77,7 @@ namespace savanna::Entities
 
     public:
         operator ComponentKeyData() const { return m_ComponentKey; }
-        operator se_ComponentKey_t() const { return m_ComponentKey.m_FullComponentKey; }
+        operator seComponentKey() const { return m_ComponentKey.m_FullComponentKey; }
 
         ComponentKey& operator=(const ComponentKey& componentKey)
         {
@@ -91,7 +91,7 @@ namespace savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator=(const se_ComponentKey_t& componentKey)
+        ComponentKey& operator=(const seComponentKey& componentKey)
         {
             m_ComponentKey.m_FullComponentKey = componentKey;
             return *this;
@@ -107,7 +107,7 @@ namespace savanna::Entities
             return ComponentKey(m_ComponentKey.m_FullComponentKey | componentKey.m_FullComponentKey);
         }
 
-        ComponentKey operator |(const se_ComponentKey_t& componentKey)
+        ComponentKey operator |(const seComponentKey& componentKey)
         {
             return ComponentKey(m_ComponentKey.m_FullComponentKey | componentKey);
         }
@@ -124,7 +124,7 @@ namespace savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator |=(const se_ComponentKey_t& componentKey)
+        ComponentKey& operator |=(const seComponentKey& componentKey)
         {
             m_ComponentKey.m_FullComponentKey |= componentKey;
             return *this;
@@ -140,7 +140,7 @@ namespace savanna::Entities
             return ComponentKey(m_ComponentKey.m_FullComponentKey & componentKey.m_FullComponentKey);
         }
 
-        ComponentKey operator &(const se_ComponentKey_t& componentKey)
+        ComponentKey operator &(const seComponentKey& componentKey)
         {
             return ComponentKey(m_ComponentKey.m_FullComponentKey & componentKey);
         }
@@ -157,7 +157,7 @@ namespace savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator &=(const se_ComponentKey_t& componentKey)
+        ComponentKey& operator &=(const seComponentKey& componentKey)
         {
             m_ComponentKey.m_FullComponentKey &= componentKey;
             return *this;
@@ -173,7 +173,7 @@ namespace savanna::Entities
             return ComponentKey(m_ComponentKey.m_FullComponentKey ^ componentKey.m_FullComponentKey);
         }
 
-        ComponentKey operator ^(const se_ComponentKey_t& componentKey)
+        ComponentKey operator ^(const seComponentKey& componentKey)
         {
             return ComponentKey(m_ComponentKey.m_FullComponentKey ^ componentKey);
         }
@@ -190,7 +190,7 @@ namespace savanna::Entities
             return *this;
         }
 
-        ComponentKey& operator ^=(const se_ComponentKey_t& componentKey)
+        ComponentKey& operator ^=(const seComponentKey& componentKey)
         {
             m_ComponentKey.m_FullComponentKey ^= componentKey;
             return *this;
@@ -206,7 +206,7 @@ namespace savanna::Entities
             return *this <=> ComponentKey(other);
         }
 
-        auto operator<=>(const se_ComponentKey_t& other) const
+        auto operator<=>(const seComponentKey& other) const
         {
             return *this <=> ComponentKey(other);
         }
