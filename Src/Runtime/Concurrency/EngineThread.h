@@ -20,6 +20,8 @@ namespace savanna::concurrency
 {
     typedef void (*pfn_seThreadTask)(void* pArgs);
 
+    constexpr std::thread::id k_InvalidThreadId = std::thread::id();
+
     struct ThreadExecutionInterface
     {
         pfn_seThreadTask m_pFunction;
@@ -31,11 +33,13 @@ namespace savanna::concurrency
     private:
         friend class ThreadManager;
 
-        static void RunThread(EngineThread* pThread);
+        static void RunThread(
+            std::stop_token stopToken,
+            std::atomic<ThreadExecutionInterface*>& executionInterface);
 
-        std::thread* m_pThread;
+        std::jthread m_Thread;
         std::atomic<ThreadExecutionInterface*> m_ExecutionInfo;
-        std::atomic_bool m_Active;
+        std::stop_source m_InternalStopSource;
 
     public:
         EngineThread();
@@ -46,13 +50,16 @@ namespace savanna::concurrency
         EngineThread& operator=(const EngineThread&) = delete;
         ~EngineThread();
 
-        bool IsActive() const { return m_Active.load(std::memory_order_acquire); }
+        inline bool IsActive() const
+        {
+            return m_Thread.get_id() != k_InvalidThreadId && m_Thread.joinable();
+        }
 
     private:
         void SetExecutionInterface(ThreadExecutionInterface* pJobInterface);
 
-        void Start(std::thread* pThreadBuffer);
-        void Stop();
+        void Start();
+        void RequestStop();
     };
 
 } // namespace savanna::Concurrency

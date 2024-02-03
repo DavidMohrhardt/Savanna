@@ -61,13 +61,13 @@ namespace savanna::gfx
         return (*m_pInterface).m_pfnDestroy();
     }
 
-    seGfxDriverHandle GfxDriver::GetDriverHandle()
+    seGfxDriver GfxDriver::GetDriver()
     {
         if (m_pInterface == nullptr)
         {
             return kSavannaGfxErrorCodeInvalidDriverInterface;
         }
-        return (*m_pInterface).m_pfnGetDriverHandle();
+        return (*m_pInterface).m_pfnGetDriver();
     }
 
     seGfxErrorCode GfxDriver::CreateSwapchain(const seGfxSwapchainCreateInfo& createInfo, seGfxHandle* const pOutSwapchainHandle)
@@ -90,7 +90,7 @@ namespace savanna::gfx
 
     seGfxErrorCode GfxDriver::CreateShaderModule(
         const seGfxShaderCreateInfo& createInfo,
-        seGfxShaderHandle& outShaderModuleHandle)
+        seGfxShader& outShaderModuleHandle)
     {
         if (m_pInterface == nullptr)
         {
@@ -102,7 +102,7 @@ namespace savanna::gfx
     seJobHandle GfxDriver::CreateShaderModulesAsync(
         const seGfxShaderCreateInfo* pCreateInfos,
         const size_t createInfoCount,
-        seGfxShaderHandle** const ppOutShaderModuleHandles)
+        seGfxShader** const ppOutShaderModuleHandles)
     {
         if (m_pInterface == nullptr || (*m_pInterface).m_pfnCreateShaderModulesAsync == nullptr)
         {

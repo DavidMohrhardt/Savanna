@@ -50,7 +50,7 @@ typedef struct seGfxProgram
     const seGfxShader* pShader;
 } seGfxProgram;
 
-typedef seuint64 seGfxProgramHandle;
+typedef se_uint64 seGfxProgram;
 
 #if defined(__cplusplus)
 

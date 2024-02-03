@@ -20,19 +20,18 @@
 #define DECL_GFX_DRIVER_INTERFACE_FUNCS() \
     static seGfxErrorCode Initialize(const seGfxDriverCreateInfo& createInfo); \
     static seGfxErrorCode Destroy(); \
-    static seGfxDriverHandle GetDriverHandle(); \
+    static seGfxDriver GetDriver(); \
     static seGfxErrorCode CreateSwapchain(const seGfxSwapchainCreateInfo& createInfo, seGfxHandle* const pOutSwapchainHandle); \
     static seGfxErrorCode CreateShaderModule( \
         const seGfxShaderCreateInfo& createInfo, \
-        seGfxShaderHandle& outShaderModuleHandle); \
+        seGfxShader& outShaderModuleHandle); \
     static seJobHandle CreateShaderModulesAsync( \
         const seGfxShaderCreateInfo* pCreateInfos, \
         const size_t createInfoCount, \
-        seGfxShaderHandle** const ppOutShaderModuleHandles)
+        seGfxShader** const ppOutShaderModuleHandles)
 
 namespace savanna::gfx
 {
-
 } // namespace savanna::Gfx
 
 

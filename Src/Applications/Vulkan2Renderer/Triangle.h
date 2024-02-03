@@ -7,7 +7,7 @@ class TriangleShaderCreateJob;
 struct TriangleMesh
 {
 private:
-    static seGfxShaderHandle s_DefaultTriangleShaderHandles[2];
+    static seGfxShader s_DefaultTriangleShaderHandles[2];
 
     static TriangleShaderCreateJob* CreateShaderJob(
         se_uint8 index,

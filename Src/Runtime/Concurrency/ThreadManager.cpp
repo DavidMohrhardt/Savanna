@@ -9,38 +9,37 @@ namespace savanna::concurrency
     ThreadExecutionInterface* ThreadManager::s_pDefaultUnreservedThreadInterface = nullptr;
 
     DEFINE_ENUM(seReservationState, ReservationState, uint8_t,
-        Unreserved,
-        Awaiting,
-        Reserved);
+        kUnreserved,
+        kAwaiting,
+        kReserved);
 
     inline void ThreadManager::StartUnreservedThreadsInternal()
     {
         dynamic_array<EngineThread>& threadPool = m_ThreadPool;
         dynamic_array<std::atomic_uint8_t>& reservationStates = m_ReservationStates;
-        std::thread* pScratchBuffer = reinterpret_cast<std::thread*>(m_ThreadScratchBuffer.GetBuffer());
 
         for (int i = 0; i < k_MaxThreadCount; ++i)
         {
             auto& thread = threadPool[i];
             auto& reservationState = reservationStates[i];
 
-            uint8 expected = Unreserved;
-            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            uint8 expected = kUnreserved;
+            if (reservationState.compare_exchange_strong(expected, kAwaiting))
             {
                 thread.SetExecutionInterface(s_pDefaultUnreservedThreadInterface);
 
                 if (s_pDefaultUnreservedThreadInterface == nullptr && thread.IsActive())
                 {
-                    thread.Stop();
+                    thread.RequestStop();
                 }
                 else
                 {
-                    thread.Start(pScratchBuffer + i);
+                    thread.Start();
                 }
 
                 // Explicitly set the thread to unreserved so it can be reserved but
                 // passively allowed to execute jobs.
-                reservationState.store(Unreserved, std::memory_order_release);
+                reservationState.store(kUnreserved, std::memory_order_release);
             }
         }
     }
@@ -54,8 +53,7 @@ namespace savanna::concurrency
     }
 
     ThreadManager::ThreadManager()
-        : m_ThreadScratchBuffer{kSavannaAllocatorKindGeneral}
-        , m_ThreadPool{0, kSavannaAllocatorKindGeneral}
+        : m_ThreadPool{0, kSavannaAllocatorKindGeneral}
         , m_ReservationStates{0, kSavannaAllocatorKindGeneral}
         , m_ReservedThreadCount(0)
     {}
@@ -83,12 +81,12 @@ namespace savanna::concurrency
             auto& thread = m_ThreadPool[i];
             auto& reservationState = m_ReservationStates[i];
 
-            uint8 expected = Unreserved;
-            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            uint8 expected = kUnreserved;
+            if (reservationState.compare_exchange_strong(expected, kAwaiting))
             {
-                thread.Stop();
+                thread.RequestStop();
                 pOutThreadHandles[reservedThreads++] = (seThreadHandle)i;
-                reservationState.store(Reserved, std::memory_order_release);
+                reservationState.store(kReserved, std::memory_order_release);
             }
 
             if (reservedThreads == requestedThreads)
@@ -107,8 +105,8 @@ namespace savanna::concurrency
         {
             auto& thread = m_ThreadPool[pThreadHandles[i]];
             auto& reservationState = m_ReservationStates[pThreadHandles[i]];
-            uint8 expected = Reserved;
-            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            uint8 expected = kReserved;
+            if (reservationState.compare_exchange_strong(expected, kAwaiting))
             {
                 thread.SetExecutionInterface(s_pDefaultUnreservedThreadInterface);
                 m_ReservedThreadCount--;
@@ -127,11 +125,11 @@ namespace savanna::concurrency
             {
                 auto& thread = m_ThreadPool[pThreadHandles[i]];
                 auto& reservationState = m_ReservationStates[pThreadHandles[i]];
-                uint8 expected = Reserved;
-                if (reservationState.compare_exchange_strong(expected, Awaiting))
+                uint8 expected = kReserved;
+                if (reservationState.compare_exchange_strong(expected, kAwaiting))
                 {
                     thread.SetExecutionInterface(pExecutionInterface);
-                    reservationState.store(Reserved, std::memory_order_release);
+                    reservationState.store(kReserved, std::memory_order_release);
                 }
             }
         }
@@ -145,20 +143,19 @@ namespace savanna::concurrency
             return;
         }
 
-        auto scratchBuffer = reinterpret_cast<std::thread*>(m_ThreadScratchBuffer.GetBuffer());
         for (int i = 0; i < threadCount; ++i)
         {
             auto& thread = m_ThreadPool[pThreadHandles[i]];
             auto& reservationState = m_ReservationStates[pThreadHandles[i]];
-            uint8 expected = Reserved;
-            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            uint8 expected = kReserved;
+            if (reservationState.compare_exchange_strong(expected, kAwaiting))
             {
                 if (thread.IsActive())
                 {
-                    thread.Stop();
+                    thread.RequestStop();
                 }
-                thread.Start(scratchBuffer + pThreadHandles[i]);
-                reservationState.store(Reserved, std::memory_order_release);
+                thread.Start();
+                reservationState.store(kReserved, std::memory_order_release);
             }
         }
     }
@@ -177,14 +174,14 @@ namespace savanna::concurrency
         {
             EngineThread& thread = m_ThreadPool[pThreadHandles[i]];
             std::atomic_uint8_t& reservationState = m_ReservationStates[pThreadHandles[i]];
-            uint8 expected = Reserved;
-            if (reservationState.compare_exchange_strong(expected, Awaiting))
+            uint8 expected = kReserved;
+            if (reservationState.compare_exchange_strong(expected, kAwaiting))
             {
                 if (thread.IsActive())
                 {
-                    thread.Stop();
+                    thread.RequestStop();
                 }
-                reservationState.store(Reserved, std::memory_order_release);
+                reservationState.store(kReserved, std::memory_order_release);
             }
         }
     }
@@ -209,12 +206,8 @@ namespace savanna::concurrency
     bool ThreadManager::InitializeInternal()
     {
         Info::Initialize();
-        m_ThreadScratchBuffer.Resize(sizeof(std::thread) * k_MaxThreadCount);
         m_ThreadPool.resize_initialized(k_MaxThreadCount);
         m_ReservationStates.resize_initialized(k_MaxThreadCount);
-
-        // Zero out the thread scratch buffer
-        ::memset(m_ThreadScratchBuffer.GetBuffer(), 0, m_ThreadScratchBuffer.GetSize());
 
         return true;
     }
@@ -229,7 +222,7 @@ namespace savanna::concurrency
         StopJobSystem();
         for (auto& thread : m_ThreadPool)
         {
-            thread.Stop();
+            thread.RequestStop();
         }
     }
 
@@ -238,7 +231,6 @@ namespace savanna::concurrency
         StopInternal();
         m_ThreadPool.clear();
         m_ReservationStates.clear();
-        m_ThreadScratchBuffer.Reset();
     }
 } // namespace savanna::Concurrency
 

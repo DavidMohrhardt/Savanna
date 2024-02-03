@@ -3,14 +3,13 @@
 namespace savanna::concurrency
 {
     EngineThread::EngineThread()
-        : m_pThread(nullptr)
+        : m_Thread()
         , m_ExecutionInfo(nullptr)
-        , m_Active(false)
     {}
 
     EngineThread::~EngineThread()
     {
-        Stop();
+        RequestStop();
     }
 
     EngineThread::EngineThread(EngineThread&& other) noexcept
@@ -23,28 +22,30 @@ namespace savanna::concurrency
     {
         if (this != &other)
         {
-            Stop();
+            RequestStop();
 
-            m_pThread = other.m_pThread;
+            m_Thread = std::move(other.m_Thread);
             m_ExecutionInfo.store(other.m_ExecutionInfo.load(std::memory_order_acquire), std::memory_order_release);
-            m_Active.store(other.m_Active.load(std::memory_order_acquire), std::memory_order_release);
-
-            other.m_pThread = nullptr;
             other.m_ExecutionInfo.store(nullptr, std::memory_order_release);
-            other.m_Active.store(false, std::memory_order_release);
         }
 
         return *this;
     }
 
-    void EngineThread::RunThread(EngineThread* pThread)
+    void EngineThread::RunThread(
+        std::stop_token stopToken,
+        std::atomic<ThreadExecutionInterface*>& executionInterface)
     {
-        while (pThread->m_Active.load(std::memory_order_acquire))
+        while (!stopToken.stop_requested())
         {
-            ThreadExecutionInterface* pExecInterface = pThread->m_ExecutionInfo.load(std::memory_order_acquire);
+            ThreadExecutionInterface* pExecInterface = executionInterface.load(std::memory_order_acquire);
             if (pExecInterface != nullptr && pExecInterface->m_pFunction != nullptr)
             {
                 pExecInterface->m_pFunction(pExecInterface->m_pData);
+            }
+            else if (stopToken.stop_requested())
+            {
+                break;
             }
             else
             {
@@ -58,24 +59,16 @@ namespace savanna::concurrency
         m_ExecutionInfo.store(pJobInterface, std::memory_order_release);
     }
 
-    void EngineThread::Start(std::thread *pThreadBuffer) {
-        bool expected = false;
-        if (m_Active.compare_exchange_strong(expected, true, std::memory_order_acq_rel))
-        {
-            // The address of the thread object is passed in so that the memory can be reused
-            m_pThread = new (pThreadBuffer) std::thread(RunThread, this);
-        }
+    void EngineThread::Start()
+    {
+        m_Thread = std::jthread(RunThread, std::ref(m_ExecutionInfo));
     }
 
-    void EngineThread::Stop()
+    void EngineThread::RequestStop()
     {
-        m_Active.store(false, std::memory_order_release);
-        if (m_pThread != nullptr)
+        if (IsActive())
         {
-            // Ensure the thread has been torn down but the address should still be valid
-            m_pThread->join();
-            m_pThread->~thread();
-            m_pThread = nullptr;
+            m_Thread.request_stop();
         }
     }
 

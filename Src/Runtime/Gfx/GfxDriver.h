@@ -49,7 +49,7 @@ namespace savanna::gfx
 
         seGfxErrorCode Destroy();
 
-        seGfxDriverHandle GetDriverHandle();
+        seGfxDriver GetDriver();
 
         seGfxErrorCode CreateSwapchain(const seGfxSwapchainCreateInfo& createInfo, seGfxHandle* const pOutSwapchainHandle);
 
@@ -57,12 +57,12 @@ namespace savanna::gfx
 
         seGfxErrorCode CreateShaderModule(
             const seGfxShaderCreateInfo& createInfo,
-            seGfxShaderHandle& outShaderModuleHandle);
+            seGfxShader& outShaderModuleHandle);
 
         seJobHandle CreateShaderModulesAsync(
             const seGfxShaderCreateInfo* pCreateInfos,
             const size_t createInfoCount,
-            seGfxShaderHandle** const ppOutShaderModuleHandles);
+            seGfxShader** const ppOutShaderModuleHandles);
     };
 } // namespace savanna::Gfx
 

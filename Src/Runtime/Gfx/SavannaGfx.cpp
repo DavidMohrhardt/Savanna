@@ -15,14 +15,14 @@
 
 namespace savanna::gfx
 {
-    inline GfxErrorCode Initialize(const seGfxContextCreateInfo *const pCreateInfo)
+    GfxErrorCode Initialize(const seGfxContextCreateInfo *const pCreateInfo)
     {
         return GfxContext::Construct(pCreateInfo) != nullptr
             ? kSavannaGfxErrorCodeSuccess
             : kSavannaGfxErrorCodeNotInitialized;
     }
 
-    inline GfxErrorCode Shutdown()
+    GfxErrorCode Shutdown()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -32,7 +32,7 @@ namespace savanna::gfx
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    inline GfxErrorCode CreateDriver(const seGfxDriverCreateInfoList* const pCreateInfoList)
+    GfxErrorCode CreateDriver(const seGfxDriverCreateInfoList* const pCreateInfoList)
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -41,7 +41,7 @@ namespace savanna::gfx
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    inline GfxSupportedBackend GetSupportedGfxBackends()
+    GfxSupportedBackend GetSupportedGfxBackends()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -50,7 +50,7 @@ namespace savanna::gfx
         return kSavannaSupportedGfxApiNone;
     }
 
-    inline const GfxBackend GetActiveGfxBackend()
+    const GfxBackend GetActiveGfxBackend()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -62,19 +62,19 @@ namespace savanna::gfx
         return kSavannaGfxApiNone;
     }
 
-    inline const seGfxHandle GetDriverHandle()
+    const seGfxHandle GetDriverHandle()
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
             if (auto pDriver = pContext->GetDriver()) SAVANNA_BRANCH_LIKELY
             {
-                return pDriver->GetDriverHandle();
+                return pDriver->GetDriver();
             }
         }
         return 0x0;
     }
 
-    inline GfxErrorCode CreateSwapchain(const seGfxSwapchainCreateInfo* const pCreateInfo, seGfxHandle* const pOutSwapchainHandle)
+    GfxErrorCode CreateSwapchain(const seGfxSwapchainCreateInfo* const pCreateInfo, seGfxHandle* const pOutSwapchainHandle)
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -90,7 +90,7 @@ namespace savanna::gfx
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    inline GfxErrorCode CreateShaderModule(const seGfxShaderCreateInfo& createInfo, seGfxShaderHandle& outShaderModuleHandle)
+    GfxErrorCode CreateShaderModule(const seGfxShaderCreateInfo& createInfo, seGfxShader& outShaderModuleHandle)
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -102,10 +102,10 @@ namespace savanna::gfx
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    inline seJobHandle CreateShaderModulesAsync(
+    seJobHandle CreateShaderModulesAsync(
         const seGfxShaderCreateInfo* pCreateInfos,
         const size_t createInfoCount,
-        seGfxShaderHandle** const ppOutShaderModuleHandles)
+        seGfxShader** const ppOutShaderModuleHandles)
     {
         if (GfxContext* pContext = GfxContext::Get()) SAVANNA_BRANCH_LIKELY
         {
@@ -159,7 +159,7 @@ SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxCreateSwapchain(
 
 SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxCreateShaderModule(
     const seGfxShaderCreateInfo& createInfo,
-    seGfxShaderHandle& outShaderModuleHandle)
+    seGfxShader& outShaderModuleHandle)
 {
     return savanna::gfx::CreateShaderModule(createInfo, outShaderModuleHandle);
 }
@@ -167,7 +167,7 @@ SAVANNA_EXPORT(seGfxErrorCode) SavannaGfxCreateShaderModule(
 SAVANNA_EXPORT(seJobHandle) SavannaGfxCreateShaderModulesAsync(
     const seGfxShaderCreateInfo* pCreateInfos,
     const size_t createInfoCount,
-    seGfxShaderHandle** const ppOutShaderModuleHandles)
+    seGfxShader** const ppOutShaderModuleHandles)
 {
     return savanna::gfx::CreateShaderModulesAsync(pCreateInfos, createInfoCount, ppOutShaderModuleHandles);
 }

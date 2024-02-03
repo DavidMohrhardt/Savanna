@@ -37,9 +37,6 @@ namespace savanna::concurrency
         static ThreadExecutionInterface* s_pDefaultUnreservedThreadInterface;
         static void SetUnreservedThreadDefaultExecution(ThreadExecutionInterface* pExecutionInterface);
 
-        // EngineThread uses a pointer to a std::thread internally so we provide that thread
-        // space here to avoid allocations during runtime.
-        MemoryBuffer m_ThreadScratchBuffer;
         dynamic_array<EngineThread> m_ThreadPool;
         dynamic_array<std::atomic_uint8_t> m_ReservationStates;
         size_t m_ReservedThreadCount;

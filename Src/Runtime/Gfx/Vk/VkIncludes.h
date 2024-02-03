@@ -14,6 +14,7 @@
 
 #define SVK_PHASE_1_MAIN(MACRO) \
     MACRO(vkDestroyInstance) \
+    MACRO(vkGetDeviceProcAddr) \
     MACRO(vkEnumeratePhysicalDevices) \
     MACRO(vkGetPhysicalDeviceProperties) \
     MACRO(vkGetPhysicalDeviceFeatures) \
@@ -27,7 +28,7 @@
     MACRO(vkGetPhysicalDeviceSurfaceFormatsKHR) \
     MACRO(vkGetPhysicalDeviceSurfacePresentModesKHR) \
     MACRO(vkGetPhysicalDeviceSurfaceSupportKHR) \
-    MACRO(vkDestroySurfaceKHR)
+    MACRO(vkDestroySurfaceKHR) \
 
 #define SVK_PHASE_1(MACRO) \
     SVK_PHASE_1_MAIN(MACRO) \
@@ -94,14 +95,14 @@ namespace savanna::gfx::vk
 {
 #ifdef VK_NO_PROTOTYPES
     void LoadLibraryPhase0();
-    void LoadLibraryPhase1();
-    void LoadLibraryPhase2();
-    void LoadLibraryPhase3();
+    void LoadLibraryPhase1(VkInstance instance);
+    void LoadLibraryPhase2(VkInstance instance);
+    void LoadLibraryPhase3(VkDevice Device);
 #else
     inline void LoadLibraryPhase0() {}
-    inline void LoadLibraryPhase1() {}
-    inline void LoadLibraryPhase2() {}
-    inline void LoadLibraryPhase3() {}
+    inline void LoadLibraryPhase1(VkInstance instance) {}
+    inline void LoadLibraryPhase2(VkInstance instance) {}
+    inline void LoadLibraryPhase3(VkDevice Device) {}
 #endif
 }
 

@@ -40,7 +40,7 @@ constexpr uint32_t k_TriangleUvCoords[6]
 };
 constexpr uint32_t k_TriangleUvCoordCount = 6;
 
-seGfxShaderHandle TriangleMesh::s_DefaultTriangleShaderHandles[2]
+seGfxShader TriangleMesh::s_DefaultTriangleShaderHandles[2]
 {
     k_SavannaGfxInvalidShaderModuleHandle,
     k_SavannaGfxInvalidShaderModuleHandle
@@ -50,7 +50,7 @@ struct ShaderCreateJobInput
 {
     const char* m_ShaderPath;
     seGfxShaderCreateInfo m_CreateInfo;
-    seGfxShaderHandle* m_pShaderHandle;
+    seGfxShader* m_pShaderHandle;
 };
 
 class TriangleShaderCreateJob final : public IJob
@@ -74,7 +74,7 @@ public:
 
         auto& shaderPath = m_Input.m_ShaderPath;
         auto& shaderCreateInfo = m_Input.m_CreateInfo;
-        seGfxShaderHandle* pOutShaderHandle = m_Input.m_pShaderHandle;
+        seGfxShader* pOutShaderHandle = m_Input.m_pShaderHandle;
 
         try
         {

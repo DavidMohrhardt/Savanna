@@ -62,7 +62,7 @@ namespace savanna::gfx::vk
 
         vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_PhysicalDeviceProperties);
 
-        LoadLibraryPhase2();
+        LoadLibraryPhase2(instance);
 
         if (!TryInitializeLogicalDevice(createInfo, instance, surface, pAllocationCallbacks))
         {
@@ -70,7 +70,7 @@ namespace savanna::gfx::vk
             return false;
         }
 
-        LoadLibraryPhase3();
+        LoadLibraryPhase3(m_LogicalDevice);
 
         return true;
     }

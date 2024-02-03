@@ -40,7 +40,7 @@ namespace savanna::gfx::vk
             return;
         }
 
-        LoadLibraryPhase1();
+        LoadLibraryPhase1(m_Instance);
 
         if (driverCreateInfo.m_RequestSurface && driverCreateInfo.m_pWindowHandle != nullptr)
         {
@@ -108,9 +108,9 @@ namespace savanna::gfx::vk
         return kSavannaGfxErrorCodeNotInitialized;
     }
 
-    seGfxDriverHandle VkDriver::GetDriverHandle()
+    seGfxDriver VkDriver::GetDriver()
     {
-        return reinterpret_cast<seGfxDriverHandle>(g_pVulkanDriver);
+        return reinterpret_cast<seGfxDriver>(g_pVulkanDriver);
     }
 
     seGfxErrorCode VkDriver::CreateSwapchain(const seGfxSwapchainCreateInfo &createInfo, seGfxHandle *const pOutSwapchainHandle)
@@ -134,7 +134,7 @@ namespace savanna::gfx::vk
 
     seGfxErrorCode VkDriver::CreateShaderModule(
         const seGfxShaderCreateInfo& createInfo,
-        seGfxShaderHandle& outShaderModuleHandle)
+        seGfxShader& outShaderModuleHandle)
     {
         outShaderModuleHandle = k_SavannaGfxInvalidShaderModuleHandle;
         if (g_pVulkanDriver != nullptr)
@@ -150,7 +150,7 @@ namespace savanna::gfx::vk
     seJobHandle VkDriver::CreateShaderModulesAsync(
         const seGfxShaderCreateInfo* pCreateInfos,
         const size_t createInfoCount,
-        seGfxShaderHandle** const ppOutShaderModuleHandles)
+        seGfxShader** const ppOutShaderModuleHandles)
     {
         JobHandle jobHandle = k_InvalidJobHandle;
         if (g_pVulkanDriver != nullptr)
@@ -232,7 +232,7 @@ namespace savanna::gfx::vk
         {
             FILL_OUT_INTERFACE_FUNC(Initialize),
             FILL_OUT_INTERFACE_FUNC(Destroy),
-            FILL_OUT_INTERFACE_FUNC(GetDriverHandle),
+            FILL_OUT_INTERFACE_FUNC(GetDriver),
             FILL_OUT_INTERFACE_FUNC(CreateSwapchain),
             FILL_OUT_INTERFACE_FUNC(CreateShaderModule),
             FILL_OUT_INTERFACE_FUNC(CreateShaderModulesAsync),

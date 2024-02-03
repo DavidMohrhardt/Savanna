@@ -71,7 +71,7 @@ typedef enum seAllocatorKind : seAllocatorKindBackingInt
  * @brief TODO @David.Mohrhardt Document
  *
  */
-typedef void* (*sepfnAlloc)(
+typedef void* (*pfn_seAlloc)(
     size_t size,
     void* pUserData);
 
@@ -79,7 +79,7 @@ typedef void* (*sepfnAlloc)(
  * @brief TODO @David.Mohrhardt Document
  *
  */
-typedef void* (*sepfnAllocAligned)(
+typedef void* (*pfn_seAllocAligned)(
     size_t size,
     size_t alignment,
     void* pUserData);
@@ -88,7 +88,7 @@ typedef void* (*sepfnAllocAligned)(
  * @brief TODO @David.Mohrhardt Document
  *
  */
-typedef void* (*sepfnRealloc)(
+typedef void* (*pfn_seRealloc)(
     void* ptr,
     const size_t& __newSize,
     void* pUserData);
@@ -97,7 +97,7 @@ typedef void* (*sepfnRealloc)(
  * @brief TODO @David.Mohrhardt Document
  *
  */
-typedef void* (*sepfnReallocAligned)(
+typedef void* (*pfn_seReallocAligned)(
     void* ptr,
     size_t alignment,
     const size_t& __newSize,
@@ -107,7 +107,7 @@ typedef void* (*sepfnReallocAligned)(
  * @brief TODO @David.Mohrhardt Document
  *
  */
-typedef void (*sepfnFree)(
+typedef void (*pfn_seFree)(
     void* ptr,
     void* pUserData);
 
@@ -117,11 +117,11 @@ typedef void (*sepfnFree)(
  */
 typedef struct seAllocatorInterface
 {
-    sepfnAlloc m_AllocFunc;
-    sepfnAllocAligned m_AllocAlignedFunc;
-    sepfnRealloc m_ReallocFunc;
-    sepfnReallocAligned m_ReallocAlignedFunc;
-    sepfnFree m_FreeFunc;
+    pfn_seAlloc m_AllocFunc;
+    pfn_seAllocAligned m_AllocAlignedFunc;
+    pfn_seRealloc m_ReallocFunc;
+    pfn_seReallocAligned m_ReallocAlignedFunc;
+    pfn_seFree m_FreeFunc;
 } seAllocatorInterface;
 
 /**
